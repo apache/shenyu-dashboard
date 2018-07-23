@@ -11,7 +11,7 @@ const links = [];
 
 const copyright = (
   <Fragment>
-    Copyright <Icon type="copyright" /> 2018 环球易购出品
+    Copyright <Icon type="copyright" /> 2018 出品
   </Fragment>
 );
 
@@ -47,7 +47,7 @@ class UserLayout extends React.PureComponent {
                   <span className={styles.title}>网关管理</span>
                 </Link>
               </div>
-              <div className={styles.desc}>环球易购网关管理系统</div>
+              <div className={styles.desc}>网关管理系统</div>
             </div>
             <Switch>
               {getRoutes(match.path, routerData).map(item => (
