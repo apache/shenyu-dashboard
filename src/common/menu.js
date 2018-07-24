@@ -30,17 +30,15 @@ const menuData = [
   },
   {
     name: '系统管理',
-    icon: 'form',
+    icon: 'setting',
     path: 'system',
     children: [
       {
-        name: '系统管理111',
-        path: 'basic-form',
+        name: '用户管理',
+        path: 'manage',
       },
-      
     ],
   },
-  
 ];
 
 function formatter(data, parentPath = '/', parentAuthority) {

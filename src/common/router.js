@@ -74,6 +74,9 @@ export const getRouterData = app => {
     '/': {
       component: dynamicWrapper(app, ['user', 'login'], () => import('../layouts/BasicLayout')),
     },
+    '/home': {
+      component: dynamicWrapper(app, [], () => import('../routes/home')),
+    },
     '/plug/waf': {
       component: dynamicWrapper(app, ['waf'], () => import('../routes/plug/waf')),
     },
@@ -81,9 +84,7 @@ export const getRouterData = app => {
       component: dynamicWrapper(app, ['rewrite'], () => import('../routes/plug/rewrite')),
     },
     '/plug/limiter': {
-      component: dynamicWrapper(app, ['limiter'], () =>
-        import('../routes/plug/limiter')
-      ),
+      component: dynamicWrapper(app, ['limiter'], () => import('../routes/plug/limiter')),
     },
     '/plug/divide': {
       component: dynamicWrapper(app, ['divide'], () => import('../routes/plug/divide')),
@@ -91,7 +92,10 @@ export const getRouterData = app => {
     '/plug/dubbo': {
       component: dynamicWrapper(app, ['dubbo'], () => import('../routes/plug/dubbo')),
     },
-    
+    '/system/manage': {
+      component: dynamicWrapper(app, ['manage'], () => import('../routes/manage/user')),
+    },
+
     '/exception/403': {
       component: dynamicWrapper(app, [], () => import('../routes/Exception/403')),
     },
