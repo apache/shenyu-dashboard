@@ -265,7 +265,11 @@ class BasicLayout extends React.PureComponent {
     return (
       <DocumentTitle title={this.getPageTitle()}>
         <ContainerQuery query={query}>
-          {params => <div className={classNames(params)}>{layout}</div>}
+          {params => (
+            <div style={{ minWidth: 1200 }} className={classNames(params)}>
+              {layout}
+            </div>
+          )}
         </ContainerQuery>
       </DocumentTitle>
     );
