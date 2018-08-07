@@ -93,10 +93,10 @@ export const getRouterData = app => {
       component: dynamicWrapper(app, ['dubbo'], () => import('../routes/plug/dubbo')),
     },
     '/system/manage': {
-      component: dynamicWrapper(app, ['manage'], () => import('../routes/manage/user')),
+      component: dynamicWrapper(app, ['manage'], () => import('../routes/sysytem/user')),
     },
     '/system/plugin': {
-      component: dynamicWrapper(app, ['plugin'], () => import('../routes/manage/plugin')),
+      component: dynamicWrapper(app, ['plugin'], () => import('../routes/sysytem/plugin')),
     },
 
     '/exception/403': {

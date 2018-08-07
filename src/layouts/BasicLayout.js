@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Layout, message } from 'antd';
+import { Layout } from 'antd';
 import DocumentTitle from 'react-document-title';
 import { connect } from 'dva';
 import { Route, Redirect, Switch, routerRedux } from 'dva/router';
@@ -159,23 +159,6 @@ class BasicLayout extends React.PureComponent {
     return redirect;
   };
 
-  handleMenuCollapse = collapsed => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'global/changeLayoutCollapsed',
-      payload: collapsed,
-    });
-  };
-
-  handleNoticeClear = type => {
-    message.success(`清空了${type}`);
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'global/clearNotices',
-      payload: type,
-    });
-  };
-
   handleMenuClick = ({ key }) => {
     const { dispatch } = this.props;
     if (key === 'triggerError') {
@@ -189,21 +172,10 @@ class BasicLayout extends React.PureComponent {
     }
   };
 
-  handleNoticeVisibleChange = visible => {
-    const { dispatch } = this.props;
-    if (visible) {
-      dispatch({
-        type: 'global/fetchNotices',
-      });
-    }
-  };
-
   render() {
     const {
       currentUser,
       collapsed,
-      fetchingNotices,
-      notices,
       routerData,
       match,
       location,
@@ -229,8 +201,6 @@ class BasicLayout extends React.PureComponent {
             <GlobalHeader
               logo={logo}
               currentUser={currentUser}
-              fetchingNotices={fetchingNotices}
-              notices={notices}
               collapsed={collapsed}
               isMobile={mb}
               onNoticeClear={this.handleNoticeClear}
@@ -276,9 +246,8 @@ class BasicLayout extends React.PureComponent {
   }
 }
 
-export default connect(({ user, global = {}, loading }) => ({
+export default connect(({ user, global = {} }) => ({
   currentUser: user.currentUser,
   collapsed: global.collapsed,
-  fetchingNotices: loading.effects['global/fetchNotices'],
-  notices: global.notices,
+
 }))(BasicLayout);

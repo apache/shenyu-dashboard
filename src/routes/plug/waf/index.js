@@ -6,7 +6,7 @@ import { connect } from 'dva';
   waf,
 }))
 export default class Waf extends Component {
-  componentDidMount() {}
+  componentDidMount() { }
 
   render() {
     const selectColumns = [
@@ -52,12 +52,21 @@ export default class Waf extends Component {
 
     return (
       <div>
-        <Row>
+        <Row gutter={20}>
           <Col span={7}>
-            <Table columns={selectColumns} dataSource={[]} />
+            <Table
+              bordered
+              columns={selectColumns}
+              dataSource={[]}
+            />
           </Col>
-          <Col span={16} offset={1}>
-            <Table columns={rulesColumns} expandedRowRender={() => <p>111</p>} dataSource={[]} />
+          <Col span={17}>
+            <Table
+              bordered
+              columns={rulesColumns}
+              expandedRowRender={() => <p>111</p>}
+              dataSource={[]}
+            />
           </Col>
         </Row>
       </div>

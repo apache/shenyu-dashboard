@@ -10,6 +10,8 @@ module.exports = {
     jasmine: true,
   },
   rules: {
+    'no-param-reassign': [0],
+    'prefer-const': [0],
     'linebreak-style': [0],
     'generator-star-spacing': [0],
     'consistent-return': [0],
