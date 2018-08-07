@@ -37,6 +37,10 @@ const menuData = [
         name: '用户管理',
         path: 'manage',
       },
+      {
+        name: '插件管理',
+        path: 'plugin',
+      },
     ],
   },
 ];

@@ -5,6 +5,8 @@ import { getFakeChartData } from './mock/chart';
 import { getProfileBasicData } from './mock/profile';
 import { getProfileAdvancedData } from './mock/profile';
 import { getNotices } from './mock/notices';
+
+import { getUsers } from './mock/user';
 import { format, delay } from 'roadhog-api-doc';
 
 // 是否禁用代理
@@ -12,43 +14,45 @@ const noProxy = process.env.NO_PROXY === 'true';
 
 // 代码中会兼容本地 service mock 以及部署站点的静态数据
 const proxy = {
-  // 支持值为 Object 和 Array
-  'GET /api/currentUser': {
-    $desc: '获取当前用户接口',
+  'GET /dashboardUser': {
     $params: {
-      pageSize: {
-        desc: '分页',
-        exp: 2,
-      },
+      userName: 'ADMIN',
+      currentPage: 1,
+      pageSize: 10,
     },
-    $body: {
-      name: 'Serati Ma',
-      avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
-      userid: '00000001',
-      notifyCount: 12,
-    },
+    $body: getUsers(),
   },
-  // GET POST 可省略
-  'GET /api/users': [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
+  'GET /dashboardUser/1': {
+    id: '1',
+    userName: 'ADMIN',
+    password: '123456',
+    role: 1,
+    enabled: true,
+    dateCreated: '2018-07-28 13:38:05',
+    dateUpdated: '2018-07-28 13:38:05',
+  },
+  'POST /dashboardUser/1': {
+    $params: {
+      username: 'user',
+      password: '123456',
+      role: 1,
+      enabled: true,
     },
-    {
-      key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sidney No. 1 Lake Park',
-    },
-  ],
+    $body: {},
+  },
+  'PUT /dashboardUser/1': {
+    username: 'ADMIN',
+    password: '123456',
+    role: 1,
+    enabled: true,
+  },
+  'DELETE /dashboardUser/1': {
+    username: 'ADMIN',
+    password: '123456',
+    role: 1,
+    enabled: true,
+  },
+
   'GET /api/project/notice': getNotice,
   'GET /api/activities': getActivities,
   'GET /api/rule': getRule,

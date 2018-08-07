@@ -107,6 +107,7 @@ public class DashboardUserVO {
     ]
 }
 ```
+
 **(2)明细用户**
 URL地址：
 [/dashboardUser/{id}](http://127.0.0.1:8082/dashboardUser/{id})

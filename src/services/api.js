@@ -1,79 +1,124 @@
-import { stringify } from 'qs';
 import request from '../utils/request';
 
-export async function queryProjectNotice() {
-  return request('/api/project/notice');
-}
-
-export async function queryActivities() {
-  return request('/api/activities');
-}
-
-export async function queryRule(params) {
-  return request(`/api/rule?${stringify(params)}`);
-}
-
-export async function removeRule(params) {
-  return request('/api/rule', {
+/* 添加用户 */
+export async function addUser(params) {
+  return request('/dashboardUser', {
     method: 'POST',
     body: {
       ...params,
-      method: 'delete',
     },
   });
 }
+/* 删除用户 */
+export async function deleteUser(params) {
+  return request(`/dashboardUser/${params.id}`, {
+    method: 'DELETE',
+  });
+}
+/* 修改用户 */
+export async function updateUser(params) {
+  return request(`/dashboardUser/${params.id}`, {
+    method: 'PUT',
+    body: {
+      ...params,
+    },
+  });
+}
+/* 查询所有用户 */
+export async function getAllUsers(params) {
+  return request('/dashboardUser', {
+    method: 'GET',
+    body: {
+      ...params,
+    },
+  });
+}
+/* 查询单个用户 */
+export async function findUser(params) {
+  return request(`/dashboardUser/${params.id}`, {
+    method: 'GET',
+  });
+}
 
-export async function addRule(params) {
-  return request('/api/rule', {
+// 插件管理
+/* 增加插件 */
+export async function addPlugin(params) {
+  return request('/plugin', {
     method: 'POST',
     body: {
       ...params,
-      method: 'post',
     },
   });
 }
-
-export async function fakeSubmitForm(params) {
-  return request('/api/forms', {
-    method: 'POST',
-    body: params,
+/* 删除插件 */
+export async function deletePlugin(params) {
+  return request(`/plugin/${params.id}`, {
+    method: 'DELETE',
+  });
+}
+/* 修改插件 */
+export async function updatePlugin(params) {
+  return request(`/plugin/${params.id}`, {
+    method: 'PUT',
+    body: {
+      ...params,
+    },
+  });
+}
+/* 查询所有插件 */
+export async function getAllPlugins(params) {
+  return request('/plugin', {
+    method: 'GET',
+    body: {
+      ...params,
+    },
+  });
+}
+/* 查询单个插件 */
+export async function findPlugin(params) {
+  return request(`/plugin/${params.id}`, {
+    method: 'GET',
   });
 }
 
-export async function fakeChartData() {
-  return request('/api/fake_chart_data');
-}
+// 选择器管理
 
-export async function queryTags() {
-  return request('/api/tags');
-}
-
-export async function queryBasicProfile() {
-  return request('/api/profile/basic');
-}
-
-export async function queryAdvancedProfile() {
-  return request('/api/profile/advanced');
-}
-
-export async function queryFakeList(params) {
-  return request(`/api/fake_list?${stringify(params)}`);
-}
-
-export async function fakeAccountLogin(params) {
-  return request('/api/login/account', {
+/* 增加插件 */
+export async function addSelector(params) {
+  return request('/selector', {
     method: 'POST',
-    body: params,
+    body: {
+      ...params,
+    },
   });
 }
-
-export async function fakeRegister(params) {
-  return request('/api/register', {
-    method: 'POST',
-    body: params,
+/* 删除插件 */
+export async function deleteSelector(params) {
+  return request(`/selector/${params.id}`, {
+    method: 'DELETE',
   });
 }
-
-export async function queryNotices() {
-  return request('/api/notices');
+/* 修改插件 */
+export async function updateSelector(params) {
+  return request(`/selector/${params.id}`, {
+    method: 'PUT',
+    body: {
+      ...params,
+    },
+  });
+}
+/* 查询所有插件 */
+export async function getAllSelectors(params) {
+  return request('/selector', {
+    method: 'GET',
+    body: {
+      ...params,
+    },
+  });
+}
+/* 查询单个插件 */
+export async function findSelector(params) {
+  return request(`/selector/${params.id}`, {
+    method: 'GET',
+  });
 }

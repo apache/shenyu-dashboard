@@ -10,6 +10,7 @@ module.exports = {
     jasmine: true,
   },
   rules: {
+    'linebreak-style': [0],
     'generator-star-spacing': [0],
     'consistent-return': [0],
     'react/forbid-prop-types': [0],
