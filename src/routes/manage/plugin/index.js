@@ -8,6 +8,6 @@ export default class Plugin extends Component {
   componentDidMount() {}
 
   render() {
-    return <div>Manage</div>;
+    return <div>plugin</div>;
   }
 }

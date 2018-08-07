@@ -92,7 +92,7 @@ export const getRouterData = app => {
     '/plug/dubbo': {
       component: dynamicWrapper(app, ['dubbo'], () => import('../routes/plug/dubbo')),
     },
-    '/system/user': {
+    '/system/manage': {
       component: dynamicWrapper(app, ['manage'], () => import('../routes/manage/user')),
     },
     '/system/plugin': {
