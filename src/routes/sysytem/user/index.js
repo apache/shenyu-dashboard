@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table } from 'antd';
+import { Table, Row, Col, Input, Button } from 'antd';
 import { connect } from 'dva';
 
 @connect(({ manage, loading }) => ({
@@ -12,38 +12,46 @@ export default class Manage extends Component {
     this.state = {
       currentPage: 1,
       selectedRowKeys: [],
-    }
+      userName: '',
+    };
   }
 
   componentWillMount() {
     const { dispatch } = this.props;
-    const { currentPage } = this.state;
+    const { currentPage, userName } = this.state;
     dispatch({
       type: 'manage/fetchUsers',
       payload: {
-        userName: '',
+        userName,
         currentPage,
         pageSize: 10,
       },
-    })
+    });
   }
 
-  onSelectChange = (selectedRowKeys) => {
+  onSelectChange = selectedRowKeys => {
     this.setState({ selectedRowKeys });
-  }
+  };
 
-  pageOnchange = (page) => {
+  pageOnchange = page => {
     this.setState({ currentPage: page });
-  }
+  };
 
-  editClick = (record) => {
+  editClick = record => {
     console.log(record);
-  }
+  };
+
+  searchOnchange = e => {
+    const userName = e.target.value;
+    this.setState({ userName });
+  };
+
+  searchClick = () => {};
 
   render() {
     const { manage, loading } = this.props;
     const { userList } = manage;
-    const { currentPage, selectedRowKeys } = this.state;
+    const { currentPage, selectedRowKeys, userName } = this.state;
     const userColumns = [
       {
         title: '用户名',
@@ -67,13 +75,14 @@ export default class Manage extends Component {
         render: (text, record) => {
           return (
             <div
-              className='edit'
+              className="edit"
               onClick={() => {
                 this.editClick(record);
               }}
             >
               编辑
-            </div>)
+            </div>
+          );
         },
       },
     ];
@@ -85,8 +94,31 @@ export default class Manage extends Component {
 
     return (
       <div>
-        <div>search</div>
+        <Row type="flex" justify="flex-start" align="middle" gutter={50}>
+          <Col span={10} className="searchblock">
+            <Input
+              value={userName}
+              onChange={this.searchOnchange}
+              size="large"
+              placeholder="请输入用户名"
+            />
+            <Button type="primary" size="large" onClick={this.searchClick}>
+              查询
+            </Button>
+          </Col>
+          <Col span={6}>
+            <Button type="danger" size="large">
+              删除勾选数据
+            </Button>
+          </Col>
+          <Col span={6}>
+            <Button type="primary" size="large">
+              添加数据
+            </Button>
+          </Col>
+        </Row>
         <Table
+          style={{ marginTop: 30 }}
           bordered
           loading={loading}
           columns={userColumns}

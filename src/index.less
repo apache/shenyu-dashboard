@@ -8,11 +8,17 @@ body,
   min-height: 100%;
 }
 
-:global(.edit){
+:global(.edit) {
   cursor: pointer;
   color: @primary-color;
-  &:hover{
+  &:hover {
     color: @primary-color;
+  }
+}
+:global(.searchblock) {
+  display: flex !important;
+  button {
+    margin-left: 30px;
   }
 }
 

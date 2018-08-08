@@ -5,13 +5,22 @@ import createHistory from 'history/createHashHistory';
 // user BrowserHistory
 // import createHistory from 'history/createBrowserHistory';
 import createLoading from 'dva-loading';
+
 import 'moment/locale/zh-cn';
 import './rollbar';
-
 import './index.less';
+
+const middlewares = [];
+if (process.env.NODE_ENV === `development`) {
+  const { logger } = require(`redux-logger`);
+
+  middlewares.push(logger);
+}
+
 // 1. Initialize
 const app = dva({
   history: createHistory(),
+  onAction: middlewares,
 });
 
 // 2. Plugins

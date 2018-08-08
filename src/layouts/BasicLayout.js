@@ -7,7 +7,6 @@ import { Route, Redirect, Switch, routerRedux } from 'dva/router';
 import { ContainerQuery } from 'react-container-query';
 import classNames from 'classnames';
 import pathToRegexp from 'path-to-regexp';
-import { enquireScreen, unenquireScreen } from 'enquire-js';
 import GlobalHeader from '../components/GlobalHeader';
 import SiderMenu from '../components/SiderMenu';
 import NotFound from '../routes/Exception/404';
@@ -58,17 +57,6 @@ const getBreadcrumbNameMap = (menuData, routerData) => {
 };
 
 const query = {
-  'screen-xs': {
-    maxWidth: 575,
-  },
-  'screen-sm': {
-    minWidth: 576,
-    maxWidth: 767,
-  },
-  'screen-md': {
-    minWidth: 768,
-    maxWidth: 991,
-  },
   'screen-lg': {
     minWidth: 992,
     maxWidth: 1199,
@@ -82,19 +70,10 @@ const query = {
   },
 };
 
-let isMobile;
-enquireScreen(b => {
-  isMobile = b;
-});
-
 class BasicLayout extends React.PureComponent {
   static childContextTypes = {
     location: PropTypes.object,
     breadcrumbNameMap: PropTypes.object,
-  };
-
-  state = {
-    isMobile,
   };
 
   getChildContext() {
@@ -106,20 +85,13 @@ class BasicLayout extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.enquireHandler = enquireScreen(mobile => {
-      this.setState({
-        isMobile: mobile,
-      });
-    });
     const { dispatch } = this.props;
     dispatch({
       type: 'user/fetchCurrent',
     });
   }
 
-  componentWillUnmount() {
-    unenquireScreen(this.enquireHandler);
-  }
+  componentWillUnmount() {}
 
   getPageTitle() {
     const { routerData, location } = this.props;
@@ -173,14 +145,7 @@ class BasicLayout extends React.PureComponent {
   };
 
   render() {
-    const {
-      currentUser,
-      collapsed,
-      routerData,
-      match,
-      location,
-    } = this.props;
-    const { isMobile: mb } = this.state;
+    const { currentUser, collapsed, routerData, match, location } = this.props;
     const bashRedirect = this.getBaseRedirect();
     const layout = (
       <Layout>
@@ -193,7 +158,6 @@ class BasicLayout extends React.PureComponent {
           menuData={getMenuData()}
           collapsed={collapsed}
           location={location}
-          isMobile={mb}
           onCollapse={this.handleMenuCollapse}
         />
         <Layout>
@@ -202,7 +166,6 @@ class BasicLayout extends React.PureComponent {
               logo={logo}
               currentUser={currentUser}
               collapsed={collapsed}
-              isMobile={mb}
               onNoticeClear={this.handleNoticeClear}
               onCollapse={this.handleMenuCollapse}
               onMenuClick={this.handleMenuClick}
@@ -249,5 +212,4 @@ class BasicLayout extends React.PureComponent {
 export default connect(({ user, global = {} }) => ({
   currentUser: user.currentUser,
   collapsed: global.collapsed,
-
 }))(BasicLayout);
