@@ -1,34 +1,40 @@
-import { getAllUsers } from '../services/api';
+import { getAllPlugins } from '../services/api';
 
 export default {
   namespace: 'plugin',
 
   state: {
-    userList: [],
+    pluginList: [],
   },
 
   effects: {
     *fetchList(params, { call, put }) {
-      let { page, dataList } = yield call(getAllUsers, params);
-      dataList = dataList.map(item => {
-        item.key = item.id;
-        return item;
-      });
-      yield put({
-        type: 'saveUsers',
-        payload: {
-          total: page.totalCount,
-          dataList,
-        },
-      });
+      const json = yield call(getAllPlugins, params);
+      if (json.code === 200) {
+        const dataList = json.data.dataList.map(item => {
+          item.key = item.id;
+          return item;
+        });
+        const total = json.data.page.totalCount;
+
+        yield put({
+          type: 'savePlugins',
+          payload: {
+            total,
+            dataList,
+          },
+        });
+      }
+
+
     },
   },
 
   reducers: {
-    saveUsers(state, { payload }) {
+    savePlugins(state, { payload }) {
       return {
         ...state,
-        userList: payload.dataList,
+        pluginList: payload.dataList,
       };
     },
   },

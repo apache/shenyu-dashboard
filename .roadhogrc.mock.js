@@ -7,6 +7,8 @@ import { getProfileAdvancedData } from './mock/profile';
 import { getNotices } from './mock/notices';
 
 import { getUsers } from './mock/user';
+import { getPlatform } from './mock/platform'
+import { getPlugin } from './mock/plugin'
 import { format, delay } from 'roadhog-api-doc';
 
 // 是否禁用代理
@@ -51,6 +53,15 @@ const proxy = {
     password: '123456',
     role: 1,
     enabled: true,
+  },
+  'GET /platform': getPlatform,
+  'GET /plugin': {
+    $params: {
+      name: '',
+      currentPage: 1,
+      pageSize: 10,
+    },
+    $body: getPlugin,
   },
 
   'GET /api/project/notice': getNotice,

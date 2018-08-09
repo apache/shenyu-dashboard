@@ -12,17 +12,17 @@ export default class Plugin extends Component {
     this.state = {
       currentPage: 1,
       selectedRowKeys: [],
-      userName: '',
+      name: '',
     };
   }
 
   componentWillMount() {
     const { dispatch } = this.props;
-    const { currentPage, userName } = this.state;
+    const { currentPage, name } = this.state;
     dispatch({
       type: 'plugin/fetchList',
       payload: {
-        userName,
+        name,
         currentPage,
         pageSize: 10,
       },
@@ -42,26 +42,44 @@ export default class Plugin extends Component {
   };
 
   searchOnchange = e => {
-    const userName = e.target.value;
-    this.setState({ userName });
+    const name = e.target.value;
+    this.setState({ name });
   };
 
-  searchClick = () => {};
+  searchClick = () => { 
+    const { dispatch } = this.props;
+    const { name } = this.state;
+    dispatch({
+      type: 'plugin/fetchList',
+      payload: {
+        name,
+        currentPage: 1,
+        pageSize: 10,
+      },
+    });
+  };
 
   render() {
-    const { manage, loading } = this.props;
-    const { userList } = manage;
-    const { currentPage, selectedRowKeys, userName } = this.state;
-    const userColumns = [
+    const { plugin, loading } = this.props;
+    const { pluginList } = plugin;
+    const { currentPage, selectedRowKeys, name } = this.state;
+    const pluginColumns = [
       {
         title: '插件名',
-        dataIndex: 'userName',
-        key: 'userName',
+        dataIndex: 'name',
+        key: 'name',
       },
       {
         title: '状态',
-        dataIndex: 'status',
-        key: 'status',
+        dataIndex: 'enabled',
+        key: 'enabled',
+        render: (text) => {
+          if (text) {
+            return <div>开启</div>
+          } else {
+            return <div>关闭</div>
+          }
+        },
       },
       {
         title: '创建时间',
@@ -99,25 +117,30 @@ export default class Plugin extends Component {
 
     return (
       <div>
-        <Row type="flex" justify="flex-start" align="middle" gutter={50}>
-          <Col span={10} className="searchblock">
+        <Row type="flex" justify="flex-start" align="middle" gutter={20}>
+          <Col span={8} className="searchblock">
             <Input
-              value={userName}
+              value={name}
               onChange={this.searchOnchange}
-              size="large"
-              placeholder="请输入插件名"
+              placeholder="请输入用户名"
             />
-            <Button type="primary" size="large" onClick={this.searchClick}>
+            <Button type="primary" onClick={this.searchClick}>
               查询
             </Button>
           </Col>
-          <Col span={6}>
-            <Button type="danger" size="large">
+          <Col span={4}>
+            <Button
+              type="danger"
+              onClick={this.deleteClick}
+            >
               删除勾选数据
             </Button>
           </Col>
-          <Col span={6}>
-            <Button type="primary" size="large">
+          <Col span={4}>
+            <Button
+              type="primary"
+              onClick={this.addClick}
+            >
               添加数据
             </Button>
           </Col>
@@ -126,8 +149,8 @@ export default class Plugin extends Component {
           style={{ marginTop: 30 }}
           bordered
           loading={loading}
-          columns={userColumns}
-          dataSource={userList}
+          columns={pluginColumns}
+          dataSource={pluginList}
           rowSelection={rowSelection}
           pagination={{
             total: 3,

@@ -122,3 +122,10 @@ export async function findSelector(params) {
     method: 'GET',
   });
 }
+
+/* 查询所有常量 */
+export async function queryPlatform() {
+  return request(`/platform}`, {
+    method: 'GET',
+  });
+}
