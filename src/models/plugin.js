@@ -1,17 +1,34 @@
+import { getAllUsers } from '../services/api';
+
 export default {
   namespace: 'plugin',
 
   state: {
-    list: [],
+    userList: [],
   },
 
-  effects: {},
+  effects: {
+    *fetchList(params, { call, put }) {
+      let { page, dataList } = yield call(getAllUsers, params);
+      dataList = dataList.map(item => {
+        item.key = item.id;
+        return item;
+      });
+      yield put({
+        type: 'saveUsers',
+        payload: {
+          total: page.totalCount,
+          dataList,
+        },
+      });
+    },
+  },
 
   reducers: {
-    saveList(state, action) {
+    saveUsers(state, { payload }) {
       return {
         ...state,
-        list: action.payload,
+        userList: payload.dataList,
       };
     },
   },
