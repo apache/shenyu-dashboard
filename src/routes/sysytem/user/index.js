@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Table, Row, Col, Input, Button } from 'antd';
 import { connect } from 'dva';
+import AddModal from './AddModal';
 
 @connect(({ manage, loading }) => ({
   manage,
@@ -13,6 +14,7 @@ export default class Manage extends Component {
       currentPage: 1,
       selectedRowKeys: [],
       userName: '',
+      popup: '',
     };
   }
 
@@ -46,12 +48,25 @@ export default class Manage extends Component {
     this.setState({ userName });
   };
 
-  searchClick = () => {};
+  searchClick = () => { };
+
+  deleteClick = () => {
+
+  }
+
+  addClick = () => {
+    this.setState({
+      popup: <AddModal
+        handleOk={() => { }}
+        handleCancel={() => { }}
+      />,
+    })
+  }
 
   render() {
     const { manage, loading } = this.props;
     const { userList } = manage;
-    const { currentPage, selectedRowKeys, userName } = this.state;
+    const { currentPage, selectedRowKeys, userName, popup } = this.state;
     const userColumns = [
       {
         title: '用户名',
@@ -94,25 +109,30 @@ export default class Manage extends Component {
 
     return (
       <div>
-        <Row type="flex" justify="flex-start" align="middle" gutter={50}>
-          <Col span={10} className="searchblock">
+        <Row type="flex" justify="flex-start" align="middle" gutter={20}>
+          <Col span={8} className="searchblock">
             <Input
               value={userName}
               onChange={this.searchOnchange}
-              size="large"
               placeholder="请输入用户名"
             />
-            <Button type="primary" size="large" onClick={this.searchClick}>
+            <Button type="primary" onClick={this.searchClick}>
               查询
             </Button>
           </Col>
-          <Col span={6}>
-            <Button type="danger" size="large">
+          <Col span={4}>
+            <Button
+              type="danger"
+              onClick={this.deleteClick}
+            >
               删除勾选数据
             </Button>
           </Col>
-          <Col span={6}>
-            <Button type="primary" size="large">
+          <Col span={4}>
+            <Button
+              type="primary"
+              onClick={this.addClick}
+            >
               添加数据
             </Button>
           </Col>
@@ -131,6 +151,7 @@ export default class Manage extends Component {
             onChange: this.pageOnchange,
           }}
         />
+        {popup}
       </div>
     );
   }
