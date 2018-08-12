@@ -1,4 +1,4 @@
-**Soul后端服务API**
+**Soul后端服务API**`
 **用户管理**
 **(1)查询用户**
 URL地址：
@@ -11,7 +11,6 @@ GET
 |userName|String|否|-|用户名|
 |currentPage|Integer|否|-|当前页数|
 |pageSize|Integer|否|-|页大小|
-
 请求范例：
 [http://127.0.0.1:8082/dashboardUser?userName=ADMIN&currentPage=1&pageSize=10](http://127.0.0.1:8082/dashboardUser?userName=ADMIN&currentPage=1&pageSize=10)
 响应结果：
@@ -282,11 +281,11 @@ public class DashboardUserDTO {
 ```
 **(5)删除用户**
 URL地址：
-[/dashboardUser/{id}](http://127.0.0.1:8082/dashboardUser/{id})
+[/dashboardUser/batch](http://127.0.0.1:8082/dashboardUser/batch)
 请求方式：
 DELETE
 请求参数：
-无
+["1","2"]
 响应结果：
 ```
 {
@@ -592,11 +591,11 @@ public class PluginDTO {
 ```
 **(5)删除插件**
 URL地址：
-[/plugin/{id}](http://127.0.0.1:8082/plugin/{id})
+[/plugin/batch](http://127.0.0.1:8082/plugin/batch)
 请求方式：
 DELETE
 请求参数：
-无
+["1","2"]
 响应结果：
 ```json
 {
@@ -1104,11 +1103,11 @@ public class SelectorConditionDTO {
 ```
 **(5)删除选择器**
 URL地址：
-[/selector/{id}](http://127.0.0.1:8082/selector/{id})
+[/selector/batch](http://127.0.0.1:8082/selector/batch)
 请求方式：
 DELETE
 请求参数：
-无
+["1","2"]
 响应结果：
 ```json
 {
@@ -1592,11 +1591,11 @@ public class RuleConditionDTO {
 ```
 **(5)删除规则**
 URL地址：
-[/rule/{id}](http://127.0.0.1:8082/rule/{id})
+[/rule/batch](http://127.0.0.1:8082/rule/batch)
 请求方式：
 DELETE
 请求参数：
-无
+["1","2"]
 响应结果：
 ```json
 {
@@ -1606,11 +1605,353 @@ DELETE
 }
 ```
 
+
 -------------------
-**枚举管理**
-**(1)查询枚举**
+**认证管理**
+**(1)查询认证**
 URL地址：
-[/platform](http://127.0.0.1:8082/platform)
+[/appAuth](http://127.0.0.1:8082/appAuth)
+请求方式：
+GET
+请求参数：
+|参数名|参数类型|是否必须|默认值|备注|
+|:----|:-----|:------|:----|:---|
+|appKey|String|否|-|应用键|
+|currentPage|Integer|否|-|当前页数|
+|pageSize|Integer|否|-|页大小|
+
+请求范例：
+[http://127.0.0.1:8082/appAuth?appKey=applicationKey&currentPage=1&pageSize=10](http://127.0.0.1:8082/appAuth?appKey=applicationKey&currentPage=1&pageSize=10)
+响应结果：
+```java
+public class CommonPager<T> {
+
+    /**
+     * page.
+     */
+    private PageParameter page;
+
+    /**
+     * data.
+     */
+    private List<AppAuthVO> dataList;
+}
+public class PageParameter {
+
+    private int currentPage;
+
+    private int prePage;
+
+    private int nextPage;
+
+    private int pageSize;
+
+    private int offset;
+
+    private int totalPage;
+
+    private int totalCount;
+}
+public class AppAuthVO {
+
+    /**
+     * primary key.
+     */
+    private String id;
+
+    /**
+     * application key.
+     */
+    private String appKey;
+
+    /**
+     * encryption secret.
+     */
+    private String appSecret;
+
+    /**
+     * whether enabled.
+     */
+    private Boolean enabled;
+
+    /**
+     * created time.
+     */
+    private String dateCreated;
+
+    /**
+     * updated time.
+     */
+    private String dateUpdated;
+}
+```
+响应范例：
+```json
+{
+    "code": 200,
+    "message": "query dashboard users success",
+    "data": {
+        "page": {
+            "currentPage": 1,
+            "prePage": 1,
+            "nextPage": 1,
+            "pageSize": 10,
+            "offset": 0,
+            "totalPage": 1,
+            "totalCount": 1
+        },
+        "dataList": [
+            {
+                "id": "1",
+                "appKey": "appKey",
+                "appSecret": "appSecret",
+                "enabled": true,
+                "dateCreated": "2018-06-23 15:12:22",
+                "dateUpdated": "2018-06-23 15:12:23"
+            }
+        ]
+    }
+}
+```
+**(2)明细认证**
+URL地址：
+[/appAuth/{id}](http://127.0.0.1:8082/appAuth/{id})
+请求方式：
+GET
+请求参数：
+无
+请求范例：
+[http://127.0.0.1:8082/appAuth/1](http://127.0.0.1:8082/appAuth/1)
+响应结果：
+```java
+public class AppAuthVO {
+
+    /**
+     * primary key.
+     */
+    private String id;
+
+    /**
+     * application key.
+     */
+    private String appKey;
+
+    /**
+     * encryption secret.
+     */
+    private String appSecret;
+
+    /**
+     * whether enabled.
+     */
+    private Boolean enabled;
+
+    /**
+     * created time.
+     */
+    private String dateCreated;
+
+    /**
+     * updated time.
+     */
+    private String dateUpdated;
+}
+```
+响应范例：
+```json
+{
+    "code": 200,
+    "message": "detail dashboard user success",
+    "data": {
+        "id": "1",
+        "appKey": "appKey",
+        "appSecret": "appSecret",
+        "enabled": true,
+        "dateCreated": "2018-06-23 15:12:22",
+        "dateUpdated": "2018-06-23 15:12:23"
+    }
+}
+```
+**(3)新增认证**
+URL地址：
+[/appAuth](http://127.0.0.1:8082/appAuth)
+请求方式：
+POST
+请求参数：
+```java
+public class AppAuthDTO {
+
+    /**
+     * primary key.
+     */
+    private String id;
+
+    /**
+     * application key.
+     */
+    private String appKey;
+
+    /**
+     * encryption secret.
+     */
+    private String appSecret;
+
+    /**
+     * whether enabled.
+     */
+    private Boolean enabled;
+}
+```
+参数范例：
+```json
+{
+	"appKey": "appKey",
+	"appSecret": "appSecret",
+	"enabled": true
+}
+```
+响应结果：
+```json
+{
+    "code": 200,
+    "message": "create application authority success",
+    "data": 1
+}
+```
+**(4)编辑认证**
+URL地址：
+[/appAuth/{id}](http://127.0.0.1:8082/appAuth/{id})
+请求方式：
+PUT
+请求参数：
+```java
+public class AppAuthDTO {
+
+    /**
+     * primary key.
+     */
+    private String id;
+
+    /**
+     * application key.
+     */
+    private String appKey;
+
+    /**
+     * encryption secret.
+     */
+    private String appSecret;
+
+    /**
+     * whether enabled.
+     */
+    private Boolean enabled;
+}
+```
+参数范例：
+```json
+{
+	"appKey": "appKey",
+	"appSecret": "appSecret",
+	"enabled": false
+}
+```
+响应结果：
+```json
+{
+    "code": 200,
+    "message": "update application authority success",
+    "data": 1
+}
+```
+**(5)删除认证**
+URL地址：
+[/appAuth/batch](http://127.0.0.1:8082/appAuth/batch)
+请求方式：
+DELETE
+请求参数：
+["1","2"]
+响应结果：
+```
+{
+    "code": 200,
+    "message": "delete application authority success",
+    "data": 1
+}
+```
+
+-------------------
+**平台管理**
+URL地址：
+[/platform/login](http://127.0.0.1:8082/platform/login)
+请求方式：
+GET
+请求参数：
+|参数名|参数类型|是否必须|默认值|备注|
+|:----|:-----|:------|:----|:---|
+|userName|String|否|-|账号|
+|password|String|否|-|密码|
+请求范例：
+[http://127.0.0.1:8082/platform/login?userName=admin&password=123456](http://127.0.0.1:8082/platform/login?userName=admin&password=123456)
+响应结果：
+```java
+public class DashboardUserVO {
+
+    /**
+     * primary key.
+     */
+    private String id;
+
+    /**
+     * user name.
+     */
+    private String userName;
+
+    /**
+     * user password.
+     */
+    private String password;
+
+    /**
+     * dashboard role.
+     */
+    private Integer role;
+
+    /**
+     * whether enabled.
+     */
+    private Boolean enabled;
+
+    /**
+     * created time.
+     */
+    private String dateCreated;
+
+    /**
+     * updated time.
+     */
+    private String dateUpdated;
+}
+```
+响应范例：
+```json
+{
+    "code": 200,
+    "message": "login dashboard user success",
+    "data": {
+        "id": "1",
+        "userName": "admin",
+        "password": "123456",
+        "role": 1,
+        "enabled": true,
+        "dateCreated": "2018-06-23 15:12:22",
+        "dateUpdated": "2018-06-23 15:12:23"
+    }
+}
+```
+**(2)查询枚举**
+URL地址：
+[/platform/enum](http://127.0.0.1:8082/platform/enum)
 请求方式：
 GET
 请求参数：

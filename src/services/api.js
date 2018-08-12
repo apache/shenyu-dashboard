@@ -11,8 +11,12 @@ export async function addUser(params) {
 }
 /* 删除用户 */
 export async function deleteUser(params) {
-  return request(`/dashboardUser/${params.id}`, {
-    method: 'DELETE',
+  
+  return request(`/dashboardUser/delete`, {
+    method: 'POST',
+    body: {
+      list: params.list,
+    },
   });
 }
 /* 修改用户 */
@@ -52,8 +56,11 @@ export async function addPlugin(params) {
 }
 /* 删除插件 */
 export async function deletePlugin(params) {
-  return request(`/plugin/${params.id}`, {
-    method: 'DELETE',
+  return request(`/plugin/delete`, {
+    method: 'POST',
+    body: {
+      list: params.list,
+    },
   });
 }
 /* 修改插件 */

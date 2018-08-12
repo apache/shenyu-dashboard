@@ -22,9 +22,22 @@ body,
   }
 }
 :global(.ant-table table){
-  padding: 0;
+  padding: 0 !important;
 }
-
+:global(.table-header){
+  display: flex;
+  justify-content: space-between;
+  line-height: 40px;
+  padding:  0 20px;
+  height: 40px;
+  background: #fff;
+  h3{
+    font-size: 16px;
+  }
+  button{
+    margin-top: 4px;
+  }
+}
 
 canvas {
   display: block;

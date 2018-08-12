@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Row, Col } from 'antd';
+import { Table, Row, Col, Button } from 'antd';
 import { connect } from 'dva';
 
 @connect(({ waf }) => ({
@@ -53,16 +53,26 @@ export default class Waf extends Component {
     return (
       <div>
         <Row gutter={20}>
-          <Col span={7}>
+          <Col span={8}>
+            <div className="table-header">
+              <h3>选择器列表</h3>
+              <Button type='primary'>添加选择器</Button>
+            </div>
             <Table
               bordered
+              size='small'
               columns={selectColumns}
               dataSource={[]}
             />
           </Col>
-          <Col span={17}>
+          <Col span={16}>
+            <div className="table-header">
+              <h3>选择器规则列表</h3>
+              <Button type='primary'>添加规则</Button>
+            </div>
             <Table
               bordered
+              size='small'
               columns={rulesColumns}
               expandedRowRender={() => <p>111</p>}
               dataSource={[]}

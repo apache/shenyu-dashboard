@@ -24,58 +24,66 @@ const proxy = {
     },
     $body: getUsers(),
   },
+
   'GET /dashboardUser/1': {
-    id: '1',
-    userName: 'ADMIN',
-    password: '123456',
-    role: 1,
-    enabled: true,
-    dateCreated: '2018-07-28 13:38:05',
-    dateUpdated: '2018-07-28 13:38:05',
+    "code": 200,
+    "message": "detail dashboard user success",
+    "data": {
+      "id": "1",
+      "userName": "admin",
+      "password": "123456",
+      "role": 1,
+      "enabled": false,
+      "dateCreated": "2018-06-23 15:12:22",
+      "dateUpdated": "2018-06-23 15:12:23"
+    }
   },
-  'POST /dashboardUser/1': {
-    $params: {
-      username: 'user',
-      password: '123456',
-      role: 1,
-      enabled: true,
+  'POST /dashboardUser': {
+    $body: {
+      code: 200
     },
-    $body: {},
   },
   'PUT /dashboardUser/1': {
-    username: 'ADMIN',
-    password: '123456',
-    role: 1,
-    enabled: true,
-  },
-  'DELETE /dashboardUser/1': {
-    username: 'ADMIN',
-    password: '123456',
-    role: 1,
-    enabled: true,
-  },
-  'GET /platform': getPlatform,
-  'GET /plugin': {
-    $params: {
-      name: '',
-      currentPage: 1,
-      pageSize: 10,
+    $body: {
+      code: 200
     },
+  },
+  'POST /dashboardUser/delete': {
+    $body: {
+      code: 200
+    },
+  },
+  
+  'GET /plugin': {
     $body: getPlugin,
   },
 
-  'GET /api/project/notice': getNotice,
-  'GET /api/activities': getActivities,
-  'GET /api/rule': getRule,
-  'POST /api/rule': {
-    $params: {
-      pageSize: {
-        desc: '分页',
-        exp: 2,
-      },
-    },
-    $body: postRule,
+  'GET /plugin/1': {
+    "code": 200,
+    "message": "detail dashboard user success",
+    "data": {
+      "id": "1",
+      "name": "admin",
+      "enabled": false,
+    }
   },
+  'POST /plugin': {
+    $body: {
+      code: 200
+    },
+  },
+  'PUT /plugin/1': {
+    $body: {
+      code: 200
+    },
+  },
+  'POST /plugin/delete': {
+    $body: {
+      code: 200
+    },
+  },
+
+  
   'POST /api/forms': (req, res) => {
     res.send({ message: 'Ok' });
   },

@@ -19,28 +19,71 @@ export default class Manage extends Component {
   }
 
   componentWillMount() {
-    const { dispatch } = this.props;
-    const { currentPage, userName } = this.state;
-    dispatch({
-      type: 'manage/fetchUsers',
-      payload: {
-        userName,
-        currentPage,
-        pageSize: 10,
-      },
-    });
+    const { currentPage } = this.state;
+    this.getAllUsers(currentPage);
   }
 
   onSelectChange = selectedRowKeys => {
     this.setState({ selectedRowKeys });
   };
 
+  getAllUsers = (page) => {
+    const { dispatch } = this.props;
+    const { userName } = this.state;
+    dispatch({
+      type: 'manage/fetchUsers',
+      payload: {
+        userName,
+        currentPage: page,
+        pageSize: 10,
+      },
+    });
+  }
+
   pageOnchange = page => {
     this.setState({ currentPage: page });
+    this.getAllUsers(page);
   };
 
+  closeModal = () => {
+    this.setState({ popup: '' });
+  }
+
   editClick = record => {
-    console.log(record);
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'manage/fetchItem',
+      payload: {
+        id: record.id,
+      },
+      callback: (user) => {
+        this.setState({
+          popup: <AddModal
+            {...user}
+            handleOk={(values) => {
+              const { userName, password, role, enabled, id } = values;
+              dispatch({
+                type: 'manage/update',
+                payload: {
+                  userName,
+                  password,
+                  role,
+                  enabled,
+                  id,
+                },
+                callback: () => {
+                  this.closeModal();
+                },
+              });
+
+            }}
+            handleCancel={() => {
+              this.closeModal();
+            }}
+          />,
+        })
+      },
+    });
   };
 
   searchOnchange = e => {
@@ -48,17 +91,46 @@ export default class Manage extends Component {
     this.setState({ userName });
   };
 
-  searchClick = () => { };
+  searchClick = () => {
+    this.getAllUsers(1);
+  };
 
   deleteClick = () => {
-
+    const { dispatch } = this.props;
+    const { userName, currentPage, selectedRowKeys } = this.state;
+    dispatch({
+      type: 'manage/delete',
+      payload: {
+        userName,
+        currentPage,
+        pageSize: 10,
+        list: selectedRowKeys,
+      },
+    });
   }
 
   addClick = () => {
     this.setState({
       popup: <AddModal
-        handleOk={() => { }}
-        handleCancel={() => { }}
+        handleOk={(values) => {
+          const { dispatch } = this.props;
+          const { userName, password, role, enabled } = values;
+          dispatch({
+            type: 'manage/add',
+            payload: {
+              userName,
+              password,
+              role,
+              enabled,
+            },
+            callback: () => {
+              this.closeModal();
+            },
+          });
+        }}
+        handleCancel={() => {
+          this.closeModal();
+        }}
       />,
     })
   }
@@ -72,6 +144,18 @@ export default class Manage extends Component {
         title: '用户名',
         dataIndex: 'userName',
         key: 'userName',
+      },
+      {
+        title: '状态',
+        dataIndex: 'enabled',
+        key: 'enabled',
+        render: (text) => {
+          if (text) {
+            return <div>开启</div>
+          } else {
+            return <div>关闭</div>
+          }
+        },
       },
       {
         title: '创建时间',
@@ -138,6 +222,7 @@ export default class Manage extends Component {
           </Col>
         </Row>
         <Table
+          size='small'
           style={{ marginTop: 30 }}
           bordered
           loading={loading}

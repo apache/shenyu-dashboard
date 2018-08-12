@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, Form, Select, Input } from 'antd';
+import { Modal, Form, Select, Input, Switch } from 'antd';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -7,22 +7,29 @@ const { Option } = Select;
 class AddModal extends Component {
 
   handleSubmit = (e) => {
-    const { form, handleOk } = this.props;
+    const { form, handleOk, id = '' } = this.props;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log(values);
-        handleOk();
+        handleOk({...values, id});
       }
     });
   }
 
   render() {
-    const { handleCancel, form } = this.props;
+    let { handleCancel, form, userName = '', password = '', role = '', enabled = true } = this.props;
+    if (role === 0) {
+      role = '管理员';
+    } else if (role === 1) {
+      role = '用户';
+    } else {
+      role = '';
+    }
+
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 5},
+        sm: { span: 5 },
       },
       wrapperCol: {
         sm: { span: 19 },
@@ -45,6 +52,7 @@ class AddModal extends Component {
           >
             {getFieldDecorator('userName', {
               rules: [{ required: true, message: '请输入用户名' }],
+              initialValue: userName,
             })(
               <Input placeholder="用户名" />
             )}
@@ -55,6 +63,7 @@ class AddModal extends Component {
           >
             {getFieldDecorator('password', {
               rules: [{ required: true, message: '请输入密码密码' }],
+              initialValue: password,
             })(
               <Input placeholder="密码" />
             )}
@@ -65,11 +74,23 @@ class AddModal extends Component {
           >
             {getFieldDecorator('role', {
               rules: [{ required: true, message: '请选择角色' }],
+              initialValue: role,
             })(
               <Select>
                 <Option value="0">管理员</Option>
                 <Option value="1">用户</Option>
               </Select>
+            )}
+          </FormItem>
+          <FormItem
+            {...formItemLayout}
+            label="状态"
+          >
+            {getFieldDecorator('enabled', {
+              initialValue: enabled,
+              valuePropName: 'checked',
+            })(
+              <Switch />
             )}
           </FormItem>
         </Form>
