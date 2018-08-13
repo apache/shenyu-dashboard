@@ -2,11 +2,41 @@ import React, { Component } from 'react';
 import { Table, Row, Col, Button } from 'antd';
 import { connect } from 'dva';
 
-@connect(({ waf }) => ({
+@connect(({ waf, global, loading }) => ({
   waf,
+  platform: global.platform,
+  loading: loading.effects['global/fetchPlatform'],
 }))
 export default class Waf extends Component {
-  componentDidMount() { }
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentPage: 1,
+      // popup: '',
+    };
+  }
+
+  componentDidMount() {
+    const { platform, dispatch } = this.props;
+    console.log('platform',platform);
+    const { currentPage } = this.state;
+    const { pluginEnums } = platform;
+    if(platform){
+      const wafCode = pluginEnums && pluginEnums.filter((item) => {
+        return item.name === 'waf';
+      });
+      console.log('wafCode', wafCode);
+      dispatch({
+        type: 'waf/fetchSelector',
+        playload: {
+          pluginId: wafCode[0].code,
+          currentPage,
+          pageSize: 10,
+        },
+      })
+    }
+    
+  }
 
   render() {
     const selectColumns = [

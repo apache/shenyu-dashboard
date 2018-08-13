@@ -132,7 +132,7 @@ export async function findSelector(params) {
 
 /* 查询所有常量 */
 export async function queryPlatform() {
-  return request(`/platform}`, {
+  return request(`/platform`, {
     method: 'GET',
   });
 }

@@ -6,6 +6,7 @@ export default {
 
   state: {
     pluginList: [],
+    total: 0,
   },
 
   effects: {
@@ -75,6 +76,7 @@ export default {
       return {
         ...state,
         pluginList: payload.dataList,
+        total: payload.total,
       };
     },
   },

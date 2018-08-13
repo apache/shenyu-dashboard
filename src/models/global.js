@@ -5,31 +5,18 @@ export default {
 
   state: {
     collapsed: false,
-    notices: [],
+    platform: '',
   },
 
   effects: {
-    *fetchNotices(_, { call, put }) {
-      const data = yield call(queryPlatform);
-      yield put({
-        type: 'saveNotices',
-        payload: data,
-      });
-      yield put({
-        type: 'user/changeNotifyCount',
-        payload: data.length,
-      });
-    },
-    *clearNotices({ payload }, { put, select }) {
-      yield put({
-        type: 'saveClearedNotices',
-        payload,
-      });
-      const count = yield select(state => state.global.notices.length);
-      yield put({
-        type: 'user/changeNotifyCount',
-        payload: count,
-      });
+    *fetchPlatform(_, { call, put }) {
+      const json = yield call(queryPlatform);
+      if(json.code===200){
+        yield put({
+          type: 'savePlatform',
+          payload: json.data,
+        });
+      }
     },
   },
 
@@ -40,18 +27,13 @@ export default {
         collapsed: payload,
       };
     },
-    saveNotices(state, { payload }) {
+    savePlatform(state, { payload }) {
       return {
         ...state,
-        notices: payload,
+        platform: payload,
       };
     },
-    saveClearedNotices(state, { payload }) {
-      return {
-        ...state,
-        notices: state.notices.filter(item => item.type !== payload),
-      };
-    },
+    
   },
 
   subscriptions: {
