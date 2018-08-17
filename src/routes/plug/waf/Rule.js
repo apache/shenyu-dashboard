@@ -1,10 +1,51 @@
 import React, { Component } from "react";
-import { Modal, Form, Select, Input } from "antd";
+import { Modal, Form, Select, Input, Switch } from "antd";
+import styles from "./selector.less";
 
 const FormItem = Form.Item;
 const { Option } = Select;
 
+const selectorTypeEnums = [
+  {
+    code: 0,
+    name: "full flow",
+    support: true
+  },
+  {
+    code: 1,
+    name: "custom flow",
+    support: true
+  }
+];
+
+const matchModeEnums = [
+  {
+    code: 0,
+    name: "and",
+    support: true
+  },
+  {
+    code: 1,
+    name: "or",
+    support: true
+  }
+];
+
 class AddModal extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectorConditions: [
+        {
+          "paramType": "host",
+          "operator": "match",
+          "paramName": "paramName",
+          "paramValue": "paramValue"
+        }
+      ],
+    }
+  }
+
   handleSubmit = e => {
     const { form, handleOk, id = "" } = this.props;
     e.preventDefault();
@@ -16,7 +57,8 @@ class AddModal extends Component {
   };
 
   render() {
-    let { handleCancel, form, userName = "" } = this.props;
+    let { onCancel, form, userName = "" } = this.props;
+    const { selectorConditions } = this.state;
 
     const { getFieldDecorator } = form;
     const formItemLayout = {
@@ -27,19 +69,27 @@ class AddModal extends Component {
         sm: { span: 19 }
       }
     };
+    const formCheckLayout = {
+      labelCol: {
+        sm: { span: 18 }
+      },
+      wrapperCol: {
+        sm: { span: 4 }
+      }
+    };
     return (
       <Modal
         width={600}
-        title="用户"
+        title="规则"
         visible
         okText="确定"
         cancelText="取消"
         onOk={this.handleSubmit}
-        onCancel={handleCancel}
+        onCancel={onCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem label="名称" {...formItemLayout}>
-            {getFieldDecorator("userName", {
+            {getFieldDecorator("name", {
               rules: [{ required: true, message: "请输入名称" }],
               initialValue: userName
             })(<Input placeholder="名称" />)}
@@ -50,8 +100,13 @@ class AddModal extends Component {
               initialValue: ""
             })(
               <Select>
-                <Option value="0">管理员</Option>
-                <Option value="1">用户</Option>
+                {selectorTypeEnums.map(item => {
+                  return (
+                    <Option key={item.code} value={item.code}>
+                      {item.name}
+                    </Option>
+                  );
+                })}
               </Select>
             )}
           </FormItem>
@@ -61,48 +116,54 @@ class AddModal extends Component {
               initialValue: ""
             })(
               <Select>
-                <Option value="0">管理员</Option>
-                <Option value="1">用户</Option>
+                {matchModeEnums.map(item => {
+                  return (
+                    <Option key={item.code} value={item.code}>
+                      {item.name}
+                    </Option>
+                  );
+                })}
               </Select>
             )}
           </FormItem>
+          <div className={styles.condition}>
+            <h3>条件</h3>
+            {
+              selectorConditions.map((item) => {
+                return <div>{item.paramType}</div>
+              })
+            }
+          </div>
+          <div className={styles.layout}>
+            <FormItem {...formCheckLayout} label="继续后续选择器">
+              {getFieldDecorator("continued", {
+                initialValue: true,
+                valuePropName: "checked",
+                rules: [{ required: true }]
+              })(<Switch />)}
+            </FormItem>
+            <FormItem
+              style={{ margin: "0 30px" }}
+              {...formCheckLayout}
+              label="打印日志"
+            >
+              {getFieldDecorator("loged", {
+                initialValue: true,
+                valuePropName: "checked",
+                rules: [{ required: true }]
+              })(<Switch />)}
+            </FormItem>
+            <FormItem {...formCheckLayout} label="是否开启">
+              {getFieldDecorator("enabled", {
+                initialValue: true,
+                valuePropName: "checked",
+                rules: [{ required: true }]
+              })(<Switch />)}
+            </FormItem>
+          </div>
 
-          <div>条件</div>
-          <FormItem label="处理" {...formItemLayout}>
-            {getFieldDecorator("matchMode", {
-              rules: [{ required: true, message: "请选择处理方式" }],
-              initialValue: ""
-            })(
-              <Select>
-                <Option value="0">管理员</Option>
-                <Option value="1">用户</Option>
-              </Select>
-            )}
-          </FormItem>
-          <FormItem label="日志" {...formItemLayout}>
-            {getFieldDecorator("matchMode", {
-              rules: [{ required: true, message: "请选择是否打印日志" }],
-              initialValue: ""
-            })(
-              <Select>
-                <Option value="0">是</Option>
-                <Option value="1">否</Option>
-              </Select>
-            )}
-          </FormItem>
-          <FormItem label="是否开启" {...formItemLayout}>
-            {getFieldDecorator("matchMode", {
-              rules: [{ required: true, message: "请选择是否开启" }],
-              initialValue: ""
-            })(
-              <Select>
-                <Option value="0">是</Option>
-                <Option value="1">否</Option>
-              </Select>
-            )}
-          </FormItem>
           <FormItem label="执行顺序" {...formItemLayout}>
-            {getFieldDecorator("userName", {
+            {getFieldDecorator("rank", {
               rules: [{ required: true, message: "" }],
               initialValue: userName
             })(<Input placeholder="可以填写1-100之间的数字标志执行先后顺序" />)}

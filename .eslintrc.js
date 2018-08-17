@@ -11,6 +11,7 @@ module.exports = {
   },
   rules: {
     'comma-dangle': [0],
+    'react/no-array-index-key':[0],
     'no-param-reassign': [0],
     'prefer-const': [0],
     'linebreak-style': [0],

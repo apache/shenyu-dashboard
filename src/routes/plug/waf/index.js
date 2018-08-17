@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { Table, Row, Col, Button } from "antd";
 import { connect } from "dva";
+import Selector from './Selector';
+import Rule from './Rule';
 
 @connect(({ waf, global, loading }) => ({
   waf,
@@ -11,10 +13,11 @@ export default class Waf extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentPage: 1
-      // popup: '',
+      currentPage: 1,
+      popup: '',
     };
   }
+
 
   componentDidMount() {
     const { platform, dispatch } = this.props;
@@ -37,7 +40,20 @@ export default class Waf extends Component {
     }
   }
 
+  closeModal = () => {
+    this.setState({ popup: '' })
+  }
+
+  addSelector = () => {
+    this.setState({ popup: <Selector onCancel={this.closeModal} /> })
+  }
+
+  addRule = () => {
+    this.setState({ popup: <Rule onCancel={this.closeModal} /> })
+  }
+
   render() {
+    const { popup } = this.state;
     const selectColumns = [
       {
         title: "名称",
@@ -101,7 +117,7 @@ export default class Waf extends Component {
           <Col span={8}>
             <div className="table-header">
               <h3>选择器列表</h3>
-              <Button type="primary">添加选择器</Button>
+              <Button type="primary" onClick={this.addSelector}>添加选择器</Button>
             </div>
             <Table
               bordered
@@ -113,7 +129,7 @@ export default class Waf extends Component {
           <Col span={16}>
             <div className="table-header">
               <h3>选择器规则列表</h3>
-              <Button type="primary">添加规则</Button>
+              <Button type="primary" onClick={this.addRule}>添加规则</Button>
             </div>
             <Table
               bordered
@@ -124,6 +140,7 @@ export default class Waf extends Component {
             />
           </Col>
         </Row>
+        {popup}
       </div>
     );
   }

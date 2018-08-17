@@ -32,6 +32,20 @@ const matchModeEnums = [
 ];
 
 class AddModal extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectorConditions: [
+        {
+          "paramType": "host",
+          "operator": "match",
+          "paramName": "paramName",
+          "paramValue": "paramValue"
+        }
+      ],
+    }
+  }
+
   handleSubmit = e => {
     const { form, handleOk, id = "" } = this.props;
     e.preventDefault();
@@ -44,6 +58,7 @@ class AddModal extends Component {
 
   render() {
     let { onCancel, form, userName = "" } = this.props;
+    const { selectorConditions } = this.state;
 
     const { getFieldDecorator } = form;
     const formItemLayout = {
@@ -65,7 +80,7 @@ class AddModal extends Component {
     return (
       <Modal
         width={600}
-        title="用户"
+        title="选择器"
         visible
         okText="确定"
         cancelText="取消"
@@ -113,6 +128,11 @@ class AddModal extends Component {
           </FormItem>
           <div className={styles.condition}>
             <h3>条件</h3>
+            {
+              selectorConditions.map((item, index) => {
+                return <ul key={index}>{item.paramType}</ul>
+              })
+            }
           </div>
           <div className={styles.layout}>
             <FormItem {...formCheckLayout} label="继续后续选择器">
