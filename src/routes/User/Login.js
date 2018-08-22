@@ -11,23 +11,15 @@ const { UserName, Password, Submit } = Login;
   submitting: loading.effects['login/login'],
 }))
 export default class LoginPage extends Component {
-  state = {
-    type: 'account',
-  };
-
-  onTabChange = type => {
-    this.setState({ type });
-  };
-
+  
   handleSubmit = (err, values) => {
-    const { type } = this.state;
+   
     const { dispatch } = this.props;
     if (!err) {
       dispatch({
         type: 'login/login',
         payload: {
           ...values,
-          type,
         },
       });
     }
@@ -39,13 +31,13 @@ export default class LoginPage extends Component {
 
   render() {
     const {  submitting } = this.props;
-    const { type } = this.state;
+  
     return (
       <div className={styles.main}>
-        <Login defaultActiveKey={type} onTabChange={this.onTabChange} onSubmit={this.handleSubmit}>
+        <Login onSubmit={this.handleSubmit}>
           <div>
-            <UserName name="userName" placeholder="账号 user" />
-            <Password name="password" placeholder="密码 123456" />
+            <UserName name="userName" placeholder="账号" />
+            <Password name="password" placeholder="密码" />
           </div>
           <Submit loading={submitting}>登录</Submit>
         </Login>

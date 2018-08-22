@@ -1,7 +1,7 @@
 const path = require('path');
 
 export default {
-  entry: 'src/index.js',
+  entry: './src/index.js',
   extraBabelPlugins: [['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }]],
   env: {
     development: {
@@ -25,4 +25,11 @@ export default {
   disableDynamicImport: true,
   publicPath: '/',
   hash: true,
+  proxy: {
+    "/": {
+      "target": "http://47.93.205.234:8082/",
+      "changeOrigin": true,
+      "pathRewrite": { "^/" : "" },
+    },
+  },
 };

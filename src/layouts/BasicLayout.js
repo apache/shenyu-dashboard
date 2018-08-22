@@ -87,9 +87,6 @@ class BasicLayout extends React.PureComponent {
   componentWillMount(){
     const { dispatch } = this.props;
     dispatch({
-      type: 'user/fetchCurrent',
-    });
-    dispatch({
       type: 'global/fetchPlatform',
     })
   }
@@ -212,7 +209,6 @@ class BasicLayout extends React.PureComponent {
   }
 }
 
-export default connect(({ user, global = {} }) => ({
-  currentUser: user.currentUser,
+export default connect(({ global = {} }) => ({
   collapsed: global.collapsed,
 }))(BasicLayout);

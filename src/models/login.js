@@ -1,26 +1,32 @@
-import { routerRedux } from 'dva/router';
-import { stringify } from 'qs';
-import { fakeAccountLogin } from '../services/api';
-import { setAuthority } from '../utils/authority';
-import { reloadAuthorized } from '../utils/Authorized';
-import { getPageQuery } from '../utils/utils';
+import { routerRedux } from "dva/router";
+import { stringify } from "qs";
+import { queryLogin } from "../services/api";
+import { setAuthority } from "../utils/authority";
+import { reloadAuthorized } from "../utils/Authorized";
+import { getPageQuery } from "../utils/utils";
 
 export default {
-  namespace: 'login',
+  namespace: "login",
 
   state: {
-    status: undefined,
+    status: undefined
   },
 
   effects: {
     *login({ payload }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
-      yield put({
-        type: 'changeLoginStatus',
-        payload: response,
-      });
+     
+      const response = yield call(queryLogin, payload);
+
       // Login successfully
-      if (response.status === 'ok') {
+      if (response.code === 200) {
+        yield put({
+          type: "changeLoginStatus",
+          payload: {
+            state: true,
+            currentAuthority: "admin"
+          }
+        });
+
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
@@ -29,7 +35,7 @@ export default {
           const redirectUrlParams = new URL(redirect);
           if (redirectUrlParams.origin === urlParams.origin) {
             redirect = redirect.substr(urlParams.origin.length);
-            if (redirect.startsWith('/#')) {
+            if (redirect.startsWith("/#")) {
               redirect = redirect.substr(2);
             }
           } else {
@@ -37,37 +43,36 @@ export default {
             return;
           }
         }
-        yield put(routerRedux.replace(redirect || '/'));
+        yield put(routerRedux.replace(redirect || "/"));
       }
     },
     *logout(_, { put }) {
       yield put({
-        type: 'changeLoginStatus',
+        type: "changeLoginStatus",
         payload: {
           status: false,
-          currentAuthority: 'guest',
-        },
+          currentAuthority: ""
+        }
       });
       reloadAuthorized();
       yield put(
         routerRedux.push({
-          pathname: '/user/login',
+          pathname: "/user/login",
           search: stringify({
-            redirect: window.location.href,
-          }),
+            redirect: window.location.href
+          })
         })
       );
-    },
+    }
   },
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority(payload.currentAuthority);
+      setAuthority("admin");
       return {
         ...state,
-        status: payload.status,
-        type: payload.type,
+        status: payload.status
       };
-    },
-  },
+    }
+  }
 };
