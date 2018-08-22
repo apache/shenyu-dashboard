@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal, Form, Select, Input, Switch } from "antd";
+import { Modal, Form, Select, Input, Switch, Button } from "antd";
 import styles from "./selector.less";
 
 const FormItem = Form.Item;
@@ -56,6 +56,14 @@ class AddModal extends Component {
     });
   };
 
+  handleAdd=()=>{
+
+  }
+
+  handleDelete=(item)=>{
+    console.log(item);
+  }
+
   render() {
     let { onCancel, form, userName = "" } = this.props;
     const { selectorConditions } = this.state;
@@ -63,10 +71,10 @@ class AddModal extends Component {
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 5 }
+        sm: { span: 4 }
       },
       wrapperCol: {
-        sm: { span: 19 }
+        sm: { span: 20 }
       }
     };
     const formCheckLayout = {
@@ -79,7 +87,7 @@ class AddModal extends Component {
     };
     return (
       <Modal
-        width={600}
+        width={660}
         title="选择器"
         visible
         okText="确定"
@@ -130,9 +138,30 @@ class AddModal extends Component {
             <h3>条件</h3>
             {
               selectorConditions.map((item, index) => {
-                return <ul key={index}>{item.paramType}</ul>
+                return (
+                  <ul key={index}>
+                    <li>
+                      <Select style={{ width: 120 }}>
+                        <Option value='0'>大于</Option>
+                      </Select>
+                    </li>
+                    <li>
+                      <Input style={{width: 120}} placeholder='运算' />
+                    </li>
+                    <li>
+                      <Select style={{ width: 120 }}>
+                        <Option value='0'>小于</Option>
+                      </Select>
+                    </li>
+                    <li>
+                      <Input style={{width: 120}} placeholder='计算' />
+                    </li>
+                    <li><Button type='priamry' onClick={()=>{this.handleDelete(item)}}>删除</Button></li>
+                  </ul>
+                )
               })
             }
+            <Button onClick={this.handleAdd} style={{marginLeft: 40}} type='primary'>新增</Button>
           </div>
           <div className={styles.layout}>
             <FormItem {...formCheckLayout} label="继续后续选择器">

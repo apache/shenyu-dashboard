@@ -52,6 +52,14 @@ export default class Waf extends Component {
     this.setState({ popup: <Rule onCancel={this.closeModal} /> })
   }
 
+  editSelector = (record) => {
+    console.log(record);
+  }
+
+  deleteSelector = (record) => {
+    console.log(record);
+  }
+
   render() {
     const { popup } = this.state;
     const selectColumns = [
@@ -69,11 +77,11 @@ export default class Waf extends Component {
         title: "操作",
         dataIndex: "operate",
         key: "operate",
-        render: () => {
+        render: (text, record) => {
           return (
             <div>
-              <span className="edit">修改</span>
-              <span className="edit">删除</span>
+              <span className="edit" onClick={() => { this.editSelector(record) }}>修改</span>
+              <span className="edit" onClick={() => { this.deleteSelector(record) }}>删除</span>
             </div>
           );
         }
