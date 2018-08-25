@@ -1,49 +1,27 @@
 import React, { Component } from "react";
 import { Modal, Form, Select, Input, Switch, Button } from "antd";
+import { connect } from "dva";
 import styles from "./selector.less";
 
 const FormItem = Form.Item;
 const { Option } = Select;
 
-const selectorTypeEnums = [
-  {
-    code: 0,
-    name: "full flow",
-    support: true
-  },
-  {
-    code: 1,
-    name: "custom flow",
-    support: true
-  }
-];
-
-const matchModeEnums = [
-  {
-    code: 0,
-    name: "and",
-    support: true
-  },
-  {
-    code: 1,
-    name: "or",
-    support: true
-  }
-];
-
+@connect(({ global }) => ({
+  platform: global.platform
+}))
 class AddModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
       selectorConditions: [
         {
-          "paramType": "host",
-          "operator": "match",
-          "paramName": "paramName",
-          "paramValue": "paramValue"
+          paramType: "host",
+          operator: "match",
+          paramName: "paramName",
+          paramValue: "paramValue"
         }
-      ],
-    }
+      ]
+    };
   }
 
   handleSubmit = e => {
@@ -56,17 +34,17 @@ class AddModal extends Component {
     });
   };
 
-  handleAdd=()=>{
+  handleAdd = () => {};
 
-  }
-
-  handleDelete=(item)=>{
+  handleDelete = item => {
     console.log(item);
-  }
+  };
 
   render() {
-    let { onCancel, form, userName = "" } = this.props;
+    let { onCancel, form, userName = "", platform } = this.props;
     const { selectorConditions } = this.state;
+
+    const { selectorTypeEnums, matchModeEnums } = platform;
 
     const { getFieldDecorator } = form;
     const formItemLayout = {
@@ -137,32 +115,45 @@ class AddModal extends Component {
           </FormItem>
           <div className={styles.condition}>
             <h3>条件</h3>
-            {
-              selectorConditions.map((item, index) => {
-                return (
-                  <ul key={index}>
-                    <li>
-                      <Select style={{ width: 120 }}>
-                        <Option value='0'>大于</Option>
-                      </Select>
-                    </li>
-                    <li>
-                      <Input style={{width: 120}} placeholder='运算' />
-                    </li>
-                    <li>
-                      <Select style={{ width: 120 }}>
-                        <Option value='0'>小于</Option>
-                      </Select>
-                    </li>
-                    <li>
-                      <Input style={{width: 120}} placeholder='计算' />
-                    </li>
-                    <li><Button type='priamry' onClick={()=>{this.handleDelete(item)}}>删除</Button></li>
-                  </ul>
-                )
-              })
-            }
-            <Button onClick={this.handleAdd} style={{marginLeft: 40}} type='primary'>新增</Button>
+            {selectorConditions.map((item, index) => {
+              return (
+                <ul key={index}>
+                  <li>
+                    <Select style={{ width: 120 }}>
+                      <Option value="0">大于</Option>
+                    </Select>
+                  </li>
+                  <li>
+                    <Input style={{ width: 120 }} placeholder="运算" />
+                  </li>
+                  <li>
+                    <Select style={{ width: 120 }}>
+                      <Option value="0">小于</Option>
+                    </Select>
+                  </li>
+                  <li>
+                    <Input style={{ width: 120 }} placeholder="计算" />
+                  </li>
+                  <li>
+                    <Button
+                      type="priamry"
+                      onClick={() => {
+                        this.handleDelete(item);
+                      }}
+                    >
+                      删除
+                    </Button>
+                  </li>
+                </ul>
+              );
+            })}
+            <Button
+              onClick={this.handleAdd}
+              style={{ marginLeft: 40 }}
+              type="primary"
+            >
+              新增
+            </Button>
           </div>
           <div className={styles.layout}>
             <FormItem {...formCheckLayout} label="继续后续选择器">

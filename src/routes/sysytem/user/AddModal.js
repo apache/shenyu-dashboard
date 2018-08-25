@@ -18,13 +18,6 @@ class AddModal extends Component {
 
   render() {
     let { handleCancel, form, userName = '', password = '', role = '', enabled = true } = this.props;
-    if (role === 0) {
-      role = '管理员';
-    } else if (role === 1) {
-      role = '用户';
-    } else {
-      role = '';
-    }
 
     const { getFieldDecorator } = form;
     const formItemLayout = {
@@ -75,7 +68,7 @@ class AddModal extends Component {
           >
             {getFieldDecorator('role', {
               rules: [{ required: true, message: '请选择角色' }],
-              initialValue: role,
+              initialValue: role.toString(),
             })(
               <Select>
                 <Option value="0">管理员</Option>

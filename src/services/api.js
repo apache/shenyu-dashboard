@@ -15,10 +15,8 @@ export async function addUser(params) {
 /* 删除用户 */
 export async function deleteUser(params) {
   return request(`${baseUrl}/dashboardUser/batch`, {
-    method: `POST`,
-    body: {
-      list: params.list
-    }
+    method: `DELETE`,
+    body: [...params.list],
   });
 }
 /* 修改用户 */
@@ -26,13 +24,23 @@ export async function updateUser(params) {
   return request(`${baseUrl}/dashboardUser/${params.id}`, {
     method: `PUT`,
     body: {
-      ...params
+      userName: params.userName,
+      password: params.password,
+      role: params.role,
+      enabled: params.enabled
     }
   });
 }
 /* 查询所有用户 */
 export async function getAllUsers(params) {
-  return request(`${baseUrl}/dashboardUser?${stringify(params)}`, {
+  const { userName, currentPage, pageSize } = params;
+  let myParams = params;
+  if (userName) {
+    myParams = params;
+  } else {
+    myParams = { currentPage, pageSize };
+  }
+  return request(`${baseUrl}/dashboardUser?${stringify(myParams)}`, {
     method: `GET`
   });
 }
@@ -74,7 +82,7 @@ export async function updatePlugin(params) {
 /* 查询所有插件 */
 export async function getAllPlugins(params) {
   return request(`${baseUrl}/plugin?${stringify(params)}`, {
-    method: `GET`,
+    method: `GET`
   });
 }
 /* 查询单个插件 */
@@ -90,8 +98,8 @@ export async function addAuth(params) {
   return request(`${baseUrl}/appAuth`, {
     method: `POST`,
     body: {
-      ...params,
-    },
+      ...params
+    }
   });
 }
 /* 删除认证 */
@@ -99,8 +107,8 @@ export async function deleteAuth(params) {
   return request(`${baseUrl}/appAuth/batch`, {
     method: `POST`,
     body: {
-      list: params.list,
-    },
+      list: params.list
+    }
   });
 }
 /* 修改认证 */
@@ -108,20 +116,20 @@ export async function updateAuth(params) {
   return request(`${baseUrl}/appAuth/${params.id}`, {
     method: `PUT`,
     body: {
-      ...params,
-    },
+      ...params
+    }
   });
 }
 /* 查询所有认证 */
 export async function getAllAuth(params) {
   return request(`${baseUrl}/appAuth?${stringify(params)}`, {
-    method: `GET`,
+    method: `GET`
   });
 }
 /* 查询单个认证 */
 export async function findAuth(params) {
   return request(`${baseUrl}/appAuth/${params.id}`, {
-    method: `GET`,
+    method: `GET`
   });
 }
 
@@ -157,7 +165,7 @@ export async function updateSelector(params) {
 /* 查询所有选择器 */
 export async function getAllSelectors(params) {
   return request(`${baseUrl}/selector?${stringify(params)}`, {
-    method: `GET`,
+    method: `GET`
   });
 }
 /* 查询单个选择器 */
@@ -180,4 +188,3 @@ export async function queryLogin(params) {
     method: `GET`
   });
 }
-

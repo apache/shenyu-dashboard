@@ -83,8 +83,14 @@ class BasicLayout extends React.PureComponent {
       breadcrumbNameMap: getBreadcrumbNameMap(getMenuData(), routerData),
     };
   }
-  
 
+  componentWillMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'global/fetchPlatform',
+    });
+  }
+  
   getPageTitle() {
     const { routerData, location } = this.props;
     const { pathname } = location;

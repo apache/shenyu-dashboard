@@ -10,6 +10,7 @@ module.exports = {
     jasmine: true,
   },
   rules: {
+    'react/destructuring-assignment':[0],
     'comma-dangle': [0],
     'react/no-array-index-key':[0],
     'no-param-reassign': [0],

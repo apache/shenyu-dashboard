@@ -5,7 +5,7 @@ import AddModal from "./AddModal";
 
 @connect(({ manage, loading }) => ({
   manage,
-  loading: loading.effects["manage/fetchUsers"]
+  loading: loading.effects["manage/fetch"]
 }))
 export default class Manage extends Component {
   constructor(props) {
@@ -31,11 +31,11 @@ export default class Manage extends Component {
     const { dispatch } = this.props;
     const { userName } = this.state;
     dispatch({
-      type: "manage/fetchUsers",
+      type: "manage/fetch",
       payload: {
         userName,
         currentPage: page,
-        pageSize: 10
+        pageSize: 12
       }
     });
   };
@@ -51,6 +51,8 @@ export default class Manage extends Component {
 
   editClick = record => {
     const { dispatch } = this.props;
+    const { currentPage } = this.state;
+    const name = this.state.userName;
     dispatch({
       type: "manage/fetchItem",
       payload: {
@@ -71,6 +73,11 @@ export default class Manage extends Component {
                     role,
                     enabled,
                     id
+                  },
+                  fetchValue: {
+                    userName: name,
+                    currentPage,
+                    pageSize: 12
                   },
                   callback: () => {
                     this.closeModal();
@@ -94,6 +101,7 @@ export default class Manage extends Component {
 
   searchClick = () => {
     this.getAllUsers(1);
+    this.setState({currentPage: 1});
   };
 
   deleteClick = () => {
@@ -103,10 +111,12 @@ export default class Manage extends Component {
       dispatch({
         type: "manage/delete",
         payload: {
+          list: selectedRowKeys
+        },
+        fetchValue: {
           userName,
           currentPage,
-          pageSize: 10,
-          list: selectedRowKeys
+          pageSize: 12
         }
       });
     } else {
@@ -116,6 +126,8 @@ export default class Manage extends Component {
   };
 
   addClick = () => {
+    const { currentPage } = this.state;
+    const name = this.state.userName;
     this.setState({
       popup: (
         <AddModal
@@ -129,6 +141,11 @@ export default class Manage extends Component {
                 password,
                 role,
                 enabled
+              },
+              fetchValue: {
+                userName: name,
+                currentPage,
+                pageSize: 12,
               },
               callback: () => {
                 this.closeModal();
@@ -145,7 +162,7 @@ export default class Manage extends Component {
 
   render() {
     const { manage, loading } = this.props;
-    const { userList } = manage;
+    const { userList, total } = manage;
     const { currentPage, selectedRowKeys, userName, popup } = this.state;
     const userColumns = [
       {
@@ -232,9 +249,9 @@ export default class Manage extends Component {
           dataSource={userList}
           rowSelection={rowSelection}
           pagination={{
-            total: 3,
+            total,
             current: currentPage,
-            pageSize: 10,
+            pageSize: 12,
             onChange: this.pageOnchange
           }}
         />
