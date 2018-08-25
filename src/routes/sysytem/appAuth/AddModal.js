@@ -1,31 +1,36 @@
-import React, { Component } from 'react';
-import { Modal, Form, Input, Switch } from 'antd';
+import React, { Component } from "react";
+import { Modal, Form, Input, Switch } from "antd";
 
 const FormItem = Form.Item;
 
 class AddModal extends Component {
-
-  handleSubmit = (e) => {
-    const { form, handleOk, id = '' } = this.props;
+  handleSubmit = e => {
+    const { form, handleOk, id = "" } = this.props;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        handleOk({...values, id});
+        handleOk({ ...values, id });
       }
     });
-  }
+  };
 
   render() {
-    let { handleCancel, form, appKey = '', enabled = true } = this.props;
-    
+    let {
+      handleCancel,
+      form,
+      appKey = "",
+      appSecret = "",
+      enabled = true
+    } = this.props;
+
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 5 },
+        sm: { span: 6 }
       },
       wrapperCol: {
-        sm: { span: 19 },
-      },
+        sm: { span: 18 }
+      }
     };
     return (
       <Modal
@@ -39,31 +44,27 @@ class AddModal extends Component {
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem
-            label="appKey"
-            {...formItemLayout}
-          >
-            {getFieldDecorator('appKey', {
-              rules: [{ required: true, message: '请输入认证名' }],
-              initialValue: appKey,
-            })(
-              <Input placeholder="认证名" />
-            )}
+          <FormItem label="appKey" {...formItemLayout}>
+            {getFieldDecorator("appKey", {
+              rules: [{ required: true, message: "请输入appKey" }],
+              initialValue: appKey
+            })(<Input placeholder="appKey" />)}
           </FormItem>
-          <FormItem
-            {...formItemLayout}
-            label="状态"
-          >
-            {getFieldDecorator('enabled', {
+          <FormItem label="appSecret" {...formItemLayout}>
+            {getFieldDecorator("appSecret", {
+              rules: [{ required: true, message: "请输入appSecret" }],
+              initialValue: appSecret
+            })(<Input placeholder="appSecret" />)}
+          </FormItem>
+          <FormItem {...formItemLayout} label="状态">
+            {getFieldDecorator("enabled", {
               initialValue: enabled,
-              valuePropName: 'checked',
-            })(
-              <Switch />
-            )}
+              valuePropName: "checked"
+            })(<Switch />)}
           </FormItem>
         </Form>
       </Modal>
-    )
+    );
   }
 }
 

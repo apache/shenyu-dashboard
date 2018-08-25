@@ -5,9 +5,9 @@ import AddModal from "./AddModal";
 
 @connect(({ auth, loading }) => ({
   auth,
-  loading: loading.effects["auth/fetchAuths"]
+  loading: loading.effects["auth/fetch"]
 }))
-export default class AppAuth extends Component {
+export default class Auth extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -31,11 +31,11 @@ export default class AppAuth extends Component {
     const { dispatch } = this.props;
     const { appKey } = this.state;
     dispatch({
-      type: "auth/fetchAuths",
+      type: "auth/fetch",
       payload: {
         appKey,
         currentPage: page,
-        pageSize: 10
+        pageSize: 12
       }
     });
   };
@@ -51,6 +51,8 @@ export default class AppAuth extends Component {
 
   editClick = record => {
     const { dispatch } = this.props;
+    const { currentPage } = this.state;
+    const authName = this.state.appKey;
     dispatch({
       type: "auth/fetchItem",
       payload: {
@@ -62,15 +64,19 @@ export default class AppAuth extends Component {
             <AddModal
               {...auth}
               handleOk={values => {
-                const { appKey, password, role, enabled, id } = values;
+                const { appKey, appSecret, enabled, id } = values;
                 dispatch({
                   type: "auth/update",
                   payload: {
                     appKey,
-                    password,
-                    role,
+                    appSecret,
                     enabled,
                     id
+                  },
+                  fetchValue: {
+                    appKey: authName,
+                    currentPage,
+                    pageSize: 12
                   },
                   callback: () => {
                     this.closeModal();
@@ -94,6 +100,7 @@ export default class AppAuth extends Component {
 
   searchClick = () => {
     this.getAllAuths(1);
+    this.setState({ currentPage: 1 });
   };
 
   deleteClick = () => {
@@ -103,10 +110,12 @@ export default class AppAuth extends Component {
       dispatch({
         type: "auth/delete",
         payload: {
+          list: selectedRowKeys
+        },
+        fetchValue: {
           appKey,
           currentPage,
-          pageSize: 10,
-          list: selectedRowKeys
+          pageSize: 12
         }
       });
     } else {
@@ -116,19 +125,26 @@ export default class AppAuth extends Component {
   };
 
   addClick = () => {
+    const { currentPage } = this.state;
+    const authName = this.state.appKey;
     this.setState({
       popup: (
         <AddModal
           handleOk={values => {
             const { dispatch } = this.props;
-            const { appKey, password, role, enabled } = values;
+            const { appKey, appSecret, enabled } = values;
+
             dispatch({
               type: "auth/add",
               payload: {
                 appKey,
-                password,
-                role,
+                appSecret,
                 enabled
+              },
+              fetchValue: {
+                appKey: authName,
+                currentPage,
+                pageSize: 12
               },
               callback: () => {
                 this.closeModal();
@@ -145,7 +161,7 @@ export default class AppAuth extends Component {
 
   render() {
     const { auth, loading } = this.props;
-    const { authList } = auth;
+    const { authList, total } = auth;
     const { currentPage, selectedRowKeys, appKey, popup } = this.state;
     const authColumns = [
       {
@@ -158,6 +174,7 @@ export default class AppAuth extends Component {
         dataIndex: "appSecret",
         key: "appSecret"
       },
+      
       {
         title: "状态",
         dataIndex: "enabled",
@@ -211,7 +228,7 @@ export default class AppAuth extends Component {
             <Input
               value={appKey}
               onChange={this.searchOnchange}
-              placeholder="请输入"
+              placeholder="请输入认证"
             />
             <Button type="primary" onClick={this.searchClick}>
               查询
@@ -237,9 +254,9 @@ export default class AppAuth extends Component {
           dataSource={authList}
           rowSelection={rowSelection}
           pagination={{
-            total: 3,
+            total,
             current: currentPage,
-            pageSize: 10,
+            pageSize: 12,
             onChange: this.pageOnchange
           }}
         />
@@ -248,3 +265,4 @@ export default class AppAuth extends Component {
     );
   }
 }
+

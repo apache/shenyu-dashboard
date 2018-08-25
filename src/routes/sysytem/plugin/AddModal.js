@@ -1,32 +1,40 @@
-import React, { Component } from 'react';
-import { Modal, Form, Input, Switch } from 'antd';
+import React, { Component } from "react";
+import { Modal, Form, Switch, Select } from "antd";
+import { connect } from "dva";
 
+const { Option } = Select;
 const FormItem = Form.Item;
 
+@connect(({ global }) => ({
+  platform: global.platform
+}))
 class AddModal extends Component {
-
-  handleSubmit = (e) => {
-    const { form, handleOk, id = '' } = this.props;
+  handleSubmit = e => {
+    const { form, handleOk, id = "" } = this.props;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        handleOk({...values, id});
+        handleOk({ ...values, id });
       }
     });
-  }
+  };
 
   render() {
-    let { handleCancel, form, name = '', enabled = true } = this.props;
-    
+    let { handleCancel, form, code, enabled = true, platform } = this.props;
+
     const { getFieldDecorator } = form;
+
+    const { pluginEnums } = platform;
+
     const formItemLayout = {
       labelCol: {
-        sm: { span: 5 },
+        sm: { span: 5 }
       },
       wrapperCol: {
-        sm: { span: 19 },
-      },
+        sm: { span: 19 }
+      }
     };
+
     return (
       <Modal
         width={450}
@@ -39,32 +47,33 @@ class AddModal extends Component {
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem
-            label="插件名"
-            {...formItemLayout}
-          >
-            {getFieldDecorator('name', {
-              rules: [{ required: true, message: '请输入插件名' }],
-              initialValue: name,
+          <FormItem label="插件" {...formItemLayout}>
+            {getFieldDecorator("code", {
+              rules: [{ required: true, message: "请选择插件" }],
+              initialValue: code,
             })(
-              <Input placeholder="插件名" />
+              <Select>
+                {pluginEnums &&
+                  pluginEnums.map(item => {
+                    return (
+                      <Option key={item.code} value={item.code}>
+                        {item.name}
+                      </Option>
+                    );
+                  })}
+              </Select>
             )}
           </FormItem>
-          
-          <FormItem
-            {...formItemLayout}
-            label="状态"
-          >
-            {getFieldDecorator('enabled', {
+
+          <FormItem {...formItemLayout} label="状态">
+            {getFieldDecorator("enabled", {
               initialValue: enabled,
-              valuePropName: 'checked',
-            })(
-              <Switch />
-            )}
+              valuePropName: "checked"
+            })(<Switch />)}
           </FormItem>
         </Form>
       </Modal>
-    )
+    );
   }
 }
 

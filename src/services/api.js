@@ -63,11 +63,9 @@ export async function addPlugin(params) {
 }
 /* 删除插件 */
 export async function deletePlugin(params) {
-  return request(`${baseUrl}/plugin/delete`, {
-    method: `POST`,
-    body: {
-      list: params.list
-    }
+  return request(`${baseUrl}/plugin/batch`, {
+    method: `DELETE`,
+    body: [...params.list],
   });
 }
 /* 修改插件 */
@@ -75,13 +73,21 @@ export async function updatePlugin(params) {
   return request(`${baseUrl}/plugin/${params.id}`, {
     method: `PUT`,
     body: {
-      ...params
+      code: params.code,
+      enabled: params.enabled
     }
   });
 }
 /* 查询所有插件 */
 export async function getAllPlugins(params) {
-  return request(`${baseUrl}/plugin?${stringify(params)}`, {
+  const { name, currentPage, pageSize } = params;
+  let myParams = params;
+  if (name) {
+    myParams = params;
+  } else {
+    myParams = { currentPage, pageSize };
+  }
+  return request(`${baseUrl}/plugin?${stringify(myParams)}`, {
     method: `GET`
   });
 }
@@ -105,10 +111,8 @@ export async function addAuth(params) {
 /* 删除认证 */
 export async function deleteAuth(params) {
   return request(`${baseUrl}/appAuth/batch`, {
-    method: `POST`,
-    body: {
-      list: params.list
-    }
+    method: `DELETE`,
+    body: [...params.list],
   });
 }
 /* 修改认证 */
@@ -116,13 +120,21 @@ export async function updateAuth(params) {
   return request(`${baseUrl}/appAuth/${params.id}`, {
     method: `PUT`,
     body: {
-      ...params
+      appKey: params.appKey,
+      enabled: params.enabled
     }
   });
 }
 /* 查询所有认证 */
 export async function getAllAuth(params) {
-  return request(`${baseUrl}/appAuth?${stringify(params)}`, {
+  const { appKey, currentPage, pageSize } = params;
+  let myParams = params;
+  if (appKey) {
+    myParams = params;
+  } else {
+    myParams = { currentPage, pageSize };
+  }
+  return request(`${baseUrl}/appAuth?${stringify(myParams)}`, {
     method: `GET`
   });
 }

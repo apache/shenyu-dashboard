@@ -1,12 +1,18 @@
-import { message } from 'antd';
-import { getAllPlugins, findPlugin, updatePlugin, deletePlugin, addPlugin } from '../services/api';
+import { message } from "antd";
+import {
+  getAllPlugins,
+  findPlugin,
+  updatePlugin,
+  deletePlugin,
+  addPlugin
+} from "../services/api";
 
 export default {
-  namespace: 'plugin',
+  namespace: "plugin",
 
   state: {
     pluginList: [],
-    total: 0,
+    total: 0
   },
 
   effects: {
@@ -15,16 +21,16 @@ export default {
       const json = yield call(getAllPlugins, payload);
       if (json.code === 200) {
         let { page, dataList } = json.data;
-        dataList = dataList.map((item) => {
+        dataList = dataList.map(item => {
           item.key = item.id;
           return item;
-        })
+        });
         yield put({
-          type: 'savePlugins',
+          type: "savePlugins",
           payload: {
             total: page.totalCount,
-            dataList,
-          },
+            dataList
+          }
         });
       }
     },
@@ -32,43 +38,49 @@ export default {
       const { payload, callback } = params;
       const json = yield call(findPlugin, payload);
       if (json.code === 200) {
-        const user = json.data;
-        callback(user);
+        const plugin = json.data;
+        callback(plugin);
       }
     },
     *add(params, { call, put }) {
-      const { payload, callback } = params;
+      const { payload, callback, fetchValue } = params;
       const json = yield call(addPlugin, payload);
       if (json.code === 200) {
-        message.success('添加成功');
+        message.success("添加成功");
         callback();
-        yield put({ type: 'reload', payload })
+        yield put({ type: "reload", fetchValue });
+      }else{
+        message.warn(json.message);
       }
     },
     *delete(params, { call, put }) {
-      const { payload } = params;
+      const { payload, fetchValue } = params;
       const { list } = payload;
-      const json = yield call(deletePlugin, {list});
+      const json = yield call(deletePlugin, { list });
       if (json.code === 200) {
-        message.success('删除成功');
-        yield put({ type: 'reload', payload })
+        message.success("删除成功");
+        yield put({ type: "reload", fetchValue });
+      }else{
+        message.warn(json.message);
       }
-
     },
     *update(params, { call, put }) {
-      const { payload, callback } = params;
+      const { payload, callback, fetchValue } = params;
       const json = yield call(updatePlugin, payload);
       if (json.code === 200) {
-        message.success('修改成功');
+        message.success("修改成功");
         callback();
-        yield put({ type: 'reload', payload })
+        yield put({ type: "reload", fetchValue });
+      }else{
+        message.warn(json.message);
       }
-
     },
     *reload(params, { put }) {
-      const { name, currentPage, pageSize } = params;
-      yield put({ type: 'fetch', payload: { name, currentPage, pageSize } });
-    },
+      const { fetchValue } = params;
+      const { name, currentPage, pageSize } = fetchValue;
+      const payload = { name, currentPage, pageSize };
+      yield put({ type: "fetch", payload });
+    }
   },
 
   reducers: {
@@ -76,8 +88,8 @@ export default {
       return {
         ...state,
         pluginList: payload.dataList,
-        total: payload.total,
+        total: payload.total
       };
-    },
-  },
+    }
+  }
 };

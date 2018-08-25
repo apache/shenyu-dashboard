@@ -16,7 +16,6 @@ export default {
   },
 
   effects: {
-    
     *fetch(params, { call, put }) {
       const { payload } = params;
       const json = yield call(getAllUsers, payload);
@@ -43,13 +42,15 @@ export default {
         callback(user);
       }
     },
-    *add(params, { call,put }) {
+    *add(params, { call, put }) {
       const { payload, callback, fetchValue } = params;
       const json = yield call(addUser, payload);
       if (json.code === 200) {
         message.success("添加成功");
         callback();
-        yield put({ type: 'reload', fetchValue })
+        yield put({ type: "reload", fetchValue });
+      } else {
+        message.warn(json.message);
       }
     },
     *delete(params, { call, put }) {
@@ -58,26 +59,29 @@ export default {
       const json = yield call(deleteUser, { list });
       if (json.code === 200) {
         message.success("删除成功");
-        yield put({ type: 'reload', fetchValue })
+        yield put({ type: "reload", fetchValue });
+      } else {
+        message.warn(json.message);
       }
     },
-    *update(params, { call,put }) {
+    *update(params, { call, put }) {
       const { payload, callback, fetchValue } = params;
       const json = yield call(updateUser, payload);
       if (json.code === 200) {
         message.success("修改成功");
         callback();
-        yield put({ type: 'reload', fetchValue })
+        yield put({ type: "reload", fetchValue });
+      } else {
+        message.warn(json.message);
       }
     },
 
     *reload(params, { put }) {
       const { fetchValue } = params;
       const { userName, currentPage, pageSize } = fetchValue;
-      const payload = {userName, currentPage, pageSize}
-      yield put({ type: 'fetch',   payload});
-    },
-    
+      const payload = { userName, currentPage, pageSize };
+      yield put({ type: "fetch", payload });
+    }
   },
 
   reducers: {

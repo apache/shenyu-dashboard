@@ -35,7 +35,7 @@ export default class Plugin extends Component {
       payload: {
         name,
         currentPage: page,
-        pageSize: 10
+        pageSize: 12
       }
     });
   };
@@ -51,26 +51,31 @@ export default class Plugin extends Component {
 
   editClick = record => {
     const { dispatch } = this.props;
+    const { currentPage } = this.state;
+    const pluginName = this.state.name;
     dispatch({
       type: "plugin/fetchItem",
       payload: {
         id: record.id
       },
-      callback: user => {
+      callback: plugin => {
         this.setState({
           popup: (
             <AddModal
-              {...user}
+              {...plugin}
               handleOk={values => {
-                const { name, password, role, enabled, id } = values;
+                const { code, enabled, id } = values;
                 dispatch({
                   type: "plugin/update",
                   payload: {
-                    name,
-                    password,
-                    role,
+                    code,
                     enabled,
                     id
+                  },
+                  fetchValue: {
+                    name: pluginName,
+                    currentPage,
+                    pageSize: 12
                   },
                   callback: () => {
                     this.closeModal();
@@ -94,6 +99,7 @@ export default class Plugin extends Component {
 
   searchClick = () => {
     this.getAllPlugins(1);
+    this.setState({ currentPage: 1 });
   };
 
   deleteClick = () => {
@@ -103,10 +109,12 @@ export default class Plugin extends Component {
       dispatch({
         type: "plugin/delete",
         payload: {
+          list: selectedRowKeys
+        },
+        fetchValue: {
           name,
           currentPage,
-          pageSize: 10,
-          list: selectedRowKeys
+          pageSize: 12
         }
       });
     } else {
@@ -116,19 +124,25 @@ export default class Plugin extends Component {
   };
 
   addClick = () => {
+    const { currentPage } = this.state;
+    const pluginName = this.state.name;
     this.setState({
       popup: (
         <AddModal
           handleOk={values => {
             const { dispatch } = this.props;
-            const { name, password, role, enabled } = values;
+            const { code, enabled } = values;
+
             dispatch({
               type: "plugin/add",
               payload: {
-                name,
-                password,
-                role,
+                code,
                 enabled
+              },
+              fetchValue: {
+                name: pluginName,
+                currentPage,
+                pageSize: 12
               },
               callback: () => {
                 this.closeModal();
@@ -145,7 +159,7 @@ export default class Plugin extends Component {
 
   render() {
     const { plugin, loading } = this.props;
-    const { pluginList } = plugin;
+    const { pluginList, total } = plugin;
     const { currentPage, selectedRowKeys, name, popup } = this.state;
     const pluginColumns = [
       {
@@ -232,9 +246,9 @@ export default class Plugin extends Component {
           dataSource={pluginList}
           rowSelection={rowSelection}
           pagination={{
-            total: 3,
+            total,
             current: currentPage,
-            pageSize: 10,
+            pageSize: 12,
             onChange: this.pageOnchange
           }}
         />
