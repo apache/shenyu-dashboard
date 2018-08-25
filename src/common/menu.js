@@ -41,6 +41,10 @@ const menuData = [
         name: '插件管理',
         path: 'plugin',
       },
+      {
+        name: '认证管理',
+        path: 'auth'
+      }
     ],
   },
 ];

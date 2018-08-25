@@ -1,50 +1,82 @@
-import { query as queryUsers, queryCurrent } from '../services/user';
+import { message } from 'antd';
+import { getAllAuth, findAuth, updateAuth, deleteAuth, addAuth } from '../services/api';
 
 export default {
   namespace: 'auth',
 
   state: {
-    list: [],
-    currentUser: {},
+    authList: [],
+    total: 0,
   },
 
   effects: {
-    *fetch(_, { call, put }) {
-      const response = yield call(queryUsers);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
+    *fetchAuths(params, { call, put }) {
+      const { payload } = params;
+      const json = yield call(getAllAuth, payload);
+      if (json.code === 200) {
+        let { page, dataList } = json.data;
+        dataList = dataList.map((item) => {
+          item.key = item.id;
+          return item;
+        })
+        yield put({
+          type: 'saveAuths',
+          payload: {
+            total: page.totalCount,
+            dataList,
+          },
+        });
+      }
     },
-    *fetchCurrent(_, { call, put }) {
-      const response = yield call(queryCurrent);
-      yield put({
-        type: 'saveCurrentUser',
-        payload: response,
-      });
+    *fetchItem(params, { call }) {
+      const { payload, callback } = params;
+      const json = yield call(findAuth, payload);
+      if (json.code === 200) {
+        const auth = json.data;
+        callback(auth);
+      }
+    },
+    *add(params, { call, put }) {
+      const { payload, callback } = params;
+      const json = yield call(addAuth, payload);
+      if (json.code === 200) {
+        message.success('添加成功');
+        callback();
+        yield put({ type: 'reload', payload })
+      }
+    },
+    *delete(params, { call, put }) {
+      const { payload } = params;
+      const { list } = payload;
+      const json = yield call(deleteAuth, {list});
+      if (json.code === 200) {
+        message.success('删除成功');
+        yield put({ type: 'reload', payload })
+      }
+
+    },
+    *update(params, { call, put }) {
+      const { payload, callback } = params;
+      const json = yield call(updateAuth, payload);
+      if (json.code === 200) {
+        message.success('修改成功');
+        callback();
+        yield put({ type: 'reload', payload })
+      }
+
+    },
+    *reload(params, { put }) {
+      const { appKey, currentPage, pageSize } = params;
+      yield put({ type: 'fetchAuths', payload: { appKey, currentPage, pageSize } });
     },
   },
 
   reducers: {
-    save(state, action) {
+    saveAuths(state, { payload }) {
       return {
         ...state,
-        list: action.payload,
-      };
-    },
-    saveCurrentUser(state, action) {
-      return {
-        ...state,
-        currentUser: action.payload || {},
-      };
-    },
-    changeNotifyCount(state, action) {
-      return {
-        ...state,
-        currentUser: {
-          ...state.currentUser,
-          notifyCount: action.payload,
-        },
+        authList: payload.dataList,
+        total: payload.total,
       };
     },
   },

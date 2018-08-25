@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Layout } from 'antd';
 import DocumentTitle from 'react-document-title';
 import { connect } from 'dva';
-import { Route, Redirect, Switch, routerRedux } from 'dva/router';
+import { Route, Redirect, Switch } from 'dva/router';
 import { ContainerQuery } from 'react-container-query';
 import classNames from 'classnames';
 import pathToRegexp from 'path-to-regexp';
@@ -84,14 +84,6 @@ class BasicLayout extends React.PureComponent {
     };
   }
   
-  componentWillMount(){
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'global/fetchPlatform',
-    })
-  }
-
-  componentWillUnmount() {}
 
   getPageTitle() {
     const { routerData, location } = this.props;
@@ -133,10 +125,7 @@ class BasicLayout extends React.PureComponent {
 
   handleMenuClick = ({ key }) => {
     const { dispatch } = this.props;
-    if (key === 'triggerError') {
-      dispatch(routerRedux.push('/exception/trigger'));
-      return;
-    }
+    
     if (key === 'logout') {
       dispatch({
         type: 'login/logout',

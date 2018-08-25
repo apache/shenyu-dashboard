@@ -16,7 +16,7 @@ class AddModal extends Component {
   }
 
   render() {
-    let { handleCancel, form, userName = '', enabled = true } = this.props;
+    let { handleCancel, form, appKey = '', enabled = true } = this.props;
     
     const { getFieldDecorator } = form;
     const formItemLayout = {
@@ -30,7 +30,8 @@ class AddModal extends Component {
     return (
       <Modal
         width={450}
-        title="用户"
+        centered
+        title="认证"
         visible
         okText="确定"
         cancelText="取消"
@@ -42,11 +43,11 @@ class AddModal extends Component {
             label="appKey"
             {...formItemLayout}
           >
-            {getFieldDecorator('userName', {
-              rules: [{ required: true, message: '请输入用户名' }],
-              initialValue: userName,
+            {getFieldDecorator('appKey', {
+              rules: [{ required: true, message: '请输入认证名' }],
+              initialValue: appKey,
             })(
-              <Input placeholder="用户名" />
+              <Input placeholder="认证名" />
             )}
           </FormItem>
           <FormItem

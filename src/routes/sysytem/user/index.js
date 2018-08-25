@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import { Table, Row, Col, Input, Button } from 'antd';
-import { connect } from 'dva';
-import AddModal from './AddModal';
+import React, { Component } from "react";
+import { Table, Row, Col, Input, Button, message } from "antd";
+import { connect } from "dva";
+import AddModal from "./AddModal";
 
 @connect(({ manage, loading }) => ({
   manage,
-  loading: loading.effects['manage/fetchUsers'],
+  loading: loading.effects["manage/fetchUsers"]
 }))
 export default class Manage extends Component {
   constructor(props) {
@@ -13,8 +13,8 @@ export default class Manage extends Component {
     this.state = {
       currentPage: 1,
       selectedRowKeys: [],
-      userName: '',
-      popup: '',
+      userName: "",
+      popup: ""
     };
   }
 
@@ -27,18 +27,18 @@ export default class Manage extends Component {
     this.setState({ selectedRowKeys });
   };
 
-  getAllUsers = (page) => {
+  getAllUsers = page => {
     const { dispatch } = this.props;
     const { userName } = this.state;
     dispatch({
-      type: 'manage/fetchUsers',
+      type: "manage/fetchUsers",
       payload: {
         userName,
         currentPage: page,
-        pageSize: 10,
-      },
+        pageSize: 10
+      }
     });
-  }
+  };
 
   pageOnchange = page => {
     this.setState({ currentPage: page });
@@ -46,43 +46,44 @@ export default class Manage extends Component {
   };
 
   closeModal = () => {
-    this.setState({ popup: '' });
-  }
+    this.setState({ popup: "" });
+  };
 
   editClick = record => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'manage/fetchItem',
+      type: "manage/fetchItem",
       payload: {
-        id: record.id,
+        id: record.id
       },
-      callback: (user) => {
+      callback: user => {
         this.setState({
-          popup: <AddModal
-            {...user}
-            handleOk={(values) => {
-              const { userName, password, role, enabled, id } = values;
-              dispatch({
-                type: 'manage/update',
-                payload: {
-                  userName,
-                  password,
-                  role,
-                  enabled,
-                  id,
-                },
-                callback: () => {
-                  this.closeModal();
-                },
-              });
-
-            }}
-            handleCancel={() => {
-              this.closeModal();
-            }}
-          />,
-        })
-      },
+          popup: (
+            <AddModal
+              {...user}
+              handleOk={values => {
+                const { userName, password, role, enabled, id } = values;
+                dispatch({
+                  type: "manage/update",
+                  payload: {
+                    userName,
+                    password,
+                    role,
+                    enabled,
+                    id
+                  },
+                  callback: () => {
+                    this.closeModal();
+                  }
+                });
+              }}
+              handleCancel={() => {
+                this.closeModal();
+              }}
+            />
+          )
+        });
+      }
     });
   };
 
@@ -98,42 +99,49 @@ export default class Manage extends Component {
   deleteClick = () => {
     const { dispatch } = this.props;
     const { userName, currentPage, selectedRowKeys } = this.state;
-    dispatch({
-      type: 'manage/delete',
-      payload: {
-        userName,
-        currentPage,
-        pageSize: 10,
-        list: selectedRowKeys,
-      },
-    });
-  }
+    if (selectedRowKeys && selectedRowKeys.length > 0) {
+      dispatch({
+        type: "manage/delete",
+        payload: {
+          userName,
+          currentPage,
+          pageSize: 10,
+          list: selectedRowKeys
+        }
+      });
+    } else {
+      message.destroy();
+      message.warn("请选择数据");
+    }
+  };
 
   addClick = () => {
     this.setState({
-      popup: <AddModal
-        handleOk={(values) => {
-          const { dispatch } = this.props;
-          const { userName, password, role, enabled } = values;
-          dispatch({
-            type: 'manage/add',
-            payload: {
-              userName,
-              password,
-              role,
-              enabled,
-            },
-            callback: () => {
-              this.closeModal();
-            },
-          });
-        }}
-        handleCancel={() => {
-          this.closeModal();
-        }}
-      />,
-    })
-  }
+      popup: (
+        <AddModal
+          handleOk={values => {
+            const { dispatch } = this.props;
+            const { userName, password, role, enabled } = values;
+            dispatch({
+              type: "manage/add",
+              payload: {
+                userName,
+                password,
+                role,
+                enabled
+              },
+              callback: () => {
+                this.closeModal();
+              }
+            });
+          }}
+          handleCancel={() => {
+            this.closeModal();
+          }}
+        />
+      )
+    });
+  };
 
   render() {
     const { manage, loading } = this.props;
@@ -141,36 +149,36 @@ export default class Manage extends Component {
     const { currentPage, selectedRowKeys, userName, popup } = this.state;
     const userColumns = [
       {
-        title: '用户名',
-        dataIndex: 'userName',
-        key: 'userName',
+        title: "用户名",
+        dataIndex: "userName",
+        key: "userName"
       },
       {
-        title: '状态',
-        dataIndex: 'enabled',
-        key: 'enabled',
-        render: (text) => {
+        title: "状态",
+        dataIndex: "enabled",
+        key: "enabled",
+        render: text => {
           if (text) {
-            return <div>开启</div>
+            return <div>开启</div>;
           } else {
-            return <div>关闭</div>
+            return <div>关闭</div>;
           }
-        },
+        }
       },
       {
-        title: '创建时间',
-        dataIndex: 'dateCreated',
-        key: 'dateCreated',
+        title: "创建时间",
+        dataIndex: "dateCreated",
+        key: "dateCreated"
       },
       {
-        title: '更新时间',
-        dataIndex: 'dateUpdated',
-        key: 'dateUpdated',
+        title: "更新时间",
+        dataIndex: "dateUpdated",
+        key: "dateUpdated"
       },
       {
-        title: '操作',
-        dataIndex: 'operate',
-        key: 'operate',
+        title: "操作",
+        dataIndex: "operate",
+        key: "operate",
         render: (text, record) => {
           return (
             <div
@@ -182,13 +190,13 @@ export default class Manage extends Component {
               编辑
             </div>
           );
-        },
-      },
+        }
+      }
     ];
 
     const rowSelection = {
       selectedRowKeys,
-      onChange: this.onSelectChange,
+      onChange: this.onSelectChange
     };
 
     return (
@@ -205,24 +213,18 @@ export default class Manage extends Component {
             </Button>
           </Col>
           <Col span={4}>
-            <Button
-              type="danger"
-              onClick={this.deleteClick}
-            >
+            <Button type="danger" onClick={this.deleteClick}>
               删除勾选数据
             </Button>
           </Col>
           <Col span={4}>
-            <Button
-              type="primary"
-              onClick={this.addClick}
-            >
+            <Button type="primary" onClick={this.addClick}>
               添加数据
             </Button>
           </Col>
         </Row>
         <Table
-          size='small'
+          size="small"
           style={{ marginTop: 30 }}
           bordered
           loading={loading}
@@ -233,7 +235,7 @@ export default class Manage extends Component {
             total: 3,
             current: currentPage,
             pageSize: 10,
-            onChange: this.pageOnchange,
+            onChange: this.pageOnchange
           }}
         />
         {popup}

@@ -30,6 +30,7 @@ class AddModal extends Component {
     return (
       <Modal
         width={450}
+        centered
         title="插件"
         visible
         okText="确定"

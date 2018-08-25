@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import { Table, Row, Col, Input, Button } from 'antd';
-import { connect } from 'dva';
-import AddModal from './AddModal';
+import React, { Component } from "react";
+import { Table, Row, Col, Input, Button, message } from "antd";
+import { connect } from "dva";
+import AddModal from "./AddModal";
 
 @connect(({ plugin, loading }) => ({
   plugin,
-  loading: loading.effects['plugin/fetch'],
+  loading: loading.effects["plugin/fetch"]
 }))
 export default class Plugin extends Component {
   constructor(props) {
@@ -13,8 +13,8 @@ export default class Plugin extends Component {
     this.state = {
       currentPage: 1,
       selectedRowKeys: [],
-      name: '',
-      popup: '',
+      name: "",
+      popup: ""
     };
   }
 
@@ -27,18 +27,18 @@ export default class Plugin extends Component {
     this.setState({ selectedRowKeys });
   };
 
-  getAllPlugins = (page) => {
+  getAllPlugins = page => {
     const { dispatch } = this.props;
     const { name } = this.state;
     dispatch({
-      type: 'plugin/fetch',
+      type: "plugin/fetch",
       payload: {
         name,
         currentPage: page,
-        pageSize: 10,
-      },
+        pageSize: 10
+      }
     });
-  }
+  };
 
   pageOnchange = page => {
     this.setState({ currentPage: page });
@@ -46,43 +46,44 @@ export default class Plugin extends Component {
   };
 
   closeModal = () => {
-    this.setState({ popup: '' });
-  }
+    this.setState({ popup: "" });
+  };
 
   editClick = record => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'plugin/fetchItem',
+      type: "plugin/fetchItem",
       payload: {
-        id: record.id,
+        id: record.id
       },
-      callback: (user) => {
+      callback: user => {
         this.setState({
-          popup: <AddModal
-            {...user}
-            handleOk={(values) => {
-              const { name, password, role, enabled, id } = values;
-              dispatch({
-                type: 'plugin/update',
-                payload: {
-                  name,
-                  password,
-                  role,
-                  enabled,
-                  id,
-                },
-                callback: () => {
-                  this.closeModal();
-                },
-              });
-
-            }}
-            handleCancel={() => {
-              this.closeModal();
-            }}
-          />,
-        })
-      },
+          popup: (
+            <AddModal
+              {...user}
+              handleOk={values => {
+                const { name, password, role, enabled, id } = values;
+                dispatch({
+                  type: "plugin/update",
+                  payload: {
+                    name,
+                    password,
+                    role,
+                    enabled,
+                    id
+                  },
+                  callback: () => {
+                    this.closeModal();
+                  }
+                });
+              }}
+              handleCancel={() => {
+                this.closeModal();
+              }}
+            />
+          )
+        });
+      }
     });
   };
 
@@ -98,42 +99,49 @@ export default class Plugin extends Component {
   deleteClick = () => {
     const { dispatch } = this.props;
     const { name, currentPage, selectedRowKeys } = this.state;
-    dispatch({
-      type: 'plugin/delete',
-      payload: {
-        name,
-        currentPage,
-        pageSize: 10,
-        list: selectedRowKeys,
-      },
-    });
-  }
+    if (selectedRowKeys && selectedRowKeys.length > 0) {
+      dispatch({
+        type: "plugin/delete",
+        payload: {
+          name,
+          currentPage,
+          pageSize: 10,
+          list: selectedRowKeys
+        }
+      });
+    } else {
+      message.destroy();
+      message.warn("请选择数据");
+    }
+  };
 
   addClick = () => {
     this.setState({
-      popup: <AddModal
-        handleOk={(values) => {
-          const { dispatch } = this.props;
-          const { name, password, role, enabled } = values;
-          dispatch({
-            type: 'plugin/add',
-            payload: {
-              name,
-              password,
-              role,
-              enabled,
-            },
-            callback: () => {
-              this.closeModal();
-            },
-          });
-        }}
-        handleCancel={() => {
-          this.closeModal();
-        }}
-      />,
-    })
-  }
+      popup: (
+        <AddModal
+          handleOk={values => {
+            const { dispatch } = this.props;
+            const { name, password, role, enabled } = values;
+            dispatch({
+              type: "plugin/add",
+              payload: {
+                name,
+                password,
+                role,
+                enabled
+              },
+              callback: () => {
+                this.closeModal();
+              }
+            });
+          }}
+          handleCancel={() => {
+            this.closeModal();
+          }}
+        />
+      )
+    });
+  };
 
   render() {
     const { plugin, loading } = this.props;
@@ -141,36 +149,36 @@ export default class Plugin extends Component {
     const { currentPage, selectedRowKeys, name, popup } = this.state;
     const pluginColumns = [
       {
-        title: '插件名',
-        dataIndex: 'name',
-        key: 'name',
+        title: "插件名",
+        dataIndex: "name",
+        key: "name"
       },
       {
-        title: '状态',
-        dataIndex: 'enabled',
-        key: 'enabled',
-        render: (text) => {
+        title: "状态",
+        dataIndex: "enabled",
+        key: "enabled",
+        render: text => {
           if (text) {
-            return <div>开启</div>
+            return <div>开启</div>;
           } else {
-            return <div>关闭</div>
+            return <div>关闭</div>;
           }
-        },
+        }
       },
       {
-        title: '创建时间',
-        dataIndex: 'dateCreated',
-        key: 'dateCreated',
+        title: "创建时间",
+        dataIndex: "dateCreated",
+        key: "dateCreated"
       },
       {
-        title: '更新时间',
-        dataIndex: 'dateUpdated',
-        key: 'dateUpdated',
+        title: "更新时间",
+        dataIndex: "dateUpdated",
+        key: "dateUpdated"
       },
       {
-        title: '操作',
-        dataIndex: 'operate',
-        key: 'operate',
+        title: "操作",
+        dataIndex: "operate",
+        key: "operate",
         render: (text, record) => {
           return (
             <div
@@ -182,13 +190,13 @@ export default class Plugin extends Component {
               编辑
             </div>
           );
-        },
-      },
+        }
+      }
     ];
 
     const rowSelection = {
       selectedRowKeys,
-      onChange: this.onSelectChange,
+      onChange: this.onSelectChange
     };
 
     return (
@@ -205,24 +213,18 @@ export default class Plugin extends Component {
             </Button>
           </Col>
           <Col span={4}>
-            <Button
-              type="danger"
-              onClick={this.deleteClick}
-            >
+            <Button type="danger" onClick={this.deleteClick}>
               删除勾选数据
             </Button>
           </Col>
           <Col span={4}>
-            <Button
-              type="primary"
-              onClick={this.addClick}
-            >
+            <Button type="primary" onClick={this.addClick}>
               添加数据
             </Button>
           </Col>
         </Row>
         <Table
-          size='small'
+          size="small"
           style={{ marginTop: 30 }}
           bordered
           loading={loading}
@@ -233,7 +235,7 @@ export default class Plugin extends Component {
             total: 3,
             current: currentPage,
             pageSize: 10,
-            onChange: this.pageOnchange,
+            onChange: this.pageOnchange
           }}
         />
         {popup}

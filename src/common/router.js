@@ -98,6 +98,9 @@ export const getRouterData = app => {
     '/system/plugin': {
       component: dynamicWrapper(app, ['plugin'], () => import('../routes/sysytem/plugin')),
     },
+    '/system/auth': {
+      component: dynamicWrapper(app, ['auth'], () => import('../routes/sysytem/appAuth')),
+    },
 
     '/exception/403': {
       component: dynamicWrapper(app, [], () => import('../routes/Exception/403')),

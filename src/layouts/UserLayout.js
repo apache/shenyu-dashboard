@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { Link, Redirect, Switch, Route } from 'dva/router';
 import DocumentTitle from 'react-document-title';
+import { connect } from 'dva';
 import { Icon } from 'antd';
 import GlobalFooter from '../components/GlobalFooter';
 import styles from './UserLayout.less';
@@ -24,15 +25,26 @@ function getLoginPathWithRedirectPath() {
 }
 
 class UserLayout extends React.PureComponent {
+
+  componentDidMount(){
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'global/fetchPlatform',
+    });
+
+  }
+
   getPageTitle() {
     const { routerData, location } = this.props;
     const { pathname } = location;
-    let title = 'Ant Design Pro';
+    let title = '登录';
     if (routerData[pathname] && routerData[pathname].name) {
-      title = `${routerData[pathname].name} - Ant Design Pro`;
+      title = `${routerData[pathname].name} - bbex`;
     }
     return title;
   }
+
+ 
 
   render() {
     const { routerData, match } = this.props;
@@ -68,4 +80,7 @@ class UserLayout extends React.PureComponent {
   }
 }
 
-export default UserLayout;
+export default connect(({ global = {} }) => ({
+  collapsed: global.collapsed,
+}))(UserLayout);
+
