@@ -187,7 +187,7 @@ export async function findSelector(params) {
   });
 }
 
-export async function getAllRule(params) {
+export async function getAllRules(params) {
   return request(`${baseUrl}/rule?${stringify(params)}`, {
     method: `GET`
   });

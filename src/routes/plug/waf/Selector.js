@@ -15,36 +15,61 @@ class AddModal extends Component {
     this.state = {
       selectorConditions: [
         {
-          paramType: "host",
-          operator: "match",
-          paramName: "paramName",
-          paramValue: "paramValue"
+          paramType: "",
+          operator: "",
+          paramName: "",
+          paramValue: ""
         }
       ]
     };
   }
 
   handleSubmit = e => {
-    const { form, handleOk, id = "" } = this.props;
+    const { form, handleOk } = this.props;
+    const { selectorConditions } = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        handleOk({ ...values, id });
+        handleOk({ ...values, rank: Number(values.rank), selectorConditions });
       }
     });
   };
 
-  handleAdd = () => {};
+  handleAdd = () => {
+    let { selectorConditions } = this.state;
+    selectorConditions.push({
+      paramType: "",
+      operator: "",
+      paramName: "",
+      paramValue: ""
+    });
+    this.setState({ selectorConditions });
+  };
 
-  handleDelete = item => {
-    console.log(item);
+  handleDelete = index => {
+    let { selectorConditions } = this.state;
+    if (selectorConditions && selectorConditions.length > 0) {
+      selectorConditions.splice(index, 1);
+    }
+    this.setState({ selectorConditions });
+  };
+
+  conditionChange = (index, name, value) => {
+    let { selectorConditions } = this.state;
+    selectorConditions[index][name] = value;
+    this.setState({ selectorConditions });
   };
 
   render() {
-    let { onCancel, form, userName = "", platform } = this.props;
+    let { onCancel, form, name = "", platform } = this.props;
     const { selectorConditions } = this.state;
 
-    const { selectorTypeEnums, matchModeEnums } = platform;
+    const {
+      selectorTypeEnums,
+      matchModeEnums,
+      operatorEnums,
+      paramTypeEnums
+    } = platform;
 
     const { getFieldDecorator } = form;
     const formItemLayout = {
@@ -78,7 +103,7 @@ class AddModal extends Component {
           <FormItem label="名称" {...formItemLayout}>
             {getFieldDecorator("name", {
               rules: [{ required: true, message: "请输入名称" }],
-              initialValue: userName
+              initialValue: name
             })(<Input placeholder="名称" />)}
           </FormItem>
           <FormItem label="类型" {...formItemLayout}>
@@ -119,26 +144,70 @@ class AddModal extends Component {
               return (
                 <ul key={index}>
                   <li>
-                    <Select style={{ width: 120 }}>
-                      <Option value="0">大于</Option>
+                    <Select
+                      onChange={value => {
+                        this.conditionChange(index, "operator", value);
+                      }}
+                      value={item.operator}
+                      style={{ width: 110 }}
+                    >
+                      {operatorEnums.map(opearte => {
+                        return (
+                          <Option key={opearte.name} value={opearte.name}>
+                            {opearte.name}
+                          </Option>
+                        );
+                      })}
                     </Select>
                   </li>
                   <li>
-                    <Input style={{ width: 120 }} placeholder="运算" />
+                    <Input
+                      onChange={e => {
+                        this.conditionChange(
+                          index,
+                          "paramName",
+                          e.target.value
+                        );
+                      }}
+                      value={item.paramName}
+                      style={{ width: 110 }}
+                    />
                   </li>
                   <li>
-                    <Select style={{ width: 120 }}>
-                      <Option value="0">小于</Option>
+                    <Select
+                      onChange={value => {
+                        this.conditionChange(index, "paramType", value);
+                      }}
+                      value={item.paramType}
+                      style={{ width: 110 }}
+                    >
+                      {paramTypeEnums.map(type => {
+                        return (
+                          <Option key={type.name} value={type.name}>
+                            {type.name}
+                          </Option>
+                        );
+                      })}
                     </Select>
                   </li>
                   <li>
-                    <Input style={{ width: 120 }} placeholder="计算" />
+                    <Input
+                      onChange={e => {
+                        this.conditionChange(
+                          index,
+                          "paramValue",
+                          e.target.value
+                        );
+                      }}
+                      value={item.paramValue}
+                      style={{ width: 110 }}
+                    />
                   </li>
                   <li>
                     <Button
                       type="danger"
                       onClick={() => {
-                        this.handleDelete(item);
+                        this.handleDelete(index);
                       }}
                     >
                       删除
@@ -185,8 +254,16 @@ class AddModal extends Component {
 
           <FormItem label="执行顺序" {...formItemLayout}>
             {getFieldDecorator("rank", {
-              rules: [{ required: true, message: "" }],
-              initialValue: userName
+              rules: [
+                {
+                  required: true,
+                  message: "请输入1-100数字"
+                },
+                {
+                  pattern: /^([1-9][0-9]{0,1}|100)$/,
+                  message: "请输入1-100数字"
+                }
+              ]
             })(<Input placeholder="可以填写1-100之间的数字标志执行先后顺序" />)}
           </FormItem>
         </Form>
