@@ -26,14 +26,6 @@ function getLoginPathWithRedirectPath() {
 
 class UserLayout extends React.PureComponent {
 
-  componentDidMount(){
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'global/fetchPlatform',
-    });
-
-  }
-
   getPageTitle() {
     const { routerData, location } = this.props;
     const { pathname } = location;

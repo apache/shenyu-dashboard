@@ -136,7 +136,7 @@ class AddModal extends Component {
                   </li>
                   <li>
                     <Button
-                      type="priamry"
+                      type="danger"
                       onClick={() => {
                         this.handleDelete(item);
                       }}

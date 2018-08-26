@@ -187,6 +187,12 @@ export async function findSelector(params) {
   });
 }
 
+export async function getAllRule(params) {
+  return request(`${baseUrl}/rule?${stringify(params)}`, {
+    method: `GET`
+  });
+}
+
 /* 查询所有常量 */
 export async function queryPlatform() {
   return request(`${baseUrl}/platform/enum`, {
