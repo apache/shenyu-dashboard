@@ -30,7 +30,7 @@ class AddModal extends Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        handleOk({ ...values, rank: Number(values.rank), selectorConditions });
+        handleOk({ ...values, sort: Number(values.sort), selectorConditions });
       }
     });
   };
@@ -253,7 +253,7 @@ class AddModal extends Component {
           </div>
 
           <FormItem label="执行顺序" {...formItemLayout}>
-            {getFieldDecorator("rank", {
+            {getFieldDecorator("sort", {
               rules: [
                 {
                   required: true,
