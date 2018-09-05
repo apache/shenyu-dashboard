@@ -218,7 +218,7 @@ class AddModal extends Component {
             })}
             <Button
               onClick={this.handleAdd}
-              style={{ marginLeft: 40 }}
+              style={{ marginLeft: 50 }}
               type="primary"
             >
               新增

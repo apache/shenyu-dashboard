@@ -12,10 +12,14 @@ ul,
 ol {
   list-style: none;
 }
-:global(.ant-table){
+
+:global(.ant-table) {
   background: #fff;
 }
 
+:global(.table-selected) {
+  background: lighten(@primary-color, 25%);
+}
 
 :global(.edit) {
   cursor: pointer;
@@ -24,26 +28,29 @@ ol {
     color: @primary-color;
   }
 }
+
 :global(.searchblock) {
   display: flex !important;
   button {
     margin-left: 30px;
   }
 }
-:global(.ant-table table){
+
+:global(.ant-table table) {
   padding: 0 !important;
 }
-:global(.table-header){
+
+:global(.table-header) {
   display: flex;
   justify-content: space-between;
   line-height: 40px;
-  padding:  0 20px;
+  padding: 0 20px;
   height: 40px;
   background: #fff;
-  h3{
+  h3 {
     font-size: 16px;
   }
-  button{
+  button {
     margin-top: 4px;
   }
 }
@@ -63,7 +70,6 @@ body {
   .ant-spin-container {
     overflow: visible !important;
   }
-
   .global-spin {
     width: 100%;
     margin: 40px 0 !important;

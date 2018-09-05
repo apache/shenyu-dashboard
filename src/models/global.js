@@ -1,4 +1,4 @@
-import { queryPlatform } from "../services/api";
+import { queryPlatform, getAllPlugins } from "../services/api";
 
 export default {
   namespace: "global",
@@ -258,7 +258,8 @@ export default {
           support: true
         }
       ]
-    }
+    },
+    plugins: []
   },
 
   effects: {
@@ -268,6 +269,22 @@ export default {
         yield put({
           type: "savePlatform",
           payload: json.data
+        });
+      }
+    },
+    *fetchPlugins(_, { call, put }) {
+      const payload = {
+        currentPage: 1,
+        pageSize: 50
+      };
+      const json = yield call(getAllPlugins, payload);
+      if (json.code === 200) {
+        let { dataList } = json.data;
+        yield put({
+          type: "savePlugins",
+          payload: {
+            dataList
+          }
         });
       }
     }
@@ -284,6 +301,12 @@ export default {
       return {
         ...state,
         platform: payload
+      };
+    },
+    savePlugins(state, { payload }) {
+      return {
+        ...state,
+        plugins: payload.dataList
       };
     }
   },

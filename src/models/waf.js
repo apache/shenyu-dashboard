@@ -3,7 +3,8 @@ import {
   getAllSelectors,
   getAllRules,
   addSelector,
-  findSelector
+  findSelector,
+  getAllPlugins
 } from "../services/api";
 
 export default {
@@ -14,30 +15,67 @@ export default {
     ruleList: [],
     selectorTotal: 0,
     ruleTotal: 0,
-    currentSelector: ""
+    currentSelector: "",
+    plugins: []
   },
 
   effects: {
-    *fetchSelector(params, { call, put }) {
-      const { payload } = params;
-      const json = yield call(getAllSelectors, payload);
-      if (json.code === 200) {
-        let { page, dataList } = json.data;
-        dataList = dataList.map(item => {
-          item.key = item.id;
-          return item;
-        });
+    *fetchSelector({ payload }, { call, put }) {
+      const res = yield call(getAllPlugins, {
+        currentPage: 1,
+        pageSize: 50
+      });
+      if (res.code === 200) {
+        let plugins = res.data.dataList;
         yield put({
-          type: "saveSelector",
+          type: "savePlugins",
           payload: {
-            selectorTotal: page.totalCount,
-            selectorList: dataList
+            dataList: plugins
           }
         });
+        const plugin = plugins.filter(item => {
+          return item.name === "waf";
+        });
+        let pluginId = "";
+        if (plugin && plugin.length > 0) {
+          pluginId = plugin[0].id;
+        }
+        const json = yield call(getAllSelectors, { ...payload, pluginId });
+        if (json.code === 200) {
+          let { page, dataList } = json.data;
+          dataList = dataList.map(item => {
+            item.key = item.id;
+            return item;
+          });
+          yield put({
+            type: "saveSelector",
+            payload: {
+              selectorTotal: page.totalCount,
+              selectorList: dataList
+            }
+          });
+
+          if (dataList && dataList.length > 0) {
+            yield put({
+              type: "saveCurrentSelector",
+              payload: {
+                currentSelector: dataList[0]
+              }
+            });
+
+            yield put({
+              type: "fetchRule",
+              payload: {
+                currentPage: 1,
+                pageSize: 12,
+                selectorId: dataList[0].id
+              }
+            });
+          }
+        }
       }
     },
-    *fetchRule(params, { call, put }) {
-      const { payload } = params;
+    *fetchRule({ payload }, { call, put }) {
       const json = yield call(getAllRules, payload);
       if (json.code === 200) {
         let { page, dataList } = json.data;
@@ -79,7 +117,7 @@ export default {
       const { fetchValue } = params;
       const { pluginId, currentPage, pageSize } = fetchValue;
       const payload = { pluginId, currentPage, pageSize };
-      yield put({ type: "fetch", payload });
+      yield put({ type: "fetchSelector", payload });
     }
   },
 
@@ -97,6 +135,19 @@ export default {
         ...state,
         ruleList: payload.ruleList,
         ruleTotal: payload.ruleTotal
+      };
+    },
+
+    savePlugins(state, { payload }) {
+      return {
+        ...state,
+        plugins: payload.dataList
+      };
+    },
+    saveCurrentSelector(state, { payload }) {
+      return {
+        ...state,
+        currentSelector: payload.currentSelector
       };
     }
   }

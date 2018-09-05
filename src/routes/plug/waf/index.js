@@ -5,7 +5,7 @@ import Selector from "./Selector";
 import Rule from "./Rule";
 
 @connect(({ waf, global, loading }) => ({
-  waf,
+  ...waf,
   platform: global.platform,
   loading: loading.effects["global/fetchPlatform"]
 }))
@@ -25,11 +25,9 @@ export default class Waf extends Component {
 
   getAllSelectors = page => {
     const { dispatch } = this.props;
-
     dispatch({
       type: "waf/fetchSelector",
       payload: {
-        pluginId: this.getPluginId("waf"),
         currentPage: page,
         pageSize: 12
       }
@@ -37,13 +35,12 @@ export default class Waf extends Component {
   };
 
   getPluginId = name => {
-    const { platform } = this.props;
-    const { pluginEnums } = platform;
-    const plugin = pluginEnums.filter(item => {
+    const { plugins } = this.props;
+    const plugin = plugins.filter(item => {
       return item.name === name;
     });
     if (plugin && plugin.length > 0) {
-      return plugin[0].code;
+      return plugin[0].id;
     } else {
       return "";
     }
@@ -78,7 +75,26 @@ export default class Waf extends Component {
   };
 
   addRule = () => {
-    this.setState({ popup: <Rule onCancel={this.closeModal} /> });
+    const { selectorPage } = this.state;
+    const { dispatch } = this.props;
+    const pluginId = this.getPluginId("waf");
+    this.setState({
+      popup: (
+        <Rule
+          handleOk={rule => {
+            dispatch({
+              type: "waf/addRule",
+              payload: { pluginId, ...rule },
+              fetchValue: { pluginId, currentPage: selectorPage, pageSize: 12 },
+              callback: () => {
+                this.closeModal();
+              }
+            });
+          }}
+          onCancel={this.closeModal}
+        />
+      )
+    });
   };
 
   editSelector = record => {
@@ -139,20 +155,35 @@ export default class Waf extends Component {
 
   render() {
     const { popup, selectorPage, rulePage } = this.state;
-    const { waf } = this.props;
-    const { selectorList, ruleList, selectorTotal, ruleTotal } = waf;
+    const {
+      selectorList,
+      ruleList,
+      selectorTotal,
+      ruleTotal,
+      currentSelector
+    } = this.props;
     const selectColumns = [
       {
+        align: "center",
         title: "名称",
         dataIndex: "name",
         key: "name"
       },
       {
+        align: "center",
         title: "开启",
-        dataIndex: "open",
-        key: "open"
+        dataIndex: "enabled",
+        key: "enabled",
+        render: text => {
+          if (text) {
+            return <div>开启</div>;
+          } else {
+            return <div>关闭</div>;
+          }
+        }
       },
       {
+        align: "center",
         title: "操作",
         dataIndex: "operate",
         key: "operate",
@@ -160,6 +191,7 @@ export default class Waf extends Component {
           return (
             <div>
               <span
+                style={{ marginRight: 8 }}
                 className="edit"
                 onClick={() => {
                   this.editSelector(record);
@@ -183,21 +215,32 @@ export default class Waf extends Component {
 
     const rulesColumns = [
       {
+        align: "center",
         title: "规则名称",
         dataIndex: "name",
         key: "name"
       },
       {
+        align: "center",
         title: "开启",
-        dataIndex: "open",
-        key: "open"
+        dataIndex: "enabled",
+        key: "enabled",
+        render: text => {
+          if (text) {
+            return <div>开启</div>;
+          } else {
+            return <div>关闭</div>;
+          }
+        }
       },
       {
+        align: "center",
         title: "更新时间",
-        dataIndex: "time",
-        key: "time"
+        dataIndex: "dateCreated",
+        key: "dateCreated"
       },
       {
+        align: "center",
         title: "操作",
         dataIndex: "operate",
         key: "operate",
@@ -233,6 +276,13 @@ export default class Waf extends Component {
                 current: selectorPage,
                 pageSize: 12,
                 onChange: this.pageSelectorChange
+              }}
+              rowClassName={item => {
+                if (currentSelector && currentSelector.id === item.id) {
+                  return "table-selected";
+                } else {
+                  return "";
+                }
               }}
             />
           </Col>
