@@ -25,9 +25,10 @@ class AddModal extends Component {
   }
 
   handleSubmit = e => {
+    e.preventDefault();
     const { form, handleOk } = this.props;
     const { selectorConditions } = this.state;
-    e.preventDefault();
+   
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         handleOk({ ...values, sort: Number(values.sort), selectorConditions });
@@ -65,7 +66,6 @@ class AddModal extends Component {
     const { selectorConditions } = this.state;
 
     const {
-      selectorTypeEnums,
       matchModeEnums,
       operatorEnums,
       paramTypeEnums,
@@ -93,7 +93,7 @@ class AddModal extends Component {
       <Modal
         width={660}
         centered
-        title="选择器"
+        title="规则"
         visible
         okText="确定"
         cancelText="取消"
@@ -106,22 +106,6 @@ class AddModal extends Component {
               rules: [{ required: true, message: "请输入名称" }],
               initialValue: name
             })(<Input placeholder="名称" />)}
-          </FormItem>
-          <FormItem label="类型" {...formItemLayout}>
-            {getFieldDecorator("type", {
-              rules: [{ required: true, message: "请选择类型" }],
-              initialValue: ""
-            })(
-              <Select>
-                {selectorTypeEnums.map(item => {
-                  return (
-                    <Option key={item.code} value={item.code}>
-                      {item.name}
-                    </Option>
-                  );
-                })}
-              </Select>
-            )}
           </FormItem>
           <FormItem label="匹配方式" {...formItemLayout}>
             {getFieldDecorator("matchMode", {

@@ -4,7 +4,10 @@ import {
   getAllRules,
   addSelector,
   findSelector,
-  getAllPlugins
+  getAllPlugins,
+  deleteSelector,
+  updateSelector,
+  addRule
 } from "../services/api";
 
 export default {
@@ -104,6 +107,18 @@ export default {
       }
     },
 
+    *addRule(params, { call, put }) {
+      const { payload, callback, fetchValue } = params;
+      const json = yield call(addRule, payload);
+      if (json.code === 200) {
+        message.success("添加成功");
+        callback();
+        yield put({ type: "reloadRule", fetchValue });
+      } else {
+        message.warn(json.message);
+      }
+    },
+    
     *fetchSeItem(params, { call }) {
       const { payload, callback } = params;
       const json = yield call(findSelector, payload);
@@ -112,13 +127,45 @@ export default {
         callback(selector);
       }
     },
+    *deleteSelector(params, { call, put }) {
+      const { payload, fetchValue } = params;
+      const { list } = payload;
+      const json = yield call(deleteSelector, { list });
+      if (json.code === 200) {
+        message.success("删除成功");
+        yield put({ type: "reload", fetchValue });
+      }else{
+        message.warn(json.message);
+      }
+    },
+    *updateSelector(params, { call, put }) {
+      const { payload, callback, fetchValue } = params;
+      const json = yield call(updateSelector, payload);
+      if (json.code === 200) {
+        message.success("修改成功");
+        callback();
+        yield put({ type: "reload", fetchValue });
+      }else{
+        message.warn(json.message);
+      }
+    },
+    
 
     *reload(params, { put }) {
       const { fetchValue } = params;
       const { pluginId, currentPage, pageSize } = fetchValue;
       const payload = { pluginId, currentPage, pageSize };
       yield put({ type: "fetchSelector", payload });
+    },
+
+    *reloadRule(params, { put }) {
+      const { fetchValue } = params;
+      const { selectorId, currentPage, pageSize } = fetchValue;
+      const payload = { selectorId, currentPage, pageSize };
+      yield put({ type: "fetchRule", payload });
     }
+
+    
   },
 
   reducers: {

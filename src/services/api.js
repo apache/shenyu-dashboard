@@ -158,11 +158,9 @@ export async function addSelector(params) {
 }
 /* 删除选择器 */
 export async function deleteSelector(params) {
-  return request(`${baseUrl}/batch`, {
-    method: `POST`,
-    body: {
-      ...params
-    }
+  return request(`${baseUrl}/selector/batch`, {
+    method: `DELETE`,
+    body: [...params.list],
   });
 }
 /* 修改选择器 */
@@ -190,6 +188,15 @@ export async function findSelector(params) {
 export async function getAllRules(params) {
   return request(`${baseUrl}/rule?${stringify(params)}`, {
     method: `GET`
+  });
+}
+
+export async function addRule(params) {
+  return request(`${baseUrl}/rule`, {
+    method: `POST`,
+    body: {
+      ...params
+    }
   });
 }
 

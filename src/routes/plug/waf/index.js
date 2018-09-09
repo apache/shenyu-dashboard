@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import { Table, Row, Col, Button } from "antd";
+import { Table, Row, Col, Button, message } from "antd";
 import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
 
 @connect(({ waf, global, loading }) => ({
+  ...global,
   ...waf,
-  platform: global.platform,
   loading: loading.effects["global/fetchPlatform"]
 }))
 export default class Waf extends Component {
@@ -28,6 +28,19 @@ export default class Waf extends Component {
     dispatch({
       type: "waf/fetchSelector",
       payload: {
+        currentPage: page,
+        pageSize: 12
+      }
+    });
+  };
+
+  getAllRules = page => {
+    const { dispatch, currentSelector } = this.props;
+    const selectorId = currentSelector ? currentSelector.id : "";
+    dispatch({
+      type: "waf/fetchRule",
+      payload: {
+        selectorId,
         currentPage: page,
         pageSize: 12
       }
@@ -75,36 +88,46 @@ export default class Waf extends Component {
   };
 
   addRule = () => {
-    const { selectorPage } = this.state;
-    const { dispatch } = this.props;
-    const pluginId = this.getPluginId("waf");
-    this.setState({
-      popup: (
-        <Rule
-          handleOk={rule => {
-            dispatch({
-              type: "waf/addRule",
-              payload: { pluginId, ...rule },
-              fetchValue: { pluginId, currentPage: selectorPage, pageSize: 12 },
-              callback: () => {
-                this.closeModal();
-              }
-            });
-          }}
-          onCancel={this.closeModal}
-        />
-      )
-    });
+    const { rulePage } = this.state;
+    const { dispatch, currentSelector } = this.props;
+    if (currentSelector && currentSelector.id) {
+      const selectorId = currentSelector.id;
+      this.setState({
+        popup: (
+          <Rule
+            handleOk={rule => {
+              dispatch({
+                type: "waf/addRule",
+                payload: { selectorId, ...rule },
+                fetchValue: {
+                  selectorId,
+                  currentPage: rulePage,
+                  pageSize: 12
+                },
+                callback: () => {
+                  this.closeModal();
+                }
+              });
+            }}
+            onCancel={this.closeModal}
+          />
+        )
+      });
+    } else {
+      message.destroy();
+      message.warn("请先添加选择器");
+    }
   };
 
   editSelector = record => {
     const { dispatch } = this.props;
     const { currentPage } = this.state;
     const pluginId = this.getPluginId("waf");
+    const { id } = record;
     dispatch({
       type: "waf/fetchSeItem",
       payload: {
-        id: record.id
+        id
       },
       callback: selector => {
         this.setState({
@@ -112,13 +135,11 @@ export default class Waf extends Component {
             <Selector
               {...selector}
               handleOk={values => {
-                const { appKey, appSecret, enabled, id } = values;
                 dispatch({
-                  type: "waf/update",
+                  type: "waf/updateSelector",
                   payload: {
-                    appKey,
-                    appSecret,
-                    enabled,
+                    pluginId,
+                    ...values,
                     id
                   },
                   fetchValue: {
@@ -142,15 +163,50 @@ export default class Waf extends Component {
   };
 
   deleteSelector = record => {
-    console.log(record);
+    const { dispatch } = this.props;
+    const { currentPage } = this.state;
+    const pluginId = this.getPluginId("waf");
+    dispatch({
+      type: "waf/deleteSelector",
+      payload: {
+        list: [record.id]
+      },
+      fetchValue: {
+        pluginId,
+        currentPage,
+        pageSize: 12
+      }
+    });
   };
 
   pageSelectorChange = page => {
     this.setSate({ selectorPage: page });
+    this.getAllSelectors(page);
   };
 
   pageRuleChange = page => {
     this.setState({ rulePage: page });
+    this.getAllRules(page);
+  };
+
+  // 点击选择器
+  rowClick = record => {
+    const { id } = record;
+    const { dispatch } = this.props;
+    dispatch({
+      type: "waf/saveCurrentSelector",
+      payload: {
+        currentSelector: record
+      }
+    });
+    dispatch({
+      type: "waf/fetchRule",
+      payload: {
+        currentPage: 1,
+        pageSize: 12,
+        selectorId: id
+      }
+    });
   };
 
   render() {
@@ -193,7 +249,8 @@ export default class Waf extends Component {
               <span
                 style={{ marginRight: 8 }}
                 className="edit"
-                onClick={() => {
+                onClick={e => {
+                  e.stopPropagation();
                   this.editSelector(record);
                 }}
               >
@@ -201,7 +258,8 @@ export default class Waf extends Component {
               </span>
               <span
                 className="edit"
-                onClick={() => {
+                onClick={e => {
+                  e.stopPropagation();
                   this.deleteSelector(record);
                 }}
               >
@@ -267,6 +325,13 @@ export default class Waf extends Component {
             </div>
             <Table
               size="small"
+              onRow={record => {
+                return {
+                  onClick: () => {
+                    this.rowClick(record);
+                  }
+                };
+              }}
               style={{ marginTop: 30 }}
               bordered
               columns={selectColumns}
