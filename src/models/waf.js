@@ -7,7 +7,10 @@ import {
   getAllPlugins,
   deleteSelector,
   updateSelector,
-  addRule
+  addRule,
+  deleteRule,
+  findRule,
+  updateRule,
 } from "../services/api";
 
 export default {
@@ -58,14 +61,14 @@ export default {
             }
           });
 
+          yield put({
+            type: "saveCurrentSelector",
+            payload: {
+              currentSelector:
+                dataList && dataList.length > 0 ? dataList[0] : ""
+            }
+          });
           if (dataList && dataList.length > 0) {
-            yield put({
-              type: "saveCurrentSelector",
-              payload: {
-                currentSelector: dataList[0]
-              }
-            });
-
             yield put({
               type: "fetchRule",
               payload: {
@@ -118,7 +121,7 @@ export default {
         message.warn(json.message);
       }
     },
-    
+
     *fetchSeItem(params, { call }) {
       const { payload, callback } = params;
       const json = yield call(findSelector, payload);
@@ -134,7 +137,7 @@ export default {
       if (json.code === 200) {
         message.success("删除成功");
         yield put({ type: "reload", fetchValue });
-      }else{
+      } else {
         message.warn(json.message);
       }
     },
@@ -145,11 +148,40 @@ export default {
         message.success("修改成功");
         callback();
         yield put({ type: "reload", fetchValue });
-      }else{
+      } else {
         message.warn(json.message);
       }
     },
-    
+    *deleteRule(params, { call, put }) {
+      const { payload, fetchValue } = params;
+      const { list } = payload;
+      const json = yield call(deleteRule, { list });
+      if (json.code === 200) {
+        message.success("删除成功");
+        yield put({ type: "reloadRule", fetchValue });
+      } else {
+        message.warn(json.message);
+      }
+    },
+    *fetchRuleItem(params, { call }) {
+      const { payload, callback } = params;
+      const json = yield call(findRule, payload);
+      if (json.code === 200) {
+        const rule = json.data;
+        callback(rule);
+      }
+    },
+    *updateRule(params, { call, put }) {
+      const { payload, callback, fetchValue } = params;
+      const json = yield call(updateRule, payload);
+      if (json.code === 200) {
+        message.success("修改成功");
+        callback();
+        yield put({ type: "reload", fetchValue });
+      } else {
+        message.warn(json.message);
+      }
+    },
 
     *reload(params, { put }) {
       const { fetchValue } = params;
@@ -164,8 +196,6 @@ export default {
       const payload = { selectorId, currentPage, pageSize };
       yield put({ type: "fetchRule", payload });
     }
-
-    
   },
 
   reducers: {

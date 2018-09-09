@@ -54,6 +54,7 @@ export default {
           currentAuthority: ""
         }
       });
+      setAuthority("");
       reloadAuthorized();
       yield put(
         routerRedux.push({

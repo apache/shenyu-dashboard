@@ -16,7 +16,7 @@ export async function addUser(params) {
 export async function deleteUser(params) {
   return request(`${baseUrl}/dashboardUser/batch`, {
     method: `DELETE`,
-    body: [...params.list],
+    body: [...params.list]
   });
 }
 /* 修改用户 */
@@ -65,7 +65,7 @@ export async function addPlugin(params) {
 export async function deletePlugin(params) {
   return request(`${baseUrl}/plugin/batch`, {
     method: `DELETE`,
-    body: [...params.list],
+    body: [...params.list]
   });
 }
 /* 修改插件 */
@@ -112,7 +112,7 @@ export async function addAuth(params) {
 export async function deleteAuth(params) {
   return request(`${baseUrl}/appAuth/batch`, {
     method: `DELETE`,
-    body: [...params.list],
+    body: [...params.list]
   });
 }
 /* 修改认证 */
@@ -160,7 +160,7 @@ export async function addSelector(params) {
 export async function deleteSelector(params) {
   return request(`${baseUrl}/selector/batch`, {
     method: `DELETE`,
-    body: [...params.list],
+    body: [...params.list]
   });
 }
 /* 修改选择器 */
@@ -194,6 +194,27 @@ export async function getAllRules(params) {
 export async function addRule(params) {
   return request(`${baseUrl}/rule`, {
     method: `POST`,
+    body: {
+      ...params
+    }
+  });
+}
+export async function deleteRule(params) {
+  return request(`${baseUrl}/rule/batch`, {
+    method: `DELETE`,
+    body: [...params.list]
+  });
+}
+
+export async function findRule(params) {
+  return request(`${baseUrl}/rule/${params.id}`, {
+    method: `GET`
+  });
+}
+
+export async function updateRule(params) {
+  return request(`${baseUrl}/rule/${params.id}`, {
+    method: `PUT`,
     body: {
       ...params
     }

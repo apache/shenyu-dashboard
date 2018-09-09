@@ -129,18 +129,15 @@ class BasicLayout extends React.PureComponent {
     return redirect;
   };
 
-  handleMenuClick = ({ key }) => {
-    const { dispatch } = this.props;
-    
-    if (key === 'logout') {
-      dispatch({
-        type: 'login/logout',
-      });
-    }
-  };
+  handleLogout=()=>{
+    const { dispatch } =this.props;
+    dispatch({
+      type: 'login/logout'
+    })
+  }
 
   render() {
-    const { currentUser, collapsed, routerData, match, location } = this.props;
+    const { collapsed, routerData, match, location } = this.props;
     const bashRedirect = this.getBaseRedirect();
     const layout = (
       <Layout>
@@ -159,12 +156,9 @@ class BasicLayout extends React.PureComponent {
           <Header style={{ padding: 0 }}>
             <GlobalHeader
               logo={logo}
-              currentUser={currentUser}
               collapsed={collapsed}
-              onNoticeClear={this.handleNoticeClear}
               onCollapse={this.handleMenuCollapse}
-              onMenuClick={this.handleMenuClick}
-              onNoticeVisibleChange={this.handleNoticeVisibleChange}
+              onLogout={this.handleLogout}
             />
           </Header>
           <Content style={{ margin: '24px 24px 0', height: '100%' }}>

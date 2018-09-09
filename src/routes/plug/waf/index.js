@@ -121,7 +121,7 @@ export default class Waf extends Component {
 
   editSelector = record => {
     const { dispatch } = this.props;
-    const { currentPage } = this.state;
+    const { selectorPage } = this.state;
     const pluginId = this.getPluginId("waf");
     const { id } = record;
     dispatch({
@@ -144,7 +144,7 @@ export default class Waf extends Component {
                   },
                   fetchValue: {
                     pluginId,
-                    currentPage,
+                    currentPage: selectorPage,
                     pageSize: 12
                   },
                   callback: () => {
@@ -164,7 +164,7 @@ export default class Waf extends Component {
 
   deleteSelector = record => {
     const { dispatch } = this.props;
-    const { currentPage } = this.state;
+    const { selectorPage } = this.state;
     const pluginId = this.getPluginId("waf");
     dispatch({
       type: "waf/deleteSelector",
@@ -173,7 +173,7 @@ export default class Waf extends Component {
       },
       fetchValue: {
         pluginId,
-        currentPage,
+        currentPage: selectorPage,
         pageSize: 12
       }
     });
@@ -208,6 +208,66 @@ export default class Waf extends Component {
       }
     });
   };
+
+  editRule=(record)=>{
+    const { dispatch, currentSelector } = this.props;
+    const { rulePage } = this.state;
+    const selectorId = currentSelector ? currentSelector.id : "";
+    const { id } = record;
+    dispatch({
+      type: "waf/fetchRuleItem",
+      payload: {
+        id
+      },
+      callback: rule => {
+        this.setState({
+          popup: (
+            <Rule
+              {...rule}
+              handleOk={values => {
+                dispatch({
+                  type: "waf/updateRule",
+                  payload: {
+                    selectorId,
+                    ...values,
+                    id
+                  },
+                  fetchValue: {
+                    selectorId,
+                    currentPage: rulePage,
+                    pageSize: 12
+                  },
+                  callback: () => {
+                    this.closeModal();
+                  }
+                });
+              }}
+              handleCancel={() => {
+                this.closeModal();
+              }}
+            />
+          )
+        });
+      }
+    });
+  }
+  
+  deleteRule=(record)=>{
+    const { dispatch } = this.props;
+    const { rulePage } = this.state;
+    const pluginId = this.getPluginId("waf");
+    dispatch({
+      type: "waf/deleteRule",
+      payload: {
+        list: [record.id]
+      },
+      fetchValue: {
+        pluginId,
+        currentPage: rulePage,
+        pageSize: 12
+      }
+    });
+  }
 
   render() {
     const { popup, selectorPage, rulePage } = this.state;
@@ -302,11 +362,28 @@ export default class Waf extends Component {
         title: "操作",
         dataIndex: "operate",
         key: "operate",
-        render: () => {
+        render: (text, record) => {
           return (
             <div>
-              <span className="edit">修改</span>
-              <span className="edit">删除</span>
+              <span
+                className="edit"
+                style={{ marginRight: 8 }}
+                onClick={e => {
+                  e.stopPropagation();
+                  this.editRule(record);
+                }}
+              >
+                修改
+              </span>
+              <span
+                className="edit"
+                onClick={e => {
+                  e.stopPropagation();
+                  this.deleteRule(record);
+                }}
+              >
+                删除
+              </span>
             </div>
           );
         }
