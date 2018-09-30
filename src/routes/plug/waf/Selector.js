@@ -146,15 +146,15 @@ class AddModal extends Component {
                   <li>
                     <Select
                       onChange={value => {
-                        this.conditionChange(index, "operator", value);
+                        this.conditionChange(index, "paramType", value);
                       }}
-                      value={item.operator}
+                      value={item.paramType}
                       style={{ width: 110 }}
                     >
-                      {operatorEnums.map(opearte => {
+                      {paramTypeEnums.map(type => {
                         return (
-                          <Option key={opearte.name} value={opearte.name}>
-                            {opearte.name}
+                          <Option key={type.name} value={type.name}>
+                            {type.name}
                           </Option>
                         );
                       })}
@@ -176,20 +176,21 @@ class AddModal extends Component {
                   <li>
                     <Select
                       onChange={value => {
-                        this.conditionChange(index, "paramType", value);
+                        this.conditionChange(index, "operator", value);
                       }}
-                      value={item.paramType}
+                      value={item.operator}
                       style={{ width: 110 }}
                     >
-                      {paramTypeEnums.map(type => {
+                      {operatorEnums.map(opearte => {
                         return (
-                          <Option key={type.name} value={type.name}>
-                            {type.name}
+                          <Option key={opearte.name} value={opearte.name}>
+                            {opearte.name}
                           </Option>
                         );
                       })}
                     </Select>
                   </li>
+
                   <li>
                     <Input
                       onChange={e => {
