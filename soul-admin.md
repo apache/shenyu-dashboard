@@ -2183,3 +2183,20 @@ public class EnumVO implements Serializable {
 	}
 }
 ```
+## divide插件 handle字段数据结构为:{"groupKey":"pdm","commandKey":"PDM","maxConcurrentRequests":0,"errorThresholdPercentage":0,"requestVolumeThreshold":0,"sleepWindowInMilliseconds":0,"timeout":10,"loadBalance":"roundRobin","upstreamList":[{"upstreamHost":"localhost","upstreamUrl":"http://localhost:8081","timeout":1000,"retry":0,"weight":90}]}
+
+## dubbo插件 handle字段数据结构为:{"groupKey":"xiaoyu","commandKey":"xiaoyu","maxConcurrentRequests":0,"errorThresholdPercentage":0,"requestVolumeThreshold":0,"sleepWindowInMilliseconds":0,"timeout":3000,"registry":"zookeeper://localhost:2181","appName":"local","protocol":null,"port":0,"version":null,"group":null,"retries":2,"loadbalance":roundRobin}
+
+## RateLimiter插件 handle字段数据结构为:{"replenishRate":1.0,"burstCapacity":1.0,"loged":false}
+
+## waf插件 handle字段数据结构为:{"permission":"allow","statusCode":"403"}
+
+## Rewrite插件 handle字段数据结构为:{"rewriteURI":"/xxx/xxx"}
+
+## SpringCloud插件 handle字段数据结构为:{"groupKey":"xiaoyu","commandKey":"xiaoyu,"maxConcurrentRequests":0,"errorThresholdPercentage":0,"requestVolumeThreshold":0,"sleepWindowInMilliseconds":0,"timeout":1,"serviceId":"xiaoyu","path":"/xxx"}
+
+
+
+
+
+
