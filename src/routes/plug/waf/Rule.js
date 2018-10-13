@@ -13,7 +13,7 @@ class AddModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectorConditions: [
+      ruleConditions: [
         {
           paramType: "",
           operator: "",
@@ -27,43 +27,43 @@ class AddModal extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, handleOk } = this.props;
-    const { selectorConditions } = this.state;
+    const { ruleConditions } = this.state;
 
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        handleOk({ ...values, sort: Number(values.sort), selectorConditions });
+        handleOk({ ...values, sort: Number(values.sort), ruleConditions });
       }
     });
   };
 
   handleAdd = () => {
-    let { selectorConditions } = this.state;
-    selectorConditions.push({
+    let { ruleConditions } = this.state;
+    ruleConditions.push({
       paramType: "",
       operator: "",
       paramName: "",
       paramValue: ""
     });
-    this.setState({ selectorConditions });
+    this.setState({ ruleConditions });
   };
 
   handleDelete = index => {
-    let { selectorConditions } = this.state;
-    if (selectorConditions && selectorConditions.length > 0) {
-      selectorConditions.splice(index, 1);
+    let { ruleConditions } = this.state;
+    if (ruleConditions && ruleConditions.length > 0) {
+      ruleConditions.splice(index, 1);
     }
-    this.setState({ selectorConditions });
+    this.setState({ ruleConditions });
   };
 
   conditionChange = (index, name, value) => {
-    let { selectorConditions } = this.state;
-    selectorConditions[index][name] = value;
-    this.setState({ selectorConditions });
+    let { ruleConditions } = this.state;
+    ruleConditions[index][name] = value;
+    this.setState({ ruleConditions });
   };
 
   render() {
     let { onCancel, form, name = "", platform } = this.props;
-    const { selectorConditions } = this.state;
+    const { ruleConditions } = this.state;
 
     let { matchModeEnums, operatorEnums, paramTypeEnums, wafEnums } = platform;
 
@@ -132,21 +132,21 @@ class AddModal extends Component {
           </FormItem>
           <div className={styles.condition}>
             <h3>条件</h3>
-            {selectorConditions.map((item, index) => {
+            {ruleConditions.map((item, index) => {
               return (
                 <ul key={index}>
                   <li>
                     <Select
                       onChange={value => {
-                        this.conditionChange(index, "operator", value);
+                        this.conditionChange(index, "paramType", value);
                       }}
-                      value={item.operator}
+                      value={item.paramType}
                       style={{ width: 110 }}
                     >
-                      {operatorEnums.map(opearte => {
+                      {paramTypeEnums.map(type => {
                         return (
-                          <Option key={opearte.name} value={opearte.name}>
-                            {opearte.name}
+                          <Option key={type.name} value={type.name}>
+                            {type.name}
                           </Option>
                         );
                       })}
@@ -168,20 +168,21 @@ class AddModal extends Component {
                   <li>
                     <Select
                       onChange={value => {
-                        this.conditionChange(index, "paramType", value);
+                        this.conditionChange(index, "operator", value);
                       }}
-                      value={item.paramType}
+                      value={item.operator}
                       style={{ width: 110 }}
                     >
-                      {paramTypeEnums.map(type => {
+                      {operatorEnums.map(opearte => {
                         return (
-                          <Option key={type.name} value={type.name}>
-                            {type.name}
+                          <Option key={opearte.name} value={opearte.name}>
+                            {opearte.name}
                           </Option>
                         );
                       })}
                     </Select>
                   </li>
+
                   <li>
                     <Input
                       onChange={e => {
