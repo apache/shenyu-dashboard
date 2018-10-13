@@ -5,7 +5,8 @@ export default {
 
   state: {
     collapsed: false,
-    platform: {
+    platform: {},
+    /* platform: {
       matchModeEnums: [
         {
           code: 0,
@@ -258,7 +259,7 @@ export default {
           support: true
         }
       ]
-    },
+    }, */
     plugins: []
   },
 

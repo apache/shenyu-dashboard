@@ -28,7 +28,7 @@ class AddModal extends Component {
     e.preventDefault();
     const { form, handleOk } = this.props;
     const { selectorConditions } = this.state;
-   
+
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         handleOk({ ...values, sort: Number(values.sort), selectorConditions });
@@ -65,12 +65,19 @@ class AddModal extends Component {
     let { onCancel, form, name = "", platform } = this.props;
     const { selectorConditions } = this.state;
 
-    const {
-      matchModeEnums,
-      operatorEnums,
-      paramTypeEnums,
-      wafEnums
-    } = platform;
+    let { matchModeEnums, operatorEnums, paramTypeEnums, wafEnums } = platform;
+
+    if (operatorEnums) {
+      operatorEnums = operatorEnums.filter(item => {
+        return item.support === true;
+      });
+    }
+
+    if (paramTypeEnums) {
+      paramTypeEnums = paramTypeEnums.filter(item => {
+        return item.support === true;
+      });
+    }
 
     const { getFieldDecorator } = form;
     const formItemLayout = {

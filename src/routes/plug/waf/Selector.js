@@ -64,12 +64,24 @@ class AddModal extends Component {
     let { onCancel, form, name = "", platform } = this.props;
     const { selectorConditions } = this.state;
 
-    const {
+    let {
       selectorTypeEnums,
       matchModeEnums,
       operatorEnums,
       paramTypeEnums
     } = platform;
+
+    if (operatorEnums) {
+      operatorEnums = operatorEnums.filter(item => {
+        return item.support === true;
+      });
+    }
+
+    if (paramTypeEnums) {
+      paramTypeEnums = paramTypeEnums.filter(item => {
+        return item.support === true;
+      });
+    }
 
     const { getFieldDecorator } = form;
     const formItemLayout = {
