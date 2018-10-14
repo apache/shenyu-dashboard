@@ -92,6 +92,9 @@ export const getRouterData = app => {
     '/plug/dubbo': {
       component: dynamicWrapper(app, ['dubbo'], () => import('../routes/plug/dubbo')),
     },
+    '/plug/spring': {
+      component: dynamicWrapper(app, ['spring'], () => import('../routes/plug/spring')),
+    },
     '/system/manage': {
       component: dynamicWrapper(app, ['manage'], () => import('../routes/sysytem/user')),
     },

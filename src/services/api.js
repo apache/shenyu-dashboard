@@ -1,7 +1,7 @@
 import { stringify } from "qs";
 import request from "../utils/request";
 
-const baseUrl = "http://192.168.2.187:8082";
+const baseUrl = "http://47.93.205.234:8082";
 
 /* 添加用户 */
 export async function addUser(params) {

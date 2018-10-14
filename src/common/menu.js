@@ -26,6 +26,10 @@ const menuData = [
         name: 'dubbo',
         path: 'dubbo',
       },
+      {
+        name: 'springCloud',
+        path: 'spring',
+      },
     ],
   },
   {

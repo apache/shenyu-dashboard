@@ -20,7 +20,7 @@ class AddModal extends Component {
   };
 
   render() {
-    let { handleCancel, form, code, enabled = true, platform } = this.props;
+    let { handleCancel, form, code, enabled = true, platform , disabled} = this.props;
 
     const { getFieldDecorator } = form;
 
@@ -52,7 +52,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: "请选择插件" }],
               initialValue: code,
             })(
-              <Select>
+              <Select disabled={disabled}>
                 {pluginEnums &&
                   pluginEnums.map(item => {
                     return (

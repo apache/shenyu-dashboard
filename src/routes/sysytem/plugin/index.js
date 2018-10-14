@@ -62,6 +62,7 @@ export default class Plugin extends Component {
         this.setState({
           popup: (
             <AddModal
+              disabled={true}
               {...plugin}
               handleOk={values => {
                 const { code, enabled, id } = values;
@@ -129,10 +130,10 @@ export default class Plugin extends Component {
     this.setState({
       popup: (
         <AddModal
+          disabled={false}
           handleOk={values => {
             const { dispatch } = this.props;
             const { code, enabled } = values;
-
             dispatch({
               type: "plugin/add",
               payload: {
@@ -163,11 +164,13 @@ export default class Plugin extends Component {
     const { currentPage, selectedRowKeys, name, popup } = this.state;
     const pluginColumns = [
       {
+        align: "center",
         title: "插件名",
         dataIndex: "name",
         key: "name"
       },
       {
+        align: "center",
         title: "状态",
         dataIndex: "enabled",
         key: "enabled",
@@ -180,16 +183,19 @@ export default class Plugin extends Component {
         }
       },
       {
+        align: "center",
         title: "创建时间",
         dataIndex: "dateCreated",
         key: "dateCreated"
       },
       {
+        align: "center",
         title: "更新时间",
         dataIndex: "dateUpdated",
         key: "dateUpdated"
       },
       {
+        align: "center",
         title: "操作",
         dataIndex: "operate",
         key: "operate",

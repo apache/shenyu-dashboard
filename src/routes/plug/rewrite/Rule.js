@@ -12,77 +12,94 @@ const { Option } = Select;
 class AddModal extends Component {
   constructor(props) {
     super(props);
-
-    const selectorConditions = props.selectorConditions || [
+    const ruleConditions = props.ruleConditions||[
       {
         paramType: "",
         operator: "",
         paramName: "",
         paramValue: ""
       }
-    ];
+    ]
     this.state = {
-      selectorConditions
+      ruleConditions
     };
   }
 
   handleSubmit = e => {
-    const { form, handleOk } = this.props;
-    const { selectorConditions } = this.state;
     e.preventDefault();
+    const { form, handleOk } = this.props;
+    const { ruleConditions } = this.state;
+
     form.validateFieldsAndScroll((err, values) => {
+      const {
+        name,
+        matchMode,
+        rewriteURI,
+        loged,
+        enabled
+      } = values;
+      const handle = {
+        rewriteURI,
+      };
       if (!err) {
-        handleOk({ ...values, sort: Number(values.sort), selectorConditions });
+        handleOk({
+          name,
+          matchMode,
+          handle: JSON.stringify(handle),
+          loged,
+          enabled,
+          sort: Number(values.sort),
+          ruleConditions
+        });
       }
     });
   };
 
   handleAdd = () => {
-    let { selectorConditions } = this.state;
-    selectorConditions.push({
+    let { ruleConditions } = this.state;
+    ruleConditions.push({
       paramType: "",
       operator: "",
       paramName: "",
       paramValue: ""
     });
-    this.setState({ selectorConditions });
+    this.setState({ ruleConditions });
   };
 
   handleDelete = index => {
-    let { selectorConditions } = this.state;
-    if (selectorConditions && selectorConditions.length > 0) {
-      selectorConditions.splice(index, 1);
+    let { ruleConditions } = this.state;
+    if (ruleConditions && ruleConditions.length > 0) {
+      ruleConditions.splice(index, 1);
     }
-    this.setState({ selectorConditions });
+    this.setState({ ruleConditions });
   };
 
   conditionChange = (index, name, value) => {
-    let { selectorConditions } = this.state;
-    selectorConditions[index][name] = value;
-    this.setState({ selectorConditions });
+    let { ruleConditions } = this.state;
+    ruleConditions[index][name] = value;
+    this.setState({ ruleConditions });
   };
 
   render() {
     let {
       onCancel,
       form,
-      name = "",
       platform,
-      type = "",
+      name = "",
       matchMode = "",
-      continued = true,
+      handle,
       loged = true,
       enabled = true,
-      sort
+      sort = ""
     } = this.props;
-    const { selectorConditions } = this.state;
+    const { ruleConditions } = this.state;
+    let rewriteURI = "";
+    if (handle) {
+      const myHandle = JSON.parse(handle);
+      rewriteURI = myHandle.rewriteURI;
+    }
 
-    let {
-      selectorTypeEnums,
-      matchModeEnums,
-      operatorEnums,
-      paramTypeEnums
-    } = platform;
+    let { matchModeEnums, operatorEnums, paramTypeEnums } = platform;
 
     if (operatorEnums) {
       operatorEnums = operatorEnums.filter(item => {
@@ -117,7 +134,7 @@ class AddModal extends Component {
       <Modal
         width={660}
         centered
-        title="选择器"
+        title="规则"
         visible
         okText="确定"
         cancelText="取消"
@@ -130,22 +147,6 @@ class AddModal extends Component {
               rules: [{ required: true, message: "请输入名称" }],
               initialValue: name
             })(<Input placeholder="名称" />)}
-          </FormItem>
-          <FormItem label="类型" {...formItemLayout}>
-            {getFieldDecorator("type", {
-              rules: [{ required: true, message: "请选择类型" }],
-              initialValue: type
-            })(
-              <Select>
-                {selectorTypeEnums.map(item => {
-                  return (
-                    <Option key={item.code} value={item.code}>
-                      {item.name}
-                    </Option>
-                  );
-                })}
-              </Select>
-            )}
           </FormItem>
           <FormItem label="匹配方式" {...formItemLayout}>
             {getFieldDecorator("matchMode", {
@@ -165,7 +166,7 @@ class AddModal extends Component {
           </FormItem>
           <div className={styles.condition}>
             <h3>条件</h3>
-            {selectorConditions.map((item, index) => {
+            {ruleConditions.map((item, index) => {
               return (
                 <ul key={index}>
                   <li>
@@ -176,10 +177,10 @@ class AddModal extends Component {
                       value={item.paramType}
                       style={{ width: 110 }}
                     >
-                      {paramTypeEnums.map(typeItem => {
+                      {paramTypeEnums.map(type => {
                         return (
-                          <Option key={typeItem.name} value={typeItem.name}>
-                            {typeItem.name}
+                          <Option key={type.name} value={type.name}>
+                            {type.name}
                           </Option>
                         );
                       })}
@@ -250,14 +251,12 @@ class AddModal extends Component {
               新增
             </Button>
           </div>
+          <FormItem label="处理" {...formItemLayout}>
+            {getFieldDecorator("rewriteURI", {
+              initialValue: rewriteURI
+            })(<Input placeholder="请输入rewriteURI" />)}
+          </FormItem>
           <div className={styles.layout}>
-            <FormItem {...formCheckLayout} label="继续后续选择器">
-              {getFieldDecorator("continued", {
-                initialValue: continued,
-                valuePropName: "checked",
-                rules: [{ required: true }]
-              })(<Switch />)}
-            </FormItem>
             <FormItem
               style={{ margin: "0 30px" }}
               {...formCheckLayout}

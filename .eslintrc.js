@@ -10,6 +10,9 @@ module.exports = {
     jasmine: true,
   },
   rules: {
+    'react/jsx-boolean-value': [0],
+    'one-var': [0],
+    'prefer-destructuring': [0],
     'react/destructuring-assignment':[0],
     'comma-dangle': [0],
     'react/no-array-index-key':[0],

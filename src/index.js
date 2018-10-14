@@ -7,7 +7,7 @@ import createHistory from 'history/createHashHistory';
 import createLoading from 'dva-loading';
 
 import 'moment/locale/zh-cn';
-import './rollbar';
+// import './rollbar';
 import './index.less';
 
 const middlewares = [];

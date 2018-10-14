@@ -166,11 +166,13 @@ export default class Manage extends Component {
     const { currentPage, selectedRowKeys, userName, popup } = this.state;
     const userColumns = [
       {
+        align: "center",
         title: "用户名",
         dataIndex: "userName",
         key: "userName"
       },
       {
+        align: "center",
         title: "状态",
         dataIndex: "enabled",
         key: "enabled",
@@ -183,16 +185,19 @@ export default class Manage extends Component {
         }
       },
       {
+        align: "center",
         title: "创建时间",
         dataIndex: "dateCreated",
         key: "dateCreated"
       },
       {
+        align: "center",
         title: "更新时间",
         dataIndex: "dateUpdated",
         key: "dateUpdated"
       },
       {
+        align: "center",
         title: "操作",
         dataIndex: "operate",
         key: "operate",

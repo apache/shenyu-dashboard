@@ -70,7 +70,7 @@ export default class Waf extends Component {
     this.setState({
       popup: (
         <Selector
-          pluginId={this.getPluginId()}
+          pluginId={pluginId}
           handleOk={selector => {
             dispatch({
               type: "waf/addSelector",
@@ -152,9 +152,7 @@ export default class Waf extends Component {
                   }
                 });
               }}
-              handleCancel={() => {
-                this.closeModal();
-              }}
+              onCancel={this.closeModal}
             />
           )
         });
@@ -209,7 +207,7 @@ export default class Waf extends Component {
     });
   };
 
-  editRule=(record)=>{
+  editRule = record => {
     const { dispatch, currentSelector } = this.props;
     const { rulePage } = this.state;
     const selectorId = currentSelector ? currentSelector.id : "";
@@ -242,32 +240,29 @@ export default class Waf extends Component {
                   }
                 });
               }}
-              handleCancel={() => {
-                this.closeModal();
-              }}
+              onCancel={this.closeModal}
             />
           )
         });
       }
     });
-  }
-  
-  deleteRule=(record)=>{
-    const { dispatch } = this.props;
+  };
+
+  deleteRule = record => {
+    const { dispatch, currentSelector } = this.props;
     const { rulePage } = this.state;
-    const pluginId = this.getPluginId("waf");
     dispatch({
       type: "waf/deleteRule",
       payload: {
         list: [record.id]
       },
       fetchValue: {
-        pluginId,
+        selectorId: currentSelector.id,
         currentPage: rulePage,
         pageSize: 12
       }
     });
-  }
+  };
 
   render() {
     const { popup, selectorPage, rulePage } = this.state;
@@ -440,7 +435,7 @@ export default class Waf extends Component {
               style={{ marginTop: 30 }}
               bordered
               columns={rulesColumns}
-              expandedRowRender={() => <p>111</p>}
+              expandedRowRender={record => <p>{record.handle}</p>}
               dataSource={ruleList}
               pagination={{
                 total: ruleTotal,

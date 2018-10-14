@@ -12,36 +12,80 @@ const { Option } = Select;
 class AddModal extends Component {
   constructor(props) {
     super(props);
-    const ruleConditions = props.ruleConditions||[
+    const ruleConditions = props.ruleConditions || [
       {
         paramType: "",
         operator: "",
         paramName: "",
         paramValue: ""
       }
-    ]
+    ];
+
+    let requestVolumeThreshold = "",
+      errorThresholdPercentage = "",
+      maxConcurrentRequests = "",
+      sleepWindowInMilliseconds = "",
+      groupKey = "",
+      commandKey = "",
+      timeout = "",
+      serviceId = "",
+      path = "";
+
+    if (props.handle) {
+      const myHandle = JSON.parse(props.handle);
+      requestVolumeThreshold = myHandle.requestVolumeThreshold;
+      errorThresholdPercentage = myHandle.errorThresholdPercentage;
+      maxConcurrentRequests = myHandle.maxConcurrentRequests;
+      sleepWindowInMilliseconds = myHandle.sleepWindowInMilliseconds;
+      groupKey = myHandle.groupKey;
+      commandKey = myHandle.commandKey;
+      timeout = myHandle.timeout;
+      serviceId = myHandle.serviceId;
+      path = myHandle.path;
+    }
+
     this.state = {
-      ruleConditions
+      ruleConditions,
+      requestVolumeThreshold,
+      errorThresholdPercentage,
+      maxConcurrentRequests,
+      sleepWindowInMilliseconds,
+      groupKey,
+      commandKey,
+      timeout,
+      serviceId,
+      path
     };
   }
 
   handleSubmit = e => {
     e.preventDefault();
     const { form, handleOk } = this.props;
-    const { ruleConditions } = this.state;
+    const {
+      ruleConditions,
+      requestVolumeThreshold,
+      errorThresholdPercentage,
+      maxConcurrentRequests,
+      sleepWindowInMilliseconds,
+      groupKey,
+      commandKey,
+      timeout,
+      serviceId,
+      path
+    } = this.state;
 
     form.validateFieldsAndScroll((err, values) => {
-      const {
-        name,
-        matchMode,
-        permission,
-        statusCode,
-        loged,
-        enabled
-      } = values;
+      const { name, matchMode, loged, enabled } = values;
       const handle = {
-        permission,
-        statusCode
+        requestVolumeThreshold,
+        errorThresholdPercentage,
+        maxConcurrentRequests,
+        sleepWindowInMilliseconds,
+        groupKey,
+        commandKey,
+        timeout,
+        serviceId,
+        path
       };
       if (!err) {
         handleOk({
@@ -82,6 +126,10 @@ class AddModal extends Component {
     this.setState({ ruleConditions });
   };
 
+  onHandleChange = (key, value) => {
+    this.setState({ [key]: value });
+  };
+
   render() {
     let {
       onCancel,
@@ -89,21 +137,24 @@ class AddModal extends Component {
       platform,
       name = "",
       matchMode = "",
-      handle,
       loged = true,
       enabled = true,
       sort = ""
     } = this.props;
-    const { ruleConditions } = this.state;
-    let permission = "";
-    let statusCode = "";
-    if (handle) {
-      const myHandle = JSON.parse(handle);
-      permission = myHandle.permission;
-      statusCode = myHandle.statusCode;
-    }
+    const {
+      ruleConditions,
+      requestVolumeThreshold,
+      errorThresholdPercentage,
+      maxConcurrentRequests,
+      sleepWindowInMilliseconds,
+      groupKey,
+      commandKey,
+      timeout,
+      serviceId,
+      path
+    } = this.state;
 
-    let { matchModeEnums, operatorEnums, paramTypeEnums, wafEnums } = platform;
+    let { matchModeEnums, operatorEnums, paramTypeEnums } = platform;
 
     if (operatorEnums) {
       operatorEnums = operatorEnums.filter(item => {
@@ -169,7 +220,7 @@ class AddModal extends Component {
             )}
           </FormItem>
           <div className={styles.condition}>
-            <h3>条件</h3>
+            <h3>条件: </h3>
             {ruleConditions.map((item, index) => {
               return (
                 <ul key={index}>
@@ -255,26 +306,120 @@ class AddModal extends Component {
               新增
             </Button>
           </div>
-          <FormItem label="处理" {...formItemLayout}>
-            {getFieldDecorator("permission", {
-              initialValue: permission
-            })(
-              <Select>
-                {wafEnums.map(item => {
-                  return (
-                    <Option key={item.name} value={item.name}>
-                      {item.name}
-                    </Option>
-                  );
-                })}
-              </Select>
-            )}
-          </FormItem>
-          <FormItem label="状态码" {...formItemLayout}>
-            {getFieldDecorator("statusCode", {
-              initialValue: statusCode
-            })(<Input placeholder="请输入状态码" />)}
-          </FormItem>
+          <div className={styles.handleWrap}>
+            <h4>处理: </h4>
+            <ul>
+              <li>
+                <Input
+                  addonBefore={<div>re请求数</div>}
+                  value={requestVolumeThreshold}
+                  style={{ width: 250 }}
+                  placeholder="requestVolumeThreshold"
+                  onChange={e => {
+                    const value = e.target.value;
+                    this.onHandleChange("requestVolumeThreshold", value);
+                  }}
+                />
+              </li>
+              <li>
+                <Input
+                  addonBefore={<div>错误阀值</div>}
+                  value={errorThresholdPercentage}
+                  style={{ width: 250 }}
+                  placeholder="errorThresholdPercentage"
+                  onChange={e => {
+                    const value = e.target.value;
+                    this.onHandleChange("errorThresholdPercentage", value);
+                  }}
+                />
+              </li>
+              <li>
+                <Input
+                  addonBefore={<div>最大请求数</div>}
+                  value={maxConcurrentRequests}
+                  style={{ width: 250 }}
+                  placeholder="maxConcurrentRequests"
+                  onChange={e => {
+                    const value = e.target.value;
+                    this.onHandleChange("maxConcurrentRequests", value);
+                  }}
+                />
+              </li>
+              <li>
+                <Input
+                  addonBefore={<div>沉睡时长</div>}
+                  value={sleepWindowInMilliseconds}
+                  style={{ width: 250 }}
+                  placeholder="sleepWindowInMilliseconds"
+                  onChange={e => {
+                    const value = e.target.value;
+                    this.onHandleChange("sleepWindowInMilliseconds", value);
+                  }}
+                />
+              </li>
+              <li>
+                <Input
+                  addonBefore={<div>groupKey</div>}
+                  value={groupKey}
+                  style={{ width: 250 }}
+                  placeholder="groupKey"
+                  onChange={e => {
+                    const value = e.target.value;
+                    this.onHandleChange("groupKey", value);
+                  }}
+                />
+              </li>
+              <li>
+                <Input
+                  addonBefore={<div>commandKey</div>}
+                  value={commandKey}
+                  style={{ width: 250 }}
+                  placeholder="commandKey"
+                  onChange={e => {
+                    const value = e.target.value;
+                    this.onHandleChange("commandKey", value);
+                  }}
+                />
+              </li>
+
+              <li>
+                <Input
+                  addonBefore={<div>超时时间</div>}
+                  value={timeout}
+                  style={{ width: 250 }}
+                  placeholder="timeout"
+                  onChange={e => {
+                    const value = e.target.value;
+                    this.onHandleChange("timeout", value);
+                  }}
+                />
+              </li>
+              <li>
+                <Input
+                  addonBefore={<div>serviceId</div>}
+                  value={serviceId}
+                  style={{ width: 250 }}
+                  placeholder="serviceId"
+                  onChange={e => {
+                    const value = e.target.value;
+                    this.onHandleChange("serviceId", value);
+                  }}
+                />
+              </li>
+              <li>
+                <Input
+                  addonBefore={<div>重试次数</div>}
+                  value={path}
+                  style={{ width: 250 }}
+                  placeholder="path"
+                  onChange={e => {
+                    const value = e.target.value;
+                    this.onHandleChange("path", value);
+                  }}
+                />
+              </li>
+            </ul>
+          </div>
           <div className={styles.layout}>
             <FormItem
               style={{ margin: "0 30px" }}

@@ -165,17 +165,20 @@ export default class Auth extends Component {
     const { currentPage, selectedRowKeys, appKey, popup } = this.state;
     const authColumns = [
       {
+        align: "center",
         title: "appKey",
         dataIndex: "appKey",
         key: "appKey"
       },
       {
+        align: "center",
         title: "appSecret",
         dataIndex: "appSecret",
         key: "appSecret"
       },
       
       {
+        align: "center",
         title: "状态",
         dataIndex: "enabled",
         key: "enabled",
@@ -188,16 +191,19 @@ export default class Auth extends Component {
         }
       },
       {
+        align: "center",
         title: "创建时间",
         dataIndex: "dateCreated",
         key: "dateCreated"
       },
       {
+        align: "center",
         title: "更新时间",
         dataIndex: "dateUpdated",
         key: "dateUpdated"
       },
       {
+        align: "center",
         title: "操作",
         dataIndex: "operate",
         key: "operate",

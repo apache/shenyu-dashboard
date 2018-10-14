@@ -1,4 +1,3 @@
-
 import { message } from "antd";
 import {
   getAllSelectors,
@@ -15,7 +14,7 @@ import {
 } from "../services/api";
 
 export default {
-  namespace: "rewrite",
+  namespace: "spring",
 
   state: {
     selectorList: [],
@@ -41,7 +40,7 @@ export default {
           }
         });
         const plugin = plugins.filter(item => {
-          return item.name === "rewrite";
+          return item.name === "springCloud";
         });
         let pluginId = "";
         if (plugin && plugin.length > 0) {
@@ -230,4 +229,6 @@ export default {
     }
   }
 };
+
+
 

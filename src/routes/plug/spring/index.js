@@ -4,12 +4,12 @@ import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
 
-@connect(({ rewrite, global, loading }) => ({
+@connect(({ spring, global, loading }) => ({
   ...global,
-  ...rewrite,
+  ...spring,
   loading: loading.effects["global/fetchPlatform"]
 }))
-export default class Rewrite extends Component {
+export default class Spring extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -26,7 +26,7 @@ export default class Rewrite extends Component {
   getAllSelectors = page => {
     const { dispatch } = this.props;
     dispatch({
-      type: "rewrite/fetchSelector",
+      type: "spring/fetchSelector",
       payload: {
         currentPage: page,
         pageSize: 12
@@ -38,7 +38,7 @@ export default class Rewrite extends Component {
     const { dispatch, currentSelector } = this.props;
     const selectorId = currentSelector ? currentSelector.id : "";
     dispatch({
-      type: "rewrite/fetchRule",
+      type: "spring/fetchRule",
       payload: {
         selectorId,
         currentPage: page,
@@ -66,14 +66,14 @@ export default class Rewrite extends Component {
   addSelector = () => {
     const { selectorPage } = this.state;
     const { dispatch } = this.props;
-    const pluginId = this.getPluginId("rewrite");
+    const pluginId = this.getPluginId("springCloud");
     this.setState({
       popup: (
         <Selector
           pluginId={pluginId}
           handleOk={selector => {
             dispatch({
-              type: "rewrite/addSelector",
+              type: "spring/addSelector",
               payload: { pluginId, ...selector },
               fetchValue: { pluginId, currentPage: selectorPage, pageSize: 12 },
               callback: () => {
@@ -97,7 +97,7 @@ export default class Rewrite extends Component {
           <Rule
             handleOk={rule => {
               dispatch({
-                type: "rewrite/addRule",
+                type: "spring/addRule",
                 payload: { selectorId, ...rule },
                 fetchValue: {
                   selectorId,
@@ -122,10 +122,10 @@ export default class Rewrite extends Component {
   editSelector = record => {
     const { dispatch } = this.props;
     const { selectorPage } = this.state;
-    const pluginId = this.getPluginId("rewrite");
+    const pluginId = this.getPluginId("springCloud");
     const { id } = record;
     dispatch({
-      type: "rewrite/fetchSeItem",
+      type: "spring/fetchSeItem",
       payload: {
         id
       },
@@ -136,7 +136,7 @@ export default class Rewrite extends Component {
               {...selector}
               handleOk={values => {
                 dispatch({
-                  type: "rewrite/updateSelector",
+                  type: "spring/updateSelector",
                   payload: {
                     pluginId,
                     ...values,
@@ -163,9 +163,9 @@ export default class Rewrite extends Component {
   deleteSelector = record => {
     const { dispatch } = this.props;
     const { selectorPage } = this.state;
-    const pluginId = this.getPluginId("rewrite");
+    const pluginId = this.getPluginId("springCloud");
     dispatch({
-      type: "rewrite/deleteSelector",
+      type: "spring/deleteSelector",
       payload: {
         list: [record.id]
       },
@@ -192,13 +192,13 @@ export default class Rewrite extends Component {
     const { id } = record;
     const { dispatch } = this.props;
     dispatch({
-      type: "rewrite/saveCurrentSelector",
+      type: "spring/saveCurrentSelector",
       payload: {
         currentSelector: record
       }
     });
     dispatch({
-      type: "rewrite/fetchRule",
+      type: "spring/fetchRule",
       payload: {
         currentPage: 1,
         pageSize: 12,
@@ -213,7 +213,7 @@ export default class Rewrite extends Component {
     const selectorId = currentSelector ? currentSelector.id : "";
     const { id } = record;
     dispatch({
-      type: "rewrite/fetchRuleItem",
+      type: "spring/fetchRuleItem",
       payload: {
         id
       },
@@ -224,7 +224,7 @@ export default class Rewrite extends Component {
               {...rule}
               handleOk={values => {
                 dispatch({
-                  type: "rewrite/updateRule",
+                  type: "spring/updateRule",
                   payload: {
                     selectorId,
                     ...values,
@@ -252,7 +252,7 @@ export default class Rewrite extends Component {
     const { dispatch, currentSelector } = this.props;
     const { rulePage } = this.state;
     dispatch({
-      type: "rewrite/deleteRule",
+      type: "spring/deleteRule",
       payload: {
         list: [record.id]
       },
