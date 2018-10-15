@@ -2197,6 +2197,12 @@ public class EnumVO implements Serializable {
 
 
 
-
-
+Hystrix：参数详解：
+groupKey：分组Key  
+commandKey：命令key
+maxConcurrentRequests：最大并发量
+errorThresholdPercentage:错误百分比阀值
+requestVolumeThreshold：跳闸最小请求数量
+sleepWindowInMilliseconds :跳闸休眠时间（单位毫秒）
+timeout:超时时间
 
