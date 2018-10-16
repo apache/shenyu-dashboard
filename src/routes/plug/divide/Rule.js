@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Modal, Form, Select, Input, Switch, Button } from "antd";
 import { connect } from "dva";
-import styles from "./selector.less";
+import classnames from "classnames";
+import styles from "../index.less";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -145,10 +146,15 @@ class AddModal extends Component {
       groupKey,
       commandKey,
       loadbalance,
-      timeout,
+      timeout
     } = this.state;
 
-    let { matchModeEnums, operatorEnums, paramTypeEnums } = platform;
+    let {
+      matchModeEnums,
+      operatorEnums,
+      paramTypeEnums,
+      loadBalanceEnums
+    } = platform;
 
     if (operatorEnums) {
       operatorEnums = operatorEnums.filter(item => {
@@ -161,14 +167,19 @@ class AddModal extends Component {
         return item.support === true;
       });
     }
+    if (loadBalanceEnums) {
+      loadBalanceEnums = loadBalanceEnums.filter(item => {
+        return item.support === true;
+      });
+    }
 
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 4 }
+        sm: { span: 3 }
       },
       wrapperCol: {
-        sm: { span: 20 }
+        sm: { span: 21 }
       }
     };
     const formCheckLayout = {
@@ -181,7 +192,7 @@ class AddModal extends Component {
     };
     return (
       <Modal
-        width={660}
+        width={800}
         centered
         title="规则"
         visible
@@ -213,101 +224,108 @@ class AddModal extends Component {
               </Select>
             )}
           </FormItem>
-          <div className={styles.condition}>
-            <h3>条件: </h3>
-            {ruleConditions.map((item, index) => {
-              return (
-                <ul key={index}>
-                  <li>
-                    <Select
-                      onChange={value => {
-                        this.conditionChange(index, "paramType", value);
-                      }}
-                      value={item.paramType}
-                      style={{ width: 110 }}
-                    >
-                      {paramTypeEnums.map(type => {
-                        return (
-                          <Option key={type.name} value={type.name}>
-                            {type.name}
-                          </Option>
-                        );
-                      })}
-                    </Select>
-                  </li>
-                  <li>
-                    <Input
-                      onChange={e => {
-                        this.conditionChange(
-                          index,
-                          "paramName",
-                          e.target.value
-                        );
-                      }}
-                      value={item.paramName}
-                      style={{ width: 110 }}
-                    />
-                  </li>
-                  <li>
-                    <Select
-                      onChange={value => {
-                        this.conditionChange(index, "operator", value);
-                      }}
-                      value={item.operator}
-                      style={{ width: 110 }}
-                    >
-                      {operatorEnums.map(opearte => {
-                        return (
-                          <Option key={opearte.name} value={opearte.name}>
-                            {opearte.name}
-                          </Option>
-                        );
-                      })}
-                    </Select>
-                  </li>
+          <div className={styles.ruleConditions}>
+            <h3 className={styles.header}>条件:</h3>
+            <div className={styles.content}>
+              {ruleConditions.map((item, index) => {
+                return (
+                  <ul key={index}>
+                    <li>
+                      <Select
+                        onChange={value => {
+                          this.conditionChange(index, "paramType", value);
+                        }}
+                        value={item.paramType}
+                        style={{ width: 110 }}
+                      >
+                        {paramTypeEnums.map(type => {
+                          return (
+                            <Option key={type.name} value={type.name}>
+                              {type.name}
+                            </Option>
+                          );
+                        })}
+                      </Select>
+                    </li>
+                    <li>
+                      <Input
+                        onChange={e => {
+                          this.conditionChange(
+                            index,
+                            "paramName",
+                            e.target.value
+                          );
+                        }}
+                        value={item.paramName}
+                        style={{ width: 110 }}
+                      />
+                    </li>
+                    <li>
+                      <Select
+                        onChange={value => {
+                          this.conditionChange(index, "operator", value);
+                        }}
+                        value={item.operator}
+                        style={{ width: 110 }}
+                      >
+                        {operatorEnums.map(opearte => {
+                          return (
+                            <Option key={opearte.name} value={opearte.name}>
+                              {opearte.name}
+                            </Option>
+                          );
+                        })}
+                      </Select>
+                    </li>
 
-                  <li>
-                    <Input
-                      onChange={e => {
-                        this.conditionChange(
-                          index,
-                          "paramValue",
-                          e.target.value
-                        );
-                      }}
-                      value={item.paramValue}
-                      style={{ width: 110 }}
-                    />
-                  </li>
-                  <li>
-                    <Button
-                      type="danger"
-                      onClick={() => {
-                        this.handleDelete(index);
-                      }}
-                    >
-                      删除
-                    </Button>
-                  </li>
-                </ul>
-              );
-            })}
-            <Button
-              onClick={this.handleAdd}
-              style={{ marginLeft: 50 }}
-              type="primary"
-            >
-              新增
-            </Button>
+                    <li>
+                      <Input
+                        onChange={e => {
+                          this.conditionChange(
+                            index,
+                            "paramValue",
+                            e.target.value
+                          );
+                        }}
+                        value={item.paramValue}
+                        style={{ width: 110 }}
+                      />
+                    </li>
+                    <li>
+                      <Button
+                        type="danger"
+                        onClick={() => {
+                          this.handleDelete(index);
+                        }}
+                      >
+                        删除
+                      </Button>
+                    </li>
+                  </ul>
+                );
+              })}
+            </div>
+            <div>
+              <Button onClick={this.handleAdd} type="primary">
+                新增
+              </Button>
+            </div>
           </div>
           <div className={styles.handleWrap}>
-            <h4>处理: </h4>
-            <ul>
+            <div className={styles.header}>
+              <h3>处理: </h3>
+            </div>
+            <ul
+              className={classnames({
+                [styles.handleUl]: true,
+                [styles.springUl]: true
+              })}
+            >
               <li>
                 <Input
-                  addonBefore={<div>re请求数</div>}
+                  addonBefore={<div>跳闸最小请求数量</div>}
                   value={requestVolumeThreshold}
-                  style={{ width: 250 }}
+                  style={{ width: 320 }}
                   placeholder="requestVolumeThreshold"
                   onChange={e => {
                     const value = e.target.value;
@@ -317,9 +335,9 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>错误阀值</div>}
+                  addonBefore={<div>错误半分比阀值</div>}
                   value={errorThresholdPercentage}
-                  style={{ width: 250 }}
+                  style={{ width: 320 }}
                   placeholder="errorThresholdPercentage"
                   onChange={e => {
                     const value = e.target.value;
@@ -329,9 +347,9 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>最大请求数</div>}
+                  addonBefore={<div>最大并发量</div>}
                   value={maxConcurrentRequests}
-                  style={{ width: 250 }}
+                  style={{ width: 280 }}
                   placeholder="maxConcurrentRequests"
                   onChange={e => {
                     const value = e.target.value;
@@ -341,9 +359,9 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>沉睡时长</div>}
+                  addonBefore={<div>跳闸休眠时间(单位毫秒)</div>}
                   value={sleepWindowInMilliseconds}
-                  style={{ width: 250 }}
+                  style={{ width: 360 }}
                   placeholder="sleepWindowInMilliseconds"
                   onChange={e => {
                     const value = e.target.value;
@@ -353,9 +371,9 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>groupKey</div>}
+                  addonBefore={<div>分组Key</div>}
                   value={groupKey}
-                  style={{ width: 250 }}
+                  style={{ width: 320 }}
                   placeholder="groupKey"
                   onChange={e => {
                     const value = e.target.value;
@@ -365,9 +383,9 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>commandKey</div>}
+                  addonBefore={<div>命令Key</div>}
                   value={commandKey}
-                  style={{ width: 250 }}
+                  style={{ width: 320 }}
                   placeholder="commandKey"
                   onChange={e => {
                     const value = e.target.value;
@@ -375,19 +393,26 @@ class AddModal extends Component {
                   }}
                 />
               </li>
-              <li>
-                <Input
-                  addonBefore={<div>loadbalance</div>}
-                  value={loadbalance}
-                  style={{ width: 250 }}
-                  placeholder="loadbalance"
-                  onChange={e => {
-                    const value = e.target.value;
+              <li style={{ marginTop: 14 }} className={styles.loadbalanceLine}>
+                <div className={styles.loadText}>负载策略</div>
+                <Select
+                  onChange={value => {
                     this.onHandleChange("loadbalance", value);
                   }}
-                />
+                  value={loadbalance}
+                  style={{ width: 160 }}
+                  placeholder="loadbalance"
+                >
+                  {loadBalanceEnums.map(item => {
+                    return (
+                      <Option key={item.name} value={item.name}>
+                        {item.name}
+                      </Option>
+                    );
+                  })}
+                </Select>
               </li>
-              <li>
+              <li style={{ marginTop: 14 }}>
                 <Input
                   addonBefore={<div>超时时间</div>}
                   value={timeout}

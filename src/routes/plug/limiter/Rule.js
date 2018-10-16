@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Modal, Form, Select, Input, Switch, Button } from "antd";
 import { connect } from "dva";
-import styles from "./selector.less";
+import styles from "../index.less";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -119,10 +119,10 @@ class AddModal extends Component {
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 4 }
+        sm: { span: 3 }
       },
       wrapperCol: {
-        sm: { span: 20 }
+        sm: { span: 21 }
       }
     };
     const formCheckLayout = {
@@ -135,7 +135,7 @@ class AddModal extends Component {
     };
     return (
       <Modal
-        width={660}
+        width={800}
         centered
         title="规则"
         visible
@@ -167,96 +167,98 @@ class AddModal extends Component {
               </Select>
             )}
           </FormItem>
-          <div className={styles.condition}>
-            <h3>条件: </h3>
-            {ruleConditions.map((item, index) => {
-              return (
-                <ul key={index}>
-                  <li>
-                    <Select
-                      onChange={value => {
-                        this.conditionChange(index, "paramType", value);
-                      }}
-                      value={item.paramType}
-                      style={{ width: 110 }}
-                    >
-                      {paramTypeEnums.map(type => {
-                        return (
-                          <Option key={type.name} value={type.name}>
-                            {type.name}
-                          </Option>
-                        );
-                      })}
-                    </Select>
-                  </li>
-                  <li>
-                    <Input
-                      onChange={e => {
-                        this.conditionChange(
-                          index,
-                          "paramName",
-                          e.target.value
-                        );
-                      }}
-                      value={item.paramName}
-                      style={{ width: 110 }}
-                    />
-                  </li>
-                  <li>
-                    <Select
-                      onChange={value => {
-                        this.conditionChange(index, "operator", value);
-                      }}
-                      value={item.operator}
-                      style={{ width: 110 }}
-                    >
-                      {operatorEnums.map(opearte => {
-                        return (
-                          <Option key={opearte.name} value={opearte.name}>
-                            {opearte.name}
-                          </Option>
-                        );
-                      })}
-                    </Select>
-                  </li>
+          <div className={styles.ruleConditions}>
+            <h3 className={styles.header}>条件:</h3>
+            <div className={styles.content}>
+              {ruleConditions.map((item, index) => {
+                return (
+                  <ul key={index}>
+                    <li>
+                      <Select
+                        onChange={value => {
+                          this.conditionChange(index, "paramType", value);
+                        }}
+                        value={item.paramType}
+                        style={{ width: 110 }}
+                      >
+                        {paramTypeEnums.map(type => {
+                          return (
+                            <Option key={type.name} value={type.name}>
+                              {type.name}
+                            </Option>
+                          );
+                        })}
+                      </Select>
+                    </li>
+                    <li>
+                      <Input
+                        onChange={e => {
+                          this.conditionChange(
+                            index,
+                            "paramName",
+                            e.target.value
+                          );
+                        }}
+                        value={item.paramName}
+                        style={{ width: 110 }}
+                      />
+                    </li>
+                    <li>
+                      <Select
+                        onChange={value => {
+                          this.conditionChange(index, "operator", value);
+                        }}
+                        value={item.operator}
+                        style={{ width: 110 }}
+                      >
+                        {operatorEnums.map(opearte => {
+                          return (
+                            <Option key={opearte.name} value={opearte.name}>
+                              {opearte.name}
+                            </Option>
+                          );
+                        })}
+                      </Select>
+                    </li>
 
-                  <li>
-                    <Input
-                      onChange={e => {
-                        this.conditionChange(
-                          index,
-                          "paramValue",
-                          e.target.value
-                        );
-                      }}
-                      value={item.paramValue}
-                      style={{ width: 110 }}
-                    />
-                  </li>
-                  <li>
-                    <Button
-                      type="danger"
-                      onClick={() => {
-                        this.handleDelete(index);
-                      }}
-                    >
-                      删除
-                    </Button>
-                  </li>
-                </ul>
-              );
-            })}
-            <Button
-              onClick={this.handleAdd}
-              style={{ marginLeft: 50 }}
-              type="primary"
-            >
-              新增
-            </Button>
+                    <li>
+                      <Input
+                        onChange={e => {
+                          this.conditionChange(
+                            index,
+                            "paramValue",
+                            e.target.value
+                          );
+                        }}
+                        value={item.paramValue}
+                        style={{ width: 110 }}
+                      />
+                    </li>
+                    <li>
+                      <Button
+                        type="danger"
+                        onClick={() => {
+                          this.handleDelete(index);
+                        }}
+                      >
+                        删除
+                      </Button>
+                    </li>
+                  </ul>
+                );
+              })}
+            </div>
+            <div>
+              <Button onClick={this.handleAdd} type="primary">
+                新增
+              </Button>
+            </div>
           </div>
           <div className={styles.handleWrap}>
-            <h4>处理: </h4>
-            <ul>
+            <div className={styles.header}>
+              <h3>处理: </h3>
+            </div>
+            <ul className={styles.handleUl}>
               <li>
                 <Input
                   addonBefore={<div>时间间隔</div>}

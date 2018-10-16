@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Modal, Form, Select, Input, Switch, Button } from "antd";
+import { Modal, Form, Select, Input, Switch, Button, message } from "antd";
 import { connect } from "dva";
-import styles from "./selector.less";
+import styles from "../index.less";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -26,13 +26,40 @@ class AddModal extends Component {
     };
   }
 
+  checkConditions = selectorConditions => {
+    let result = true;
+    if (selectorConditions) {
+      selectorConditions.forEach((item, index) => {
+        const { paramType, operator, paramName, paramValue } = item;
+        if (!paramType || !operator || !paramName || !paramValue) {
+          message.destroy();
+          message.error(`第${index + 1}行条件不完整`);
+          result = false;
+        }
+      });
+    } else {
+      message.destroy();
+      message.error(`条件不完整`);
+      result = false;
+    }
+    return result;
+  };
+
   handleSubmit = e => {
     const { form, handleOk } = this.props;
     const { selectorConditions } = this.state;
+
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        handleOk({ ...values, sort: Number(values.sort), selectorConditions });
+        const mySubmit = this.checkConditions(selectorConditions);
+        if (mySubmit) {
+          handleOk({
+            ...values,
+            sort: Number(values.sort),
+            selectorConditions
+          });
+        }
       }
     });
   };
@@ -99,10 +126,10 @@ class AddModal extends Component {
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 4 }
+        sm: { span: 3 }
       },
       wrapperCol: {
-        sm: { span: 20 }
+        sm: { span: 21 }
       }
     };
     const formCheckLayout = {
@@ -115,7 +142,7 @@ class AddModal extends Component {
     };
     return (
       <Modal
-        width={660}
+        width={700}
         centered
         title="选择器"
         visible
@@ -164,89 +191,88 @@ class AddModal extends Component {
             )}
           </FormItem>
           <div className={styles.condition}>
-            <h3>条件</h3>
-            {selectorConditions.map((item, index) => {
-              return (
-                <ul key={index}>
-                  <li>
-                    <Select
-                      onChange={value => {
-                        this.conditionChange(index, "paramType", value);
-                      }}
-                      value={item.paramType}
-                      style={{ width: 110 }}
-                    >
-                      {paramTypeEnums.map(typeItem => {
-                        return (
-                          <Option key={typeItem.name} value={typeItem.name}>
-                            {typeItem.name}
-                          </Option>
-                        );
-                      })}
-                    </Select>
-                  </li>
-                  <li>
-                    <Input
-                      onChange={e => {
-                        this.conditionChange(
-                          index,
-                          "paramName",
-                          e.target.value
-                        );
-                      }}
-                      value={item.paramName}
-                      style={{ width: 110 }}
-                    />
-                  </li>
-                  <li>
-                    <Select
-                      onChange={value => {
-                        this.conditionChange(index, "operator", value);
-                      }}
-                      value={item.operator}
-                      style={{ width: 110 }}
-                    >
-                      {operatorEnums.map(opearte => {
-                        return (
-                          <Option key={opearte.name} value={opearte.name}>
-                            {opearte.name}
-                          </Option>
-                        );
-                      })}
-                    </Select>
-                  </li>
+            <h3 className={styles.header}>条件: </h3>
+            <div>
+              {selectorConditions.map((item, index) => {
+                return (
+                  <ul key={index}>
+                    <li>
+                      <Select
+                        onChange={value => {
+                          this.conditionChange(index, "paramType", value);
+                        }}
+                        value={item.paramType}
+                        style={{ width: 100 }}
+                      >
+                        {paramTypeEnums.map(typeItem => {
+                          return (
+                            <Option key={typeItem.name} value={typeItem.name}>
+                              {typeItem.name}
+                            </Option>
+                          );
+                        })}
+                      </Select>
+                    </li>
+                    <li>
+                      <Input
+                        onChange={e => {
+                          this.conditionChange(
+                            index,
+                            "paramName",
+                            e.target.value
+                          );
+                        }}
+                        value={item.paramName}
+                        style={{ width: 100 }}
+                      />
+                    </li>
+                    <li>
+                      <Select
+                        onChange={value => {
+                          this.conditionChange(index, "operator", value);
+                        }}
+                        value={item.operator}
+                        style={{ width: 100 }}
+                      >
+                        {operatorEnums.map(opearte => {
+                          return (
+                            <Option key={opearte.name} value={opearte.name}>
+                              {opearte.name}
+                            </Option>
+                          );
+                        })}
+                      </Select>
+                    </li>
 
-                  <li>
-                    <Input
-                      onChange={e => {
-                        this.conditionChange(
-                          index,
-                          "paramValue",
-                          e.target.value
-                        );
-                      }}
-                      value={item.paramValue}
-                      style={{ width: 110 }}
-                    />
-                  </li>
-                  <li>
-                    <Button
-                      type="danger"
-                      onClick={() => {
-                        this.handleDelete(index);
-                      }}
-                    >
-                      删除
-                    </Button>
-                  </li>
-                </ul>
-              );
-            })}
-            <Button
-              onClick={this.handleAdd}
-              style={{ marginLeft: 50 }}
-              type="primary"
-            >
+                    <li>
+                      <Input
+                        onChange={e => {
+                          this.conditionChange(
+                            index,
+                            "paramValue",
+                            e.target.value
+                          );
+                        }}
+                        value={item.paramValue}
+                        style={{ width: 100 }}
+                      />
+                    </li>
+                    <li>
+                      <Button
+                        type="danger"
+                        onClick={() => {
+                          this.handleDelete(index);
+                        }}
+                      >
+                        删除
+                      </Button>
+                    </li>
+                  </ul>
+                );
+              })}
+            </div>
+
+            <Button onClick={this.handleAdd} type="primary">
               新增
             </Button>
           </div>
