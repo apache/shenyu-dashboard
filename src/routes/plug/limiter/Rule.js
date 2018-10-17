@@ -35,6 +35,39 @@ class AddModal extends Component {
     };
   }
 
+  checkConditions = (replenishRate, burstCapacity) => {
+    let { ruleConditions } = this.state;
+    let result = true;
+    if (ruleConditions) {
+      ruleConditions.forEach((item, index) => {
+        const { paramType, operator, paramName, paramValue } = item;
+        if (!paramType || !operator || !paramName || !paramValue) {
+          message.destroy();
+          message.error(`第${index + 1}行条件不完整`);
+          result = false;
+        }
+      });
+    } else {
+      message.destroy();
+      message.error(`条件不完整`);
+      result = false;
+    }
+
+    if (!replenishRate) {
+      message.destroy();
+      message.error(`速率不能为空`);
+      result = false;
+    }
+
+    if (!burstCapacity) {
+      message.destroy();
+      message.error(`容量不能为空`);
+      result = false;
+    }
+
+    return result;
+  };
+
   handleSubmit = e => {
     e.preventDefault();
     const { form, handleOk } = this.props;
@@ -47,15 +80,18 @@ class AddModal extends Component {
         burstCapacity
       };
       if (!err) {
-        handleOk({
-          name,
-          matchMode,
-          handle: JSON.stringify(handle),
-          loged,
-          enabled,
-          sort: Number(values.sort),
-          ruleConditions
-        });
+        const submit = this.checkConditions(replenishRate, burstCapacity);
+        if (submit) {
+          handleOk({
+            name,
+            matchMode,
+            handle: JSON.stringify(handle),
+            loged,
+            enabled,
+            sort: Number(values.sort),
+            ruleConditions
+          });
+        }
       }
     });
   };
@@ -171,7 +207,9 @@ class AddModal extends Component {
             )}
           </FormItem>
           <div className={styles.ruleConditions}>
-            <h3 className={styles.header}>条件:</h3>
+            <h3 className={styles.header}>
+              <strong>*</strong>条件:
+            </h3>
             <div className={styles.content}>
               {ruleConditions.map((item, index) => {
                 return (
@@ -264,7 +302,7 @@ class AddModal extends Component {
             <ul className={styles.handleUl}>
               <li>
                 <Input
-                  addonBefore={<div>时间间隔</div>}
+                  addonBefore={<div>速率</div>}
                   value={replenishRate}
                   style={{ width: 250 }}
                   placeholder="输入replenishRate"
@@ -276,7 +314,7 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>最多次数</div>}
+                  addonBefore={<div>容量</div>}
                   value={burstCapacity}
                   style={{ width: 250 }}
                   placeholder="输入burstCapacity"

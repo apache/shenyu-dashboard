@@ -264,6 +264,17 @@ export default class Dubbo extends Component {
     });
   };
 
+  asyncClick = () => {
+    const { dispatch } = this.props;
+    const id = this.getPluginId("dubbo");
+    dispatch({
+      type: "global/asyncPlugin",
+      payload: {
+        id
+      }
+    });
+  };
+
   render() {
     const { popup, selectorPage, rulePage } = this.state;
     const {
@@ -425,7 +436,12 @@ export default class Dubbo extends Component {
           </Col>
           <Col span={16}>
             <div className="table-header">
-              <h3>选择器规则列表</h3>
+              <div style={{ display: "flex" }}>
+                <h3 style={{ marginRight: 30 }}>选择器规则列表</h3>
+                <Button icon="reload" onClick={this.asyncClick} type="primary">
+                  同步dubbo
+                </Button>
+              </div>
               <Button type="primary" onClick={this.addRule}>
                 添加规则
               </Button>

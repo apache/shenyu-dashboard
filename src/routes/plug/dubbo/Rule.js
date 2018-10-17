@@ -77,6 +77,48 @@ class AddModal extends Component {
     };
   }
 
+  checkConditions = (appName, protocol, port, registry) => {
+    let { ruleConditions } = this.state;
+    let result = true;
+    if (ruleConditions) {
+      ruleConditions.forEach((item, index) => {
+        const { paramType, operator, paramName, paramValue } = item;
+        if (!paramType || !operator || !paramName || !paramValue) {
+          message.destroy();
+          message.error(`第${index + 1}行条件不完整`);
+          result = false;
+        }
+      });
+    } else {
+      message.destroy();
+      message.error(`条件不完整`);
+      result = false;
+    }
+
+    if (!appName) {
+      message.destroy();
+      message.error(`应用名不能为空`);
+      result = false;
+    }
+    if (!protocol) {
+      message.destroy();
+      message.error(`协议不能为空`);
+      result = false;
+    }
+    if (!port) {
+      message.destroy();
+      message.error(`端口号不能为空`);
+      result = false;
+    }
+    if (!registry) {
+      message.destroy();
+      message.error(`注册地址不能为空`);
+      result = false;
+    }
+
+    return result;
+  };
+
   handleSubmit = e => {
     e.preventDefault();
     const { form, handleOk } = this.props;
@@ -119,15 +161,18 @@ class AddModal extends Component {
         retries
       };
       if (!err) {
-        handleOk({
-          name,
-          matchMode,
-          handle: JSON.stringify(handle),
-          loged,
-          enabled,
-          sort: Number(values.sort),
-          ruleConditions
-        });
+        const submit = this.checkConditions(appName, protocol, port, registry);
+        if (submit) {
+          handleOk({
+            name,
+            matchMode,
+            handle: JSON.stringify(handle),
+            loged,
+            enabled,
+            sort: Number(values.sort),
+            ruleConditions
+          });
+        }
       }
     });
   };
@@ -271,7 +316,9 @@ class AddModal extends Component {
             )}
           </FormItem>
           <div className={styles.ruleConditions}>
-            <h3 className={styles.header}>条件:</h3>
+            <h3 className={styles.header}>
+              <strong>*</strong>条件:
+            </h3>
             <div className={styles.content}>
               {ruleConditions.map((item, index) => {
                 return (
@@ -359,7 +406,7 @@ class AddModal extends Component {
           </div>
           <div className={styles.handleWrap}>
             <div className={styles.header}>
-              <h3>处理: </h3>
+              <h3>Hystrix处理: </h3>
             </div>
             <ul
               className={classnames({
@@ -439,8 +486,20 @@ class AddModal extends Component {
                   }}
                 />
               </li>
+            </ul>
+          </div>
 
-              <li style={{ marginTop: 14 }} className={styles.loadbalanceLine}>
+          <div className={styles.handleWrap}>
+            <div className={styles.header}>
+              <h3>Dubbo配置: </h3>
+            </div>
+            <ul
+              className={classnames({
+                [styles.handleUl]: true,
+                [styles.springUl]: true
+              })}
+            >
+              <li className={styles.loadbalanceLine}>
                 <div className={styles.loadText}>负载策略</div>
                 <Select
                   onChange={value => {
@@ -459,8 +518,7 @@ class AddModal extends Component {
                   })}
                 </Select>
               </li>
-
-              <li style={{ marginTop: 14 }}>
+              <li>
                 <Input
                   addonBefore={<div>应用名</div>}
                   value={appName}
@@ -472,7 +530,7 @@ class AddModal extends Component {
                   }}
                 />
               </li>
-              <li style={{ marginTop: 14 }}>
+              <li>
                 <Input
                   addonBefore={<div>协议</div>}
                   value={protocol}

@@ -1,7 +1,7 @@
 import { stringify } from "qs";
 import request from "../utils/request";
 
-const baseUrl = "http://192.168.1.118:8082";
+const baseUrl = "http://47.93.205.234:8082";
 
 /* 添加用户 */
 export async function addUser(params) {
@@ -239,5 +239,11 @@ export async function queryLogin(params) {
 export async function asyncPlugin() {
   return request(`${baseUrl}/plugin/syncPluginAll`, {
     method: `POST`
+  });
+}
+// 同步单个插件
+export async function asyncOnePlugin(params) {
+  return request(`${baseUrl}/plugin/syncPluginData/${params.id}`, {
+    method: `PUT`,
   });
 }

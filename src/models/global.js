@@ -1,4 +1,5 @@
-import { queryPlatform, getAllPlugins } from "../services/api";
+import { message } from "antd";
+import { queryPlatform, getAllPlugins, asyncOnePlugin } from "../services/api";
 
 export default {
   namespace: "global",
@@ -287,6 +288,15 @@ export default {
             dataList
           }
         });
+      }
+    },
+    *asyncPlugin(params, { call }) {
+      const { payload } = params;
+      const json = yield call(asyncOnePlugin, payload);
+      if (json.code === 200) {
+        message.success("同步成功");
+      } else {
+        message.warn(json.message);
       }
     }
   },

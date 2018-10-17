@@ -116,15 +116,18 @@ class AddModal extends Component {
         path
       };
       if (!err) {
-        handleOk({
-          name,
-          matchMode,
-          handle: JSON.stringify(handle),
-          loged,
-          enabled,
-          sort: Number(values.sort),
-          ruleConditions
-        });
+        const submit = this.checkConditions(serviceId);
+        if (submit) {
+          handleOk({
+            name,
+            matchMode,
+            handle: JSON.stringify(handle),
+            loged,
+            enabled,
+            sort: Number(values.sort),
+            ruleConditions
+          });
+        }
       }
     });
   };
@@ -251,7 +254,9 @@ class AddModal extends Component {
             )}
           </FormItem>
           <div className={styles.ruleConditions}>
-            <h3 className={styles.header}>条件:</h3>
+            <h3 className={styles.header}>
+              <strong>*</strong>条件:
+            </h3>
             <div className={styles.content}>
               {ruleConditions.map((item, index) => {
                 return (
@@ -339,7 +344,7 @@ class AddModal extends Component {
           </div>
           <div className={styles.handleWrap}>
             <div className={styles.header}>
-              <h3>处理: </h3>
+              <h3>Hystrix处理: </h3>
             </div>
             <ul
               className={classnames({
@@ -419,8 +424,24 @@ class AddModal extends Component {
                   }}
                 />
               </li>
-
-              <li style={{ marginTop: 14 }}>
+            </ul>
+          </div>
+          <div className={styles.handleWrap}>
+            <div
+              className={classnames({
+                [styles.header]: true,
+                [styles.springHeader]: true
+              })}
+            >
+              <h3>springCloud配置: </h3>
+            </div>
+            <ul
+              className={classnames({
+                [styles.handleUl]: true,
+                [styles.springUl]: true
+              })}
+            >
+              <li>
                 <Input
                   addonBefore={<div>超时时间</div>}
                   value={timeout}
@@ -432,7 +453,7 @@ class AddModal extends Component {
                   }}
                 />
               </li>
-              <li style={{ marginTop: 14 }}>
+              <li>
                 <Input
                   addonBefore={<div>路径</div>}
                   value={path}
@@ -444,7 +465,7 @@ class AddModal extends Component {
                   }}
                 />
               </li>
-              <li style={{ marginTop: 14 }}>
+              <li>
                 <Input
                   addonBefore={<div>serviceId</div>}
                   value={serviceId}

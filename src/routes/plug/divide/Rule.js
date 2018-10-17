@@ -67,6 +67,56 @@ class AddModal extends Component {
     };
   }
 
+  checkConditions = (loadbalance, timeout, upstreamList) => {
+    let { ruleConditions } = this.state;
+    let result = true;
+    if (ruleConditions) {
+      ruleConditions.forEach((item, index) => {
+        const { paramType, operator, paramName, paramValue } = item;
+        if (!paramType || !operator || !paramName || !paramValue) {
+          message.destroy();
+          message.error(`第${index + 1}行条件不完整`);
+          result = false;
+        }
+      });
+    } else {
+      message.destroy();
+      message.error(`条件不完整`);
+      result = false;
+    }
+
+    if (!loadbalance) {
+      message.destroy();
+      message.error(`负载策略不能为空`);
+      result = false;
+    }
+
+    if (!timeout) {
+      message.destroy();
+      message.error(`超时时间不能为空`);
+      result = false;
+    }
+
+    if (upstreamList) {
+      upstreamList.forEach((item, index) => {
+        const { upstreamHost, upstreamUrl } = item;
+        if (!upstreamHost || !upstreamUrl) {
+          message.destroy();
+          message.error(
+            `第${index + 1}行http负载, upstreamHost和upstreamUrl不能为空`
+          );
+          result = false;
+        }
+      });
+    } else {
+      message.destroy();
+      message.error(`http负载不完整`);
+      result = false;
+    }
+
+    return result;
+  };
+
   handleSubmit = e => {
     e.preventDefault();
     const { form, handleOk } = this.props;
@@ -97,15 +147,19 @@ class AddModal extends Component {
         upstreamList
       };
       if (!err) {
-        handleOk({
-          name,
-          matchMode,
-          handle: JSON.stringify(handle),
-          loged,
-          enabled,
-          sort: Number(values.sort),
-          ruleConditions
-        });
+        const submit = this.checkConditions(loadbalance, timeout, upstreamList);
+
+        if (submit) {
+          handleOk({
+            name,
+            matchMode,
+            handle: JSON.stringify(handle),
+            loged,
+            enabled,
+            sort: Number(values.sort),
+            ruleConditions
+          });
+        }
       }
     });
   };
@@ -151,8 +205,11 @@ class AddModal extends Component {
 
   divideHandleDelete = index => {
     let { upstreamList } = this.state;
-    if (upstreamList && upstreamList.length > 0) {
+    if (upstreamList && upstreamList.length > 1) {
       upstreamList.splice(index, 1);
+    } else {
+      message.destroy();
+      message.error("至少有一个http负载");
     }
     this.setState({ upstreamList });
   };
@@ -273,7 +330,9 @@ class AddModal extends Component {
             )}
           </FormItem>
           <div className={styles.ruleConditions}>
-            <h3 className={styles.header}>条件:</h3>
+            <h3 className={styles.header}>
+              <strong>*</strong>条件:
+            </h3>
             <div className={styles.content}>
               {ruleConditions.map((item, index) => {
                 return (
@@ -361,7 +420,7 @@ class AddModal extends Component {
           </div>
           <div className={styles.handleWrap}>
             <div className={styles.header}>
-              <h3>处理: </h3>
+              <h3>Hystrix处理: </h3>
             </div>
             <ul
               className={classnames({
@@ -476,7 +535,7 @@ class AddModal extends Component {
           </div>
           <div className={styles.divideHandle}>
             <div className={styles.header}>
-              <h3>upstreamList: </h3>
+              <h3>http负载: </h3>
             </div>
             <div className={styles.content}>
               {upstreamList.map((item, index) => {
