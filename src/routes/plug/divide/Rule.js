@@ -29,7 +29,16 @@ class AddModal extends Component {
       groupKey = "",
       commandKey = "",
       loadbalance = "",
-      timeout = "";
+      timeout = "",
+      upstreamList = [
+        {
+          upstreamHost: "",
+          upstreamUrl: "",
+          timeout: "",
+          retry: "",
+          weight: ""
+        }
+      ];
 
     if (props.handle) {
       const myHandle = JSON.parse(props.handle);
@@ -41,6 +50,7 @@ class AddModal extends Component {
       commandKey = myHandle.commandKey;
       loadbalance = myHandle.loadbalance;
       timeout = myHandle.timeout;
+      upstreamList = myHandle.upstreamList;
     }
 
     this.state = {
@@ -52,7 +62,8 @@ class AddModal extends Component {
       groupKey,
       commandKey,
       loadbalance,
-      timeout
+      timeout,
+      upstreamList
     };
   }
 
@@ -68,7 +79,8 @@ class AddModal extends Component {
       groupKey,
       commandKey,
       loadbalance,
-      timeout
+      timeout,
+      upstreamList
     } = this.state;
 
     form.validateFieldsAndScroll((err, values) => {
@@ -81,7 +93,8 @@ class AddModal extends Component {
         groupKey,
         commandKey,
         loadbalance,
-        timeout
+        timeout,
+        upstreamList
       };
       if (!err) {
         handleOk({
@@ -108,6 +121,23 @@ class AddModal extends Component {
     this.setState({ ruleConditions });
   };
 
+  divideHandleAdd = () => {
+    let { upstreamList } = this.state;
+    if (upstreamList) {
+      upstreamList.push({
+        upstreamHost: "",
+        upstreamUrl: "",
+        timeout: "",
+        retry: "",
+        weight: ""
+      });
+    } else {
+      upstreamList = [];
+    }
+
+    this.setState({ upstreamList });
+  };
+
   handleDelete = index => {
     let { ruleConditions } = this.state;
     if (ruleConditions && ruleConditions.length > 0) {
@@ -116,10 +146,24 @@ class AddModal extends Component {
     this.setState({ ruleConditions });
   };
 
+  divideHandleDelete = index => {
+    let { upstreamList } = this.state;
+    if (upstreamList && upstreamList.length > 0) {
+      upstreamList.splice(index, 1);
+    }
+    this.setState({ upstreamList });
+  };
+
   conditionChange = (index, name, value) => {
     let { ruleConditions } = this.state;
     ruleConditions[index][name] = value;
     this.setState({ ruleConditions });
+  };
+
+  divideHandleChange = (index, name, value) => {
+    let { upstreamList } = this.state;
+    upstreamList[index][name] = value;
+    this.setState({ upstreamList });
   };
 
   onHandleChange = (key, value) => {
@@ -146,7 +190,8 @@ class AddModal extends Component {
       groupKey,
       commandKey,
       loadbalance,
-      timeout
+      timeout,
+      upstreamList
     } = this.state;
 
     let {
@@ -425,6 +470,105 @@ class AddModal extends Component {
                 />
               </li>
             </ul>
+          </div>
+          <div className={styles.divideHandle}>
+            <div className={styles.header}>
+              <h3>upstreamList: </h3>
+            </div>
+            <div className={styles.content}>
+              {upstreamList.map((item, index) => {
+                return (
+                  <ul key={index}>
+                    <li>
+                      <Input
+                        onChange={e => {
+                          this.divideHandleChange(
+                            index,
+                            "upstreamHost",
+                            e.target.value
+                          );
+                        }}
+                        placeholder="upstreamHost"
+                        value={item.upstreamHost}
+                        style={{ width: 120 }}
+                      />
+                    </li>
+                    <li>
+                      <Input
+                        onChange={e => {
+                          this.divideHandleChange(
+                            index,
+                            "upstreamUrl",
+                            e.target.value
+                          );
+                        }}
+                        placeholder="upstreamUrl"
+                        value={item.upstreamUrl}
+                        style={{ width: 120 }}
+                      />
+                    </li>
+                    <li>
+                      <Input
+                        onChange={e => {
+                          this.divideHandleChange(
+                            index,
+                            "timeout",
+                            e.target.value
+                          );
+                        }}
+                        placeholder="timeout"
+                        value={item.timeout}
+                        style={{ width: 80 }}
+                      />
+                    </li>
+
+                    <li>
+                      <Input
+                        onChange={e => {
+                          this.divideHandleChange(
+                            index,
+                            "retry",
+                            e.target.value
+                          );
+                        }}
+                        placeholder="retry"
+                        value={item.retry}
+                        style={{ width: 80 }}
+                      />
+                    </li>
+                    <li>
+                      <Input
+                        onChange={e => {
+                          this.divideHandleChange(
+                            index,
+                            "weight",
+                            e.target.value
+                          );
+                        }}
+                        placeholder="weight"
+                        value={item.weight}
+                        style={{ width: 80 }}
+                      />
+                    </li>
+                    <li>
+                      <Button
+                        type="danger"
+                        onClick={() => {
+                          this.divideHandleDelete(index);
+                        }}
+                      >
+                        删除
+                      </Button>
+                    </li>
+                  </ul>
+                );
+              })}
+            </div>
+            <div>
+              <Button onClick={this.divideHandleAdd} type="primary">
+                新增
+              </Button>
+            </div>
           </div>
           <div className={styles.layout}>
             <FormItem

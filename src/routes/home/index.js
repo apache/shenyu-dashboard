@@ -1,19 +1,23 @@
-import React, { Component } from 'react';
-import {connect } from 'dva';
-import './home.less';
+import React, { Component } from "react";
+import { connect } from "dva";
+import styles from "./home.less";
 
 @connect(({ global }) => ({
-  global,
+  global
 }))
 export default class Home extends Component {
-  componentDidMount(){
+  componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'global/fetchPlatform',
+      type: "global/fetchPlatform"
     });
   }
 
   render() {
-    return <div className="content">网关管理系统</div>;
+    return (
+      <div className={styles.content}>
+        <span>欢迎登录网关管理系统</span>
+      </div>
+    );
   }
 }

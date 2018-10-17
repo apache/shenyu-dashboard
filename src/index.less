@@ -4,6 +4,12 @@ body,
   height: 100%;
 }
 
+:global {
+  .plug-content-wrap {
+    padding: 24px
+  }
+}
+
 :global(.ant-layout) {
   min-height: 100%;
 }
@@ -39,8 +45,9 @@ ol {
 :global(.ant-table table) {
   padding: 0 !important;
 }
-:global{
-  .ant-table-small > .ant-table-content > .ant-table-body{
+
+:global {
+  .ant-table-small>.ant-table-content>.ant-table-body {
     margin: 0 !important;
   }
 }

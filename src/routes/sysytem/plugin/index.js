@@ -220,7 +220,7 @@ export default class Plugin extends Component {
     };
 
     return (
-      <div>
+      <div className="plug-content-wrap">
         <Row type="flex" justify="flex-start" align="middle" gutter={20}>
           <Col span={8} className="searchblock">
             <Input

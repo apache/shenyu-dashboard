@@ -386,7 +386,7 @@ export default class Spring extends Component {
     ];
 
     return (
-      <div>
+      <div className="plug-content-wrap">
         <Row gutter={20}>
           <Col span={8}>
             <div className="table-header">

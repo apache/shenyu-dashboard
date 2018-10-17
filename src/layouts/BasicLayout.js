@@ -1,19 +1,19 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Layout } from 'antd';
-import DocumentTitle from 'react-document-title';
-import { connect } from 'dva';
-import { Route, Redirect, Switch } from 'dva/router';
-import { ContainerQuery } from 'react-container-query';
-import classNames from 'classnames';
-import pathToRegexp from 'path-to-regexp';
-import GlobalHeader from '../components/GlobalHeader';
-import SiderMenu from '../components/SiderMenu';
-import NotFound from '../routes/Exception/404';
-import { getRoutes } from '../utils/utils';
-import Authorized from '../utils/Authorized';
-import { getMenuData } from '../common/menu';
-import logo from '../assets/logo.svg';
+import React from "react";
+import PropTypes from "prop-types";
+import { Layout } from "antd";
+import DocumentTitle from "react-document-title";
+import { connect } from "dva";
+import { Route, Redirect, Switch } from "dva/router";
+import { ContainerQuery } from "react-container-query";
+import classNames from "classnames";
+import pathToRegexp from "path-to-regexp";
+import GlobalHeader from "../components/GlobalHeader";
+import SiderMenu from "../components/SiderMenu";
+import NotFound from "../routes/Exception/404";
+import { getRoutes } from "../utils/utils";
+import Authorized from "../utils/Authorized";
+import { getMenuData } from "../common/menu";
+import logo from "../assets/logo.svg";
 
 const { Content, Header } = Layout;
 const { AuthorizedRoute, check } = Authorized;
@@ -27,7 +27,7 @@ const getRedirect = item => {
     if (item.children[0] && item.children[0].path) {
       redirectData.push({
         from: `${item.path}`,
-        to: `${item.children[0].path}`,
+        to: `${item.children[0].path}`
       });
       item.children.forEach(children => {
         getRedirect(children);
@@ -57,44 +57,44 @@ const getBreadcrumbNameMap = (menuData, routerData) => {
 };
 
 const query = {
-  'screen-lg': {
+  "screen-lg": {
     minWidth: 992,
-    maxWidth: 1199,
+    maxWidth: 1199
   },
-  'screen-xl': {
+  "screen-xl": {
     minWidth: 1200,
-    maxWidth: 1599,
+    maxWidth: 1599
   },
-  'screen-xxl': {
-    minWidth: 1600,
-  },
+  "screen-xxl": {
+    minWidth: 1600
+  }
 };
 
 class BasicLayout extends React.PureComponent {
   static childContextTypes = {
     location: PropTypes.object,
-    breadcrumbNameMap: PropTypes.object,
+    breadcrumbNameMap: PropTypes.object
   };
 
   getChildContext() {
     const { location, routerData } = this.props;
     return {
       location,
-      breadcrumbNameMap: getBreadcrumbNameMap(getMenuData(), routerData),
+      breadcrumbNameMap: getBreadcrumbNameMap(getMenuData(), routerData)
     };
   }
 
   componentWillMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'global/fetchPlatform',
+      type: "global/fetchPlatform"
     });
   }
-  
+
   getPageTitle() {
     const { routerData, location } = this.props;
     const { pathname } = location;
-    let title = '网关管理';
+    let title = "网关管理";
     let currRouterData = null;
     // match params path
     Object.keys(routerData).forEach(key => {
@@ -113,28 +113,28 @@ class BasicLayout extends React.PureComponent {
     // 这里是重定向的,重定向到 url 的 redirect 参数所示地址
     const urlParams = new URL(window.location.href);
 
-    const redirect = urlParams.searchParams.get('redirect');
+    const redirect = urlParams.searchParams.get("redirect");
     // Remove the parameters in the url
     if (redirect) {
-      urlParams.searchParams.delete('redirect');
-      window.history.replaceState(null, 'redirect', urlParams.href);
+      urlParams.searchParams.delete("redirect");
+      window.history.replaceState(null, "redirect", urlParams.href);
     } else {
       const { routerData } = this.props;
       // get the first authorized route path in routerData
       const authorizedPath = Object.keys(routerData).find(
-        item => check(routerData[item].authority, item) && item !== '/'
+        item => check(routerData[item].authority, item) && item !== "/"
       );
       return authorizedPath;
     }
     return redirect;
   };
 
-  handleLogout=()=>{
-    const { dispatch } =this.props;
+  handleLogout = () => {
+    const { dispatch } = this.props;
     dispatch({
-      type: 'login/logout'
-    })
-  }
+      type: "login/logout"
+    });
+  };
 
   render() {
     const { collapsed, routerData, match, location } = this.props;
@@ -161,7 +161,13 @@ class BasicLayout extends React.PureComponent {
               onLogout={this.handleLogout}
             />
           </Header>
-          <Content style={{ margin: '24px 24px 0', height: '100%' }}>
+          <Content
+            className="content-wrap"
+            style={{
+              height: "100%",
+              position: "relative"
+            }}
+          >
             <Switch>
               {redirectData.map(item => (
                 <Redirect key={item.from} exact from={item.from} to={item.to} />
@@ -199,5 +205,5 @@ class BasicLayout extends React.PureComponent {
 }
 
 export default connect(({ global = {} }) => ({
-  collapsed: global.collapsed,
+  collapsed: global.collapsed
 }))(BasicLayout);
