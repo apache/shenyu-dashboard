@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal, Form, Select, Input, Switch, Button } from "antd";
+import { Modal, Form, Select, Input, Switch, Button, message } from "antd";
 import { connect } from "dva";
 import classnames from "classnames";
 import styles from "../index.less";
@@ -145,8 +145,11 @@ class AddModal extends Component {
 
   handleDelete = index => {
     let { ruleConditions } = this.state;
-    if (ruleConditions && ruleConditions.length > 0) {
+    if (ruleConditions && ruleConditions.length > 1) {
       ruleConditions.splice(index, 1);
+    } else {
+      message.destroy();
+      message.error("至少有一个条件");
     }
     this.setState({ ruleConditions });
   };

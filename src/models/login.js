@@ -1,5 +1,6 @@
 import { routerRedux } from "dva/router";
 import { stringify } from "qs";
+import { message } from "antd";
 import { queryLogin } from "../services/api";
 import { setAuthority } from "../utils/authority";
 import { reloadAuthorized } from "../utils/Authorized";
@@ -14,11 +15,11 @@ export default {
 
   effects: {
     *login({ payload }, { call, put }) {
-     
       const response = yield call(queryLogin, payload);
 
       // Login successfully
-      if (response.code === 200) {
+
+      if (response.data) {
         yield put({
           type: "changeLoginStatus",
           payload: {
@@ -44,6 +45,9 @@ export default {
           }
         }
         yield put(routerRedux.replace(redirect || "/"));
+      } else {
+        message.destroy();
+        message.error("用户名或密码不正确");
       }
     },
     *logout(_, { put }) {

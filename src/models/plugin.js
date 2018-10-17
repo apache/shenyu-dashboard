@@ -4,7 +4,8 @@ import {
   findPlugin,
   updatePlugin,
   deletePlugin,
-  addPlugin
+  addPlugin,
+  asyncPlugin
 } from "../services/api";
 
 export default {
@@ -49,7 +50,7 @@ export default {
         message.success("添加成功");
         callback();
         yield put({ type: "reload", fetchValue });
-      }else{
+      } else {
         message.warn(json.message);
       }
     },
@@ -60,7 +61,7 @@ export default {
       if (json.code === 200) {
         message.success("删除成功");
         yield put({ type: "reload", fetchValue });
-      }else{
+      } else {
         message.warn(json.message);
       }
     },
@@ -71,7 +72,7 @@ export default {
         message.success("修改成功");
         callback();
         yield put({ type: "reload", fetchValue });
-      }else{
+      } else {
         message.warn(json.message);
       }
     },
@@ -80,6 +81,14 @@ export default {
       const { name, currentPage, pageSize } = fetchValue;
       const payload = { name, currentPage, pageSize };
       yield put({ type: "fetch", payload });
+    },
+    *asyncAll(_, { call }) {
+      const json = yield call(asyncPlugin);
+      if (json.code === 200) {
+        message.success("同步成功");
+      } else {
+        message.warn(json.message);
+      }
     }
   },
 

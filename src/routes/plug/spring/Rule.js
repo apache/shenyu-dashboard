@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal, Form, Select, Input, Switch, Button } from "antd";
+import { Modal, Form, Select, Input, Switch, Button, message } from "antd";
 import { connect } from "dva";
 import classnames from "classnames";
 import styles from "../index.less";
@@ -59,6 +59,33 @@ class AddModal extends Component {
     };
   }
 
+  checkConditions = serviceId => {
+    let { ruleConditions } = this.state;
+    let result = true;
+    if (ruleConditions) {
+      ruleConditions.forEach((item, index) => {
+        const { paramType, operator, paramName, paramValue } = item;
+        if (!paramType || !operator || !paramName || !paramValue) {
+          message.destroy();
+          message.error(`第${index + 1}行条件不完整`);
+          result = false;
+        }
+      });
+    } else {
+      message.destroy();
+      message.error(`条件不完整`);
+      result = false;
+    }
+
+    if (!serviceId) {
+      message.destroy();
+      message.error(`serviceId值不能为空`);
+      result = false;
+    }
+
+    return result;
+  };
+
   handleSubmit = e => {
     e.preventDefault();
     const { form, handleOk } = this.props;
@@ -115,8 +142,11 @@ class AddModal extends Component {
 
   handleDelete = index => {
     let { ruleConditions } = this.state;
-    if (ruleConditions && ruleConditions.length > 0) {
+    if (ruleConditions && ruleConditions.length > 1) {
       ruleConditions.splice(index, 1);
+    } else {
+      message.destroy();
+      message.error("至少有一个条件");
     }
     this.setState({ ruleConditions });
   };
@@ -404,7 +434,7 @@ class AddModal extends Component {
               </li>
               <li style={{ marginTop: 14 }}>
                 <Input
-                  addonBefore={<div>重试次数</div>}
+                  addonBefore={<div>路径</div>}
                   value={path}
                   style={{ width: 200 }}
                   placeholder="path"

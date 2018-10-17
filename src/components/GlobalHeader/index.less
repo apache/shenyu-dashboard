@@ -1,5 +1,4 @@
 @import '~antd/lib/style/themes/default.less';
-
 .header {
   height: 64px;
   padding: 0 12px 0 0;
@@ -53,13 +52,16 @@ i.trigger {
   float: right;
   height: 100%;
   cursor: pointer;
+  &:hover {
+    color: @primary-color;
+  }
   .action {
     cursor: pointer;
     padding: 0 12px;
     display: inline-block;
     transition: all 0.3s;
     height: 100%;
-    > i {
+    >i {
       font-size: 16px;
       vertical-align: middle;
       color: @text-color;

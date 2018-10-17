@@ -77,8 +77,11 @@ class AddModal extends Component {
 
   handleDelete = index => {
     let { selectorConditions } = this.state;
-    if (selectorConditions && selectorConditions.length > 0) {
+    if (selectorConditions && selectorConditions.length > 1) {
       selectorConditions.splice(index, 1);
+    } else {
+      message.destroy();
+      message.error("至少有一个条件");
     }
     this.setState({ selectorConditions });
   };
@@ -191,7 +194,9 @@ class AddModal extends Component {
             )}
           </FormItem>
           <div className={styles.condition}>
-            <h3 className={styles.header}>条件: </h3>
+            <h3 className={styles.header}>
+              <strong>*</strong>条件:{" "}
+            </h3>
             <div>
               {selectorConditions.map((item, index) => {
                 return (

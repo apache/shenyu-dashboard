@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Table, Row, Col, Input, Button, message } from "antd";
+import { Table,Input, Button, message } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
 
@@ -158,6 +158,14 @@ export default class Plugin extends Component {
     });
   };
 
+  // 同步插件数据
+  syncAllClick = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "plugin/asyncAll"
+    });
+  };
+
   render() {
     const { plugin, loading } = this.props;
     const { pluginList, total } = plugin;
@@ -221,28 +229,44 @@ export default class Plugin extends Component {
 
     return (
       <div className="plug-content-wrap">
-        <Row type="flex" justify="flex-start" align="middle" gutter={20}>
-          <Col span={8} className="searchblock">
-            <Input
-              value={name}
-              onChange={this.searchOnchange}
-              placeholder="请输入插件名"
-            />
-            <Button type="primary" onClick={this.searchClick}>
-              查询
-            </Button>
-          </Col>
-          <Col span={4}>
-            <Button type="danger" onClick={this.deleteClick}>
-              删除勾选数据
-            </Button>
-          </Col>
-          <Col span={4}>
-            <Button type="primary" onClick={this.addClick}>
-              添加数据
-            </Button>
-          </Col>
-        </Row>
+        <div style={{ display: "flex" }}>
+          <Input
+            value={name}
+            onChange={this.searchOnchange}
+            placeholder="请输入插件名"
+            style={{ width: 240 }}
+          />
+          <Button
+            type="primary"
+            style={{ marginLeft: 20 }}
+            onClick={this.searchClick}
+          >
+            查询
+          </Button>
+          <Button
+            style={{ marginLeft: 20 }}
+            type="danger"
+            onClick={this.deleteClick}
+          >
+            删除勾选数据
+          </Button>
+          <Button
+            style={{ marginLeft: 20 }}
+            type="primary"
+            onClick={this.addClick}
+          >
+            添加数据
+          </Button>
+          <Button
+            style={{ marginLeft: 20 }}
+            icon="reload"
+            type="primary"
+            onClick={this.syncAllClick}
+          >
+            同步所有数据
+          </Button>
+        </div>
+
         <Table
           size="small"
           style={{ marginTop: 30 }}

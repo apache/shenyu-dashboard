@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Table, Row, Col, Input, Button, message } from "antd";
+import { Table, Input, Button, message } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
 
@@ -166,7 +166,7 @@ export default class Auth extends Component {
     const authColumns = [
       {
         align: "center",
-        title: "appKey",
+        title: "module",
         dataIndex: "appKey",
         key: "appKey"
       },
@@ -176,7 +176,7 @@ export default class Auth extends Component {
         dataIndex: "appSecret",
         key: "appSecret"
       },
-      
+
       {
         align: "center",
         title: "状态",
@@ -229,28 +229,36 @@ export default class Auth extends Component {
 
     return (
       <div className="plug-content-wrap">
-        <Row type="flex" justify="flex-start" align="middle" gutter={20}>
-          <Col span={8} className="searchblock">
-            <Input
-              value={appKey}
-              onChange={this.searchOnchange}
-              placeholder="请输入认证"
-            />
-            <Button type="primary" onClick={this.searchClick}>
-              查询
-            </Button>
-          </Col>
-          <Col span={4}>
-            <Button type="danger" onClick={this.deleteClick}>
-              删除勾选数据
-            </Button>
-          </Col>
-          <Col span={4}>
-            <Button type="primary" onClick={this.addClick}>
-              添加数据
-            </Button>
-          </Col>
-        </Row>
+        <div style={{ display: "flex" }}>
+          <Input
+            value={appKey}
+            onChange={this.searchOnchange}
+            placeholder="请输入认证"
+            style={{ width: 240, marginLeft: 20 }}
+          />
+          <Button
+            style={{ marginLeft: 20 }}
+            type="primary"
+            onClick={this.searchClick}
+          >
+            查询
+          </Button>
+          <Button
+            style={{ marginLeft: 20 }}
+            type="danger"
+            onClick={this.deleteClick}
+          >
+            删除勾选数据
+          </Button>
+          <Button
+            style={{ marginLeft: 20 }}
+            type="primary"
+            onClick={this.addClick}
+          >
+            添加数据
+          </Button>
+        </div>
+
         <Table
           size="small"
           style={{ marginTop: 30 }}
@@ -271,4 +279,3 @@ export default class Auth extends Component {
     );
   }
 }
-

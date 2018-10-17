@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal, Form, Select, Input, Switch, Button } from "antd";
+import { Modal, Form, Select, Input, Switch, Button, message } from "antd";
 import { connect } from "dva";
 import styles from "../index.less";
 
@@ -25,6 +25,33 @@ class AddModal extends Component {
     };
   }
 
+  checkConditions = (permission, statusCode) => {
+    let { ruleConditions } = this.state;
+    let result = true;
+    if (ruleConditions) {
+      ruleConditions.forEach((item, index) => {
+        const { paramType, operator, paramName, paramValue } = item;
+        if (!paramType || !operator || !paramName || !paramValue) {
+          message.destroy();
+          message.error(`第${index + 1}行条件不完整`);
+          result = false;
+        }
+      });
+    } else {
+      message.destroy();
+      message.error(`条件不完整`);
+      result = false;
+    }
+
+    if (permission === "reject" && !statusCode) {
+      message.destroy();
+      message.error(`请填写状态码`);
+      result = false;
+    }
+
+    return result;
+  };
+
   handleSubmit = e => {
     e.preventDefault();
     const { form, handleOk } = this.props;
@@ -44,15 +71,18 @@ class AddModal extends Component {
         statusCode
       };
       if (!err) {
-        handleOk({
-          name,
-          matchMode,
-          handle: JSON.stringify(handle),
-          loged,
-          enabled,
-          sort: Number(values.sort),
-          ruleConditions
-        });
+        const submit = this.checkConditions(permission, statusCode);
+        if (submit) {
+          handleOk({
+            name,
+            matchMode,
+            handle: JSON.stringify(handle),
+            loged,
+            enabled,
+            sort: Number(values.sort),
+            ruleConditions
+          });
+        }
       }
     });
   };
@@ -70,8 +100,11 @@ class AddModal extends Component {
 
   handleDelete = index => {
     let { ruleConditions } = this.state;
-    if (ruleConditions && ruleConditions.length > 0) {
+    if (ruleConditions && ruleConditions.length > 1) {
       ruleConditions.splice(index, 1);
+    } else {
+      message.destroy();
+      message.error("至少有一个条件");
     }
     this.setState({ ruleConditions });
   };
@@ -169,7 +202,9 @@ class AddModal extends Component {
             )}
           </FormItem>
           <div className={styles.ruleConditions}>
-            <h3 className={styles.header}>条件:</h3>
+            <h3 className={styles.header}>
+              <strong>*</strong>条件:
+            </h3>
             <div className={styles.content}>
               {ruleConditions.map((item, index) => {
                 return (
@@ -257,7 +292,8 @@ class AddModal extends Component {
           </div>
           <FormItem label="处理" {...formItemLayout}>
             {getFieldDecorator("permission", {
-              initialValue: permission
+              initialValue: permission,
+              rules: [{ required: true, message: "请选择处理" }]
             })(
               <Select>
                 {wafEnums.map(item => {
@@ -272,7 +308,13 @@ class AddModal extends Component {
           </FormItem>
           <FormItem label="状态码" {...formItemLayout}>
             {getFieldDecorator("statusCode", {
-              initialValue: statusCode
+              initialValue: statusCode,
+              rules: [
+                {
+                  pattern: /^\d*$/,
+                  message: "请输入数字"
+                }
+              ]
             })(<Input placeholder="请输入状态码" />)}
           </FormItem>
           <div className={styles.layout}>

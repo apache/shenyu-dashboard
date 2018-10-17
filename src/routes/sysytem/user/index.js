@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Table, Row, Col, Input, Button, message } from "antd";
+import { Table, Input, Button, message } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
 
@@ -101,7 +101,7 @@ export default class Manage extends Component {
 
   searchClick = () => {
     this.getAllUsers(1);
-    this.setState({currentPage: 1});
+    this.setState({ currentPage: 1 });
   };
 
   deleteClick = () => {
@@ -145,7 +145,7 @@ export default class Manage extends Component {
               fetchValue: {
                 userName: name,
                 currentPage,
-                pageSize: 12,
+                pageSize: 12
               },
               callback: () => {
                 this.closeModal();
@@ -223,28 +223,36 @@ export default class Manage extends Component {
 
     return (
       <div className="plug-content-wrap">
-        <Row type="flex" justify="flex-start" align="middle" gutter={20}>
-          <Col span={8} className="searchblock">
-            <Input
-              value={userName}
-              onChange={this.searchOnchange}
-              placeholder="请输入用户名"
-            />
-            <Button type="primary" onClick={this.searchClick}>
-              查询
-            </Button>
-          </Col>
-          <Col span={4}>
-            <Button type="danger" onClick={this.deleteClick}>
-              删除勾选数据
-            </Button>
-          </Col>
-          <Col span={4}>
-            <Button type="primary" onClick={this.addClick}>
-              添加数据
-            </Button>
-          </Col>
-        </Row>
+        <div style={{ display: "flex" }}>
+          <Input
+            value={userName}
+            onChange={this.searchOnchange}
+            placeholder="请输入用户名"
+            style={{ width: 240 }}
+          />
+          <Button
+            style={{ marginLeft: 20 }}
+            type="primary"
+            onClick={this.searchClick}
+          >
+            查询
+          </Button>
+          <Button
+            style={{ marginLeft: 20 }}
+            type="danger"
+            onClick={this.deleteClick}
+          >
+            删除勾选数据
+          </Button>
+          <Button
+            style={{ marginLeft: 20 }}
+            type="primary"
+            onClick={this.addClick}
+          >
+            添加数据
+          </Button>
+        </div>
+
         <Table
           size="small"
           style={{ marginTop: 30 }}

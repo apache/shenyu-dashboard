@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Layout } from "antd";
+import { Layout, message } from "antd";
 import DocumentTitle from "react-document-title";
 import { connect } from "dva";
 import { Route, Redirect, Switch } from "dva/router";
@@ -14,6 +14,12 @@ import { getRoutes } from "../utils/utils";
 import Authorized from "../utils/Authorized";
 import { getMenuData } from "../common/menu";
 import logo from "../assets/logo.svg";
+
+message.config({
+  top: 200,
+  duration: 2,
+  maxCount: 3
+});
 
 const { Content, Header } = Layout;
 const { AuthorizedRoute, check } = Authorized;

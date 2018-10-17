@@ -44,7 +44,7 @@ class AddModal extends Component {
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label="appKey" {...formItemLayout}>
+          <FormItem label="module" {...formItemLayout}>
             {getFieldDecorator("appKey", {
               rules: [{ required: true, message: "请输入appKey" }],
               initialValue: appKey
