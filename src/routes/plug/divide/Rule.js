@@ -500,7 +500,19 @@ class AddModal extends Component {
                   }}
                 />
               </li>
-              <li style={{ marginTop: 14 }} className={styles.loadbalanceLine}>
+            </ul>
+          </div>
+          <div className={styles.handleWrap}>
+            <div className={styles.header}>
+              <h3>http负载: </h3>
+            </div>
+            <ul
+              className={classnames({
+                [styles.handleUl]: true,
+                [styles.springUl]: true
+              })}
+            >
+              <li className={styles.loadbalanceLine}>
                 <div className={styles.loadText}>负载策略</div>
                 <Select
                   onChange={value => {
@@ -519,7 +531,7 @@ class AddModal extends Component {
                   })}
                 </Select>
               </li>
-              <li style={{ marginTop: 14 }}>
+              <li>
                 <Input
                   addonBefore={<div>超时时间</div>}
                   value={timeout}
@@ -534,9 +546,7 @@ class AddModal extends Component {
             </ul>
           </div>
           <div className={styles.divideHandle}>
-            <div className={styles.header}>
-              <h3>http负载: </h3>
-            </div>
+            <div className={styles.header} />
             <div className={styles.content}>
               {upstreamList.map((item, index) => {
                 return (
