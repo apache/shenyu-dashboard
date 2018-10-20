@@ -16,7 +16,7 @@ startServer.on('exit', () => {
   kill(process.env.PORT || 8000);
 });
 
-// eslint-disable-next-line
+// eslint-disable-next-li
 console.log('Starting development server for e2e tests...');
 startServer.stdout.on('data', data => {
   // eslint-disable-next-line
