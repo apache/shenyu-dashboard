@@ -80,7 +80,6 @@ const proxy = {
       code: 200
     },
   },
-  
   'GET /api/notices': getNotices,
   'GET /api/500': (req, res) => {
     res.status(500).send({

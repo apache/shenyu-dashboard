@@ -10,9 +10,6 @@ export default {
       extraBabelPlugins: ["dva-hmr"]
     }
   },
-  externals: {
-    rollbar: "rollbar"
-  },
   alias: {
     components: path.resolve(__dirname, "src/components/")
   },
