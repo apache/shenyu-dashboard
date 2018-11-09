@@ -1,9 +1,7 @@
 import { stringify } from "qs";
-import json from "../../public/path.json";
 import request from "../utils/request";
 
-const baseUrl = json.httpPath;
-
+const baseUrl = document.getElementById("httpPath").innerHTML;
 /* 添加用户 */
 export async function addUser(params) {
   return request(`${baseUrl}/dashboardUser`, {

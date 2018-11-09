@@ -28,7 +28,7 @@ class AddModal extends Component {
       sleepWindowInMilliseconds = "",
       groupKey = "",
       commandKey = "",
-      loadbalance = "",
+      loadBalance = "",
       registry = "",
       appName = "",
       protocol = "",
@@ -46,7 +46,7 @@ class AddModal extends Component {
       sleepWindowInMilliseconds = myHandle.sleepWindowInMilliseconds;
       groupKey = myHandle.groupKey;
       commandKey = myHandle.commandKey;
-      loadbalance = myHandle.loadbalance;
+      loadBalance = myHandle.loadBalance;
       registry = myHandle.registry;
       appName = myHandle.appName;
       protocol = myHandle.protocol;
@@ -65,7 +65,7 @@ class AddModal extends Component {
       sleepWindowInMilliseconds,
       groupKey,
       commandKey,
-      loadbalance,
+      loadBalance,
       registry,
       appName,
       protocol,
@@ -130,7 +130,7 @@ class AddModal extends Component {
       sleepWindowInMilliseconds,
       groupKey,
       commandKey,
-      loadbalance,
+      loadBalance,
       registry,
       appName,
       protocol,
@@ -150,7 +150,7 @@ class AddModal extends Component {
         sleepWindowInMilliseconds,
         groupKey,
         commandKey,
-        loadbalance,
+        loadBalance,
         registry,
         appName,
         protocol,
@@ -208,6 +208,12 @@ class AddModal extends Component {
   onHandleChange = (key, value) => {
     this.setState({ [key]: value });
   };
+  
+  onHandleNumberChange = (key, value) => {
+    if(/^\d*$/.test(value)){
+      this.setState({ [key]: value });
+    }
+  };
 
   render() {
     let {
@@ -228,7 +234,7 @@ class AddModal extends Component {
       sleepWindowInMilliseconds,
       groupKey,
       commandKey,
-      loadbalance,
+      loadBalance,
       registry,
       appName,
       protocol,
@@ -422,7 +428,7 @@ class AddModal extends Component {
                   placeholder="requestVolumeThreshold"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleChange("requestVolumeThreshold", value);
+                    this.onHandleNumberChange("requestVolumeThreshold", value);
                   }}
                 />
               </li>
@@ -434,7 +440,7 @@ class AddModal extends Component {
                   placeholder="errorThresholdPercentage"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleChange("errorThresholdPercentage", value);
+                    this.onHandleNumberChange("errorThresholdPercentage", value);
                   }}
                 />
               </li>
@@ -446,7 +452,7 @@ class AddModal extends Component {
                   placeholder="maxConcurrentRequests"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleChange("maxConcurrentRequests", value);
+                    this.onHandleNumberChange("maxConcurrentRequests", value);
                   }}
                 />
               </li>
@@ -458,7 +464,7 @@ class AddModal extends Component {
                   placeholder="sleepWindowInMilliseconds"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleChange("sleepWindowInMilliseconds", value);
+                    this.onHandleNumberChange("sleepWindowInMilliseconds", value);
                   }}
                 />
               </li>
@@ -503,11 +509,11 @@ class AddModal extends Component {
                 <div className={styles.loadText}>负载策略</div>
                 <Select
                   onChange={value => {
-                    this.onHandleChange("loadbalance", value);
+                    this.onHandleChange("loadBalance", value);
                   }}
-                  value={loadbalance}
+                  value={loadBalance}
                   style={{ width: 160 }}
-                  placeholder="loadbalance"
+                  placeholder="loadBalance"
                 >
                   {loadBalanceEnums.map(item => {
                     return (
@@ -542,30 +548,7 @@ class AddModal extends Component {
                   }}
                 />
               </li>
-              <li>
-                <Input
-                  addonBefore={<div>端口号</div>}
-                  value={port}
-                  style={{ width: 150 }}
-                  placeholder="port"
-                  onChange={e => {
-                    const value = e.target.value;
-                    this.onHandleChange("port", value);
-                  }}
-                />
-              </li>
-              <li>
-                <Input
-                  addonBefore={<div>版本号</div>}
-                  value={version}
-                  style={{ width: 150 }}
-                  placeholder="version"
-                  onChange={e => {
-                    const value = e.target.value;
-                    this.onHandleChange("version", value);
-                  }}
-                />
-              </li>
+              
               <li>
                 <Input
                   addonBefore={<div>注册地址</div>}
@@ -580,19 +563,55 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>超时时间</div>}
-                  value={timeout}
-                  style={{ width: 210 }}
-                  placeholder="timeout"
+                  addonBefore={<div>重试次数</div>}
+                  value={retries}
+                  style={{ width: 150 }}
+                  placeholder="retries"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleChange("timeout", value);
+                    this.onHandleNumberChange("retries", value);
                   }}
                 />
               </li>
               <li>
                 <Input
-                  addonBefore={<div>group</div>}
+                  addonBefore={<div>超时时间</div>}
+                  value={timeout}
+                  style={{ width: 150 }}
+                  placeholder="timeout"
+                  onChange={e => {
+                    const value = e.target.value;
+                    this.onHandleNumberChange("timeout", value);
+                  }}
+                />
+              </li>
+              <li>
+                <Input
+                  addonBefore={<div>端口号</div>}
+                  value={port}
+                  style={{ width: 210 }}
+                  placeholder="port"
+                  onChange={e => {
+                    const value = e.target.value;
+                    this.onHandleNumberChange("port", value);
+                  }}
+                />
+              </li>
+              <li>
+                <Input
+                  addonBefore={<div>版本号</div>}
+                  value={version}
+                  style={{ width: 210 }}
+                  placeholder="version"
+                  onChange={e => {
+                    const value = e.target.value;
+                    this.onHandleChange("version", value);
+                  }}
+                />
+              </li>
+              <li>
+                <Input
+                  addonBefore={<div>分组</div>}
                   value={group}
                   style={{ width: 210 }}
                   placeholder="group"
@@ -602,18 +621,7 @@ class AddModal extends Component {
                   }}
                 />
               </li>
-              <li>
-                <Input
-                  addonBefore={<div>重试次数</div>}
-                  value={retries}
-                  style={{ width: 210 }}
-                  placeholder="retries"
-                  onChange={e => {
-                    const value = e.target.value;
-                    this.onHandleChange("retries", value);
-                  }}
-                />
-              </li>
+              
             </ul>
           </div>
           <div className={styles.layout}>

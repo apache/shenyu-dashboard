@@ -28,11 +28,12 @@ class AddModal extends Component {
       sleepWindowInMilliseconds = "",
       groupKey = "",
       commandKey = "",
-      loadbalance = "",
+      loadBalance = "",
       timeout = "",
       upstreamList = [
         {
           upstreamHost: "",
+          protocol: "",
           upstreamUrl: "",
           timeout: "",
           retry: "",
@@ -48,7 +49,7 @@ class AddModal extends Component {
       sleepWindowInMilliseconds = myHandle.sleepWindowInMilliseconds;
       groupKey = myHandle.groupKey;
       commandKey = myHandle.commandKey;
-      loadbalance = myHandle.loadbalance;
+      loadBalance = myHandle.loadBalance;
       timeout = myHandle.timeout;
       upstreamList = myHandle.upstreamList;
     }
@@ -61,13 +62,13 @@ class AddModal extends Component {
       sleepWindowInMilliseconds,
       groupKey,
       commandKey,
-      loadbalance,
+      loadBalance,
       timeout,
       upstreamList
     };
   }
 
-  checkConditions = (loadbalance, timeout, upstreamList) => {
+  checkConditions = (loadBalance, timeout, upstreamList) => {
     let { ruleConditions } = this.state;
     let result = true;
     if (ruleConditions) {
@@ -85,7 +86,7 @@ class AddModal extends Component {
       result = false;
     }
 
-    if (!loadbalance) {
+    if (!loadBalance) {
       message.destroy();
       message.error(`负载策略不能为空`);
       result = false;
@@ -128,7 +129,7 @@ class AddModal extends Component {
       sleepWindowInMilliseconds,
       groupKey,
       commandKey,
-      loadbalance,
+      loadBalance,
       timeout,
       upstreamList
     } = this.state;
@@ -142,12 +143,12 @@ class AddModal extends Component {
         sleepWindowInMilliseconds,
         groupKey,
         commandKey,
-        loadbalance,
+        loadBalance,
         timeout,
         upstreamList
       };
       if (!err) {
-        const submit = this.checkConditions(loadbalance, timeout, upstreamList);
+        const submit = this.checkConditions(loadBalance, timeout, upstreamList);
 
         if (submit) {
           handleOk({
@@ -180,6 +181,7 @@ class AddModal extends Component {
     if (upstreamList) {
       upstreamList.push({
         upstreamHost: "",
+        protocol: "",
         upstreamUrl: "",
         timeout: "",
         retry: "",
@@ -226,8 +228,23 @@ class AddModal extends Component {
     this.setState({ upstreamList });
   };
 
+  divideHandleNumberChange = (index, name, value) => {
+    if(/^\d*$/.test(value)){
+      let { upstreamList } = this.state;
+      upstreamList[index][name] = value;
+      this.setState({ upstreamList });
+    }
+    
+  };
+
   onHandleChange = (key, value) => {
     this.setState({ [key]: value });
+  };
+
+  onHandleNumberChange = (key, value) => {
+    if(/^\d*$/.test(value)){
+      this.setState({ [key]: value });
+    }
   };
 
   render() {
@@ -249,7 +266,7 @@ class AddModal extends Component {
       sleepWindowInMilliseconds,
       groupKey,
       commandKey,
-      loadbalance,
+      loadBalance,
       timeout,
       upstreamList
     } = this.state;
@@ -436,7 +453,7 @@ class AddModal extends Component {
                   placeholder="requestVolumeThreshold"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleChange("requestVolumeThreshold", value);
+                    this.onHandleNumberChange("requestVolumeThreshold", value);
                   }}
                 />
               </li>
@@ -448,7 +465,7 @@ class AddModal extends Component {
                   placeholder="errorThresholdPercentage"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleChange("errorThresholdPercentage", value);
+                    this.onHandleNumberChange("errorThresholdPercentage", value);
                   }}
                 />
               </li>
@@ -460,7 +477,7 @@ class AddModal extends Component {
                   placeholder="maxConcurrentRequests"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleChange("maxConcurrentRequests", value);
+                    this.onHandleNumberChange("maxConcurrentRequests", value);
                   }}
                 />
               </li>
@@ -472,7 +489,7 @@ class AddModal extends Component {
                   placeholder="sleepWindowInMilliseconds"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleChange("sleepWindowInMilliseconds", value);
+                    this.onHandleNumberChange("sleepWindowInMilliseconds", value);
                   }}
                 />
               </li>
@@ -480,7 +497,7 @@ class AddModal extends Component {
                 <Input
                   addonBefore={<div>分组Key</div>}
                   value={groupKey}
-                  style={{ width: 320 }}
+                  style={{ width: 210 }}
                   placeholder="groupKey"
                   onChange={e => {
                     const value = e.target.value;
@@ -492,11 +509,23 @@ class AddModal extends Component {
                 <Input
                   addonBefore={<div>命令Key</div>}
                   value={commandKey}
-                  style={{ width: 320 }}
+                  style={{ width: 210 }}
                   placeholder="commandKey"
                   onChange={e => {
                     const value = e.target.value;
                     this.onHandleChange("commandKey", value);
+                  }}
+                />
+              </li>
+              <li>
+                <Input
+                  addonBefore={<div>超时时间</div>}
+                  value={timeout}
+                  style={{ width: 210 }}
+                  placeholder="timeout(ms)"
+                  onChange={e => {
+                    const value = e.target.value;
+                    this.onHandleNumberChange("timeout", value);
                   }}
                 />
               </li>
@@ -516,11 +545,11 @@ class AddModal extends Component {
                 <div className={styles.loadText}>负载策略</div>
                 <Select
                   onChange={value => {
-                    this.onHandleChange("loadbalance", value);
+                    this.onHandleChange("loadBalance", value);
                   }}
-                  value={loadbalance}
+                  value={loadBalance}
                   style={{ width: 160 }}
-                  placeholder="loadbalance"
+                  placeholder="loadBalance"
                 >
                   {loadBalanceEnums.map(item => {
                     return (
@@ -531,18 +560,7 @@ class AddModal extends Component {
                   })}
                 </Select>
               </li>
-              <li>
-                <Input
-                  addonBefore={<div>超时时间</div>}
-                  value={timeout}
-                  style={{ width: 250 }}
-                  placeholder="timeout"
-                  onChange={e => {
-                    const value = e.target.value;
-                    this.onHandleChange("timeout", value);
-                  }}
-                />
-              </li>
+              
             </ul>
           </div>
           <div className={styles.divideHandle}>
@@ -562,7 +580,21 @@ class AddModal extends Component {
                         }}
                         placeholder="upstreamHost"
                         value={item.upstreamHost}
-                        style={{ width: 120 }}
+                        style={{ width: 80 }}
+                      />
+                    </li>
+                    <li>
+                      <Input
+                        onChange={e => {
+                          this.divideHandleChange(
+                            index,
+                            "protocol",
+                            e.target.value
+                          );
+                        }}
+                        placeholder="protocol"
+                        value={item.protocol}
+                        style={{ width: 80 }}
                       />
                     </li>
                     <li>
@@ -576,19 +608,19 @@ class AddModal extends Component {
                         }}
                         placeholder="upstreamUrl"
                         value={item.upstreamUrl}
-                        style={{ width: 120 }}
+                        style={{ width: 80 }}
                       />
                     </li>
                     <li>
                       <Input
                         onChange={e => {
-                          this.divideHandleChange(
+                          this.divideHandleNumberChange(
                             index,
                             "timeout",
                             e.target.value
                           );
                         }}
-                        placeholder="timeout"
+                        placeholder="timeout(ms)"
                         value={item.timeout}
                         style={{ width: 80 }}
                       />
@@ -597,7 +629,7 @@ class AddModal extends Component {
                     <li>
                       <Input
                         onChange={e => {
-                          this.divideHandleChange(
+                          this.divideHandleNumberChange(
                             index,
                             "retry",
                             e.target.value
@@ -611,7 +643,7 @@ class AddModal extends Component {
                     <li>
                       <Input
                         onChange={e => {
-                          this.divideHandleChange(
+                          this.divideHandleNumberChange(
                             index,
                             "weight",
                             e.target.value

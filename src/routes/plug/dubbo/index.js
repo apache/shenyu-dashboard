@@ -298,9 +298,9 @@ export default class Dubbo extends Component {
         key: "enabled",
         render: text => {
           if (text) {
-            return <div>开启</div>;
+            return <div className="open">开启</div>;
           } else {
-            return <div>关闭</div>;
+            return <div className="close">关闭</div>;
           }
         }
       },
@@ -351,9 +351,9 @@ export default class Dubbo extends Component {
         key: "enabled",
         render: text => {
           if (text) {
-            return <div>开启</div>;
+            return <div className="open">开启</div>;
           } else {
-            return <div>关闭</div>;
+            return <div className="close">关闭</div>;
           }
         }
       },

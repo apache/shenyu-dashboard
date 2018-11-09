@@ -164,6 +164,12 @@ class AddModal extends Component {
     this.setState({ [key]: value });
   };
 
+  onHandleNumberChange = (key, value) => {
+    if(/^\d*$/.test(value)){
+      this.setState({ [key]: value });
+    }
+  };
+
   render() {
     let {
       onCancel,
@@ -360,7 +366,7 @@ class AddModal extends Component {
                   placeholder="requestVolumeThreshold"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleChange("requestVolumeThreshold", value);
+                    this.onHandleNumberChange("requestVolumeThreshold", value);
                   }}
                 />
               </li>
@@ -372,7 +378,7 @@ class AddModal extends Component {
                   placeholder="errorThresholdPercentage"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleChange("errorThresholdPercentage", value);
+                    this.onHandleNumberChange("errorThresholdPercentage", value);
                   }}
                 />
               </li>
@@ -384,7 +390,7 @@ class AddModal extends Component {
                   placeholder="maxConcurrentRequests"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleChange("maxConcurrentRequests", value);
+                    this.onHandleNumberChange("maxConcurrentRequests", value);
                   }}
                 />
               </li>
@@ -396,7 +402,7 @@ class AddModal extends Component {
                   placeholder="sleepWindowInMilliseconds"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleChange("sleepWindowInMilliseconds", value);
+                    this.onHandleNumberChange("sleepWindowInMilliseconds", value);
                   }}
                 />
               </li>
@@ -446,10 +452,10 @@ class AddModal extends Component {
                   addonBefore={<div>超时时间</div>}
                   value={timeout}
                   style={{ width: 200 }}
-                  placeholder="timeout"
+                  placeholder="timeout(ms)"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleChange("timeout", value);
+                    this.onHandleNumberChange("timeout", value);
                   }}
                 />
               </li>
