@@ -128,6 +128,12 @@ class AddModal extends Component {
     this.setState({ [key]: value });
   };
 
+  onHandleNumberChange = (key, value) => {
+    if(/^\d{0,8}\.{0,1}\d{0,2}$/.test(value)){
+      this.setState({ [key]: value });
+    }
+  };
+
   render() {
     let {
       onCancel,
@@ -308,7 +314,7 @@ class AddModal extends Component {
                   placeholder="输入replenishRate"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleChange("replenishRate", value);
+                    this.onHandleNumberChange("replenishRate", value);
                   }}
                 />
               </li>
@@ -320,7 +326,7 @@ class AddModal extends Component {
                   placeholder="输入burstCapacity"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleChange("burstCapacity", value);
+                    this.onHandleNumberChange("burstCapacity", value);
                   }}
                 />
               </li>

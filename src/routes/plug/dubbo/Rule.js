@@ -22,10 +22,10 @@ class AddModal extends Component {
       }
     ];
 
-    let requestVolumeThreshold = "",
-      errorThresholdPercentage = "",
-      maxConcurrentRequests = "",
-      sleepWindowInMilliseconds = "",
+    let requestVolumeThreshold = "20",
+    errorThresholdPercentage = "50",
+    maxConcurrentRequests = "100",
+    sleepWindowInMilliseconds = "5000",
       groupKey = "",
       commandKey = "",
       loadBalance = "",
@@ -141,13 +141,22 @@ class AddModal extends Component {
       retries
     } = this.state;
 
+    const myRequestVolumeThreshold =
+      requestVolumeThreshold > 0 ? requestVolumeThreshold : "0";
+    const myErrorThresholdPercentage =
+      errorThresholdPercentage > 0 ? errorThresholdPercentage : "0";
+    const myMaxConcurrentRequests =
+      maxConcurrentRequests > 0 ? maxConcurrentRequests : "0";
+    const mySleepWindowInMilliseconds =
+      sleepWindowInMilliseconds > 0 ? sleepWindowInMilliseconds : "0";
+
     form.validateFieldsAndScroll((err, values) => {
       const { name, matchMode, loged, enabled } = values;
       const handle = {
-        requestVolumeThreshold,
-        errorThresholdPercentage,
-        maxConcurrentRequests,
-        sleepWindowInMilliseconds,
+        requestVolumeThreshold: myRequestVolumeThreshold,
+        errorThresholdPercentage: myErrorThresholdPercentage,
+        maxConcurrentRequests: myMaxConcurrentRequests,
+        sleepWindowInMilliseconds: mySleepWindowInMilliseconds,
         groupKey,
         commandKey,
         loadBalance,

@@ -22,10 +22,10 @@ class AddModal extends Component {
       }
     ];
 
-    let requestVolumeThreshold = "",
-      errorThresholdPercentage = "",
-      maxConcurrentRequests = "",
-      sleepWindowInMilliseconds = "",
+    let requestVolumeThreshold = "20",
+      errorThresholdPercentage = "50",
+      maxConcurrentRequests = "100",
+      sleepWindowInMilliseconds = "5000",
       groupKey = "",
       commandKey = "",
       timeout = "",
@@ -101,14 +101,22 @@ class AddModal extends Component {
       serviceId,
       path
     } = this.state;
+    const myRequestVolumeThreshold =
+      requestVolumeThreshold > 0 ? requestVolumeThreshold : "0";
+    const myErrorThresholdPercentage =
+      errorThresholdPercentage > 0 ? errorThresholdPercentage : "0";
+    const myMaxConcurrentRequests =
+      maxConcurrentRequests > 0 ? maxConcurrentRequests : "0";
+    const mySleepWindowInMilliseconds =
+      sleepWindowInMilliseconds > 0 ? sleepWindowInMilliseconds : "0";
 
     form.validateFieldsAndScroll((err, values) => {
       const { name, matchMode, loged, enabled } = values;
       const handle = {
-        requestVolumeThreshold,
-        errorThresholdPercentage,
-        maxConcurrentRequests,
-        sleepWindowInMilliseconds,
+        requestVolumeThreshold: myRequestVolumeThreshold,
+        errorThresholdPercentage: myErrorThresholdPercentage,
+        maxConcurrentRequests: myMaxConcurrentRequests,
+        sleepWindowInMilliseconds: mySleepWindowInMilliseconds,
         groupKey,
         commandKey,
         timeout,
@@ -165,7 +173,7 @@ class AddModal extends Component {
   };
 
   onHandleNumberChange = (key, value) => {
-    if(/^\d*$/.test(value)){
+    if (/^\d*$/.test(value)) {
       this.setState({ [key]: value });
     }
   };
@@ -378,7 +386,10 @@ class AddModal extends Component {
                   placeholder="errorThresholdPercentage"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleNumberChange("errorThresholdPercentage", value);
+                    this.onHandleNumberChange(
+                      "errorThresholdPercentage",
+                      value
+                    );
                   }}
                 />
               </li>
@@ -402,7 +413,10 @@ class AddModal extends Component {
                   placeholder="sleepWindowInMilliseconds"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleNumberChange("sleepWindowInMilliseconds", value);
+                    this.onHandleNumberChange(
+                      "sleepWindowInMilliseconds",
+                      value
+                    );
                   }}
                 />
               </li>
