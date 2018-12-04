@@ -4,7 +4,7 @@ import { message } from "antd";
 import { queryLogin } from "../services/api";
 import { setAuthority } from "../utils/authority";
 import { reloadAuthorized } from "../utils/Authorized";
-import { getPageQuery } from "../utils/utils";
+// import { getPageQuery } from "../utils/utils";
 
 export default {
   namespace: "login",
@@ -28,7 +28,7 @@ export default {
           }
         });
 
-        reloadAuthorized();
+        /* reloadAuthorized();
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params;
@@ -43,8 +43,8 @@ export default {
             window.location.href = redirect;
             return;
           }
-        }
-        yield put(routerRedux.replace(redirect || "/"));
+        } */
+        yield put(routerRedux.push("/home"));
       } else {
         message.destroy();
         message.error("用户名或密码不正确");

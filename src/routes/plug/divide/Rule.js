@@ -36,8 +36,8 @@ class AddModal extends Component {
           protocol: "",
           upstreamUrl: "",
           timeout: "",
-          retry: "",
-          weight: ""
+          retry: "0",
+          weight: "0"
         }
       ];
 
@@ -193,8 +193,8 @@ class AddModal extends Component {
         protocol: "",
         upstreamUrl: "",
         timeout: "",
-        retry: "",
-        weight: ""
+        retry: "0",
+        weight: "0"
       });
     } else {
       upstreamList = [];
@@ -322,7 +322,7 @@ class AddModal extends Component {
     };
     return (
       <Modal
-        width={800}
+        width={900}
         centered
         title="规则"
         visible
@@ -591,9 +591,9 @@ class AddModal extends Component {
                             e.target.value
                           );
                         }}
-                        placeholder="upstreamHost"
+                        placeholder="hostName"
                         value={item.upstreamHost}
-                        style={{ width: 80 }}
+                        style={{ width: 90 }}
                       />
                     </li>
                     <li>
@@ -605,9 +605,9 @@ class AddModal extends Component {
                             e.target.value
                           );
                         }}
-                        placeholder="protocol"
+                        placeholder="http://"
                         value={item.protocol}
-                        style={{ width: 80 }}
+                        style={{ width: 70 }}
                       />
                     </li>
                     <li>
@@ -621,7 +621,7 @@ class AddModal extends Component {
                         }}
                         placeholder="upstreamUrl"
                         value={item.upstreamUrl}
-                        style={{ width: 80 }}
+                        style={{ width: 180 }}
                       />
                     </li>
                     <li>
@@ -635,7 +635,7 @@ class AddModal extends Component {
                         }}
                         placeholder="timeout(ms)"
                         value={item.timeout}
-                        style={{ width: 80 }}
+                        style={{ width: 100 }}
                       />
                     </li>
 
@@ -650,7 +650,7 @@ class AddModal extends Component {
                         }}
                         placeholder="retry"
                         value={item.retry}
-                        style={{ width: 80 }}
+                        style={{ width: 60 }}
                       />
                     </li>
                     <li>

@@ -136,6 +136,13 @@ export default {
       const json = yield call(deleteSelector, { list });
       if (json.code === 200) {
         message.success("删除成功");
+        yield put({
+          type: "saveRule",
+          payload: {
+            ruleTotal: 0,
+            ruleList: []
+          }
+        });
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
