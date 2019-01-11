@@ -11,6 +11,14 @@ const menuData = [
         path: 'waf',
       },
       {
+        name: 'sign',
+        path: 'sign',
+      },
+      {
+        name: 'monitor',
+        path: 'monitor',
+      },
+      {
         name: 'rewrite',
         path: 'rewrite',
       },

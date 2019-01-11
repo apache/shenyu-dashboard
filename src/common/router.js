@@ -80,6 +80,12 @@ export const getRouterData = app => {
     '/plug/waf': {
       component: dynamicWrapper(app, ['waf'], () => import('../routes/plug/waf')),
     },
+    '/plug/sign': {
+      component: dynamicWrapper(app, ['sign'], () => import('../routes/plug/sign')),
+    },
+    '/plug/monitor': {
+      component: dynamicWrapper(app, ['monitor'], () => import('../routes/plug/monitor')),
+    },
     '/plug/rewrite': {
       component: dynamicWrapper(app, ['rewrite'], () => import('../routes/plug/rewrite')),
     },

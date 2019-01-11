@@ -28,22 +28,22 @@ export default {
           }
         });
 
-        /* reloadAuthorized();
-        const urlParams = new URL(window.location.href);
-        const params = getPageQuery();
-        let { redirect } = params;
-        if (redirect) {
-          const redirectUrlParams = new URL(redirect);
-          if (redirectUrlParams.origin === urlParams.origin) {
-            redirect = redirect.substr(urlParams.origin.length);
-            if (redirect.startsWith("/#")) {
-              redirect = redirect.substr(2);
-            }
-          } else {
-            window.location.href = redirect;
-            return;
-          }
-        } */
+        reloadAuthorized();
+        /* const urlParams = new URL(window.location.href);
+         const params = getPageQuery();
+         let { redirect } = params;
+         if (redirect) {
+           const redirectUrlParams = new URL(redirect);
+           if (redirectUrlParams.origin === urlParams.origin) {
+             redirect = redirect.substr(urlParams.origin.length);
+             if (redirect.startsWith("/#")) {
+               redirect = redirect.substr(2);
+             }
+           } else {
+             window.location.href = redirect;
+             return;
+           }
+         } */
         yield put(routerRedux.push("/home"));
       } else {
         message.destroy();

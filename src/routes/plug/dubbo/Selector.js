@@ -54,8 +54,10 @@ class AddModal extends Component {
       if (!err) {
         const mySubmit = this.checkConditions(selectorConditions);
         if (mySubmit) {
+          const { appName, protocol, port, registry } = values;
           handleOk({
             ...values,
+            handle: JSON.stringify({ appName, protocol, port, registry }),
             sort: Number(values.sort),
             selectorConditions
           });
@@ -103,9 +105,23 @@ class AddModal extends Component {
       continued = true,
       loged = true,
       enabled = true,
-      sort
+      sort,
+      handle
     } = this.props;
     const { selectorConditions } = this.state;
+
+    let appName = "",
+      protocol = "",
+      port = "",
+      registry = ""
+
+    if (handle) {
+      const myHandle = JSON.parse(handle);
+      appName = myHandle.appName;
+      protocol = myHandle.protocol;
+      port = myHandle.port;
+      registry = myHandle.registry;
+    }
 
     let {
       selectorTypeEnums,
@@ -143,6 +159,16 @@ class AddModal extends Component {
         sm: { span: 4 }
       }
     };
+
+    const formItemDubLayout = {
+      labelCol: {
+        sm: { span: 5 }
+      },
+      wrapperCol: {
+        sm: { span: 19 }
+      }
+    };
+
     return (
       <Modal
         width={700}
@@ -308,7 +334,55 @@ class AddModal extends Component {
               })(<Switch />)}
             </FormItem>
           </div>
-
+          <h4>dubbo处理: </h4>
+          <FormItem label="应用名" {...formItemDubLayout}>
+            {getFieldDecorator("appName", {
+              initialValue: appName,
+              rules: [
+                {
+                  required: true,
+                  message: "请输入应用名"
+                }
+              ]
+            })(<Input placeholder="appName" />)}
+          </FormItem>
+          <FormItem label="协议" {...formItemDubLayout}>
+            {getFieldDecorator("protocol", {
+              initialValue: protocol,
+              rules: [
+                {
+                  required: true,
+                  message: "请输入协议"
+                }
+              ]
+            })(<Input placeholder="protocol" />)}
+          </FormItem>
+          <FormItem label="注册地址" {...formItemDubLayout}>
+            {getFieldDecorator("registry", {
+              initialValue: registry,
+              rules: [
+                {
+                  required: true,
+                  message: "请输入注册地址"
+                }
+              ]
+            })(<Input placeholder="registry" />)}
+          </FormItem>
+          <FormItem label="端口号" {...formItemDubLayout}>
+            {getFieldDecorator("port", {
+              initialValue: port,
+              rules: [
+                {
+                  required: true,
+                  message: "请输入端口号"
+                },
+                {
+                  pattern: /^\d*$/,
+                  message: "请输入数字"
+                }
+              ]
+            })(<Input placeholder="port" />)}
+          </FormItem>
           <FormItem label="执行顺序" {...formItemLayout}>
             {getFieldDecorator("sort", {
               initialValue: sort,

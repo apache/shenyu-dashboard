@@ -12,8 +12,7 @@ const { Option } = Select;
 class AddModal extends Component {
   constructor(props) {
     super(props);
-
-    const selectorConditions = props.selectorConditions || [
+    const ruleConditions = props.ruleConditions || [
       {
         paramType: "",
         operator: "",
@@ -22,14 +21,15 @@ class AddModal extends Component {
       }
     ];
     this.state = {
-      selectorConditions
+      ruleConditions
     };
   }
 
-  checkConditions = selectorConditions => {
+  checkConditions = () => {
+    let { ruleConditions } = this.state;
     let result = true;
-    if (selectorConditions) {
-      selectorConditions.forEach((item, index) => {
+    if (ruleConditions) {
+      ruleConditions.forEach((item, index) => {
         const { paramType, operator, paramName, paramValue } = item;
         if (!paramType || !operator || !paramName || !paramValue) {
           message.destroy();
@@ -42,24 +42,35 @@ class AddModal extends Component {
       message.error(`条件不完整`);
       result = false;
     }
+
     return result;
   };
 
   handleSubmit = e => {
-    const { form, handleOk } = this.props;
-    const { selectorConditions } = this.state;
-
     e.preventDefault();
+    const { form, handleOk } = this.props;
+    const { ruleConditions } = this.state;
+
     form.validateFieldsAndScroll((err, values) => {
+      const {
+        name,
+        matchMode,
+        loged,
+        enabled,
+        handle=""
+      } = values;
+
       if (!err) {
-        const mySubmit = this.checkConditions(selectorConditions);
-        if (mySubmit) {
-          const { serviceId } = values;
+        const submit = this.checkConditions();
+        if (submit) {
           handleOk({
-            ...values,
-            handle: serviceId,
+            name,
+            matchMode,
+            handle,
+            loged,
+            enabled,
             sort: Number(values.sort),
-            selectorConditions
+            ruleConditions
           });
         }
       }
@@ -67,59 +78,48 @@ class AddModal extends Component {
   };
 
   handleAdd = () => {
-    let { selectorConditions } = this.state;
-    selectorConditions.push({
+    let { ruleConditions } = this.state;
+    ruleConditions.push({
       paramType: "",
       operator: "",
       paramName: "",
       paramValue: ""
     });
-    this.setState({ selectorConditions });
+    this.setState({ ruleConditions });
   };
 
   handleDelete = index => {
-    let { selectorConditions } = this.state;
-    if (selectorConditions && selectorConditions.length > 1) {
-      selectorConditions.splice(index, 1);
+    let { ruleConditions } = this.state;
+    if (ruleConditions && ruleConditions.length > 1) {
+      ruleConditions.splice(index, 1);
     } else {
       message.destroy();
       message.error("至少有一个条件");
     }
-    this.setState({ selectorConditions });
+    this.setState({ ruleConditions });
   };
 
   conditionChange = (index, name, value) => {
-    let { selectorConditions } = this.state;
-    selectorConditions[index][name] = value;
-    this.setState({ selectorConditions });
+    let { ruleConditions } = this.state;
+    ruleConditions[index][name] = value;
+    this.setState({ ruleConditions });
   };
 
   render() {
     let {
       onCancel,
       form,
-      name = "",
       platform,
-      type = "",
+      name = "",
       matchMode = "",
-      continued = true,
+      handle,
       loged = true,
       enabled = true,
-      sort,
-      handle = ""
+      sort = ""
     } = this.props;
+    const { ruleConditions } = this.state;
 
-    let serviceId = handle;
-
-
-    const { selectorConditions } = this.state;
-
-    let {
-      selectorTypeEnums,
-      matchModeEnums,
-      operatorEnums,
-      paramTypeEnums
-    } = platform;
+    let { matchModeEnums, operatorEnums, paramTypeEnums } = platform;
 
     if (operatorEnums) {
       operatorEnums = operatorEnums.filter(item => {
@@ -152,9 +152,9 @@ class AddModal extends Component {
     };
     return (
       <Modal
-        width={700}
+        width={800}
         centered
-        title="选择器"
+        title="规则"
         visible
         okText="确定"
         cancelText="取消"
@@ -167,22 +167,6 @@ class AddModal extends Component {
               rules: [{ required: true, message: "请输入名称" }],
               initialValue: name
             })(<Input placeholder="名称" />)}
-          </FormItem>
-          <FormItem label="类型" {...formItemLayout}>
-            {getFieldDecorator("type", {
-              rules: [{ required: true, message: "请选择类型" }],
-              initialValue: type
-            })(
-              <Select>
-                {selectorTypeEnums.map(item => {
-                  return (
-                    <Option key={item.code} value={item.code}>
-                      {item.name}
-                    </Option>
-                  );
-                })}
-              </Select>
-            )}
           </FormItem>
           <FormItem label="匹配方式" {...formItemLayout}>
             {getFieldDecorator("matchMode", {
@@ -200,12 +184,12 @@ class AddModal extends Component {
               </Select>
             )}
           </FormItem>
-          <div className={styles.condition}>
+          <div className={styles.ruleConditions}>
             <h3 className={styles.header}>
-              <strong>*</strong>条件:{" "}
+              <strong>*</strong>条件:
             </h3>
-            <div>
-              {selectorConditions.map((item, index) => {
+            <div className={styles.content}>
+              {ruleConditions.map((item, index) => {
                 return (
                   <ul key={index}>
                     <li>
@@ -214,12 +198,12 @@ class AddModal extends Component {
                           this.conditionChange(index, "paramType", value);
                         }}
                         value={item.paramType}
-                        style={{ width: 100 }}
+                        style={{ width: 110 }}
                       >
-                        {paramTypeEnums.map(typeItem => {
+                        {paramTypeEnums.map(type => {
                           return (
-                            <Option key={typeItem.name} value={typeItem.name}>
-                              {typeItem.name}
+                            <Option key={type.name} value={type.name}>
+                              {type.name}
                             </Option>
                           );
                         })}
@@ -235,7 +219,7 @@ class AddModal extends Component {
                           );
                         }}
                         value={item.paramName}
-                        style={{ width: 100 }}
+                        style={{ width: 110 }}
                       />
                     </li>
                     <li>
@@ -244,7 +228,7 @@ class AddModal extends Component {
                           this.conditionChange(index, "operator", value);
                         }}
                         value={item.operator}
-                        style={{ width: 100 }}
+                        style={{ width: 110 }}
                       >
                         {operatorEnums.map(opearte => {
                           return (
@@ -266,7 +250,7 @@ class AddModal extends Component {
                           );
                         }}
                         value={item.paramValue}
-                        style={{ width: 100 }}
+                        style={{ width: 110 }}
                       />
                     </li>
                     <li>
@@ -283,19 +267,20 @@ class AddModal extends Component {
                 );
               })}
             </div>
-
-            <Button onClick={this.handleAdd} type="primary">
-              新增
-            </Button>
+            <div>
+              <Button onClick={this.handleAdd} type="primary">
+                新增
+              </Button>
+            </div>
           </div>
+
+          <FormItem label="处理" {...formItemLayout}>
+            {getFieldDecorator("handle", {
+              initialValue: handle,
+              rules: [{ required: true, message: "请输入处理" }]
+            })(<Input placeholder="处理" />)}
+          </FormItem>
           <div className={styles.layout}>
-            <FormItem {...formCheckLayout} label="继续后续选择器">
-              {getFieldDecorator("continued", {
-                initialValue: continued,
-                valuePropName: "checked",
-                rules: [{ required: true }]
-              })(<Switch />)}
-            </FormItem>
             <FormItem
               style={{ margin: "0 30px" }}
               {...formCheckLayout}
@@ -315,18 +300,7 @@ class AddModal extends Component {
               })(<Switch />)}
             </FormItem>
           </div>
-          <FormItem label="serviceId" {...formItemLayout}>
-            {getFieldDecorator("serviceId", {
-              initialValue: serviceId,
-              rules: [
-                {
-                  required: true,
-                  message: "请输入serviceId"
-                },
 
-              ]
-            })(<Input placeholder="serviceId" />)}
-          </FormItem>
           <FormItem label="执行顺序" {...formItemLayout}>
             {getFieldDecorator("sort", {
               initialValue: sort,

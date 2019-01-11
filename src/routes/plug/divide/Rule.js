@@ -30,16 +30,8 @@ class AddModal extends Component {
       commandKey = "",
       loadBalance = "",
       timeout = "",
-      upstreamList = [
-        {
-          upstreamHost: "",
-          protocol: "",
-          upstreamUrl: "",
-          timeout: "",
-          retry: "0",
-          weight: "0"
-        }
-      ];
+      retry = "",
+      weight = "";
 
     if (props.handle) {
       const myHandle = JSON.parse(props.handle);
@@ -51,7 +43,8 @@ class AddModal extends Component {
       commandKey = myHandle.commandKey;
       loadBalance = myHandle.loadBalance;
       timeout = myHandle.timeout;
-      upstreamList = myHandle.upstreamList;
+      retry = myHandle.retry;
+      weight = myHandle.weight;
     }
 
     this.state = {
@@ -64,11 +57,12 @@ class AddModal extends Component {
       commandKey,
       loadBalance,
       timeout,
-      upstreamList
+      retry,
+      weight
     };
   }
 
-  checkConditions = (loadBalance, timeout, upstreamList) => {
+  checkConditions = (loadBalance, timeout) => {
     let { ruleConditions } = this.state;
     let result = true;
     if (ruleConditions) {
@@ -98,23 +92,6 @@ class AddModal extends Component {
       result = false;
     }
 
-    if (upstreamList) {
-      upstreamList.forEach((item, index) => {
-        const { upstreamHost, upstreamUrl } = item;
-        if (!upstreamHost || !upstreamUrl) {
-          message.destroy();
-          message.error(
-            `第${index + 1}行http负载, upstreamHost和upstreamUrl不能为空`
-          );
-          result = false;
-        }
-      });
-    } else {
-      message.destroy();
-      message.error(`http负载不完整`);
-      result = false;
-    }
-
     return result;
   };
 
@@ -131,7 +108,9 @@ class AddModal extends Component {
       commandKey,
       loadBalance,
       timeout,
-      upstreamList
+      upstreamList,
+      retry,
+      weight
     } = this.state;
 
     const myRequestVolumeThreshold =
@@ -142,6 +121,8 @@ class AddModal extends Component {
       maxConcurrentRequests > 0 ? maxConcurrentRequests : "0";
     const mySleepWindowInMilliseconds =
       sleepWindowInMilliseconds > 0 ? sleepWindowInMilliseconds : "0";
+    const myRetry = retry > 0 ? retry : "0";
+    const myWeight = weight > 0 ? weight : "0";
 
     form.validateFieldsAndScroll((err, values) => {
       const { name, matchMode, loged, enabled } = values;
@@ -154,7 +135,9 @@ class AddModal extends Component {
         commandKey,
         loadBalance,
         timeout,
-        upstreamList
+        upstreamList,
+        retry: myRetry,
+        weight: myWeight
       };
       if (!err) {
         const submit = this.checkConditions(loadBalance, timeout, upstreamList);
@@ -185,23 +168,7 @@ class AddModal extends Component {
     this.setState({ ruleConditions });
   };
 
-  divideHandleAdd = () => {
-    let { upstreamList } = this.state;
-    if (upstreamList) {
-      upstreamList.push({
-        upstreamHost: "",
-        protocol: "",
-        upstreamUrl: "",
-        timeout: "",
-        retry: "0",
-        weight: "0"
-      });
-    } else {
-      upstreamList = [];
-    }
 
-    this.setState({ upstreamList });
-  };
 
   handleDelete = index => {
     let { ruleConditions } = this.state;
@@ -214,16 +181,7 @@ class AddModal extends Component {
     this.setState({ ruleConditions });
   };
 
-  divideHandleDelete = index => {
-    let { upstreamList } = this.state;
-    if (upstreamList && upstreamList.length > 1) {
-      upstreamList.splice(index, 1);
-    } else {
-      message.destroy();
-      message.error("至少有一个http负载");
-    }
-    this.setState({ upstreamList });
-  };
+
 
   conditionChange = (index, name, value) => {
     let { ruleConditions } = this.state;
@@ -231,11 +189,7 @@ class AddModal extends Component {
     this.setState({ ruleConditions });
   };
 
-  divideHandleChange = (index, name, value) => {
-    let { upstreamList } = this.state;
-    upstreamList[index][name] = value;
-    this.setState({ upstreamList });
-  };
+
 
   divideHandleNumberChange = (index, name, value) => {
     if (/^\d*$/.test(value)) {
@@ -276,7 +230,8 @@ class AddModal extends Component {
       commandKey,
       loadBalance,
       timeout,
-      upstreamList
+      retry,
+      weight
     } = this.state;
 
     let {
@@ -574,119 +529,35 @@ class AddModal extends Component {
                   })}
                 </Select>
               </li>
+              <li>
+                <Input
+                  onChange={e => {
+                    this.onHandleChange(
+                      "retry",
+                      e.target.value
+                    );
+                  }}
+                  placeholder="retry"
+                  value={retry}
+                  style={{ width: 160 }}
+                />
+              </li>
+              <li>
+                <Input
+                  onChange={e => {
+                    this.onHandleChange(
+                      "weight",
+                      e.target.value
+                    );
+                  }}
+                  placeholder="weight"
+                  value={weight}
+                  style={{ width: 180 }}
+                />
+              </li>
             </ul>
           </div>
-          <div className={styles.divideHandle}>
-            <div className={styles.header} />
-            <div className={styles.content}>
-              {upstreamList.map((item, index) => {
-                return (
-                  <ul key={index}>
-                    <li>
-                      <Input
-                        onChange={e => {
-                          this.divideHandleChange(
-                            index,
-                            "upstreamHost",
-                            e.target.value
-                          );
-                        }}
-                        placeholder="hostName"
-                        value={item.upstreamHost}
-                        style={{ width: 90 }}
-                      />
-                    </li>
-                    <li>
-                      <Input
-                        onChange={e => {
-                          this.divideHandleChange(
-                            index,
-                            "protocol",
-                            e.target.value
-                          );
-                        }}
-                        placeholder="http://"
-                        value={item.protocol}
-                        style={{ width: 70 }}
-                      />
-                    </li>
-                    <li>
-                      <Input
-                        onChange={e => {
-                          this.divideHandleChange(
-                            index,
-                            "upstreamUrl",
-                            e.target.value
-                          );
-                        }}
-                        placeholder="upstreamUrl"
-                        value={item.upstreamUrl}
-                        style={{ width: 180 }}
-                      />
-                    </li>
-                    <li>
-                      <Input
-                        onChange={e => {
-                          this.divideHandleNumberChange(
-                            index,
-                            "timeout",
-                            e.target.value
-                          );
-                        }}
-                        placeholder="timeout(ms)"
-                        value={item.timeout}
-                        style={{ width: 100 }}
-                      />
-                    </li>
 
-                    <li>
-                      <Input
-                        onChange={e => {
-                          this.divideHandleNumberChange(
-                            index,
-                            "retry",
-                            e.target.value
-                          );
-                        }}
-                        placeholder="retry"
-                        value={item.retry}
-                        style={{ width: 60 }}
-                      />
-                    </li>
-                    <li>
-                      <Input
-                        onChange={e => {
-                          this.divideHandleNumberChange(
-                            index,
-                            "weight",
-                            e.target.value
-                          );
-                        }}
-                        placeholder="weight"
-                        value={item.weight}
-                        style={{ width: 80 }}
-                      />
-                    </li>
-                    <li>
-                      <Button
-                        type="danger"
-                        onClick={() => {
-                          this.divideHandleDelete(index);
-                        }}
-                      >
-                        删除
-                      </Button>
-                    </li>
-                  </ul>
-                );
-              })}
-            </div>
-            <div>
-              <Button onClick={this.divideHandleAdd} type="primary">
-                新增
-              </Button>
-            </div>
-          </div>
           <div className={styles.layout}>
             <FormItem
               style={{ margin: "0 30px" }}

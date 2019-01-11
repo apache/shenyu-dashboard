@@ -21,8 +21,21 @@ class AddModal extends Component {
         paramValue: ""
       }
     ];
+
+    let upstreamList = [{
+      upstreamHost: "",
+      protocol: "",
+      upstreamUrl: "",
+    }]
+
+    if (props.handle) {
+      const myHandle = JSON.parse(props.handle);
+      upstreamList = myHandle;
+    }
+
     this.state = {
-      selectorConditions
+      selectorConditions,
+      upstreamList
     };
   }
 
@@ -45,6 +58,30 @@ class AddModal extends Component {
     return result;
   };
 
+  checkUpstream = (upstreamList) => {
+    let result = true;
+
+    if (upstreamList) {
+      upstreamList.forEach((item, index) => {
+        const { upstreamHost, upstreamUrl } = item;
+        if (!upstreamHost || !upstreamUrl) {
+          message.destroy();
+          message.error(
+            `第${index + 1}行http负载, upstreamHost和upstreamUrl不能为空`
+          );
+          result = false;
+        }
+      });
+    } else {
+      message.destroy();
+      message.error(`http负载不完整`);
+      result = false;
+    }
+    return result;
+  }
+
+
+
   handleSubmit = e => {
     const { form, handleOk } = this.props;
     const { selectorConditions } = this.state;
@@ -52,10 +89,14 @@ class AddModal extends Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        const { upstreamList } = this.state;
+
         const mySubmit = this.checkConditions(selectorConditions);
-        if (mySubmit) {
+        const myUpstream = this.checkUpstream(upstreamList);
+        if (mySubmit && myUpstream) {
           handleOk({
             ...values,
+            handle: JSON.stringify(upstreamList),
             sort: Number(values.sort),
             selectorConditions
           });
@@ -92,6 +133,38 @@ class AddModal extends Component {
     this.setState({ selectorConditions });
   };
 
+  divideHandleAdd = () => {
+    let { upstreamList } = this.state;
+    if (upstreamList) {
+      upstreamList.push({
+        upstreamHost: "",
+        protocol: "",
+        upstreamUrl: "",
+      });
+    } else {
+      upstreamList = [];
+    }
+
+    this.setState({ upstreamList });
+  };
+
+  divideHandleChange = (index, name, value) => {
+    let { upstreamList } = this.state;
+    upstreamList[index][name] = value;
+    this.setState({ upstreamList });
+  };
+
+  divideHandleDelete = index => {
+    let { upstreamList } = this.state;
+    if (upstreamList && upstreamList.length > 1) {
+      upstreamList.splice(index, 1);
+    } else {
+      message.destroy();
+      message.error("至少有一个http负载");
+    }
+    this.setState({ upstreamList });
+  };
+
   render() {
     let {
       onCancel,
@@ -105,7 +178,8 @@ class AddModal extends Component {
       enabled = true,
       sort
     } = this.props;
-    const { selectorConditions } = this.state;
+
+    const { selectorConditions, upstreamList } = this.state;
 
     let {
       selectorTypeEnums,
@@ -324,6 +398,76 @@ class AddModal extends Component {
               ]
             })(<Input placeholder="可以填写1-100之间的数字标志执行先后顺序" />)}
           </FormItem>
+          <div className={styles.condition}>
+            <h3 className={styles.header}>
+              <strong>*</strong>处理:{" "}
+            </h3>
+            <div className={styles.content}>
+              {upstreamList.map((item, index) => {
+                return (
+                  <ul key={index}>
+                    <li>
+                      <Input
+                        onChange={e => {
+                          this.divideHandleChange(
+                            index,
+                            "upstreamHost",
+                            e.target.value
+                          );
+                        }}
+                        placeholder="hostName"
+                        value={item.upstreamHost}
+                        style={{ width: 120 }}
+                      />
+                    </li>
+                    <li>
+                      <Input
+                        onChange={e => {
+                          this.divideHandleChange(
+                            index,
+                            "protocol",
+                            e.target.value
+                          );
+                        }}
+                        placeholder="http://"
+                        value={item.protocol}
+                        style={{ width: 120 }}
+                      />
+                    </li>
+                    <li>
+                      <Input
+                        onChange={e => {
+                          this.divideHandleChange(
+                            index,
+                            "upstreamUrl",
+                            e.target.value
+                          );
+                        }}
+                        placeholder="upstreamUrl"
+                        value={item.upstreamUrl}
+                        style={{ width: 180 }}
+                      />
+                    </li>
+                    <li>
+                      <Button
+                        type="danger"
+                        onClick={() => {
+                          this.divideHandleDelete(index);
+                        }}
+                      >
+                        删除
+                      </Button>
+                    </li>
+                  </ul>
+                );
+              })}
+            </div>
+            <div>
+              <Button onClick={this.divideHandleAdd} type="primary">
+                新增
+              </Button>
+            </div>
+          </div>
         </Form>
       </Modal>
     );

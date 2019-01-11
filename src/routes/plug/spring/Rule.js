@@ -29,7 +29,6 @@ class AddModal extends Component {
       groupKey = "",
       commandKey = "",
       timeout = "",
-      serviceId = "",
       path = "";
 
     if (props.handle) {
@@ -41,7 +40,6 @@ class AddModal extends Component {
       groupKey = myHandle.groupKey;
       commandKey = myHandle.commandKey;
       timeout = myHandle.timeout;
-      serviceId = myHandle.serviceId;
       path = myHandle.path;
     }
 
@@ -54,12 +52,11 @@ class AddModal extends Component {
       groupKey,
       commandKey,
       timeout,
-      serviceId,
       path
     };
   }
 
-  checkConditions = serviceId => {
+  checkConditions = () => {
     let { ruleConditions } = this.state;
     let result = true;
     if (ruleConditions) {
@@ -74,12 +71,6 @@ class AddModal extends Component {
     } else {
       message.destroy();
       message.error(`条件不完整`);
-      result = false;
-    }
-
-    if (!serviceId) {
-      message.destroy();
-      message.error(`serviceId值不能为空`);
       result = false;
     }
 
@@ -98,7 +89,6 @@ class AddModal extends Component {
       groupKey,
       commandKey,
       timeout,
-      serviceId,
       path
     } = this.state;
     const myRequestVolumeThreshold =
@@ -120,11 +110,10 @@ class AddModal extends Component {
         groupKey,
         commandKey,
         timeout,
-        serviceId,
         path
       };
       if (!err) {
-        const submit = this.checkConditions(serviceId);
+        const submit = this.checkConditions();
         if (submit) {
           handleOk({
             name,
@@ -198,7 +187,6 @@ class AddModal extends Component {
       groupKey,
       commandKey,
       timeout,
-      serviceId,
       path
     } = this.state;
 
@@ -453,7 +441,7 @@ class AddModal extends Component {
                 [styles.springHeader]: true
               })}
             >
-              <h3>springCloud配置: </h3>
+              <h3 style={{ width: 87 }}>spring配置: </h3>
             </div>
             <ul
               className={classnames({
@@ -465,7 +453,7 @@ class AddModal extends Component {
                 <Input
                   addonBefore={<div>超时时间</div>}
                   value={timeout}
-                  style={{ width: 200 }}
+                  style={{ width: 315 }}
                   placeholder="timeout(ms)"
                   onChange={e => {
                     const value = e.target.value;
@@ -477,23 +465,11 @@ class AddModal extends Component {
                 <Input
                   addonBefore={<div>路径</div>}
                   value={path}
-                  style={{ width: 200 }}
+                  style={{ width: 315 }}
                   placeholder="path"
                   onChange={e => {
                     const value = e.target.value;
                     this.onHandleChange("path", value);
-                  }}
-                />
-              </li>
-              <li>
-                <Input
-                  addonBefore={<div>serviceId</div>}
-                  value={serviceId}
-                  style={{ width: 200 }}
-                  placeholder="serviceId"
-                  onChange={e => {
-                    const value = e.target.value;
-                    this.onHandleChange("serviceId", value);
                   }}
                 />
               </li>

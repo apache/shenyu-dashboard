@@ -44,6 +44,7 @@ class AddModal extends Component {
     }
     return result;
   };
+  
 
   handleSubmit = e => {
     const { form, handleOk } = this.props;
@@ -54,10 +55,8 @@ class AddModal extends Component {
       if (!err) {
         const mySubmit = this.checkConditions(selectorConditions);
         if (mySubmit) {
-          const { serviceId } = values;
           handleOk({
             ...values,
-            handle: serviceId,
             sort: Number(values.sort),
             selectorConditions
           });
@@ -105,13 +104,8 @@ class AddModal extends Component {
       continued = true,
       loged = true,
       enabled = true,
-      sort,
-      handle = ""
+      sort
     } = this.props;
-
-    let serviceId = handle;
-
-
     const { selectorConditions } = this.state;
 
     let {
@@ -315,18 +309,7 @@ class AddModal extends Component {
               })(<Switch />)}
             </FormItem>
           </div>
-          <FormItem label="serviceId" {...formItemLayout}>
-            {getFieldDecorator("serviceId", {
-              initialValue: serviceId,
-              rules: [
-                {
-                  required: true,
-                  message: "请输入serviceId"
-                },
 
-              ]
-            })(<Input placeholder="serviceId" />)}
-          </FormItem>
           <FormItem label="执行顺序" {...formItemLayout}>
             {getFieldDecorator("sort", {
               initialValue: sort,

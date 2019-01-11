@@ -29,10 +29,6 @@ class AddModal extends Component {
       groupKey = "",
       commandKey = "",
       loadBalance = "",
-      registry = "",
-      appName = "",
-      protocol = "",
-      port = "",
       version = "",
       timeout = "",
       group = "",
@@ -47,10 +43,6 @@ class AddModal extends Component {
       groupKey = myHandle.groupKey;
       commandKey = myHandle.commandKey;
       loadBalance = myHandle.loadBalance;
-      registry = myHandle.registry;
-      appName = myHandle.appName;
-      protocol = myHandle.protocol;
-      port = myHandle.port;
       version = myHandle.version;
       timeout = myHandle.timeout;
       group = myHandle.group;
@@ -66,10 +58,6 @@ class AddModal extends Component {
       groupKey,
       commandKey,
       loadBalance,
-      registry,
-      appName,
-      protocol,
-      port,
       version,
       timeout,
       group,
@@ -77,7 +65,7 @@ class AddModal extends Component {
     };
   }
 
-  checkConditions = (appName, protocol, port, registry) => {
+  checkConditions = () => {
     let { ruleConditions } = this.state;
     let result = true;
     if (ruleConditions) {
@@ -94,28 +82,6 @@ class AddModal extends Component {
       message.error(`条件不完整`);
       result = false;
     }
-
-    if (!appName) {
-      message.destroy();
-      message.error(`应用名不能为空`);
-      result = false;
-    }
-    if (!protocol) {
-      message.destroy();
-      message.error(`协议不能为空`);
-      result = false;
-    }
-    if (!port) {
-      message.destroy();
-      message.error(`端口号不能为空`);
-      result = false;
-    }
-    if (!registry) {
-      message.destroy();
-      message.error(`注册地址不能为空`);
-      result = false;
-    }
-
     return result;
   };
 
@@ -131,10 +97,6 @@ class AddModal extends Component {
       groupKey,
       commandKey,
       loadBalance,
-      registry,
-      appName,
-      protocol,
-      port,
       version,
       timeout,
       group,
@@ -160,17 +122,13 @@ class AddModal extends Component {
         groupKey,
         commandKey,
         loadBalance,
-        registry,
-        appName,
-        protocol,
-        port,
         version,
         timeout,
         group,
         retries
       };
       if (!err) {
-        const submit = this.checkConditions(appName, protocol, port, registry);
+        const submit = this.checkConditions();
         if (submit) {
           handleOk({
             name,
@@ -244,10 +202,6 @@ class AddModal extends Component {
       groupKey,
       commandKey,
       loadBalance,
-      registry,
-      appName,
-      protocol,
-      port,
       version,
       timeout,
       group,
@@ -535,46 +489,9 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>应用名</div>}
-                  value={appName}
-                  style={{ width: 200 }}
-                  placeholder="appName"
-                  onChange={e => {
-                    const value = e.target.value;
-                    this.onHandleChange("appName", value);
-                  }}
-                />
-              </li>
-              <li>
-                <Input
-                  addonBefore={<div>协议</div>}
-                  value={protocol}
-                  style={{ width: 200 }}
-                  placeholder="protocol"
-                  onChange={e => {
-                    const value = e.target.value;
-                    this.onHandleChange("protocol", value);
-                  }}
-                />
-              </li>
-              
-              <li>
-                <Input
-                  addonBefore={<div>注册地址</div>}
-                  value={registry}
-                  style={{ width: 330 }}
-                  placeholder="registry"
-                  onChange={e => {
-                    const value = e.target.value;
-                    this.onHandleChange("registry", value);
-                  }}
-                />
-              </li>
-              <li>
-                <Input
                   addonBefore={<div>重试次数</div>}
                   value={retries}
-                  style={{ width: 150 }}
+                  style={{ width: 200 }}
                   placeholder="retries"
                   onChange={e => {
                     const value = e.target.value;
@@ -586,7 +503,7 @@ class AddModal extends Component {
                 <Input
                   addonBefore={<div>超时时间</div>}
                   value={timeout}
-                  style={{ width: 150 }}
+                  style={{ width: 200 }}
                   placeholder="timeout"
                   onChange={e => {
                     const value = e.target.value;
@@ -594,23 +511,12 @@ class AddModal extends Component {
                   }}
                 />
               </li>
-              <li>
-                <Input
-                  addonBefore={<div>端口号</div>}
-                  value={port}
-                  style={{ width: 210 }}
-                  placeholder="port"
-                  onChange={e => {
-                    const value = e.target.value;
-                    this.onHandleNumberChange("port", value);
-                  }}
-                />
-              </li>
+              
               <li>
                 <Input
                   addonBefore={<div>版本号</div>}
                   value={version}
-                  style={{ width: 210 }}
+                  style={{ width: 300 }}
                   placeholder="version"
                   onChange={e => {
                     const value = e.target.value;
@@ -622,7 +528,7 @@ class AddModal extends Component {
                 <Input
                   addonBefore={<div>分组</div>}
                   value={group}
-                  style={{ width: 210 }}
+                  style={{ width: 300 }}
                   placeholder="group"
                   onChange={e => {
                     const value = e.target.value;
