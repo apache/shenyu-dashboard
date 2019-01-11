@@ -26,6 +26,7 @@ class AddModal extends Component {
       upstreamHost: "",
       protocol: "",
       upstreamUrl: "",
+      weight: ''
     }]
 
     if (props.handle) {
@@ -140,6 +141,7 @@ class AddModal extends Component {
         upstreamHost: "",
         protocol: "",
         upstreamUrl: "",
+        weight: ""
       });
     } else {
       upstreamList = [];
@@ -382,25 +384,9 @@ class AddModal extends Component {
               })(<Switch />)}
             </FormItem>
           </div>
-
-          <FormItem label="执行顺序" {...formItemLayout}>
-            {getFieldDecorator("sort", {
-              initialValue: sort,
-              rules: [
-                {
-                  required: true,
-                  message: "请输入1-100数字"
-                },
-                {
-                  pattern: /^([1-9][0-9]{0,1}|100)$/,
-                  message: "请输入1-100数字"
-                }
-              ]
-            })(<Input placeholder="可以填写1-100之间的数字标志执行先后顺序" />)}
-          </FormItem>
           <div className={styles.condition}>
-            <h3 className={styles.header}>
-              <strong>*</strong>处理:{" "}
+            <h3 className={styles.header} style={{ width: 120 }}>
+              <strong>*</strong>http配置:
             </h3>
             <div className={styles.content}>
               {upstreamList.map((item, index) => {
@@ -417,7 +403,7 @@ class AddModal extends Component {
                         }}
                         placeholder="hostName"
                         value={item.upstreamHost}
-                        style={{ width: 120 }}
+                        style={{ width: 100 }}
                       />
                     </li>
                     <li>
@@ -431,7 +417,7 @@ class AddModal extends Component {
                         }}
                         placeholder="http://"
                         value={item.protocol}
-                        style={{ width: 120 }}
+                        style={{ width: 100 }}
                       />
                     </li>
                     <li>
@@ -443,9 +429,24 @@ class AddModal extends Component {
                             e.target.value
                           );
                         }}
-                        placeholder="upstreamUrl"
+                        placeholder="ip:port"
                         value={item.upstreamUrl}
-                        style={{ width: 180 }}
+                        style={{ width: 100 }}
+                      />
+                    </li>
+
+                    <li>
+                      <Input
+                        onChange={e => {
+                          this.divideHandleChange(
+                            index,
+                            "weight",
+                            e.target.value
+                          );
+                        }}
+                        placeholder="weight"
+                        value={item.weight}
+                        style={{ width: 80 }}
                       />
                     </li>
                     <li>
@@ -468,6 +469,22 @@ class AddModal extends Component {
               </Button>
             </div>
           </div>
+
+          <FormItem label="执行顺序" {...formItemLayout}>
+            {getFieldDecorator("sort", {
+              initialValue: sort,
+              rules: [
+                {
+                  required: true,
+                  message: "请输入1-100数字"
+                },
+                {
+                  pattern: /^([1-9][0-9]{0,1}|100)$/,
+                  message: "请输入1-100数字"
+                }
+              ]
+            })(<Input placeholder="可以填写1-100之间的数字标志执行先后顺序" />)}
+          </FormItem>
         </Form>
       </Modal>
     );

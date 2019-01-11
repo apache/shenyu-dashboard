@@ -315,7 +315,7 @@ class AddModal extends Component {
               })(<Switch />)}
             </FormItem>
           </div>
-          <FormItem label="serviceId" {...formItemLayout}>
+          <FormItem label="应用名称" {...formItemLayout}>
             {getFieldDecorator("serviceId", {
               initialValue: serviceId,
               rules: [

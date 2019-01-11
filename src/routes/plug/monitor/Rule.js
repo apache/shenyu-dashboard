@@ -277,7 +277,6 @@ class AddModal extends Component {
           <FormItem label="处理" {...formItemLayout}>
             {getFieldDecorator("handle", {
               initialValue: handle,
-              rules: [{ required: true, message: "请输入处理" }]
             })(<Input placeholder="处理" />)}
           </FormItem>
           <div className={styles.layout}>

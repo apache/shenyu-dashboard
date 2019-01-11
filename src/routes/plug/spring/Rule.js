@@ -395,7 +395,7 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>跳闸休眠时间(单位毫秒)</div>}
+                  addonBefore={<div>跳闸休眠时间(ms)</div>}
                   value={sleepWindowInMilliseconds}
                   style={{ width: 360 }}
                   placeholder="sleepWindowInMilliseconds"
@@ -441,7 +441,7 @@ class AddModal extends Component {
                 [styles.springHeader]: true
               })}
             >
-              <h3 style={{ width: 87 }}>spring配置: </h3>
+              <h3 style={{ width: 87 }}>springCloud: </h3>
             </div>
             <ul
               className={classnames({
@@ -451,18 +451,6 @@ class AddModal extends Component {
             >
               <li>
                 <Input
-                  addonBefore={<div>超时时间</div>}
-                  value={timeout}
-                  style={{ width: 315 }}
-                  placeholder="timeout(ms)"
-                  onChange={e => {
-                    const value = e.target.value;
-                    this.onHandleNumberChange("timeout", value);
-                  }}
-                />
-              </li>
-              <li>
-                <Input
                   addonBefore={<div>路径</div>}
                   value={path}
                   style={{ width: 315 }}
@@ -470,6 +458,18 @@ class AddModal extends Component {
                   onChange={e => {
                     const value = e.target.value;
                     this.onHandleChange("path", value);
+                  }}
+                />
+              </li>
+              <li>
+                <Input
+                  addonBefore={<div>超时时间(ms)</div>}
+                  value={timeout}
+                  style={{ width: 315 }}
+                  placeholder="timeout(ms)"
+                  onChange={e => {
+                    const value = e.target.value;
+                    this.onHandleNumberChange("timeout", value);
                   }}
                 />
               </li>

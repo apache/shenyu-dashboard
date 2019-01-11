@@ -421,7 +421,7 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>跳闸休眠时间(单位毫秒)</div>}
+                  addonBefore={<div>跳闸休眠时间(ms)</div>}
                   value={sleepWindowInMilliseconds}
                   style={{ width: 360 }}
                   placeholder="sleepWindowInMilliseconds"
@@ -501,7 +501,7 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>超时时间</div>}
+                  addonBefore={<div>超时时间(ms)</div>}
                   value={timeout}
                   style={{ width: 200 }}
                   placeholder="timeout"

@@ -30,8 +30,7 @@ class AddModal extends Component {
       commandKey = "",
       loadBalance = "",
       timeout = "",
-      retry = "",
-      weight = "";
+      retry = "";
 
     if (props.handle) {
       const myHandle = JSON.parse(props.handle);
@@ -44,7 +43,6 @@ class AddModal extends Component {
       loadBalance = myHandle.loadBalance;
       timeout = myHandle.timeout;
       retry = myHandle.retry;
-      weight = myHandle.weight;
     }
 
     this.state = {
@@ -57,8 +55,7 @@ class AddModal extends Component {
       commandKey,
       loadBalance,
       timeout,
-      retry,
-      weight
+      retry
     };
   }
 
@@ -109,8 +106,7 @@ class AddModal extends Component {
       loadBalance,
       timeout,
       upstreamList,
-      retry,
-      weight
+      retry
     } = this.state;
 
     const myRequestVolumeThreshold =
@@ -122,7 +118,6 @@ class AddModal extends Component {
     const mySleepWindowInMilliseconds =
       sleepWindowInMilliseconds > 0 ? sleepWindowInMilliseconds : "0";
     const myRetry = retry > 0 ? retry : "0";
-    const myWeight = weight > 0 ? weight : "0";
 
     form.validateFieldsAndScroll((err, values) => {
       const { name, matchMode, loged, enabled } = values;
@@ -136,8 +131,7 @@ class AddModal extends Component {
         loadBalance,
         timeout,
         upstreamList,
-        retry: myRetry,
-        weight: myWeight
+        retry: myRetry
       };
       if (!err) {
         const submit = this.checkConditions(loadBalance, timeout, upstreamList);
@@ -230,8 +224,7 @@ class AddModal extends Component {
       commandKey,
       loadBalance,
       timeout,
-      retry,
-      weight
+      retry
     } = this.state;
 
     let {
@@ -449,7 +442,7 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>跳闸休眠时间(单位毫秒)</div>}
+                  addonBefore={<div>跳闸休眠时间(ms)</div>}
                   value={sleepWindowInMilliseconds}
                   style={{ width: 360 }}
                   placeholder="sleepWindowInMilliseconds"
@@ -488,7 +481,7 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>超时时间</div>}
+                  addonBefore={<div>超时时间(ms)</div>}
                   value={timeout}
                   style={{ width: 210 }}
                   placeholder="timeout(ms)"
@@ -531,6 +524,7 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
+                  addonBefore={<div>重试次数</div>}
                   onChange={e => {
                     this.onHandleChange(
                       "retry",
@@ -542,19 +536,7 @@ class AddModal extends Component {
                   style={{ width: 160 }}
                 />
               </li>
-              <li>
-                <Input
-                  onChange={e => {
-                    this.onHandleChange(
-                      "weight",
-                      e.target.value
-                    );
-                  }}
-                  placeholder="weight"
-                  value={weight}
-                  style={{ width: 180 }}
-                />
-              </li>
+             
             </ul>
           </div>
 
