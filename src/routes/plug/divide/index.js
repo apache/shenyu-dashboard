@@ -20,16 +20,26 @@ export default class Divide extends Component {
   }
 
   componentDidMount() {
-    this.getAllSelectors(1);
+    const { dispatch } = this.props;
+    dispatch({
+      type: "global/fetchPlugins",
+      payload: {
+        callback: (plugins) => {
+          this.getAllSelectors(1, plugins);
+        }
+      }
+    })
   }
 
-  getAllSelectors = page => {
+  getAllSelectors = (page,plugins) => {
     const { dispatch } = this.props;
+    const pluginId = this.getPluginId(plugins, "divide");
     dispatch({
       type: "divide/fetchSelector",
       payload: {
         currentPage: page,
-        pageSize: 12
+        pageSize: 12,
+        pluginId
       }
     });
   };
@@ -47,8 +57,7 @@ export default class Divide extends Component {
     });
   };
 
-  getPluginId = name => {
-    const { plugins } = this.props;
+  getPluginId = (plugins, name) => {
     const plugin = plugins.filter(item => {
       return item.name === name;
     });
@@ -65,12 +74,13 @@ export default class Divide extends Component {
 
   addSelector = () => {
     const { selectorPage } = this.state;
-    const { dispatch } = this.props;
-    const pluginId = this.getPluginId("divide");
+    const { dispatch, plugins } = this.props;
+    const pluginId = this.getPluginId(plugins, "divide");
+    console.log(plugins,pluginId)
     this.setState({
       popup: (
         <Selector
-          pluginId={this.getPluginId()}
+          pluginId={pluginId}
           handleOk={selector => {
             dispatch({
               type: "divide/addSelector",
@@ -120,9 +130,9 @@ export default class Divide extends Component {
   };
 
   editSelector = record => {
-    const { dispatch } = this.props;
+    const { dispatch, plugins } = this.props;
     const { selectorPage } = this.state;
-    const pluginId = this.getPluginId("divide");
+    const pluginId = this.getPluginId(plugins, "divide");
     const { id } = record;
     dispatch({
       type: "divide/fetchSeItem",
@@ -161,9 +171,9 @@ export default class Divide extends Component {
   };
 
   deleteSelector = record => {
-    const { dispatch } = this.props;
+    const { dispatch, plugins } = this.props;
     const { selectorPage } = this.state;
-    const pluginId = this.getPluginId("divide");
+    const pluginId = this.getPluginId(plugins, "divide");
     dispatch({
       type: "divide/deleteSelector",
       payload: {
@@ -265,8 +275,8 @@ export default class Divide extends Component {
   };
 
   asyncClick = () => {
-    const { dispatch } = this.props;
-    const id = this.getPluginId("divide");
+    const { dispatch, plugins } = this.props;
+    const id = this.getPluginId(plugins, "divide");
     dispatch({
       type: "global/asyncPlugin",
       payload: {

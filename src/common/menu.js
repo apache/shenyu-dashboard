@@ -1,5 +1,6 @@
 import { isUrl } from '../utils/utils';
 
+
 const menuData = [
   {
     name: '插件列表',
@@ -9,34 +10,42 @@ const menuData = [
       {
         name: 'waf',
         path: 'waf',
+        id: 'waf1'
       },
       {
         name: 'sign',
         path: 'sign',
+        id: 'sign2'
       },
       {
         name: 'monitor',
         path: 'monitor',
+        id: 'monitor3'
       },
       {
         name: 'rewrite',
         path: 'rewrite',
+        id: 'rewrite4'
       },
       {
         name: 'rate_limiter',
-        path: 'limiter',
+        path: 'rate_limiter',
+        id: 'rate_limiter5'
       },
       {
         name: 'divide',
         path: 'divide',
+        id: 'divide6'
       },
       {
         name: 'dubbo',
         path: 'dubbo',
+        id: 'dubbo7'
       },
       {
         name: 'springCloud',
-        path: 'spring',
+        path: 'springCloud',
+        id: 'springCloud8'
       },
     ],
   },

@@ -11,11 +11,11 @@ import createLoading from 'dva-loading';
 import './index.less';
 
 const middlewares = [];
-if (process.env.NODE_ENV === `development`) {
-  const { logger } = require(`redux-logger`);
+// if (process.env.NODE_ENV === `development`) {
+//   const { logger } = require(`redux-logger`);
 
-  middlewares.push(logger);
-}
+//   middlewares.push(logger);
+// }
 
 // 1. Initialize
 const app = dva({

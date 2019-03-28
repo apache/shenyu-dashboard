@@ -5,7 +5,6 @@ import {
   getAllRules,
   addSelector,
   findSelector,
-  getAllPlugins,
   deleteSelector,
   updateSelector,
   addRule,
@@ -22,63 +21,42 @@ export default {
     ruleList: [],
     selectorTotal: 0,
     ruleTotal: 0,
-    currentSelector: "",
-    plugins: []
+    currentSelector: ""
   },
 
   effects: {
     *fetchSelector({ payload }, { call, put }) {
-      const res = yield call(getAllPlugins, {
-        currentPage: 1,
-        pageSize: 50
-      });
-      if (res.code === 200) {
-        let plugins = res.data.dataList;
+      const json = yield call(getAllSelectors, { ...payload });
+      if (json.code === 200) {
+        let { page, dataList } = json.data;
+        dataList = dataList.map(item => {
+          item.key = item.id;
+          return item;
+        });
         yield put({
-          type: "savePlugins",
+          type: "saveSelector",
           payload: {
-            dataList: plugins
+            selectorTotal: page.totalCount,
+            selectorList: dataList
           }
         });
-        const plugin = plugins.filter(item => {
-          return item.name === "rewrite";
-        });
-        let pluginId = "";
-        if (plugin && plugin.length > 0) {
-          pluginId = plugin[0].id;
-        }
-        const json = yield call(getAllSelectors, { ...payload, pluginId });
-        if (json.code === 200) {
-          let { page, dataList } = json.data;
-          dataList = dataList.map(item => {
-            item.key = item.id;
-            return item;
-          });
-          yield put({
-            type: "saveSelector",
-            payload: {
-              selectorTotal: page.totalCount,
-              selectorList: dataList
-            }
-          });
 
+        yield put({
+          type: "saveCurrentSelector",
+          payload: {
+            currentSelector:
+              dataList && dataList.length > 0 ? dataList[0] : ""
+          }
+        });
+        if (dataList && dataList.length > 0) {
           yield put({
-            type: "saveCurrentSelector",
+            type: "fetchRule",
             payload: {
-              currentSelector:
-                dataList && dataList.length > 0 ? dataList[0] : ""
+              currentPage: 1,
+              pageSize: 12,
+              selectorId: dataList[0].id
             }
           });
-          if (dataList && dataList.length > 0) {
-            yield put({
-              type: "fetchRule",
-              payload: {
-                currentPage: 1,
-                pageSize: 12,
-                selectorId: dataList[0].id
-              }
-            });
-          }
         }
       }
     },
@@ -220,13 +198,6 @@ export default {
         ...state,
         ruleList: payload.ruleList,
         ruleTotal: payload.ruleTotal
-      };
-    },
-
-    savePlugins(state, { payload }) {
-      return {
-        ...state,
-        plugins: payload.dataList
       };
     },
     saveCurrentSelector(state, { payload }) {

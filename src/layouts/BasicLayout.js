@@ -76,6 +76,10 @@ const query = {
   }
 };
 
+@connect(({ global, loading }) => ({
+  plugins: global.plugins,
+  loading: loading.effects["global/fetchPlugins"]
+}))
 class BasicLayout extends React.PureComponent {
   static childContextTypes = {
     location: PropTypes.object,
@@ -90,8 +94,14 @@ class BasicLayout extends React.PureComponent {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const { dispatch } = this.props;
+    dispatch({
+      type: "global/fetchPlugins",
+      payload: {
+        callback: () => { }
+      }
+    });
     dispatch({
       type: "global/fetchPlatform"
     });
@@ -143,8 +153,15 @@ class BasicLayout extends React.PureComponent {
   };
 
   render() {
-    const { collapsed, routerData, match, location } = this.props;
+    const { collapsed, routerData, match, location, plugins, dispatch, } = this.props;
     const bashRedirect = this.getBaseRedirect();
+    const systemRoute = ['waf', "sign", "monitor", "rewrite", "rate_limiter", "divide", "dubbo", "springCloud"];
+    let menus = getMenuData();
+    plugins.forEach((item) => {
+      if (systemRoute.indexOf(item.name) === -1) {
+        menus[0].children.push({ name: item.name, path: `/plug/${item.name}`, authority: undefined, id: item.id })
+      }
+    })
     const layout = (
       <Layout>
         <SiderMenu
@@ -153,7 +170,8 @@ class BasicLayout extends React.PureComponent {
           // If you do not have the Authorized parameter
           // you will be forced to jump to the 403 interface without permission
           Authorized={Authorized}
-          menuData={getMenuData()}
+          dispatch={dispatch}
+          menuData={menus}
           collapsed={collapsed}
           location={location}
           onCollapse={this.handleMenuCollapse}

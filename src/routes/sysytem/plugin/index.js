@@ -65,11 +65,12 @@ export default class Plugin extends Component {
               disabled={true}
               {...plugin}
               handleOk={values => {
-                const { code, enabled, id } = values;
+                const { name, enabled, id, role } = values;
                 dispatch({
                   type: "plugin/update",
                   payload: {
-                    code,
+                    role,
+                    name,
                     enabled,
                     id
                   },
@@ -133,11 +134,12 @@ export default class Plugin extends Component {
           disabled={false}
           handleOk={values => {
             const { dispatch } = this.props;
-            const { code, enabled } = values;
+            const { name, enabled, role } = values;
             dispatch({
               type: "plugin/add",
               payload: {
-                code,
+                name,
+                role,
                 enabled
               },
               fetchValue: {
@@ -176,6 +178,19 @@ export default class Plugin extends Component {
         title: "插件名",
         dataIndex: "name",
         key: "name"
+      },
+      {
+        align: "center",
+        title: "角色",
+        dataIndex: "role",
+        key: "role",
+        render: (text)=>{
+          const map = {
+            0: "系统",
+            1: "自定义"
+          }
+          return <div>{map[text] || '----'}</div>
+        }
       },
       {
         align: "center",

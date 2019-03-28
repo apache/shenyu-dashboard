@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal, Form, Switch, Select } from "antd";
+import { Modal, Form, Switch, Input, Select } from "antd";
 import { connect } from "dva";
 
 const { Option } = Select;
@@ -20,11 +20,16 @@ class AddModal extends Component {
   };
 
   render() {
-    let { handleCancel, form, code, enabled = true, platform , disabled} = this.props;
+    let { handleCancel, form, name, enabled = true, role = "0", id } = this.props;
+
+    let disable = false;
+    if (id) {
+      if (role === 0) {
+        disable = true;
+      }
+    }
 
     const { getFieldDecorator } = form;
-
-    const { pluginEnums } = platform;
 
     const formItemLayout = {
       labelCol: {
@@ -48,23 +53,27 @@ class AddModal extends Component {
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem label="插件" {...formItemLayout}>
-            {getFieldDecorator("code", {
+            {getFieldDecorator("name", {
               rules: [{ required: true, message: "请选择插件" }],
-              initialValue: code,
+              initialValue: name,
             })(
-              <Select disabled={disabled}>
-                {pluginEnums &&
-                  pluginEnums.map(item => {
-                    return (
-                      <Option key={item.code} value={item.code}>
-                        {item.name}
-                      </Option>
-                    );
-                  })}
+              <Input placeholder="插件名" disabled={disable} />
+            )}
+          </FormItem>
+          <FormItem
+            label="角色"
+            {...formItemLayout}
+          >
+            {getFieldDecorator('role', {
+              rules: [{ required: true, message: '请选择角色' }],
+              initialValue: `${role}`,
+            })(
+              <Select>
+                <Option value="0">系统</Option>
+                <Option value="1">自定义</Option>
               </Select>
             )}
           </FormItem>
-
           <FormItem {...formItemLayout} label="状态">
             {getFieldDecorator("enabled", {
               initialValue: enabled,

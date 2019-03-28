@@ -20,16 +20,26 @@ export default class Rewrite extends Component {
   }
 
   componentDidMount() {
-    this.getAllSelectors(1);
+    const { dispatch } = this.props;
+    dispatch({
+      type: "global/fetchPlugins",
+      payload: {
+        callback: (plugins) => {
+          this.getAllSelectors(1, plugins);
+        }
+      }
+    })
   }
 
-  getAllSelectors = page => {
+  getAllSelectors = (page, plugins) => {
     const { dispatch } = this.props;
+    const pluginId = this.getPluginId(plugins, "rewrite");
     dispatch({
       type: "rewrite/fetchSelector",
       payload: {
         currentPage: page,
-        pageSize: 12
+        pageSize: 12,
+        pluginId
       }
     });
   };
@@ -47,8 +57,7 @@ export default class Rewrite extends Component {
     });
   };
 
-  getPluginId = name => {
-    const { plugins } = this.props;
+  getPluginId = (plugins, name) => {
     const plugin = plugins.filter(item => {
       return item.name === name;
     });
@@ -65,8 +74,8 @@ export default class Rewrite extends Component {
 
   addSelector = () => {
     const { selectorPage } = this.state;
-    const { dispatch } = this.props;
-    const pluginId = this.getPluginId("rewrite");
+    const { dispatch, plugins } = this.props;
+    const pluginId = this.getPluginId(plugins, "rewrite");
     this.setState({
       popup: (
         <Selector
@@ -120,9 +129,9 @@ export default class Rewrite extends Component {
   };
 
   editSelector = record => {
-    const { dispatch } = this.props;
+    const { dispatch, plugins } = this.props;
     const { selectorPage } = this.state;
-    const pluginId = this.getPluginId("rewrite");
+    const pluginId = this.getPluginId(plugins, "rewrite");
     const { id } = record;
     dispatch({
       type: "rewrite/fetchSeItem",
@@ -161,9 +170,9 @@ export default class Rewrite extends Component {
   };
 
   deleteSelector = record => {
-    const { dispatch } = this.props;
+    const { dispatch, plugins } = this.props;
     const { selectorPage } = this.state;
-    const pluginId = this.getPluginId("rewrite");
+    const pluginId = this.getPluginId(plugins, "rewrite");
     dispatch({
       type: "rewrite/deleteSelector",
       payload: {
@@ -265,8 +274,8 @@ export default class Rewrite extends Component {
   };
 
   asyncClick = () => {
-    const { dispatch } = this.props;
-    const id = this.getPluginId("rewrite");
+    const { dispatch, plugins } = this.props;
+    const id = this.getPluginId(plugins, "rewrite");
     dispatch({
       type: "global/asyncPlugin",
       payload: {

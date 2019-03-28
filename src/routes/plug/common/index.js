@@ -4,12 +4,12 @@ import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
 
-@connect(({ monitor, global, loading }) => ({
+@connect(({ common, global, loading }) => ({
   ...global,
-  ...monitor,
+  ...common,
   loading: loading.effects["global/fetchPlatform"]
 }))
-export default class Monitor extends Component {
+export default class Common extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -31,11 +31,42 @@ export default class Monitor extends Component {
     })
   }
 
+  componentDidUpdate(prevProps) {
+
+    const preId = prevProps.match.params.id
+    const newId = this.props.match.params.id;
+
+    if (newId !== preId) {
+      const { dispatch } = this.props;
+
+      dispatch({
+        type: "common/resetData",
+      });
+
+      dispatch({
+        type: "global/fetchPlugins",
+        payload: {
+          callback: (plugins) => {
+            this.getAllSelectors(1, plugins);
+          }
+        }
+      })
+    }
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "common/resetData",
+    });
+  }
+
   getAllSelectors = (page, plugins) => {
     const { dispatch } = this.props;
-    const pluginId = this.getPluginId(plugins, "monitor");
+    let name = this.props.match.params ? this.props.match.params.id : '';
+    const pluginId = this.getPluginId(plugins, name);
     dispatch({
-      type: "monitor/fetchSelector",
+      type: "common/fetchSelector",
       payload: {
         currentPage: page,
         pageSize: 12,
@@ -48,7 +79,7 @@ export default class Monitor extends Component {
     const { dispatch, currentSelector } = this.props;
     const selectorId = currentSelector ? currentSelector.id : "";
     dispatch({
-      type: "monitor/fetchRule",
+      type: "common/fetchRule",
       payload: {
         selectorId,
         currentPage: page,
@@ -57,7 +88,7 @@ export default class Monitor extends Component {
     });
   };
 
-  getPluginId = (plugins,name) => {
+  getPluginId = (plugins, name) => {
     const plugin = plugins.filter(item => {
       return item.name === name;
     });
@@ -75,14 +106,15 @@ export default class Monitor extends Component {
   addSelector = () => {
     const { selectorPage } = this.state;
     const { dispatch, plugins } = this.props;
-    const pluginId = this.getPluginId(plugins, "monitor");
+    let name = this.props.match.params ? this.props.match.params.id : ''
+    const pluginId = this.getPluginId(plugins, name);
     this.setState({
       popup: (
         <Selector
           pluginId={pluginId}
           handleOk={selector => {
             dispatch({
-              type: "monitor/addSelector",
+              type: "common/addSelector",
               payload: { pluginId, ...selector },
               fetchValue: { pluginId, currentPage: selectorPage, pageSize: 12 },
               callback: () => {
@@ -106,7 +138,7 @@ export default class Monitor extends Component {
           <Rule
             handleOk={rule => {
               dispatch({
-                type: "monitor/addRule",
+                type: "common/addRule",
                 payload: { selectorId, ...rule },
                 fetchValue: {
                   selectorId,
@@ -131,10 +163,11 @@ export default class Monitor extends Component {
   editSelector = record => {
     const { dispatch, plugins } = this.props;
     const { selectorPage } = this.state;
-    const pluginId = this.getPluginId(plugins, "monitor");
+    let name = this.props.match.params ? this.props.match.params.id : ''
+    const pluginId = this.getPluginId(plugins, name);
     const { id } = record;
     dispatch({
-      type: "monitor/fetchSeItem",
+      type: "common/fetchSeItem",
       payload: {
         id
       },
@@ -145,7 +178,7 @@ export default class Monitor extends Component {
               {...selector}
               handleOk={values => {
                 dispatch({
-                  type: "monitor/updateSelector",
+                  type: "common/updateSelector",
                   payload: {
                     pluginId,
                     ...values,
@@ -172,9 +205,10 @@ export default class Monitor extends Component {
   deleteSelector = record => {
     const { dispatch, plugins } = this.props;
     const { selectorPage } = this.state;
-    const pluginId = this.getPluginId(plugins, "monitor");
+    let name = this.props.match.params ? this.props.match.params.id : ''
+    const pluginId = this.getPluginId(plugins, name);
     dispatch({
-      type: "monitor/deleteSelector",
+      type: "common/deleteSelector",
       payload: {
         list: [record.id]
       },
@@ -201,13 +235,13 @@ export default class Monitor extends Component {
     const { id } = record;
     const { dispatch } = this.props;
     dispatch({
-      type: "monitor/saveCurrentSelector",
+      type: "common/saveCurrentSelector",
       payload: {
         currentSelector: record
       }
     });
     dispatch({
-      type: "monitor/fetchRule",
+      type: "common/fetchRule",
       payload: {
         currentPage: 1,
         pageSize: 12,
@@ -222,7 +256,7 @@ export default class Monitor extends Component {
     const selectorId = currentSelector ? currentSelector.id : "";
     const { id } = record;
     dispatch({
-      type: "monitor/fetchRuleItem",
+      type: "common/fetchRuleItem",
       payload: {
         id
       },
@@ -233,7 +267,7 @@ export default class Monitor extends Component {
               {...rule}
               handleOk={values => {
                 dispatch({
-                  type: "monitor/updateRule",
+                  type: "common/updateRule",
                   payload: {
                     selectorId,
                     ...values,
@@ -261,7 +295,7 @@ export default class Monitor extends Component {
     const { dispatch, currentSelector } = this.props;
     const { rulePage } = this.state;
     dispatch({
-      type: "monitor/deleteRule",
+      type: "common/deleteRule",
       payload: {
         list: [record.id]
       },
@@ -275,7 +309,8 @@ export default class Monitor extends Component {
 
   asyncClick = () => {
     const { dispatch, plugins } = this.props;
-    const id = this.getPluginId(plugins, "monitor");
+    let name = this.props.match.params ? this.props.match.params.id : ''
+    const id = this.getPluginId(plugins, name);
     dispatch({
       type: "global/asyncPlugin",
       payload: {
@@ -448,10 +483,9 @@ export default class Monitor extends Component {
               <div style={{ display: "flex" }}>
                 <h3 style={{ marginRight: 30 }}>选择器规则列表</h3>
                 <Button icon="reload" onClick={this.asyncClick} type="primary">
-                  同步monitor
+                  同步自定义
                 </Button>
               </div>
-
               <Button type="primary" onClick={this.addRule}>
                 添加规则
               </Button>

@@ -44,6 +44,7 @@ export default {
              return;
            }
          } */
+
         yield put(routerRedux.push("/home"));
       } else {
         message.destroy();

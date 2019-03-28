@@ -20,16 +20,27 @@ export default class Waf extends Component {
   }
 
   componentDidMount() {
-    this.getAllSelectors(1);
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: "global/fetchPlugins",
+      payload: {
+        callback: (plugins) => {
+          this.getAllSelectors(1, plugins);
+        }
+      }
+    })
   }
 
-  getAllSelectors = page => {
+  getAllSelectors = (page, plugins) => {
     const { dispatch } = this.props;
+    const pluginId = this.getPluginId(plugins, "waf");
     dispatch({
       type: "waf/fetchSelector",
       payload: {
         currentPage: page,
-        pageSize: 12
+        pageSize: 12,
+        pluginId
       }
     });
   };
@@ -47,8 +58,8 @@ export default class Waf extends Component {
     });
   };
 
-  getPluginId = name => {
-    const { plugins } = this.props;
+  getPluginId = (plugins, name) => {
+
     const plugin = plugins.filter(item => {
       return item.name === name;
     });
@@ -65,8 +76,8 @@ export default class Waf extends Component {
 
   addSelector = () => {
     const { selectorPage } = this.state;
-    const { dispatch } = this.props;
-    const pluginId = this.getPluginId("waf");
+    const { dispatch, plugins } = this.props;
+    const pluginId = this.getPluginId(plugins, "waf");
     this.setState({
       popup: (
         <Selector
@@ -120,9 +131,9 @@ export default class Waf extends Component {
   };
 
   editSelector = record => {
-    const { dispatch } = this.props;
+    const { dispatch, plugins } = this.props;
     const { selectorPage } = this.state;
-    const pluginId = this.getPluginId("waf");
+    const pluginId = this.getPluginId(plugins, "waf");
     const { id } = record;
     dispatch({
       type: "waf/fetchSeItem",
@@ -161,9 +172,9 @@ export default class Waf extends Component {
   };
 
   deleteSelector = record => {
-    const { dispatch } = this.props;
+    const { dispatch, plugins } = this.props;
     const { selectorPage } = this.state;
-    const pluginId = this.getPluginId("waf");
+    const pluginId = this.getPluginId(plugins, "waf");
     dispatch({
       type: "waf/deleteSelector",
       payload: {
@@ -265,8 +276,8 @@ export default class Waf extends Component {
   };
 
   asyncClick = () => {
-    const { dispatch } = this.props;
-    const id = this.getPluginId("waf");
+    const { dispatch, plugins } = this.props;
+    const id = this.getPluginId(plugins, "waf");
     dispatch({
       type: "global/asyncPlugin",
       payload: {

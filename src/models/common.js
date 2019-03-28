@@ -14,51 +14,52 @@ import {
 } from "../services/api";
 
 export default {
-  namespace: "limiter",
+  namespace: "common",
 
   state: {
     selectorList: [],
     ruleList: [],
     selectorTotal: 0,
     ruleTotal: 0,
-    currentSelector: ""
+    currentSelector: "",
   },
 
   effects: {
     *fetchSelector({ payload }, { call, put }) {
-        const json = yield call(getAllSelectors, { ...payload });
-        if (json.code === 200) {
-          let { page, dataList } = json.data;
-          dataList = dataList.map(item => {
-            item.key = item.id;
-            return item;
-          });
-          yield put({
-            type: "saveSelector",
-            payload: {
-              selectorTotal: page.totalCount,
-              selectorList: dataList
-            }
-          });
-
-          yield put({
-            type: "saveCurrentSelector",
-            payload: {
-              currentSelector:
-                dataList && dataList.length > 0 ? dataList[0] : ""
-            }
-          });
-          if (dataList && dataList.length > 0) {
-            yield put({
-              type: "fetchRule",
-              payload: {
-                currentPage: 1,
-                pageSize: 12,
-                selectorId: dataList[0].id
-              }
-            });
+      const json = yield call(getAllSelectors, { ...payload });
+      if (json.code === 200) {
+        let { page, dataList } = json.data;
+        dataList = dataList.map(item => {
+          item.key = item.id;
+          return item;
+        });
+        yield put({
+          type: "saveSelector",
+          payload: {
+            selectorTotal: page.totalCount,
+            selectorList: dataList
           }
+        });
+
+        yield put({
+          type: "saveCurrentSelector",
+          payload: {
+            currentSelector:
+              dataList && dataList.length > 0 ? dataList[0] : ""
+          }
+        });
+        if (dataList && dataList.length > 0) {
+          yield put({
+            type: "fetchRule",
+            payload: {
+              currentPage: 1,
+              pageSize: 12,
+              selectorId: dataList[0].id
+            }
+          });
         }
+      }
+
     },
     *fetchRule({ payload }, { call, put }) {
       const json = yield call(getAllRules, payload);
@@ -205,8 +206,16 @@ export default {
         ...state,
         currentSelector: payload.currentSelector
       };
+    },
+    resetData() {
+      return {
+        selectorList: [],
+        ruleList: [],
+        selectorTotal: 0,
+        ruleTotal: 0,
+        currentSelector: ""
+      }
     }
   }
 };
-
 
