@@ -68,7 +68,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: '请选择角色' }],
               initialValue: `${role}`,
             })(
-              <Select>
+              <Select disabled={disable}>
                 <Option value="0">系统</Option>
                 <Option value="1">自定义</Option>
               </Select>

@@ -72,7 +72,8 @@ export async function updatePlugin(params) {
   return request(`${baseUrl}/plugin/${params.id}`, {
     method: `PUT`,
     body: {
-      code: params.code,
+      role: params.role,
+      name: params.name,
       enabled: params.enabled
     }
   });

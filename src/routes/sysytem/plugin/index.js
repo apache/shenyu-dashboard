@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Table,Input, Button, message } from "antd";
+import { Table, Input, Button, message, Switch } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
 
@@ -168,6 +168,15 @@ export default class Plugin extends Component {
     });
   };
 
+  operateChange = (checked, record) => {
+    const { dispatch } = this.props;
+    const { id, role, name } = record;
+    dispatch({
+      type: 'plugin/changeStatus',
+      payload: { id, enabled: checked, role, name }
+    })
+  }
+
   render() {
     const { plugin, loading } = this.props;
     const { pluginList, total } = plugin;
@@ -184,25 +193,12 @@ export default class Plugin extends Component {
         title: "角色",
         dataIndex: "role",
         key: "role",
-        render: (text)=>{
+        render: (text) => {
           const map = {
             0: "系统",
             1: "自定义"
           }
           return <div>{map[text] || '----'}</div>
-        }
-      },
-      {
-        align: "center",
-        title: "状态",
-        dataIndex: "enabled",
-        key: "enabled",
-        render: text => {
-          if (text) {
-            return <div className="open">开启</div>;
-          } else {
-            return <div className="close">关闭</div>;
-          }
         }
       },
       {
@@ -219,20 +215,11 @@ export default class Plugin extends Component {
       },
       {
         align: "center",
-        title: "操作",
-        dataIndex: "operate",
-        key: "operate",
+        title: "状态",
+        dataIndex: "enabled",
+        key: "enabled",
         render: (text, record) => {
-          return (
-            <div
-              className="edit"
-              onClick={() => {
-                this.editClick(record);
-              }}
-            >
-              编辑
-            </div>
-          );
+          return <Switch checked={text} onChange={(checked) => { this.operateChange(checked, record) }} />
         }
       }
     ];
