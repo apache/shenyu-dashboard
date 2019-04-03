@@ -69,11 +69,10 @@ export async function deletePlugin(params) {
 }
 /* 修改插件 */
 export async function updatePlugin(params) {
-  return request(`${baseUrl}/plugin/${params.id}`, {
-    method: `PUT`,
+  return request(`${baseUrl}/plugin/enabled`, {
+    method: `POST`,
     body: {
-      role: params.role,
-      name: params.name,
+      ids: [params.id],
       enabled: params.enabled
     }
   });

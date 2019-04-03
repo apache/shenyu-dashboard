@@ -15,8 +15,8 @@ class AddModal extends Component {
     super(props);
     const ruleConditions = props.ruleConditions || [
       {
-        paramType: "",
-        operator: "",
+        paramType: "header",
+        operator: "=",
         paramName: "",
         paramValue: ""
       }
@@ -74,8 +74,8 @@ class AddModal extends Component {
   handleAdd = () => {
     let { ruleConditions } = this.state;
     ruleConditions.push({
-      paramType: "",
-      operator: "",
+      paramType: "header",
+      operator: "=",
       paramName: "",
       paramValue: ""
     });

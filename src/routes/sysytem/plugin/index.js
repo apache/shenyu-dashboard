@@ -80,6 +80,7 @@ export default class Plugin extends Component {
                     pageSize: 12
                   },
                   callback: () => {
+                    this.setState({ selectedRowKeys: [] });
                     this.closeModal();
                   }
                 });
@@ -117,6 +118,15 @@ export default class Plugin extends Component {
           name,
           currentPage,
           pageSize: 12
+        },
+        callback: () => {
+          this.setState({ selectedRowKeys: [] });
+          dispatch({
+            type: "global/fetchPlugins",
+            payload: {
+              callback: () => { }
+            }
+          });
         }
       });
     } else {
@@ -149,6 +159,12 @@ export default class Plugin extends Component {
               },
               callback: () => {
                 this.closeModal();
+                dispatch({
+                  type: "global/fetchPlugins",
+                  payload: {
+                    callback: () => { }
+                  }
+                });
               }
             });
           }}
@@ -170,10 +186,10 @@ export default class Plugin extends Component {
 
   operateChange = (checked, record) => {
     const { dispatch } = this.props;
-    const { id, role, name } = record;
+    const { id } = record;
     dispatch({
       type: 'plugin/changeStatus',
-      payload: { id, enabled: checked, role, name }
+      payload: { id, enabled: checked }
     })
   }
 

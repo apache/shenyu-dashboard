@@ -28,14 +28,17 @@ const getIcon = icon => {
  * [{path:string},{path:string}] => [path,path2]
  * @param  menu
  */
-export const getFlatMenuKeys = menu =>
-  menu.reduce((keys, item) => {
+export const getFlatMenuKeys = menu => {
+  return menu.reduce((keys, item) => {
     keys.push(item.path);
     if (item.children) {
       return keys.concat(getFlatMenuKeys(item.children));
     }
     return keys;
   }, []);
+}
+
+
 
 /**
  * Find all matched menu keys based on paths
@@ -183,6 +186,8 @@ export default class SiderMenu extends PureComponent {
     const {
       location: { pathname },
     } = this.props;
+
+    // console.log(this.flatMenuKeys, urlToList(pathname));
     return getMenuMatchKeys(this.flatMenuKeys, urlToList(pathname));
   };
 

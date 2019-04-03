@@ -20,14 +20,14 @@ class AddModal extends Component {
   };
 
   render() {
-    let { handleCancel, form, name, enabled = true, role = "0", id } = this.props;
+    let { handleCancel, form, name, enabled = true, role = "1", id } = this.props;
 
     let disable = false;
     if (id) {
-      if (role === 0) {
-        disable = true;
-      }
+      disable = true;
     }
+
+    role = "1";
 
     const { getFieldDecorator } = form;
 
@@ -68,7 +68,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: '请选择角色' }],
               initialValue: `${role}`,
             })(
-              <Select disabled={disable}>
+              <Select disabled>
                 <Option value="0">系统</Option>
                 <Option value="1">自定义</Option>
               </Select>

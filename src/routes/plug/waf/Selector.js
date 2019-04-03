@@ -15,8 +15,8 @@ class AddModal extends Component {
 
     const selectorConditions = props.selectorConditions || [
       {
-        paramType: "",
-        operator: "",
+        paramType: "header",
+        operator: "=",
         paramName: "",
         paramValue: ""
       }
@@ -67,8 +67,8 @@ class AddModal extends Component {
   handleAdd = () => {
     let { selectorConditions } = this.state;
     selectorConditions.push({
-      paramType: "",
-      operator: "",
+      paramType: "header",
+      operator: "=",
       paramName: "",
       paramValue: ""
     });
@@ -106,6 +106,8 @@ class AddModal extends Component {
       sort
     } = this.props;
     const { selectorConditions } = this.state;
+
+    type = `${type}`;
 
     let {
       selectorTypeEnums,
@@ -164,12 +166,12 @@ class AddModal extends Component {
           <FormItem label="类型" {...formItemLayout}>
             {getFieldDecorator("type", {
               rules: [{ required: true, message: "请选择类型" }],
-              initialValue: type
+              initialValue: type || "1"
             })(
               <Select>
                 {selectorTypeEnums.map(item => {
                   return (
-                    <Option key={item.code} value={item.code}>
+                    <Option key={item.code} value={`${item.code}`}>
                       {item.name}
                     </Option>
                   );

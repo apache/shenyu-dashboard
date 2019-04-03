@@ -67,11 +67,12 @@ export default {
       }
     },
     *delete(params, { call, put }) {
-      const { payload, fetchValue } = params;
+      const { payload, fetchValue, callback } = params;
       const { list } = payload;
       const json = yield call(deletePlugin, { list });
       if (json.code === 200) {
         message.success("删除成功");
+        callback();
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);

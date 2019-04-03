@@ -116,6 +116,9 @@ export default class Auth extends Component {
           appKey,
           currentPage,
           pageSize: 12
+        },
+        callback: () => {
+          this.setState({ selectedRowKeys: [] })
         }
       });
     } else {
@@ -147,6 +150,7 @@ export default class Auth extends Component {
                 pageSize: 12
               },
               callback: () => {
+                this.setState({ selectedRowKeys: [] })
                 this.closeModal();
               }
             });

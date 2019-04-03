@@ -117,6 +117,9 @@ export default class Manage extends Component {
           userName,
           currentPage,
           pageSize: 12
+        },
+        callback: ()=>{
+          this.setState({ selectedRowKeys: [] });
         }
       });
     } else {
@@ -148,6 +151,7 @@ export default class Manage extends Component {
                 pageSize: 12
               },
               callback: () => {
+                this.setState({ selectedRowKeys: [] });
                 this.closeModal();
               }
             });

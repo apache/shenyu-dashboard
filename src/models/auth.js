@@ -43,18 +43,19 @@ export default {
         message.success("添加成功");
         callback();
         yield put({ type: "reload", fetchValue });
-      }else{
+      } else {
         message.warn(json.message);
       }
     },
     *delete(params, { call, put }) {
-      const { payload, fetchValue } = params;
+      const { payload, fetchValue, callback } = params;
       const { list } = payload;
       const json = yield call(deleteAuth, { list });
       if (json.code === 200) {
         message.success("删除成功");
+        callback();
         yield put({ type: "reload", fetchValue });
-      }else{
+      } else {
         message.warn(json.message);
       }
     },
@@ -65,7 +66,7 @@ export default {
         message.success("修改成功");
         callback();
         yield put({ type: "reload", fetchValue });
-      }else{
+      } else {
         message.warn(json.message);
       }
     },
