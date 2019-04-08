@@ -162,7 +162,7 @@ export default {
       if (json.code === 200) {
         message.success("修改成功");
         callback();
-        yield put({ type: "reload", fetchValue });
+        yield put({ type: "reloadRule", fetchValue });
       } else {
         message.warn(json.message);
       }
