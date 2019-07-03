@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Table, Input, Button, message, Switch } from "antd";
+import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
 
@@ -65,10 +65,11 @@ export default class Plugin extends Component {
               disabled={true}
               {...plugin}
               handleOk={values => {
-                const { name, enabled, id, role } = values;
+                const { name, enabled, id, role, config } = values;
                 dispatch({
                   type: "plugin/update",
                   payload: {
+                    config,
                     role,
                     name,
                     enabled,
@@ -144,11 +145,12 @@ export default class Plugin extends Component {
           disabled={false}
           handleOk={values => {
             const { dispatch } = this.props;
-            const { name, enabled, role } = values;
+            const { name, enabled, role,config } = values;
             dispatch({
               type: "plugin/add",
               payload: {
                 name,
+                config,
                 role,
                 enabled
               },
@@ -202,12 +204,14 @@ export default class Plugin extends Component {
         align: "center",
         title: "插件名",
         dataIndex: "name",
-        key: "name"
+        key: "name",
+        width: 200
       },
       {
         align: "center",
         title: "角色",
         dataIndex: "role",
+        width: 200,
         key: "role",
         render: (text) => {
           const map = {
@@ -219,23 +223,41 @@ export default class Plugin extends Component {
       },
       {
         align: "center",
+        title: "配置",
+        dataIndex: "config",
+        key: "config"
+      },
+      {
+        align: "center",
         title: "创建时间",
         dataIndex: "dateCreated",
-        key: "dateCreated"
+        key: "dateCreated",
+        width: 160
       },
       {
         align: "center",
         title: "更新时间",
         dataIndex: "dateUpdated",
-        key: "dateUpdated"
+        key: "dateUpdated",
+        width: 160
       },
       {
         align: "center",
         title: "状态",
         dataIndex: "enabled",
         key: "enabled",
+        width: 150,
         render: (text, record) => {
-          return <Switch checked={text} onChange={(checked) => { this.operateChange(checked, record) }} />
+          return (
+            <div
+              className="edit"
+              onClick={() => {
+                this.editClick(record);
+              }}
+            >
+              编辑
+            </div>
+          );
         }
       }
     ];
@@ -261,13 +283,23 @@ export default class Plugin extends Component {
           >
             查询
           </Button>
-          <Button
-            style={{ marginLeft: 20 }}
-            type="danger"
-            onClick={this.deleteClick}
+
+          <Popconfirm
+            title="你确认删除吗"
+            placement='bottom'
+            onConfirm={() => {
+              this.deleteClick()
+            }}
+            okText="确认"
+            cancelText="取消"
           >
-            删除勾选数据
-          </Button>
+            <Button
+              style={{ marginLeft: 20 }}
+              type="danger"
+            >
+              删除勾选数据
+            </Button>
+          </Popconfirm>
           <Button
             style={{ marginLeft: 20 }}
             type="primary"

@@ -3,6 +3,7 @@ import { Modal, Form, Switch, Input, Select } from "antd";
 import { connect } from "dva";
 
 const { Option } = Select;
+const { TextArea } = Input;
 const FormItem = Form.Item;
 
 @connect(({ global }) => ({
@@ -20,7 +21,7 @@ class AddModal extends Component {
   };
 
   render() {
-    let { handleCancel, form, name, enabled = true, role = "1", id } = this.props;
+    let { handleCancel, form, config, name, enabled = true, role = "1", id } = this.props;
 
     let disable = false;
     if (id) {
@@ -42,7 +43,7 @@ class AddModal extends Component {
 
     return (
       <Modal
-        width={450}
+        width={520}
         centered
         title="插件"
         visible
@@ -60,6 +61,14 @@ class AddModal extends Component {
               <Input placeholder="插件名" disabled={disable} />
             )}
           </FormItem>
+          <FormItem label="配置" {...formItemLayout}>
+            {getFieldDecorator("config", {
+              rules: [{ required: true, message: "请输入配置" }],
+              initialValue: config,
+            })(
+              <TextArea placeholder="请输入配置" rows={4} />
+            )}
+          </FormItem>
           <FormItem
             label="角色"
             {...formItemLayout}
@@ -74,6 +83,7 @@ class AddModal extends Component {
               </Select>
             )}
           </FormItem>
+         
           <FormItem {...formItemLayout} label="状态">
             {getFieldDecorator("enabled", {
               initialValue: enabled,

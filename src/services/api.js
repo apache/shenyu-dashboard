@@ -69,10 +69,13 @@ export async function deletePlugin(params) {
 }
 /* 修改插件 */
 export async function updatePlugin(params) {
-  return request(`${baseUrl}/plugin/enabled`, {
-    method: `POST`,
+  return request(`${baseUrl}/plugin/${params.id}`, {
+    method: `PUT`,
     body: {
       ids: [params.id],
+      name: params.name,
+      role: params.role,
+      config: params.config,
       enabled: params.enabled
     }
   });
@@ -120,6 +123,7 @@ export async function updateAuth(params) {
     method: `PUT`,
     body: {
       appKey: params.appKey,
+      appSecret: params.appSecret,
       enabled: params.enabled
     }
   });

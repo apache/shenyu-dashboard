@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Table, Row, Col, Button, message } from "antd";
+import { Table, Row, Col, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
@@ -331,15 +331,28 @@ export default class Spring extends Component {
               >
                 修改
               </span>
-              <span
-                className="edit"
-                onClick={e => {
-                  e.stopPropagation();
+              <Popconfirm
+                title="你确认删除吗"
+                placement='bottom'
+                onCancel={(e) => {
+                  e.stopPropagation()
+                }}
+                onConfirm={(e) => {
+                  e.stopPropagation()
                   this.deleteSelector(record);
                 }}
+                okText="确认"
+                cancelText="取消"
               >
-                删除
-              </span>
+                <span
+                  className="edit"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                  }}
+                >
+                  删除
+                </span>
+              </Popconfirm>
             </div>
           );
         }
@@ -390,15 +403,28 @@ export default class Spring extends Component {
               >
                 修改
               </span>
-              <span
-                className="edit"
-                onClick={e => {
-                  e.stopPropagation();
+              <Popconfirm
+                title="你确认删除吗"
+                placement='bottom'
+                onCancel={(e) => {
+                  e.stopPropagation()
+                }}
+                onConfirm={(e) => {
+                  e.stopPropagation()
                   this.deleteRule(record);
                 }}
+                okText="确认"
+                cancelText="取消"
               >
-                删除
-              </span>
+                <span
+                  className="edit"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                  }}
+                >
+                  删除
+                </span>
+              </Popconfirm>
             </div>
           );
         }
