@@ -29,7 +29,7 @@ class AddModal extends Component {
       groupKey = "",
       commandKey = "",
       loadBalance = "",
-      timeout = "",
+      timeout = "3000",
       retry = "";
 
     if (props.handle) {

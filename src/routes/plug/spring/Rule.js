@@ -28,7 +28,7 @@ class AddModal extends Component {
       sleepWindowInMilliseconds = "5000",
       groupKey = "",
       commandKey = "",
-      timeout = "",
+      timeout = "3000",
       path = "";
 
     if (props.handle) {

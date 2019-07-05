@@ -26,7 +26,7 @@ export default {
   hash: true,
   proxy: {
     "/": {
-      target: "http://192.168.1.118:8888",
+      target: "http://192.168.1.101:8888",
       changeOrigin: true,
       pathRewrite: { "^/": "" }
     }

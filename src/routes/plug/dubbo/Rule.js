@@ -30,7 +30,7 @@ class AddModal extends Component {
       commandKey = "",
       loadBalance = "",
       version = "",
-      timeout = "",
+      timeout = "3000",
       group = "",
       retries = "";
 

@@ -26,7 +26,7 @@ class AddModal extends Component {
       upstreamHost: "",
       protocol: "",
       upstreamUrl: "",
-      weight: ''
+      weight: '50'
     }]
 
     if (props.handle) {
@@ -64,11 +64,11 @@ class AddModal extends Component {
 
     if (upstreamList) {
       upstreamList.forEach((item, index) => {
-        const { upstreamHost, upstreamUrl } = item;
-        if (!upstreamHost || !upstreamUrl) {
+        const { upstreamHost, upstreamUrl,weight} = item;
+        if (!upstreamHost || !upstreamUrl || !weight) {
           message.destroy();
           message.error(
-            `第${index + 1}行http负载, upstreamHost和upstreamUrl不能为空`
+            `第${index + 1}行http负载, upstreamHost和upstreamUrl, weight不能为空`
           );
           result = false;
         }
@@ -141,7 +141,7 @@ class AddModal extends Component {
         upstreamHost: "",
         protocol: "",
         upstreamUrl: "",
-        weight: ""
+        weight: "50"
       });
     } else {
       upstreamList = [];
