@@ -247,6 +247,20 @@ export default class Plugin extends Component {
         dataIndex: "enabled",
         key: "enabled",
         width: 150,
+        render: text => {
+          if (text) {
+            return <div className="open">开启</div>;
+          } else {
+            return <div className="close">关闭</div>;
+          }
+        }
+      },
+      {
+        align: "center",
+        title: "操作",
+        dataIndex: "time",
+        key: "time",
+        width: 150,
         render: (text, record) => {
           return (
             <div
