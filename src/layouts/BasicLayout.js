@@ -119,7 +119,7 @@ class BasicLayout extends React.PureComponent {
       }
     });
     if (currRouterData && currRouterData.name) {
-      title = `${currRouterData.name} - 网关管理`;
+      title = `soul - 网关管理`;
     }
     return title;
   }
