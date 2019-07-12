@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Modal, Form, Switch, Input, Select } from "antd";
 import { connect } from "dva";
 
@@ -15,20 +15,28 @@ class AddModal extends Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        handleOk({ ...values, id });
+
+        let { name, role, enabled, master, mode, url, password, userName, database, config } = values;
+
+        if (name === 'rate_limiter') {
+          config = JSON.stringify({ master, mode, url, password })
+        } else if (name === 'monitor') {
+          config = JSON.stringify({ userName, database, url, password })
+        }
+        handleOk({ name, role, enabled, config, id });
       }
     });
   };
 
   render() {
-    let { handleCancel, form, config, name, enabled = true, role = "1", id } = this.props;
+    let { handleCancel, platform, form, config, name, enabled = true, role = "1", id } = this.props;
 
     let disable = false;
     if (id) {
       disable = true;
+    } else {
+      role = "1";
     }
-
-    role = "1";
 
     const { getFieldDecorator } = form;
 
@@ -40,6 +48,120 @@ class AddModal extends Component {
         sm: { span: 19 }
       }
     };
+    let {
+      redisModeEnums,
+    } = platform;
+
+
+    let configWrap = ''
+
+
+    if (name === 'rate_limiter') {
+      try {
+        config = JSON.parse(config)
+      } catch (error) {
+        config = {}
+      }
+
+      configWrap = (
+        <Fragment>
+          <FormItem label="master" {...formItemLayout}>
+            {getFieldDecorator("master", {
+              rules: [{ required: true, message: "请输入master" }],
+              initialValue: config.master,
+            })(
+              <Input placeholder="请输入master" />
+            )}
+          </FormItem>
+          <FormItem label="方式" {...formItemLayout}>
+            {getFieldDecorator("mode", {
+              rules: [{ required: true, message: "请选择方式" }],
+              initialValue: config.mode
+            })(
+              <Select>
+                {redisModeEnums.map(item => {
+                  return (
+                    <Option key={item.name} value={item.name}>
+                      {item.name}
+                    </Option>
+                  );
+                })}
+              </Select>
+            )}
+          </FormItem>
+          <FormItem label="URL" {...formItemLayout}>
+            {getFieldDecorator("url", {
+              rules: [{ required: true, message: "请输入URL" }],
+              initialValue: config.url,
+            })(
+              <TextArea placeholder="请输入URL。如果是cluster 或者 sentinel 多个地址使用分号（;）分隔" rows={3} />
+            )}
+          </FormItem>
+          <FormItem label="密码" {...formItemLayout}>
+            {getFieldDecorator("password", {
+              rules: [{ required: true, message: "请输入password" }],
+              initialValue: config.password,
+            })(
+              <Input placeholder="请输入password" />
+            )}
+          </FormItem>
+        </Fragment>
+      )
+    } else if (name === 'monitor') {
+      try {
+        config = JSON.parse(config)
+      } catch (error) {
+        config = {}
+      }
+      configWrap = (
+        <Fragment>
+          
+          <FormItem label="数据库" {...formItemLayout}>
+            {getFieldDecorator("database", {
+              rules: [{ required: true, message: "请输入数据库" }],
+              initialValue: config.database,
+            })(
+              <Input placeholder="请输入数据库" />
+            )}
+          </FormItem>
+          <FormItem label="URL" {...formItemLayout}>
+            {getFieldDecorator("url", {
+              rules: [{ required: true, message: "请输入URL" }],
+              initialValue: config.url,
+            })(
+              <TextArea placeholder="请输入URL" rows={3} />
+            )}
+          </FormItem>
+          <FormItem label="用户名" {...formItemLayout}>
+            {getFieldDecorator("userName", {
+              rules: [{ required: true, message: "请输入用户名" }],
+              initialValue: config.userName,
+            })(
+              <Input placeholder="请输入用户名" />
+            )}
+          </FormItem>
+          <FormItem label="密码" {...formItemLayout}>
+            {getFieldDecorator("password", {
+              rules: [{ required: true, message: "请输入password" }],
+              initialValue: config.password,
+            })(
+              <Input placeholder="请输入password" />
+            )}
+          </FormItem>
+        </Fragment>
+      )
+    } else {
+      configWrap = (
+        <FormItem label="配置" {...formItemLayout}>
+          {getFieldDecorator("config", {
+            rules: [{ required: true, message: "请输入配置" }],
+            initialValue: config,
+          })(
+            <TextArea placeholder="请输入配置" rows={4} />
+          )}
+        </FormItem>
+      )
+    }
 
     return (
       <Modal
@@ -61,14 +183,7 @@ class AddModal extends Component {
               <Input placeholder="插件名" disabled={disable} />
             )}
           </FormItem>
-          <FormItem label="配置" {...formItemLayout}>
-            {getFieldDecorator("config", {
-              rules: [{ required: true, message: "请输入配置" }],
-              initialValue: config,
-            })(
-              <TextArea placeholder="请输入配置" rows={4} />
-            )}
-          </FormItem>
+          {configWrap}
           <FormItem
             label="角色"
             {...formItemLayout}
@@ -83,7 +198,7 @@ class AddModal extends Component {
               </Select>
             )}
           </FormItem>
-         
+
           <FormItem {...formItemLayout} label="状态">
             {getFieldDecorator("enabled", {
               initialValue: enabled,
