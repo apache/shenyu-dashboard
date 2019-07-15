@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { Modal, Form, Switch, Input, Select } from "antd";
+import { Modal, Form, Switch, Input, Select, Divider } from "antd";
 import { connect } from "dva";
 
 const { Option } = Select;
@@ -63,16 +63,11 @@ class AddModal extends Component {
         config = {}
       }
 
+      const ruleMaster = this.props.form.getFieldValue('mode')
+      const reMaster = !!((ruleMaster === 'cluster' || ruleMaster === 'sentinel'))
       configWrap = (
         <Fragment>
-          <FormItem label="master" {...formItemLayout}>
-            {getFieldDecorator("master", {
-              rules: [{ required: true, message: "请输入master" }],
-              initialValue: config.master,
-            })(
-              <Input placeholder="请输入master" />
-            )}
-          </FormItem>
+          <Divider>redis 配置</Divider>
           <FormItem label="方式" {...formItemLayout}>
             {getFieldDecorator("mode", {
               rules: [{ required: true, message: "请选择方式" }],
@@ -89,6 +84,15 @@ class AddModal extends Component {
               </Select>
             )}
           </FormItem>
+          <FormItem label="master" {...formItemLayout}>
+            {getFieldDecorator("master", {
+              rules: reMaster ? [{ required: true, message: "请输入master" }] : [],
+              initialValue: config.master,
+            })(
+              <Input placeholder="请输入master" />
+            )}
+          </FormItem>
+
           <FormItem label="URL" {...formItemLayout}>
             {getFieldDecorator("url", {
               rules: [{ required: true, message: "请输入URL" }],
@@ -99,12 +103,14 @@ class AddModal extends Component {
           </FormItem>
           <FormItem label="密码" {...formItemLayout}>
             {getFieldDecorator("password", {
-              rules: [{ required: true, message: "请输入password" }],
+              rules: [],
               initialValue: config.password,
             })(
               <Input placeholder="请输入password" />
             )}
           </FormItem>
+
+          <Divider />
         </Fragment>
       )
     } else if (name === 'monitor') {
@@ -115,7 +121,7 @@ class AddModal extends Component {
       }
       configWrap = (
         <Fragment>
-          
+          <Divider>influxdb 配置</Divider>
           <FormItem label="数据库" {...formItemLayout}>
             {getFieldDecorator("database", {
               rules: [{ required: true, message: "请输入数据库" }],
@@ -148,6 +154,7 @@ class AddModal extends Component {
               <Input placeholder="请输入password" />
             )}
           </FormItem>
+          <Divider />
         </Fragment>
       )
     } else {
