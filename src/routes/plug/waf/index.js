@@ -189,8 +189,9 @@ export default class Waf extends Component {
   };
 
   pageSelectorChange = page => {
-    this.setSate({ selectorPage: page });
-    this.getAllSelectors(page);
+    const { plugins } = this.props;
+    this.setState({ selectorPage: page });
+    this.getAllSelectors(page, plugins);
   };
 
   pageRuleChange = page => {
