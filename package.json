@@ -68,7 +68,7 @@
     "react-loadable": "^5.4.0",
     "redbox-react": "^1.5.0",
     "regenerator-runtime": "^0.12.0",
-    "roadhog": "^2.4.2",
+    "roadhog": "^2.5.0-beta.4",
     "roadhog-api-doc": "^1.0.3",
     "stylelint": "^9.2.1",
     "stylelint-config-prettier": "^3.0.4",

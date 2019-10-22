@@ -107,6 +107,9 @@ export const getRouterData = app => {
     '/system/manage': {
       component: dynamicWrapper(app, ['manage'], () => import('../routes/sysytem/user')),
     },
+    '/system/metadata': {
+      component: dynamicWrapper(app, ['metadata'], () => import('../routes/sysytem/metadata')),
+    },
     '/system/plugin': {
       component: dynamicWrapper(app, ['plugin'], () => import('../routes/sysytem/plugin')),
     },

@@ -30,6 +30,94 @@ export async function updateUser(params) {
     }
   });
 }
+/* 查询所有元数据 */
+export async function getAllMetadata(params) {
+  const { appName, currentPage, pageSize } = params;
+  let myParams = params;
+  if (appName) {
+    myParams = params;
+  } else {
+    myParams = { currentPage, pageSize };
+  }
+  
+  return request(`${baseUrl}/meta-data/queryList?${stringify(myParams)}`, {
+    method: `GET`
+  });
+}
+/* 查询单个元数据 */
+// export async function findMetadata(params) {
+//   return request(`${baseUrl}/meta-data/queryList/${params.id}`, {
+//     method: `GET`
+//   });
+// }
+export async function findMetadata(params) {
+  // const { appName, currentPage, pageSize } = params;
+  // let myParams = params;
+  // if (appName) {
+  //   myParams = params;
+  // } else {
+  //   myParams = { currentPage, pageSize };
+  // }
+  return request(`${baseUrl}/meta-data/${params.id}`, {
+    method: `GET`
+  });
+}
+/* 添加元数据 */
+export async function addMetadata(params) {
+  return request(`${baseUrl}/meta-data/createOrUpdate`, {
+    method: `POST`,
+    body: {
+      ...params
+    }
+  });
+}
+/* 修改元数据 */
+export async function updateMetadata(params) {
+  return request(`${baseUrl}/meta-data/createOrUpdate`, {
+    method: `POST`,
+    body: {
+      appName: params.appName,
+      enabled: params.enabled,
+      id: params.id,
+      methodName: params.methodName,
+      parameterTypes:params.parameterTypes,
+      path: params.path,
+      rpcExt: params.rpcExt,
+      rpcType: params.rpcType,
+      serviceName: params.serviceName
+    }
+  });
+}
+/* 同步元数据 */
+export async function syncData() {
+  return request(`${baseUrl}//meta-data/syncData`, {
+    method: `POST`,
+    body: {
+      
+    }
+  });
+}
+
+
+
+/* 删除元数据 */
+export async function deleteMetadata(params) {
+  return request(`${baseUrl}/meta-data/batchDeleted`, {
+    method: `POST`,
+    body: [...params.list]
+  });
+}
+/* 元数据中的批量启用或禁用 */
+export async function updateEnabled(params) {
+  
+  return request(`${baseUrl}/meta-data/batchEnabled`, {
+    method: `POST`,
+    body: {
+      ids: params.list,
+      enabled: params.enabled
+    }
+  });
+}
 /* 查询所有用户 */
 export async function getAllUsers(params) {
   const { userName, currentPage, pageSize } = params;
@@ -80,6 +168,7 @@ export async function updatePlugin(params) {
     }
   });
 }
+
 /* 查询所有插件 */
 export async function getAllPlugins(params) {
   const { name, currentPage, pageSize } = params;

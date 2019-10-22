@@ -21,6 +21,7 @@ export default {
       const json = yield call(getAllUsers, payload);
       if (json.code === 200) {
         let { page, dataList } = json.data;
+        
         dataList = dataList.map(item => {
           item.key = item.id;
           return item;
