@@ -182,7 +182,7 @@ class AddModal extends Component {
     } = this.props;
 
     const { selectorConditions, upstreamList } = this.state;
-
+    
     let {
       selectorTypeEnums,
       matchModeEnums,
@@ -271,10 +271,13 @@ class AddModal extends Component {
               </Select>
             )}
           </FormItem>
+          {/* 条件 */}
           <div className={styles.condition}>
+            {/* 输入框左侧标题 */}
             <h3 className={styles.header}>
               <strong>*</strong>条件:{" "}
             </h3>
+
             <div>
               {selectorConditions.map((item, index) => {
                 return (
@@ -359,6 +362,7 @@ class AddModal extends Component {
               新增
             </Button>
           </div>
+          
           <div className={styles.layout}>
             <FormItem {...formCheckLayout} label="继续后续选择器">
               {getFieldDecorator("continued", {
@@ -386,6 +390,7 @@ class AddModal extends Component {
               })(<Switch />)}
             </FormItem>
           </div>
+          {/* http配置 */}
           <div className={styles.condition}>
             <h3 className={styles.header} style={{ width: 120 }}>
               <strong>*</strong>http配置:

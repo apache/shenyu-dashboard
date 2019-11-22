@@ -65,7 +65,12 @@ const menuData = [
       {
         name: '认证管理',
         path: 'auth'
+      },
+      {
+        name: '元数据管理',
+        path: 'metadata'
       }
+
     ],
   },
 ];

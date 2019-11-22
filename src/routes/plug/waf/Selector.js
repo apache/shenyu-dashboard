@@ -105,6 +105,7 @@ class AddModal extends Component {
       enabled = true,
       sort
     } = this.props;
+
     const { selectorConditions } = this.state;
 
     type = `${type}`;
@@ -115,7 +116,7 @@ class AddModal extends Component {
       operatorEnums,
       paramTypeEnums
     } = platform;
-
+    
     if (operatorEnums) {
       operatorEnums = operatorEnums.filter(item => {
         return item.support === true;

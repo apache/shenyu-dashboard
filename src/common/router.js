@@ -104,13 +104,16 @@ export const getRouterData = app => {
     '/plug/:id': {
       component: dynamicWrapper(app, ['common'], () => import('../routes/plug/common')),
     },
-    '/system/manage': {
+    '/system/manage': { // 用户管理
       component: dynamicWrapper(app, ['manage'], () => import('../routes/sysytem/user')),
     },
-    '/system/plugin': {
+    '/system/metadata': { // 元数据管理
+      component: dynamicWrapper(app, ['metadata'], () => import('../routes/sysytem/metadata')),
+    },
+    '/system/plugin': { // 插件管理
       component: dynamicWrapper(app, ['plugin'], () => import('../routes/sysytem/plugin')),
     },
-    '/system/auth': {
+    '/system/auth': { // 认证管理
       component: dynamicWrapper(app, ['auth'], () => import('../routes/sysytem/appAuth')),
     },
 

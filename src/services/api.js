@@ -30,6 +30,99 @@ export async function updateUser(params) {
     }
   });
 }
+/* 查询所有元数据 */
+export async function getAllMetadata(params) {
+  const { appName, currentPage, pageSize } = params;
+  let myParams = params;
+  if (appName) {
+    myParams = params;
+  } else {
+    myParams = { currentPage, pageSize };
+  }
+  
+  return request(`${baseUrl}/meta-data/queryList?${stringify(myParams)}`, {
+    method: `GET`
+  });
+}
+/* 查询单个元数据 */
+// export async function findMetadata(params) {
+//   return request(`${baseUrl}/meta-data/queryList/${params.id}`, {
+//     method: `GET`
+//   });
+// }
+export async function findMetadata(params) {
+  // const { appName, currentPage, pageSize } = params;
+  // let myParams = params;
+  // if (appName) {
+  //   myParams = params;
+  // } else {
+  //   myParams = { currentPage, pageSize };
+  // }
+  return request(`${baseUrl}/meta-data/${params.id}`, {
+    method: `GET`
+  });
+}
+/* 添加元数据 */
+export async function addMetadata(params) {
+  return request(`${baseUrl}/meta-data/createOrUpdate`, {
+    method: `POST`,
+    body: {
+      ...params
+    }
+  });
+}
+/* 修改元数据 */
+export async function updateMetadata(params) {
+  return request(`${baseUrl}/meta-data/createOrUpdate`, {
+    method: `POST`,
+    body: {
+      appName: params.appName,
+      enabled: params.enabled,
+      id: params.id,
+      methodName: params.methodName,
+      parameterTypes:params.parameterTypes,
+      path: params.path,
+      rpcExt: params.rpcExt,
+      rpcType: params.rpcType,
+      serviceName: params.serviceName
+    }
+  });
+}
+/* 同步元数据 */
+export async function syncData() {
+  return request(`${baseUrl}/meta-data/syncData`, {
+    method: `POST`,
+    body: {
+      
+    }
+  });
+}
+
+/* 获取所有(按照应用名称分组) */
+export async function getfetchMetaGroup(params) {
+  return request(`${baseUrl}/meta-data/findAllGroup`,{
+    method: `GET`
+  })
+}
+
+/* 删除元数据 */
+export async function deleteMetadata(params) {
+  return request(`${baseUrl}/meta-data/batchDeleted`, {
+    method: `POST`,
+    body: [...params.list]
+  });
+}
+/* 元数据中的批量启用或禁用 */
+export async function updateEnabled(params) {
+  
+  return request(`${baseUrl}/meta-data/batchEnabled`, {
+    method: `POST`,
+    body: {
+      ids: params.list,
+      enabled: params.enabled
+    }
+  });
+}
 /* 查询所有用户 */
 export async function getAllUsers(params) {
   const { userName, currentPage, pageSize } = params;
@@ -80,6 +173,7 @@ export async function updatePlugin(params) {
     }
   });
 }
+
 /* 查询所有插件 */
 export async function getAllPlugins(params) {
   const { name, currentPage, pageSize } = params;
@@ -99,7 +193,16 @@ export async function findPlugin(params) {
     method: `GET`
   });
 }
-
+/* 批量更改装态 */
+export async function updatepluginEnabled(params) {
+  return request(`${baseUrl}/plugin/enabled`, {
+    method: `POST`,
+    body: {
+      ids: params.list,
+      enabled: params.enabled
+    }
+  })
+}
 // 认证管理
 /* 增加认证 */
 export async function addAuth(params) {
@@ -140,6 +243,91 @@ export async function getAllAuth(params) {
   return request(`${baseUrl}/appAuth?${stringify(myParams)}`, {
     method: `GET`
   });
+}
+/* 同步Auth */
+export async function syncAuthsData() {
+  return request(`${baseUrl}/appAuth/syncData`, {
+    method: `POST`,
+    body: {}
+  })
+}
+/* 查询所有Auth */
+export async function getAllAuths(params) {
+  const { appKey,phone, currentPage, pageSize } = params;
+  let myParams = params;
+  if (appKey || phone) {
+    myParams = params;
+  } else {
+    myParams = { currentPage, pageSize };
+  }
+  return request(`${baseUrl}/appAuth/findPageByQuery`, {
+    method: `POST`,
+    body: {
+      ...myParams
+    }
+  });
+}
+
+/* 查询单个Auth */
+export async function findAuthData(params) {
+  return request(`${baseUrl}/appAuth/detail?id=${params.id}`, {
+    method: `GET`
+  });
+}
+/* 查询单个Auth详情 */
+export async function findAuthDataDel(params) {
+  return request(`${baseUrl}/appAuth/detailPath?id=${params.id}`, {
+    method: `GET`
+  });
+}
+/* 查询所有需用到的元数据 */
+export async function getAllMetadatas(params) {
+  return request(`${baseUrl}/meta-data/findAll`,{
+    method: `GET`
+  })
+}
+/* 修改Auth */
+export async function updateAuthData(params) {
+  
+  return request(`${baseUrl}/appAuth/updateDetail`, {
+    method: `POST`,
+    body: {
+      ...params
+    }
+  })
+}
+/* 修改AuthDel */
+export async function updateAuthDel(params) {
+  return request(`${baseUrl}/appAuth/updateDetailPath`, {
+    method: `POST`,
+    body: params
+  })
+}
+/* 添加Auth */
+export async function addAuthData(params) {
+    return request(`${baseUrl}/appAuth/apply`, {
+      method: `POST`,
+      body: {
+        ...params
+      }
+    })
+}
+/* Auth中的批量启用或禁用 */
+export async function updateAuthEnabled(params) {
+  return request(`${baseUrl}/appAuth/batchEnabled`, {
+    method: `POST`,
+    body: {
+      ids: params.list,
+      enabled: params.enabled
+    }
+  })
+}
+/* 批量删除Auth */
+export async function deleteAuths(params) {
+  return request(`${baseUrl}/appAuth/batchDelete`,{
+    method: `POST`,
+    body: [...params.list]
+  })
 }
 /* 查询单个认证 */
 export async function findAuth(params) {
