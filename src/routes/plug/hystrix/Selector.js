@@ -56,10 +56,8 @@ class AddModal extends Component {
       if (!err) {
         const mySubmit = selectValue!=='0'&&this.checkConditions(selectorConditions);
         if (mySubmit||selectValue==='0') {
-          const { serviceId } = values;
           handleOk({
             ...values,
-            handle: serviceId,
             sort: Number(values.sort),
             selectorConditions
           });
@@ -113,15 +111,12 @@ class AddModal extends Component {
       continued = true,
       loged = true,
       enabled = true,
-      sort,
-      handle = ""
+      sort
     } = this.props;
 
-    let serviceId = handle;
-    type = `${type}`;
-
-
     const { selectorConditions,selectValue } = this.state;
+
+    type = `${type}`;
 
     let {
       selectorTypeEnums,
@@ -129,7 +124,7 @@ class AddModal extends Component {
       operatorEnums,
       paramTypeEnums
     } = platform;
-
+    
     if (operatorEnums) {
       operatorEnums = operatorEnums.filter(item => {
         return item.support === true;
@@ -195,7 +190,7 @@ class AddModal extends Component {
           </FormItem>
           {
             selectValue!=='0'&&<>
-            <FormItem label="匹配方式" {...formItemLayout}>
+              <FormItem label="匹配方式" {...formItemLayout}>
             {getFieldDecorator("matchMode", {
               rules: [{ required: true, message: "请选择匹配方式" }],
               initialValue: matchMode
@@ -329,18 +324,7 @@ class AddModal extends Component {
               })(<Switch />)}
             </FormItem>
           </div>
-          <FormItem label="应用名称" {...formItemLayout}>
-            {getFieldDecorator("serviceId", {
-              initialValue: serviceId,
-              rules: [
-                {
-                  required: true,
-                  message: "请输入serviceId"
-                },
 
-              ]
-            })(<Input placeholder="serviceId" />)}
-          </FormItem>
           <FormItem label="执行顺序" {...formItemLayout}>
             {getFieldDecorator("sort", {
               initialValue: sort,

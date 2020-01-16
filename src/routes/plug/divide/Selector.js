@@ -33,10 +33,11 @@ class AddModal extends Component {
       const myHandle = JSON.parse(props.handle);
       upstreamList = myHandle;
     }
-
+    let selectValue = props.type+'' || null
     this.state = {
       selectorConditions,
-      upstreamList
+      upstreamList,
+      selectValue
     };
   }
 
@@ -85,16 +86,16 @@ class AddModal extends Component {
 
   handleSubmit = e => {
     const { form, handleOk } = this.props;
-    const { selectorConditions } = this.state;
+    const { selectorConditions,selectValue } = this.state;
 
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         const { upstreamList } = this.state;
 
-        const mySubmit = this.checkConditions(selectorConditions);
+        const mySubmit = selectValue!=='0'&& this.checkConditions(selectorConditions);
         const myUpstream = this.checkUpstream(upstreamList);
-        if (mySubmit && myUpstream) {
+        if ((mySubmit||selectValue==='0') && myUpstream) {
           handleOk({
             ...values,
             handle: JSON.stringify(upstreamList),
@@ -167,6 +168,12 @@ class AddModal extends Component {
     this.setState({ upstreamList });
   };
 
+  getSelectValue = value =>{
+    this.setState({
+      selectValue:value
+    })
+  }
+
   render() {
     let {
       onCancel,
@@ -181,7 +188,7 @@ class AddModal extends Component {
       sort
     } = this.props;
 
-    const { selectorConditions, upstreamList } = this.state;
+    const { selectorConditions, upstreamList ,selectValue } = this.state;
     
     let {
       selectorTypeEnums,
@@ -244,7 +251,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: "请选择类型" }],
               initialValue: type || "1"
             })(
-              <Select>
+              <Select onChange={value=>this.getSelectValue(value)}>
                 {selectorTypeEnums.map(item => {
                   return (
                     <Option key={item.code} value={`${item.code}`}>
@@ -255,7 +262,9 @@ class AddModal extends Component {
               </Select>
             )}
           </FormItem>
-          <FormItem label="匹配方式" {...formItemLayout}>
+          {
+            selectValue!=='0'&&<>
+              <FormItem label="匹配方式" {...formItemLayout}>
             {getFieldDecorator("matchMode", {
               rules: [{ required: true, message: "请选择匹配方式" }],
               initialValue: matchMode
@@ -363,6 +372,10 @@ class AddModal extends Component {
             </Button>
           </div>
           
+            
+            
+            </>
+          }
           <div className={styles.layout}>
             <FormItem {...formCheckLayout} label="继续后续选择器">
               {getFieldDecorator("continued", {

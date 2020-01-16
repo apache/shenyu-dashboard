@@ -80,6 +80,9 @@ export const getRouterData = app => {
     '/plug/waf': {
       component: dynamicWrapper(app, ['waf'], () => import('../routes/plug/waf')),
     },
+    '/plug/hystrix': {
+      component: dynamicWrapper(app, ['hystrix'], () => import('../routes/plug/hystrix')),
+    },
     '/plug/sign': {
       component: dynamicWrapper(app, ['sign'], () => import('../routes/plug/sign')),
     },
@@ -140,7 +143,6 @@ export const getRouterData = app => {
   };
   // Get name from ./menu.js or just set it in the router data.
   const menuData = getFlatMenuData(getMenuData());
-
   // Route configuration data
   // eg. {name,authority ...routerConfig }
   const routerData = {};

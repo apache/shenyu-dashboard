@@ -21,20 +21,13 @@ class AddModal extends Component {
         paramValue: ""
       }
     ];
-
     let requestVolumeThreshold = "20",
     errorThresholdPercentage = "50",
     maxConcurrentRequests = "100",
     sleepWindowInMilliseconds = "5000",
       groupKey = "",
-      commandKey = "",
-      loadBalance = "",
-      version = "",
-      timeout = "3000",
-      group = "",
-      retries = "";
-
-    if (props.handle) {
+      commandKey = "";
+    if(props.handle){
       const myHandle = JSON.parse(props.handle);
       requestVolumeThreshold = myHandle.requestVolumeThreshold;
       errorThresholdPercentage = myHandle.errorThresholdPercentage;
@@ -42,13 +35,7 @@ class AddModal extends Component {
       sleepWindowInMilliseconds = myHandle.sleepWindowInMilliseconds;
       groupKey = myHandle.groupKey;
       commandKey = myHandle.commandKey;
-      loadBalance = myHandle.loadBalance;
-      version = myHandle.version;
-      timeout = myHandle.timeout;
-      group = myHandle.group;
-      retries = myHandle.retries;
     }
-
     this.state = {
       ruleConditions,
       requestVolumeThreshold,
@@ -57,15 +44,10 @@ class AddModal extends Component {
       sleepWindowInMilliseconds,
       groupKey,
       commandKey,
-      loadBalance,
-      version,
-      timeout,
-      group,
-      retries
     };
   }
 
-  checkConditions = () => {
+  checkConditions = (permission, statusCode) => {
     let { ruleConditions } = this.state;
     let result = true;
     if (ruleConditions) {
@@ -82,27 +64,20 @@ class AddModal extends Component {
       message.error(`条件不完整`);
       result = false;
     }
+
+    if (permission === "reject" && !statusCode) {
+      message.destroy();
+      message.error(`请填写状态码`);
+      result = false;
+    }
+
     return result;
   };
 
   handleSubmit = e => {
     e.preventDefault();
     const { form, handleOk } = this.props;
-    const {
-      ruleConditions,
-      requestVolumeThreshold,
-      errorThresholdPercentage,
-      maxConcurrentRequests,
-      sleepWindowInMilliseconds,
-      groupKey,
-      commandKey,
-      loadBalance,
-      version,
-      timeout,
-      group,
-      retries
-    } = this.state;
-
+    const { ruleConditions,requestVolumeThreshold,errorThresholdPercentage,maxConcurrentRequests, sleepWindowInMilliseconds,groupKey,commandKey } = this.state;
     const myRequestVolumeThreshold =
       requestVolumeThreshold > 0 ? requestVolumeThreshold : "0";
     const myErrorThresholdPercentage =
@@ -112,23 +87,29 @@ class AddModal extends Component {
     const mySleepWindowInMilliseconds =
       sleepWindowInMilliseconds > 0 ? sleepWindowInMilliseconds : "0";
 
+
+
     form.validateFieldsAndScroll((err, values) => {
-      const { name, matchMode, loged, enabled } = values;
+      const {
+        name,
+        matchMode,
+        permission,
+        statusCode,
+        loged,
+        enabled
+      } = values;
       const handle = {
+        permission,
+        statusCode,
         requestVolumeThreshold: myRequestVolumeThreshold,
         errorThresholdPercentage: myErrorThresholdPercentage,
         maxConcurrentRequests: myMaxConcurrentRequests,
         sleepWindowInMilliseconds: mySleepWindowInMilliseconds,
         groupKey,
         commandKey,
-        loadBalance,
-        version,
-        timeout,
-        group,
-        retries
       };
       if (!err) {
-        const submit = this.checkConditions();
+        const submit = this.checkConditions(permission, statusCode);
         if (submit) {
           handleOk({
             name,
@@ -171,11 +152,11 @@ class AddModal extends Component {
     ruleConditions[index][name] = value;
     this.setState({ ruleConditions });
   };
-
+  
   onHandleChange = (key, value) => {
     this.setState({ [key]: value });
   };
-  
+
   onHandleNumberChange = (key, value) => {
     if(/^\d*$/.test(value)){
       this.setState({ [key]: value });
@@ -189,31 +170,27 @@ class AddModal extends Component {
       platform,
       name = "",
       matchMode = "",
+      handle,
       loged = true,
       enabled = true,
       sort = ""
     } = this.props;
-    const {
-      ruleConditions,
-      // requestVolumeThreshold,
-      // errorThresholdPercentage,
-      // maxConcurrentRequests,
-      // sleepWindowInMilliseconds,
-      // groupKey,
-      // commandKey,
-      loadBalance,
-      version,
-      timeout,
-      group,
-      retries
-    } = this.state;
+    const { ruleConditions, 
+      requestVolumeThreshold,
+      errorThresholdPercentage,
+      maxConcurrentRequests,
+      sleepWindowInMilliseconds,
+      groupKey,
+      commandKey } = this.state;
+    let permission = "";
+    let statusCode = "";
+    if (handle) {
+      const myHandle = JSON.parse(handle);
+      permission = myHandle.permission;
+      statusCode = myHandle.statusCode;
+    }
 
-    let {
-      matchModeEnums,
-      operatorEnums,
-      paramTypeEnums,
-      loadBalanceEnums
-    } = platform;
+    let { matchModeEnums, operatorEnums, paramTypeEnums, wafEnums } = platform;
 
     if (operatorEnums) {
       operatorEnums = operatorEnums.filter(item => {
@@ -227,12 +204,6 @@ class AddModal extends Component {
       });
     }
 
-    if (loadBalanceEnums) {
-      loadBalanceEnums = loadBalanceEnums.filter(item => {
-        return item.support === true;
-      });
-    }
-
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
@@ -242,7 +213,6 @@ class AddModal extends Component {
         sm: { span: 21 }
       }
     };
-    
     const formCheckLayout = {
       labelCol: {
         sm: { span: 18 }
@@ -374,8 +344,23 @@ class AddModal extends Component {
               </Button>
             </div>
           </div>
-          
-          {/* <div className={styles.handleWrap}>
+          {/* <FormItem label="处理" {...formItemLayout}>
+            {getFieldDecorator("permission", {
+              initialValue: permission,
+              rules: [{ required: true, message: "请选择处理" }]
+            })(
+              <Select>
+                {wafEnums.map(item => {
+                  return (
+                    <Option key={item.name} value={item.name}>
+                      {item.name}
+                    </Option>
+                  );
+                })}
+              </Select>
+            )}
+          </FormItem> */}
+          <div className={styles.handleWrap}>
             <div className={styles.header}>
               <h3>Hystrix处理: </h3>
             </div>
@@ -458,89 +443,18 @@ class AddModal extends Component {
                 />
               </li>
             </ul>
-          </div> */}
-
-          <div className={styles.handleWrap}>
-            <div className={styles.header}>
-              <h3>Dubbo配置: </h3>
-            </div>
-            <ul
-              className={classnames({
-                [styles.handleUl]: true,
-                [styles.springUl]: true
-              })}
-            >
-              <li className={styles.loadbalanceLine}>
-                <div className={styles.loadText}>负载策略</div>
-                <Select
-                  onChange={value => {
-                    this.onHandleChange("loadBalance", value);
-                  }}
-                  value={loadBalance}
-                  style={{ width: 160 }}
-                  placeholder="loadBalance"
-                >
-                  {loadBalanceEnums.map(item => {
-                    return (
-                      <Option key={item.name} value={item.name}>
-                        {item.name}
-                      </Option>
-                    );
-                  })}
-                </Select>
-              </li>
-              <li>
-                <Input
-                  addonBefore={<div>重试次数</div>}
-                  value={retries}
-                  style={{ width: 200 }}
-                  placeholder="retries"
-                  onChange={e => {
-                    const value = e.target.value;
-                    this.onHandleNumberChange("retries", value);
-                  }}
-                />
-              </li>
-              <li>
-                <Input
-                  addonBefore={<div>超时时间(ms)</div>}
-                  value={timeout}
-                  style={{ width: 200 }}
-                  placeholder="timeout"
-                  onChange={e => {
-                    const value = e.target.value;
-                    this.onHandleNumberChange("timeout", value);
-                  }}
-                />
-              </li>
-              
-              <li>
-                <Input
-                  addonBefore={<div>版本号</div>}
-                  value={version}
-                  style={{ width: 300 }}
-                  placeholder="version"
-                  onChange={e => {
-                    const value = e.target.value;
-                    this.onHandleChange("version", value);
-                  }}
-                />
-              </li>
-              <li>
-                <Input
-                  addonBefore={<div>分组</div>}
-                  value={group}
-                  style={{ width: 300 }}
-                  placeholder="group"
-                  onChange={e => {
-                    const value = e.target.value;
-                    this.onHandleChange("group", value);
-                  }}
-                />
-              </li>
-              
-            </ul>
           </div>
+          {/* <FormItem label="状态码" {...formItemLayout}>
+            {getFieldDecorator("statusCode", {
+              initialValue: statusCode,
+              rules: [
+                {
+                  pattern: /^\d*$/,
+                  message: "请输入数字"
+                }
+              ]
+            })(<Input placeholder="请输入状态码" />)}
+          </FormItem> */}
           <div className={styles.layout}>
             <FormItem
               style={{ margin: "0 30px" }}

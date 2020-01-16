@@ -111,7 +111,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('rpcExt', {
-              rules: [{ required: true, message: '请输入rpc扩展参数' }],
+              rules: [{ message: '请输入rpc扩展参数' }],
               initialValue: rpcExt,
             })(
               <TextArea placeholder="rpc扩展参数" rows={3} />

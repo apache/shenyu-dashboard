@@ -21,8 +21,10 @@ class AddModal extends Component {
         paramValue: ""
       }
     ];
+    let selectValue = props.type+'' || null
     this.state = {
-      selectorConditions
+      selectorConditions,
+      selectValue
     };
   }
 
@@ -47,13 +49,13 @@ class AddModal extends Component {
 
   handleSubmit = e => {
     const { form, handleOk } = this.props;
-    const { selectorConditions } = this.state;
+    const { selectorConditions,selectValue } = this.state;
 
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const mySubmit = this.checkConditions(selectorConditions);
-        if (mySubmit) {
+        const mySubmit = selectValue!=='0'&&this.checkConditions(selectorConditions);
+        if (mySubmit||selectValue==='0') {
           handleOk({
             ...values,
             sort: Number(values.sort),
@@ -92,6 +94,12 @@ class AddModal extends Component {
     this.setState({ selectorConditions });
   };
 
+  getSelectValue = value =>{
+    this.setState({
+      selectValue:value
+    })
+  }
+
   render() {
     let {
       onCancel,
@@ -105,7 +113,7 @@ class AddModal extends Component {
       enabled = true,
       sort
     } = this.props;
-    const { selectorConditions } = this.state;
+    const { selectorConditions,selectValue } = this.state;
 
     type = `${type}`;
 
@@ -168,7 +176,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: "请选择类型" }],
               initialValue: type || "1"
             })(
-              <Select>
+              <Select onChange={value=>this.getSelectValue(value)}>
                 {selectorTypeEnums.map(item => {
                   return (
                     <Option key={item.code} value={`${item.code}`}>
@@ -179,7 +187,9 @@ class AddModal extends Component {
               </Select>
             )}
           </FormItem>
-          <FormItem label="匹配方式" {...formItemLayout}>
+          {
+            selectValue!=='0'&&<>
+            <FormItem label="匹配方式" {...formItemLayout}>
             {getFieldDecorator("matchMode", {
               rules: [{ required: true, message: "请选择匹配方式" }],
               initialValue: matchMode
@@ -283,6 +293,10 @@ class AddModal extends Component {
               新增
             </Button>
           </div>
+          
+            
+            </>
+          }
           <div className={styles.layout}>
             <FormItem {...formCheckLayout} label="继续后续选择器">
               {getFieldDecorator("continued", {

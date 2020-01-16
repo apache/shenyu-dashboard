@@ -12,7 +12,7 @@ const { Option } = Select;
 class AddModal extends Component {
   constructor(props) {
     super(props);
-
+    
     const selectorConditions = props.selectorConditions || [
       {
         paramType: "header",
@@ -21,8 +21,10 @@ class AddModal extends Component {
         paramValue: ""
       }
     ];
+    let selectValue = props.type+'' || null
     this.state = {
-      selectorConditions
+      selectorConditions,
+      selectValue
     };
   }
 
@@ -47,13 +49,12 @@ class AddModal extends Component {
 
   handleSubmit = e => {
     const { form, handleOk } = this.props;
-    const { selectorConditions } = this.state;
-
+    const { selectorConditions ,selectValue} = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const mySubmit = this.checkConditions(selectorConditions);
-        if (mySubmit) {
+        const mySubmit = selectValue!=='0'&&this.checkConditions(selectorConditions);
+        if (mySubmit||selectValue==='0') {
           const { appName, protocol, port, registry } = values;
           handleOk({
             ...values,
@@ -93,6 +94,11 @@ class AddModal extends Component {
     selectorConditions[index][name] = value;
     this.setState({ selectorConditions });
   };
+  getSelectValue = value=>{
+    this.setState({
+      selectValue:value
+    })
+  }
 
   render() {
     let {
@@ -108,7 +114,7 @@ class AddModal extends Component {
       sort,
       handle
     } = this.props;
-    const { selectorConditions } = this.state;
+    const { selectorConditions,selectValue } = this.state;
 
     let appName = "",
       protocol = "",
@@ -170,7 +176,7 @@ class AddModal extends Component {
         sm: { span: 19 }
       }
     };
-
+   
     return (
       <Modal
         width={700}
@@ -194,7 +200,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: "请选择类型" }],
               initialValue: type || "1"
             })(
-              <Select>
+              <Select onChange={value=>this.getSelectValue(value)}>
                 {selectorTypeEnums.map(item => {
                   return (
                     <Option key={item.code} value={`${item.code}`}>
@@ -205,110 +211,113 @@ class AddModal extends Component {
               </Select>
             )}
           </FormItem>
-          <FormItem label="匹配方式" {...formItemLayout}>
-            {getFieldDecorator("matchMode", {
-              rules: [{ required: true, message: "请选择匹配方式" }],
-              initialValue: matchMode
-            })(
-              <Select>
-                {matchModeEnums.map(item => {
-                  return (
-                    <Option key={item.code} value={item.code}>
-                      {item.name}
-                    </Option>
-                  );
-                })}
-              </Select>
-            )}
-          </FormItem>
-          <div className={styles.condition}>
-            <h3 className={styles.header}>
-              <strong>*</strong>条件:{" "}
-            </h3>
-            <div>
-              {selectorConditions.map((item, index) => {
-                return (
-                  <ul key={index}>
-                    <li>
-                      <Select
-                        onChange={value => {
-                          this.conditionChange(index, "paramType", value);
-                        }}
-                        value={item.paramType}
-                        style={{ width: 100 }}
-                      >
-                        {paramTypeEnums.map(typeItem => {
-                          return (
-                            <Option key={typeItem.name} value={typeItem.name}>
-                              {typeItem.name}
-                            </Option>
-                          );
-                        })}
-                      </Select>
-                    </li>
-                    <li>
-                      <Input
-                        onChange={e => {
-                          this.conditionChange(
-                            index,
-                            "paramName",
-                            e.target.value
-                          );
-                        }}
-                        value={item.paramName}
-                        style={{ width: 100 }}
-                      />
-                    </li>
-                    <li>
-                      <Select
-                        onChange={value => {
-                          this.conditionChange(index, "operator", value);
-                        }}
-                        value={item.operator}
-                        style={{ width: 100 }}
-                      >
-                        {operatorEnums.map(opearte => {
-                          return (
-                            <Option key={opearte.name} value={opearte.name}>
-                              {opearte.name}
-                            </Option>
-                          );
-                        })}
-                      </Select>
-                    </li>
+         {
+           selectValue!=='0'&&(<>
+           <FormItem label="匹配方式" {...formItemLayout}>
+           {getFieldDecorator("matchMode", {
+             rules: [{ required: true, message: "请选择匹配方式" }],
+             initialValue: matchMode
+           })(
+             <Select>
+               {matchModeEnums.map(item => {
+                 return (
+                   <Option key={item.code} value={item.code}>
+                     {item.name}
+                   </Option>
+                 );
+               })}
+             </Select>
+           )}
+         </FormItem>
+         <div className={styles.condition}>
+           <h3 className={styles.header}>
+             <strong>*</strong>条件:{" "}
+           </h3>
+           <div>
+             {selectorConditions.map((item, index) => {
+               return (
+                 <ul key={index}>
+                   <li>
+                     <Select
+                       onChange={value => {
+                         this.conditionChange(index, "paramType", value);
+                       }}
+                       value={item.paramType}
+                       style={{ width: 100 }}
+                     >
+                       {paramTypeEnums.map(typeItem => {
+                         return (
+                           <Option key={typeItem.name} value={typeItem.name}>
+                             {typeItem.name}
+                           </Option>
+                         );
+                       })}
+                     </Select>
+                   </li>
+                   <li>
+                     <Input
+                       onChange={e => {
+                         this.conditionChange(
+                           index,
+                           "paramName",
+                           e.target.value
+                         );
+                       }}
+                       value={item.paramName}
+                       style={{ width: 100 }}
+                     />
+                   </li>
+                   <li>
+                     <Select
+                       onChange={value => {
+                         this.conditionChange(index, "operator", value);
+                       }}
+                       value={item.operator}
+                       style={{ width: 100 }}
+                     >
+                       {operatorEnums.map(opearte => {
+                         return (
+                           <Option key={opearte.name} value={opearte.name}>
+                             {opearte.name}
+                           </Option>
+                         );
+                       })}
+                     </Select>
+                   </li>
 
-                    <li>
-                      <Input
-                        onChange={e => {
-                          this.conditionChange(
-                            index,
-                            "paramValue",
-                            e.target.value
-                          );
-                        }}
-                        value={item.paramValue}
-                        style={{ width: 100 }}
-                      />
-                    </li>
-                    <li>
-                      <Button
-                        type="danger"
-                        onClick={() => {
-                          this.handleDelete(index);
-                        }}
-                      >
-                        删除
-                      </Button>
-                    </li>
-                  </ul>
-                );
-              })}
-            </div>
-
-            <Button onClick={this.handleAdd} type="primary">
-              新增
-            </Button>
-          </div>
+                   <li>
+                     <Input
+                       onChange={e => {
+                         this.conditionChange(
+                           index,
+                           "paramValue",
+                           e.target.value
+                         );
+                       }}
+                       value={item.paramValue}
+                       style={{ width: 100 }}
+                     />
+                   </li>
+                   <li>
+                     <Button
+                       type="danger"
+                       onClick={() => {
+                         this.handleDelete(index);
+                       }}
+                     >
+                       删除
+                     </Button>
+                   </li>
+                 </ul>
+               );
+             })}
+           </div>
+           <Button onClick={this.handleAdd} type="primary">
+             新增
+           </Button>
+         </div>
+           </>)
+         }
           <div className={styles.layout}>
             <FormItem {...formCheckLayout} label="继续后续选择器">
               {getFieldDecorator("continued", {
@@ -336,7 +345,8 @@ class AddModal extends Component {
               })(<Switch />)}
             </FormItem>
           </div>
-          <h4>dubbo处理: </h4>
+
+          {/* <h4>dubbo处理: </h4>
           <FormItem label="应用名" {...formItemDubLayout}>
             {getFieldDecorator("appName", {
               initialValue: appName,
@@ -384,7 +394,8 @@ class AddModal extends Component {
                 }
               ]
             })(<Input placeholder="port" />)}
-          </FormItem>
+          </FormItem> */}
+          
           <FormItem label="执行顺序" {...formItemLayout}>
             {getFieldDecorator("sort", {
               initialValue: sort,

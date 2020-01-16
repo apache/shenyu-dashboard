@@ -47,6 +47,11 @@ const menuData = [
         path: 'springCloud',
         id: 'springCloud8'
       },
+      {
+        name: 'hystrix',
+        path: 'hystrix',
+        id: 'hystrix9'
+      }
     ],
   },
   {
@@ -89,6 +94,7 @@ function formatter(data, parentPath = '/', parentAuthority) {
     if (item.children) {
       result.children = formatter(item.children, `${parentPath}${item.path}/`, item.authority);
     }
+    
     return result;
   });
 }

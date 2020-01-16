@@ -391,7 +391,8 @@ class AddModal extends Component {
               </Button>
             </div>
           </div>
-          <div className={styles.handleWrap}>
+
+          {/* <div className={styles.handleWrap}>
             <div className={styles.header}>
               <h3>Hystrix处理: </h3>
             </div>
@@ -492,7 +493,8 @@ class AddModal extends Component {
                 />
               </li>
             </ul>
-          </div>
+          </div> */}
+
           <div className={styles.handleWrap}>
             <div className={styles.header}>
               <h3>http负载: </h3>

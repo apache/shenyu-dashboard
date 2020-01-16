@@ -24,6 +24,7 @@ export default class Plugin extends Component {
   }
 
   onSelectChange = selectedRowKeys => {
+
     this.setState({ selectedRowKeys });
   };
 
@@ -230,6 +231,7 @@ export default class Plugin extends Component {
     const { plugin, loading } = this.props;
     const { pluginList, total } = plugin;
     const { currentPage, selectedRowKeys, name, popup } = this.state;
+    
     const pluginColumns = [
       {
         align: "center",
@@ -311,7 +313,7 @@ export default class Plugin extends Component {
       selectedRowKeys,
       onChange: this.onSelectChange
     };
-
+   
     return (
       <div className="plug-content-wrap">
         <div style={{ display: "flex" }}>

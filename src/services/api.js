@@ -79,6 +79,7 @@ export async function updateMetadata(params) {
       appName: params.appName,
       enabled: params.enabled,
       id: params.id,
+      pathDesc:params.pathDesc,
       methodName: params.methodName,
       parameterTypes:params.parameterTypes,
       path: params.path,

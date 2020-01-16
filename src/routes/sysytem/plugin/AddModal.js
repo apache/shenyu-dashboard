@@ -17,7 +17,6 @@ class AddModal extends Component {
       if (!err) {
 
         let { name, role, enabled, master, mode, url, password, userName, database, config } = values;
-
         if (name === 'rate_limiter') {
           config = JSON.stringify({ master, mode, url, password })
         } else if (name === 'monitor') {
