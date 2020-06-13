@@ -128,6 +128,8 @@ export default class Divide extends Component {
       message.warn("请先添加选择器");
     }
   };
+  
+  // 打开编辑弹窗
 
   editSelector = record => {
     const { dispatch, plugins } = this.props;

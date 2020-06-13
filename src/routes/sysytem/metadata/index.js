@@ -3,47 +3,46 @@ import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
 
-@connect(({ plugin, loading }) => ({
-  plugin,
-  loading: loading.effects["plugin/fetch"]
+@connect(({ metadata, loading }) => ({
+  metadata,
+  loading: loading.effects["metadata/fetch"]
 }))
-export default class Plugin extends Component {
+export default class Metadata extends Component {
   constructor(props) {
     super(props);
     this.state = {
       currentPage: 1,
       selectedRowKeys: [],
-      name: "",
+      appName: "",
       popup: ""
     };
   }
 
   componentWillMount() {
     const { currentPage } = this.state;
-    this.getAllPlugins(currentPage);
+    this.getAllMetadata(currentPage);
   }
 
   onSelectChange = selectedRowKeys => {
-
     this.setState({ selectedRowKeys });
   };
 
-  getAllPlugins = page => {
+  getAllMetadata = page => {
     const { dispatch } = this.props;
-    const { name } = this.state;
+    const { appName } = this.state;
     dispatch({
-      type: "plugin/fetch",
+      type: "metadata/fetch",
       payload: {
-        name,
+        appName,
         currentPage: page,
         pageSize: 12
       }
     });
   };
-
+  
   pageOnchange = page => {
     this.setState({ currentPage: page });
-    this.getAllPlugins(page);
+    this.getAllMetadata(page);
   };
 
   closeModal = () => {
@@ -53,36 +52,43 @@ export default class Plugin extends Component {
   editClick = record => {
     const { dispatch } = this.props;
     const { currentPage } = this.state;
-    const pluginName = this.state.name;
+    const name = this.state.appName;
     dispatch({
-      type: "plugin/fetchItem",
+      type: "metadata/fetchItem",
       payload: {
         id: record.id
       },
-      callback: plugin => {
+      callback: user => {
+        // console.log(user)
         this.setState({
+
           popup: (
             <AddModal
-              disabled={true}
-              {...plugin}
+              isShow={false}
+              {...user}
               handleOk={values => {
-                const { name, enabled, id, role, config } = values;
+                const { appName, methodName,id, parameterTypes,path,pathDesc, rpcExt, rpcType, serviceName } = values;
+
                 dispatch({
-                  type: "plugin/update",
+                  type: "metadata/update",
                   payload: {
-                    config,
-                    role,
-                    name,
-                    enabled,
-                    id
+                    appName,
+                    methodName,
+                    parameterTypes,
+                    // enabled,
+                    pathDesc,
+                    id,
+                    path,
+                    rpcExt,
+                    rpcType,
+                    serviceName
                   },
                   fetchValue: {
-                    name: pluginName,
+                    appName: name,
                     currentPage,
                     pageSize: 12
                   },
                   callback: () => {
-                    this.setState({ selectedRowKeys: [] });
                     this.closeModal();
                   }
                 });
@@ -98,37 +104,34 @@ export default class Plugin extends Component {
   };
 
   searchOnchange = e => {
-    const name = e.target.value;
-    this.setState({ name });
+    const appName = e.target.value;
+    this.setState({ appName });
   };
 
   searchClick = () => {
-    this.getAllPlugins(1);
+    this.getAllMetadata(1);
     this.setState({ currentPage: 1 });
   };
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { name, currentPage, selectedRowKeys } = this.state;
+    const { appName, currentPage, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
+      // console.log('000000000000000000')
+      // console.log(selectedRowKeys)
+      // console.log('000000000000000000')
       dispatch({
-        type: "plugin/delete",
+        type: "metadata/delete",
         payload: {
           list: selectedRowKeys
         },
         fetchValue: {
-          name,
+          appName,
           currentPage,
           pageSize: 12
         },
         callback: () => {
           this.setState({ selectedRowKeys: [] });
-          dispatch({
-            type: "global/fetchPlugins",
-            payload: {
-              callback: () => { }
-            }
-          });
         }
       });
     } else {
@@ -139,35 +142,35 @@ export default class Plugin extends Component {
 
   addClick = () => {
     const { currentPage } = this.state;
-    const pluginName = this.state.name;
+    const name = this.state.appName;
     this.setState({
       popup: (
         <AddModal
-          disabled={false}
+          isShow={true}
           handleOk={values => {
             const { dispatch } = this.props;
-            const { name, enabled, role,config } = values;
+            const { appName, enabled, methodName, parameterTypes,path,pathDesc, rpcExt, rpcType, serviceName } = values;
             dispatch({
-              type: "plugin/add",
+              type: "metadata/add",
               payload: {
-                name,
-                config,
-                role,
-                enabled
+                appName,
+                methodName,
+                enabled,
+                parameterTypes,
+                path,
+                pathDesc,
+                rpcExt,
+                rpcType,
+                serviceName
               },
               fetchValue: {
-                name: pluginName,
+                appName: name,
                 currentPage,
                 pageSize: 12
               },
               callback: () => {
+                this.setState({ selectedRowKeys: [] });
                 this.closeModal();
-                dispatch({
-                  type: "global/fetchPlugins",
-                  payload: {
-                    callback: () => { }
-                  }
-                });
               }
             });
           }}
@@ -179,107 +182,116 @@ export default class Plugin extends Component {
     });
   };
 
-  // 批量启用或禁用
-
   enableClick = () => {
-    const {dispatch} = this.props;
-    const {selectedRowKeys} = this.state;
-    if(selectedRowKeys && selectedRowKeys.length>0) {
+    const { dispatch } = this.props;
+    const { appName, currentPage, selectedRowKeys } = this.state;
+    if (selectedRowKeys && selectedRowKeys.length > 0) {
+      
       dispatch({
-        type: "plugin/fetchItem",
+        type: "metadata/fetchItem",
         payload: {
           id: selectedRowKeys[0]
         },
         callback: user => {
+         
           dispatch({
-            type: "plugin/updateEn",
+            type: "metadata/updateEn",
             payload: {
-              list: selectedRowKeys,
+              list: selectedRowKeys ,
               enabled: !user.enabled
             },
-            fetchValue: {},
+            fetchValue: {
+              appName,
+              currentPage,
+              pageSize: 12
+            },
             callback: () => {
-              this.setState({selectedRowKeys: []});
+              this.setState({ selectedRowKeys: [] });
             }
-          })
+          });
         }
       })
     } else {
       message.destroy();
       message.warn("请选择数据");
     }
-  }
-
-  // 同步插件数据
-  syncAllClick = () => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "plugin/asyncAll"
-    });
   };
 
-  operateChange = (checked, record) => {
+  syncData = () => {
     const { dispatch } = this.props;
-    const { id } = record;
     dispatch({
-      type: 'plugin/changeStatus',
-      payload: { id, enabled: checked }
+      type: "metadata/syncDa"
+      
     })
-  }
+  };
 
   render() {
-    const { plugin, loading } = this.props;
-    const { pluginList, total } = plugin;
-    const { currentPage, selectedRowKeys, name, popup } = this.state;
+    const { metadata, loading } = this.props;
+    const { userList, total } = metadata;
     
-    const pluginColumns = [
+    const { currentPage, selectedRowKeys, appName, popup } = this.state;
+    const userColumns = [
       {
         align: "center",
-        title: "插件名",
-        dataIndex: "name",
-        key: "name",
+        title: "应用名称",
+        dataIndex: "appName",
+        key: "appName",
+        width: 120
+      },
+      {
+        align: "center",
+        title: "路径",
+        dataIndex: "path",
+        key: "path",
+        width: 150
+      },
+      {
+        align: "center",
+        title: "路径描述",
+        dataIndex: "pathDesc",
+        key: "pathDesc",
         width: 200
       },
       {
         align: "center",
-        title: "角色",
-        dataIndex: "role",
-        width: 200,
-        key: "role",
-        render: (text) => {
-          const map = {
-            0: "系统",
-            1: "自定义"
-          }
-          return <div>{map[text] || '----'}</div>
-        }
+        title: "服务接口",
+        dataIndex: "serviceName",
+        key: "serviceName",
+        width: 150
       },
       {
         align: "center",
-        title: "配置",
-        dataIndex: "config",
-        key: "config"
+        title: "方法名称",
+        dataIndex: "methodName",
+        key: "methodName",
+        width: 120
       },
       {
         align: "center",
-        title: "创建时间",
-        dataIndex: "dateCreated",
-        key: "dateCreated",
-        width: 160
+        title: "参数类型",
+        dataIndex: "parameterTypes",
+        key: "parameterTypes",
+        width: 120
       },
       {
         align: "center",
-        title: "更新时间",
-        dataIndex: "dateUpdated",
-        key: "dateUpdated",
-        width: 160
+        title: "rpc类型",
+        dataIndex: "rpcType",
+        key: "rpcType",
+        width: 100
+      },
+      {
+        align: "center",
+        title: "rpc扩展参数",
+        dataIndex: "rpcExt",
+        key: "rpcExt"
       },
       {
         align: "center",
         title: "状态",
         dataIndex: "enabled",
+        width: 90,
         key: "enabled",
-        width: 150,
         render: text => {
           if (text) {
             return <div className="open">开启</div>;
@@ -291,9 +303,9 @@ export default class Plugin extends Component {
       {
         align: "center",
         title: "操作",
-        dataIndex: "time",
-        key: "time",
-        width: 150,
+        width: 90,
+        dataIndex: "operate",
+        key: "operate",
         render: (text, record) => {
           return (
             <div
@@ -313,24 +325,23 @@ export default class Plugin extends Component {
       selectedRowKeys,
       onChange: this.onSelectChange
     };
-   
+
     return (
       <div className="plug-content-wrap">
         <div style={{ display: "flex" }}>
           <Input
-            value={name}
+            value={appName}
             onChange={this.searchOnchange}
-            placeholder="请输入插件名"
+            placeholder="请输入appName"
             style={{ width: 240 }}
           />
           <Button
-            type="primary"
             style={{ marginLeft: 20 }}
+            type="primary"
             onClick={this.searchClick}
           >
-            查询
+            分页查询
           </Button>
-
           <Popconfirm
             title="你确认删除吗"
             placement='bottom'
@@ -352,15 +363,7 @@ export default class Plugin extends Component {
             type="primary"
             onClick={this.addClick}
           >
-            添加数据
-          </Button>
-          <Button
-            style={{ marginLeft: 20 }}
-            icon="reload"
-            type="primary"
-            onClick={this.syncAllClick}
-          >
-            同步所有数据
+            创建
           </Button>
           <Button
             style={{ marginLeft: 20 }}
@@ -369,15 +372,24 @@ export default class Plugin extends Component {
           >
             批量启用或禁用
           </Button>
+          <Button
+            style={{ marginLeft: 20 }}
+            type="primary"
+            onClick={this.syncData}
+          >
+            同步数据
+          </Button>
+          
         </div>
 
         <Table
           size="small"
           style={{ marginTop: 30 }}
           bordered
+          rowKey={record => record.id} 
           loading={loading}
-          columns={pluginColumns}
-          dataSource={pluginList}
+          columns={userColumns}
+          dataSource={userList}
           rowSelection={rowSelection}
           pagination={{
             total,

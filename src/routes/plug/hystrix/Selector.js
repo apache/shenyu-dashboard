@@ -21,25 +21,9 @@ class AddModal extends Component {
         paramValue: ""
       }
     ];
-
-    let upstreamList = [
-      {
-        upstreamHost: "",
-        protocol: "",
-        upstreamUrl: "",
-        weight: "50"
-      }
-    ];
-
-    if (props.handle) {
-      const myHandle = JSON.parse(props.handle);
-      upstreamList = myHandle;
-    }
-    // eslint-disable-next-line prefer-template
     let selectValue = props.type + "" || null;
     this.state = {
       selectorConditions,
-      upstreamList,
       selectValue
     };
   }
@@ -73,29 +57,6 @@ class AddModal extends Component {
     return result;
   };
 
-  checkUpstream = upstreamList => {
-    let result = true;
-
-    if (upstreamList) {
-      upstreamList.forEach((item, index) => {
-        const { upstreamHost, upstreamUrl, weight } = item;
-        if (!upstreamHost || !upstreamUrl || !weight) {
-          message.destroy();
-          message.error(
-            `第${index +
-              1}行http负载, upstreamHost和upstreamUrl, weight不能为空`
-          );
-          result = false;
-        }
-      });
-    } else {
-      message.destroy();
-      message.error(`http负载不完整`);
-      result = false;
-    }
-    return result;
-  };
-
   handleSubmit = e => {
     const { form, handleOk } = this.props;
     const { selectorConditions, selectValue } = this.state;
@@ -103,15 +64,11 @@ class AddModal extends Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const { upstreamList } = this.state;
-
         const mySubmit =
           selectValue !== "0" && this.checkConditions(selectorConditions);
-        const myUpstream = this.checkUpstream(upstreamList);
-        if ((mySubmit || selectValue === "0") && myUpstream) {
+        if (mySubmit || selectValue === "0") {
           handleOk({
             ...values,
-            handle: JSON.stringify(upstreamList),
             sort: Number(values.sort),
             selectorConditions
           });
@@ -147,46 +104,13 @@ class AddModal extends Component {
     selectorConditions[index][name] = value;
     this.setState({ selectorConditions });
     if (name === "paramType") {
-      let key = `paramTypeValueEn${index}`;
+      let key =  `paramTypeValueEn${index}`
       if (value === "uri" || value === "host" || value === "ip") {
         this.setState({ [key]: true });
       } else {
         this.setState({ [key]: false });
       }
     }
-  };
-
-  divideHandleAdd = () => {
-    let { upstreamList } = this.state;
-    if (upstreamList) {
-      upstreamList.push({
-        upstreamHost: "",
-        protocol: "",
-        upstreamUrl: "",
-        weight: "50"
-      });
-    } else {
-      upstreamList = [];
-    }
-
-    this.setState({ upstreamList });
-  };
-
-  divideHandleChange = (index, name, value) => {
-    let { upstreamList } = this.state;
-    upstreamList[index][name] = value;
-    this.setState({ upstreamList });
-  };
-
-  divideHandleDelete = index => {
-    let { upstreamList } = this.state;
-    if (upstreamList && upstreamList.length > 1) {
-      upstreamList.splice(index, 1);
-    } else {
-      message.destroy();
-      message.error("至少有一个http负载");
-    }
-    this.setState({ upstreamList });
   };
 
   getSelectValue = value => {
@@ -209,7 +133,9 @@ class AddModal extends Component {
       sort
     } = this.props;
 
-    const { selectorConditions, upstreamList, selectValue } = this.state;
+    const { selectorConditions, selectValue } = this.state;
+
+    type = `${type}`;
 
     let {
       selectorTypeEnums,
@@ -217,8 +143,6 @@ class AddModal extends Component {
       operatorEnums,
       paramTypeEnums
     } = platform;
-
-    type = `${type}`;
 
     if (operatorEnums) {
       operatorEnums = operatorEnums.filter(item => {
@@ -301,13 +225,10 @@ class AddModal extends Component {
                   </Select>
                 )}
               </FormItem>
-              {/* 条件 */}
               <div className={styles.condition}>
-                {/* 输入框左侧标题 */}
                 <h3 className={styles.header}>
                   <strong>*</strong>条件:{" "}
                 </h3>
-
                 <div>
                   {selectorConditions.map((item, index) => {
                     return (
@@ -424,92 +345,6 @@ class AddModal extends Component {
                 rules: [{ required: true }]
               })(<Switch />)}
             </FormItem>
-          </div>
-          {/* http配置 */}
-          <div className={styles.condition}>
-            <h3 className={styles.header} style={{ width: 120 }}>
-              <strong>*</strong>http配置:
-            </h3>
-            <div className={styles.content}>
-              {upstreamList.map((item, index) => {
-                return (
-                  <ul key={index}>
-                    <li>
-                      <Input
-                        onChange={e => {
-                          this.divideHandleChange(
-                            index,
-                            "upstreamHost",
-                            e.target.value
-                          );
-                        }}
-                        placeholder="hostName"
-                        value={item.upstreamHost}
-                        style={{ width: 100 }}
-                      />
-                    </li>
-                    <li>
-                      <Input
-                        onChange={e => {
-                          this.divideHandleChange(
-                            index,
-                            "protocol",
-                            e.target.value
-                          );
-                        }}
-                        placeholder="http://"
-                        value={item.protocol}
-                        style={{ width: 100 }}
-                      />
-                    </li>
-                    <li>
-                      <Input
-                        onChange={e => {
-                          this.divideHandleChange(
-                            index,
-                            "upstreamUrl",
-                            e.target.value
-                          );
-                        }}
-                        placeholder="ip:port"
-                        value={item.upstreamUrl}
-                        style={{ width: 100 }}
-                      />
-                    </li>
-
-                    <li>
-                      <Input
-                        onChange={e => {
-                          this.divideHandleChange(
-                            index,
-                            "weight",
-                            e.target.value
-                          );
-                        }}
-                        placeholder="weight"
-                        value={item.weight}
-                        style={{ width: 80 }}
-                      />
-                    </li>
-                    <li>
-                      <Button
-                        type="danger"
-                        onClick={() => {
-                          this.divideHandleDelete(index);
-                        }}
-                      >
-                        删除
-                      </Button>
-                    </li>
-                  </ul>
-                );
-              })}
-            </div>
-            <div>
-              <Button onClick={this.divideHandleAdd} type="primary">
-                新增
-              </Button>
-            </div>
           </div>
 
           <FormItem label="执行顺序" {...formItemLayout}>

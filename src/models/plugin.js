@@ -5,7 +5,8 @@ import {
   updatePlugin,
   deletePlugin,
   addPlugin,
-  asyncPlugin
+  asyncPlugin,
+  updatepluginEnabled
 } from "../services/api";
 
 export default {
@@ -87,6 +88,17 @@ export default {
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
+      }
+    },
+    *updateEn(params, {call, put}) {
+      const {payload,fetchValue,callback} = params;
+      const json = yield call (updatepluginEnabled,payload);
+      if(json.code===200){
+        message.success("修改成功");
+        callback();
+        yield put({type: "reload", fetchValue});
+      } else {
+        message.warn(json.message)
       }
     },
     *reload(params, { put }) {

@@ -4,12 +4,12 @@ import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
 
-@connect(({ waf, global, loading }) => ({
+@connect(({ hystrix, global, loading }) => ({
   ...global,
-  ...waf,
+  ...hystrix,
   loading: loading.effects["global/fetchPlatform"]
 }))
-export default class Waf extends Component {
+export default class Hystrix extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -34,9 +34,9 @@ export default class Waf extends Component {
 
   getAllSelectors = (page, plugins) => {
     const { dispatch } = this.props;
-    const pluginId = this.getPluginId(plugins, "waf");
+    const pluginId = this.getPluginId(plugins, "hystrix");
     dispatch({
-      type: "waf/fetchSelector",
+      type: "hystrix/fetchSelector",
       payload: {
         currentPage: page,
         pageSize: 12,
@@ -49,7 +49,7 @@ export default class Waf extends Component {
     const { dispatch, currentSelector } = this.props;
     const selectorId = currentSelector ? currentSelector.id : "";
     dispatch({
-      type: "waf/fetchRule",
+      type: "hystrix/fetchRule",
       payload: {
         selectorId,
         currentPage: page,
@@ -76,14 +76,14 @@ export default class Waf extends Component {
   addSelector = () => {
     const { selectorPage } = this.state;
     const { dispatch, plugins } = this.props;
-    const pluginId = this.getPluginId(plugins, "waf");
+    const pluginId = this.getPluginId(plugins, "hystrix");
     this.setState({
       popup: (
         <Selector
           pluginId={pluginId}
           handleOk={selector => {
             dispatch({
-              type: "waf/addSelector",
+              type: "hystrix/addSelector",
               payload: { pluginId, ...selector },
               fetchValue: { pluginId, currentPage: selectorPage, pageSize: 12 },
               callback: () => {
@@ -107,7 +107,7 @@ export default class Waf extends Component {
           <Rule
             handleOk={rule => {
               dispatch({
-                type: "waf/addRule",
+                type: "hystrix/addRule",
                 payload: { selectorId, ...rule },
                 fetchValue: {
                   selectorId,
@@ -132,23 +132,21 @@ export default class Waf extends Component {
   editSelector = record => {
     const { dispatch, plugins } = this.props;
     const { selectorPage } = this.state;
-    const pluginId = this.getPluginId(plugins, "waf");
+    const pluginId = this.getPluginId(plugins, "hystrix");
     const { id } = record;
     dispatch({
-      type: "waf/fetchSeItem",
+      type: "hystrix/fetchSeItem",
       payload: {
         id
       },
       callback: selector => {
-        console.log('---------------')
-        console.log(selector)
         this.setState({
           popup: (
             <Selector
               {...selector}
               handleOk={values => {
                 dispatch({
-                  type: "waf/updateSelector",
+                  type: "hystrix/updateSelector",
                   payload: {
                     pluginId,
                     ...values,
@@ -175,9 +173,9 @@ export default class Waf extends Component {
   deleteSelector = record => {
     const { dispatch, plugins } = this.props;
     const { selectorPage } = this.state;
-    const pluginId = this.getPluginId(plugins, "waf");
+    const pluginId = this.getPluginId(plugins, "hystrix");
     dispatch({
-      type: "waf/deleteSelector",
+      type: "hystrix/deleteSelector",
       payload: {
         list: [record.id]
       },
@@ -205,13 +203,13 @@ export default class Waf extends Component {
     const { id } = record;
     const { dispatch } = this.props;
     dispatch({
-      type: "waf/saveCurrentSelector",
+      type: "hystrix/saveCurrentSelector",
       payload: {
         currentSelector: record
       }
     });
     dispatch({
-      type: "waf/fetchRule",
+      type: "hystrix/fetchRule",
       payload: {
         currentPage: 1,
         pageSize: 12,
@@ -226,7 +224,7 @@ export default class Waf extends Component {
     const selectorId = currentSelector ? currentSelector.id : "";
     const { id } = record;
     dispatch({
-      type: "waf/fetchRuleItem",
+      type: "hystrix/fetchRuleItem",
       payload: {
         id
       },
@@ -237,7 +235,7 @@ export default class Waf extends Component {
               {...rule}
               handleOk={values => {
                 dispatch({
-                  type: "waf/updateRule",
+                  type: "hystrix/updateRule",
                   payload: {
                     selectorId,
                     ...values,
@@ -265,7 +263,7 @@ export default class Waf extends Component {
     const { dispatch, currentSelector } = this.props;
     const { rulePage } = this.state;
     dispatch({
-      type: "waf/deleteRule",
+      type: "hystrix/deleteRule",
       payload: {
         list: [record.id]
       },
@@ -279,7 +277,7 @@ export default class Waf extends Component {
 
   asyncClick = () => {
     const { dispatch, plugins } = this.props;
-    const id = this.getPluginId(plugins, "waf");
+    const id = this.getPluginId(plugins, "hystrix");
     dispatch({
       type: "global/asyncPlugin",
       payload: {
@@ -482,7 +480,7 @@ export default class Waf extends Component {
               <div style={{ display: "flex" }}>
                 <h3 style={{ marginRight: 30 }}>选择器规则列表</h3>
                 <Button icon="reload" onClick={this.asyncClick} type="primary">
-                  同步waf
+                  同步hystrix
                 </Button>
               </div>
 
