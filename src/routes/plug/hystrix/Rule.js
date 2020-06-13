@@ -22,12 +22,12 @@ class AddModal extends Component {
       }
     ];
     let requestVolumeThreshold = "20",
-    errorThresholdPercentage = "50",
-    maxConcurrentRequests = "100",
-    sleepWindowInMilliseconds = "5000",
+      errorThresholdPercentage = "50",
+      maxConcurrentRequests = "100",
+      sleepWindowInMilliseconds = "5000",
       groupKey = "",
       commandKey = "";
-    if(props.handle){
+    if (props.handle) {
       const myHandle = JSON.parse(props.handle);
       requestVolumeThreshold = myHandle.requestVolumeThreshold;
       errorThresholdPercentage = myHandle.errorThresholdPercentage;
@@ -43,7 +43,7 @@ class AddModal extends Component {
       maxConcurrentRequests,
       sleepWindowInMilliseconds,
       groupKey,
-      commandKey,
+      commandKey
     };
   }
 
@@ -87,7 +87,15 @@ class AddModal extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, handleOk } = this.props;
-    const { ruleConditions,requestVolumeThreshold,errorThresholdPercentage,maxConcurrentRequests, sleepWindowInMilliseconds,groupKey,commandKey } = this.state;
+    const {
+      ruleConditions,
+      requestVolumeThreshold,
+      errorThresholdPercentage,
+      maxConcurrentRequests,
+      sleepWindowInMilliseconds,
+      groupKey,
+      commandKey
+    } = this.state;
     const myRequestVolumeThreshold =
       requestVolumeThreshold > 0 ? requestVolumeThreshold : "0";
     const myErrorThresholdPercentage =
@@ -96,8 +104,6 @@ class AddModal extends Component {
       maxConcurrentRequests > 0 ? maxConcurrentRequests : "0";
     const mySleepWindowInMilliseconds =
       sleepWindowInMilliseconds > 0 ? sleepWindowInMilliseconds : "0";
-
-
 
     form.validateFieldsAndScroll((err, values) => {
       const {
@@ -116,7 +122,7 @@ class AddModal extends Component {
         maxConcurrentRequests: myMaxConcurrentRequests,
         sleepWindowInMilliseconds: mySleepWindowInMilliseconds,
         groupKey,
-        commandKey,
+        commandKey
       };
       if (!err) {
         const submit = this.checkConditions(permission, statusCode);
@@ -160,23 +166,25 @@ class AddModal extends Component {
   conditionChange = (index, name, value) => {
     let { ruleConditions } = this.state;
     ruleConditions[index][name] = value;
-    this.setState({ ruleConditions });
     if (name === "paramType") {
-      let key =  `paramTypeValueEn${index}`
+      let key = `paramTypeValueEn${index}`;
       if (value === "uri" || value === "host" || value === "ip") {
         this.setState({ [key]: true });
+        ruleConditions[index].paramName = "";
       } else {
         this.setState({ [key]: false });
       }
     }
+
+    this.setState({ ruleConditions });
   };
-  
+
   onHandleChange = (key, value) => {
     this.setState({ [key]: value });
   };
 
   onHandleNumberChange = (key, value) => {
-    if(/^\d*$/.test(value)){
+    if (/^\d*$/.test(value)) {
       this.setState({ [key]: value });
     }
   };
@@ -193,13 +201,15 @@ class AddModal extends Component {
       enabled = true,
       sort = ""
     } = this.props;
-    const { ruleConditions, 
+    const {
+      ruleConditions,
       requestVolumeThreshold,
       errorThresholdPercentage,
       maxConcurrentRequests,
       sleepWindowInMilliseconds,
       groupKey,
-      commandKey } = this.state;
+      commandKey
+    } = this.state;
     let permission = "";
     let statusCode = "";
     if (handle) {
@@ -298,9 +308,9 @@ class AddModal extends Component {
                         })}
                       </Select>
                     </li>
-                    <li>
+                    <li style={{display: this.state[`paramTypeValueEn${index}`]?'none':'block'}}>
                       <Input
-                        disabled={this.state[`paramTypeValueEn${index}`]}
+                       
                         onChange={e => {
                           this.conditionChange(
                             index,
@@ -409,7 +419,10 @@ class AddModal extends Component {
                   placeholder="errorThresholdPercentage"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleNumberChange("errorThresholdPercentage", value);
+                    this.onHandleNumberChange(
+                      "errorThresholdPercentage",
+                      value
+                    );
                   }}
                 />
               </li>
@@ -433,7 +446,10 @@ class AddModal extends Component {
                   placeholder="sleepWindowInMilliseconds"
                   onChange={e => {
                     const value = e.target.value;
-                    this.onHandleNumberChange("sleepWindowInMilliseconds", value);
+                    this.onHandleNumberChange(
+                      "sleepWindowInMilliseconds",
+                      value
+                    );
                   }}
                 />
               </li>

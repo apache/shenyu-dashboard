@@ -106,16 +106,17 @@ class AddModal extends Component {
   conditionChange = (index, name, value) => {
     let { ruleConditions } = this.state;
     ruleConditions[index][name] = value;
-    this.setState({ ruleConditions });
     if (name === "paramType") {
-      let key =  `paramTypeValueEn${index}`
+      let key = `paramTypeValueEn${index}`;
       if (value === "uri" || value === "host" || value === "ip") {
         this.setState({ [key]: true });
+        ruleConditions[index].paramName = "";
       } else {
         this.setState({ [key]: false });
       }
     }
 
+    this.setState({ ruleConditions });
   };
 
   render() {
@@ -221,9 +222,14 @@ class AddModal extends Component {
                         })}
                       </Select>
                     </li>
-                    <li>
+                    <li
+                      style={{
+                        display: this.state[`paramTypeValueEn${index}`]
+                          ? "none"
+                          : "block"
+                      }}
+                    >
                       <Input
-                        disabled={this.state[`paramTypeValueEn${index}`]}
                         onChange={e => {
                           this.conditionChange(
                             index,

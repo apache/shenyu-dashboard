@@ -102,16 +102,17 @@ class AddModal extends Component {
   conditionChange = (index, name, value) => {
     let { selectorConditions } = this.state;
     selectorConditions[index][name] = value;
-    this.setState({ selectorConditions });
-
     if (name === "paramType") {
-      let key =  `paramTypeValueEn${index}`
+      let key = `paramTypeValueEn${index}`;
       if (value === "uri" || value === "host" || value === "ip") {
         this.setState({ [key]: true });
+        selectorConditions[index].paramName = "";
       } else {
         this.setState({ [key]: false });
       }
     }
+
+    this.setState({ selectorConditions });
   };
 
   getSelectValue = value => {
@@ -252,9 +253,14 @@ class AddModal extends Component {
                             })}
                           </Select>
                         </li>
-                        <li>
+                        <li
+                          style={{
+                            display: this.state[`paramTypeValueEn${index}`]
+                              ? "none"
+                              : "block"
+                          }}
+                        >
                           <Input
-                            disabled={this.state[`paramTypeValueEn${index}`]}
                             onChange={e => {
                               this.conditionChange(
                                 index,
@@ -263,7 +269,7 @@ class AddModal extends Component {
                               );
                             }}
                             value={item.paramName}
-                            style={{ width: 100 }}
+                            style={{ width: 110 }}
                           />
                         </li>
                         <li>

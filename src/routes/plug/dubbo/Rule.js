@@ -23,9 +23,9 @@ class AddModal extends Component {
     ];
 
     let requestVolumeThreshold = "20",
-    errorThresholdPercentage = "50",
-    maxConcurrentRequests = "100",
-    sleepWindowInMilliseconds = "5000",
+      errorThresholdPercentage = "50",
+      maxConcurrentRequests = "100",
+      sleepWindowInMilliseconds = "5000",
       groupKey = "",
       commandKey = "",
       loadBalance = "",
@@ -179,24 +179,25 @@ class AddModal extends Component {
   conditionChange = (index, name, value) => {
     let { ruleConditions } = this.state;
     ruleConditions[index][name] = value;
-    this.setState({ ruleConditions });
-
     if (name === "paramType") {
-      let key =  `paramTypeValueEn${index}`
+      let key = `paramTypeValueEn${index}`;
       if (value === "uri" || value === "host" || value === "ip") {
         this.setState({ [key]: true });
+        ruleConditions[index].paramName = "";
       } else {
         this.setState({ [key]: false });
       }
     }
+
+    this.setState({ ruleConditions });
   };
 
   onHandleChange = (key, value) => {
     this.setState({ [key]: value });
   };
-  
+
   onHandleNumberChange = (key, value) => {
-    if(/^\d*$/.test(value)){
+    if (/^\d*$/.test(value)) {
       this.setState({ [key]: value });
     }
   };
@@ -261,7 +262,7 @@ class AddModal extends Component {
         sm: { span: 21 }
       }
     };
-    
+
     const formCheckLayout = {
       labelCol: {
         sm: { span: 18 }
@@ -329,9 +330,14 @@ class AddModal extends Component {
                         })}
                       </Select>
                     </li>
-                    <li>
+                    <li
+                      style={{
+                        display: this.state[`paramTypeValueEn${index}`]
+                          ? "none"
+                          : "block"
+                      }}
+                    >
                       <Input
-                        disabled={this.state[`paramTypeValueEn${index}`]}
                         onChange={e => {
                           this.conditionChange(
                             index,
@@ -394,7 +400,7 @@ class AddModal extends Component {
               </Button>
             </div>
           </div>
-          
+
           {/* <div className={styles.handleWrap}>
             <div className={styles.header}>
               <h3>Hystrix处理: </h3>
@@ -533,7 +539,7 @@ class AddModal extends Component {
                   }}
                 />
               </li>
-              
+
               <li>
                 <Input
                   addonBefore={<div>版本号</div>}
@@ -558,7 +564,6 @@ class AddModal extends Component {
                   }}
                 />
               </li>
-              
             </ul>
           </div>
           <div className={styles.layout}>

@@ -172,8 +172,6 @@ class AddModal extends Component {
     this.setState({ ruleConditions });
   };
 
-
-
   handleDelete = index => {
     let { ruleConditions } = this.state;
     if (ruleConditions && ruleConditions.length > 1) {
@@ -185,23 +183,21 @@ class AddModal extends Component {
     this.setState({ ruleConditions });
   };
 
-
-
   conditionChange = (index, name, value) => {
     let { ruleConditions } = this.state;
     ruleConditions[index][name] = value;
-    this.setState({ ruleConditions });
     if (name === "paramType") {
-      let key =  `paramTypeValueEn${index}`
+      let key = `paramTypeValueEn${index}`;
       if (value === "uri" || value === "host" || value === "ip") {
         this.setState({ [key]: true });
+        ruleConditions[index].paramName = "";
       } else {
         this.setState({ [key]: false });
       }
     }
+
+    this.setState({ ruleConditions });
   };
-
-
 
   divideHandleNumberChange = (index, name, value) => {
     if (/^\d*$/.test(value)) {
@@ -232,11 +228,7 @@ class AddModal extends Component {
       enabled = true,
       sort = ""
     } = this.props;
-    const {
-      ruleConditions,
-      loadBalance,
-      retry
-    } = this.state;
+    const { ruleConditions, loadBalance, retry } = this.state;
 
     let {
       matchModeEnums,
@@ -338,9 +330,14 @@ class AddModal extends Component {
                         })}
                       </Select>
                     </li>
-                    <li>
+                    <li
+                      style={{
+                        display: this.state[`paramTypeValueEn${index}`]
+                          ? "none"
+                          : "block"
+                      }}
+                    >
                       <Input
-                        disabled={this.state[`paramTypeValueEn${index}`]}
                         onChange={e => {
                           this.conditionChange(
                             index,
@@ -540,17 +537,13 @@ class AddModal extends Component {
                 <Input
                   addonBefore={<div>重试次数</div>}
                   onChange={e => {
-                    this.onHandleChange(
-                      "retry",
-                      e.target.value
-                    );
+                    this.onHandleChange("retry", e.target.value);
                   }}
                   placeholder="retry"
                   value={retry}
                   style={{ width: 160 }}
                 />
               </li>
-             
             </ul>
           </div>
 

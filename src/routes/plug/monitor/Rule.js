@@ -62,13 +62,7 @@ class AddModal extends Component {
     const { ruleConditions } = this.state;
 
     form.validateFieldsAndScroll((err, values) => {
-      const {
-        name,
-        matchMode,
-        loged,
-        enabled,
-        handle=""
-      } = values;
+      const { name, matchMode, loged, enabled, handle = "" } = values;
 
       if (!err) {
         const submit = this.checkConditions();
@@ -112,16 +106,17 @@ class AddModal extends Component {
   conditionChange = (index, name, value) => {
     let { ruleConditions } = this.state;
     ruleConditions[index][name] = value;
-    this.setState({ ruleConditions });
-
     if (name === "paramType") {
-      let key =  `paramTypeValueEn${index}`
+      let key = `paramTypeValueEn${index}`;
       if (value === "uri" || value === "host" || value === "ip") {
         this.setState({ [key]: true });
+        ruleConditions[index].paramName = "";
       } else {
         this.setState({ [key]: false });
       }
     }
+
+    this.setState({ ruleConditions });
   };
 
   render() {
@@ -228,9 +223,9 @@ class AddModal extends Component {
                         })}
                       </Select>
                     </li>
-                    <li>
+                    <li style={{display: this.state[`paramTypeValueEn${index}`]?'none':'block'}}>
                       <Input
-                        disabled={this.state[`paramTypeValueEn${index}`]}
+                       
                         onChange={e => {
                           this.conditionChange(
                             index,
@@ -296,7 +291,7 @@ class AddModal extends Component {
 
           <FormItem label="处理" {...formItemLayout}>
             {getFieldDecorator("handle", {
-              initialValue: handle,
+              initialValue: handle
             })(<Input placeholder="处理" />)}
           </FormItem>
           <div className={styles.layout}>
