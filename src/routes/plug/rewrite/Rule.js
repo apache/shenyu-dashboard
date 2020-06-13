@@ -14,9 +14,9 @@ class AddModal extends Component {
     super(props);
     const ruleConditions = props.ruleConditions || [
       {
-        paramType: "header",
+        paramType: "uri",
         operator: "=",
-        paramName: "",
+        paramName: "/",
         paramValue: ""
       }
     ];
@@ -28,7 +28,7 @@ class AddModal extends Component {
       let key = `paramTypeValueEn${index}`;
       if (paramType === "uri" || paramType === "host" || paramType === "ip") {
         this.state[key] = true;
-        ruleConditions[index].paramName = "";
+        ruleConditions[index].paramName = "/";
       } else {
         this.state[key] = false;
       }
@@ -98,12 +98,16 @@ class AddModal extends Component {
   handleAdd = () => {
     let { ruleConditions } = this.state;
     ruleConditions.push({
-      paramType: "header",
+      paramType: "uri",
       operator: "=",
-      paramName: "",
+      paramName: "/",
       paramValue: ""
     });
-    this.setState({ ruleConditions });
+    this.setState({ ruleConditions }, () => {
+      let len = ruleConditions.length || 0;
+      let key = `paramTypeValueEn${len - 1}`;
+      this.setState({ [key]: true });
+    });
   };
 
   handleDelete = index => {
@@ -124,7 +128,7 @@ class AddModal extends Component {
       let key = `paramTypeValueEn${index}`;
       if (value === "uri" || value === "host" || value === "ip") {
         this.setState({ [key]: true });
-        ruleConditions[index].paramName = "";
+        ruleConditions[index].paramName = "/";
       } else {
         this.setState({ [key]: false });
       }
