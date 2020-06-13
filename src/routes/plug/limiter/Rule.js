@@ -29,10 +29,23 @@ class AddModal extends Component {
     }
 
     this.state = {
-      ruleConditions,
       replenishRate,
       burstCapacity
     };
+
+    ruleConditions.forEach((item, index) => {
+      const { paramType } = item;
+
+      let key = `paramTypeValueEn${index}`;
+      if (paramType === "uri" || paramType === "host" || paramType === "ip") {
+        this.state[key] = true;
+        ruleConditions[index].paramName = "";
+      } else {
+        this.state[key] = false;
+      }
+    });
+
+    this.state.ruleConditions = ruleConditions;
   }
 
   checkConditions = (replenishRate, burstCapacity) => {

@@ -140,8 +140,6 @@ export default class Waf extends Component {
         id
       },
       callback: selector => {
-        console.log('---------------')
-        console.log(selector)
         this.setState({
           popup: (
             <Selector

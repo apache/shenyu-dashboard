@@ -24,9 +24,21 @@ class AddModal extends Component {
     // eslint-disable-next-line prefer-template
     let selectValue = props.type + "" || null;
     this.state = {
-      selectorConditions,
       selectValue
     };
+    selectorConditions.forEach((item, index) => {
+      const { paramType } = item;
+
+      let key = `paramTypeValueEn${index}`;
+      if (paramType === "uri" || paramType === "host" || paramType === "ip") {
+        this.state[key] = true;
+        selectorConditions[index].paramName = "";
+      } else {
+        this.state[key] = false;
+      }
+    });
+
+    this.state.selectorConditions = selectorConditions;
   }
 
   checkConditions = selectorConditions => {
