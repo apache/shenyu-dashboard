@@ -65,10 +65,20 @@ class AddModal extends Component {
     if (ruleConditions) {
       ruleConditions.forEach((item, index) => {
         const { paramType, operator, paramName, paramValue } = item;
-        if (!paramType || !operator || !paramName || !paramValue) {
+        if (!paramType || !operator || !paramValue) {
           message.destroy();
           message.error(`第${index + 1}行条件不完整`);
           result = false;
+        }
+        if (paramType === "uri" || paramType === "host" || paramType === "ip") {
+          // aaa
+        } else {
+          // eslint-disable-next-line no-lonely-if
+          if (!paramName) {
+            message.destroy();
+            message.error(`第${index + 1}行条件不完整`);
+            result = false;
+          }
         }
       });
     } else {
@@ -181,6 +191,14 @@ class AddModal extends Component {
     let { ruleConditions } = this.state;
     ruleConditions[index][name] = value;
     this.setState({ ruleConditions });
+    if (name === "paramType") {
+      let key =  `paramTypeValueEn${index}`
+      if (value === "uri" || value === "host" || value === "ip") {
+        this.setState({ [key]: true });
+      } else {
+        this.setState({ [key]: false });
+      }
+    }
   };
 
 
@@ -216,14 +234,7 @@ class AddModal extends Component {
     } = this.props;
     const {
       ruleConditions,
-      requestVolumeThreshold,
-      errorThresholdPercentage,
-      maxConcurrentRequests,
-      sleepWindowInMilliseconds,
-      groupKey,
-      commandKey,
       loadBalance,
-      timeout,
       retry
     } = this.state;
 
@@ -329,6 +340,7 @@ class AddModal extends Component {
                     </li>
                     <li>
                       <Input
+                        disabled={this.state[`paramTypeValueEn${index}`]}
                         onChange={e => {
                           this.conditionChange(
                             index,

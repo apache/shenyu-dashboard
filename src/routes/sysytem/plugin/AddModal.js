@@ -16,11 +16,9 @@ class AddModal extends Component {
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
 
-        let { name, role, enabled, master, mode, url, password, userName, database, config } = values;
+        let { name, role, enabled, master, mode, url, password, config } = values;
         if (name === 'rate_limiter') {
           config = JSON.stringify({ master, mode, url, password })
-        } else if (name === 'monitor') {
-          config = JSON.stringify({ userName, database, url, password })
         }
         handleOk({ name, role, enabled, config, id });
       }
@@ -109,50 +107,6 @@ class AddModal extends Component {
             )}
           </FormItem>
 
-          <Divider />
-        </Fragment>
-      )
-    } else if (name === 'monitor') {
-      try {
-        config = JSON.parse(config)
-      } catch (error) {
-        config = {}
-      }
-      configWrap = (
-        <Fragment>
-          <Divider>influxdb 配置</Divider>
-          <FormItem label="数据库" {...formItemLayout}>
-            {getFieldDecorator("database", {
-              rules: [{ required: true, message: "请输入数据库" }],
-              initialValue: config.database,
-            })(
-              <Input placeholder="请输入数据库" />
-            )}
-          </FormItem>
-          <FormItem label="URL" {...formItemLayout}>
-            {getFieldDecorator("url", {
-              rules: [{ required: true, message: "请输入URL" }],
-              initialValue: config.url,
-            })(
-              <TextArea placeholder="请输入URL" rows={3} />
-            )}
-          </FormItem>
-          <FormItem label="用户名" {...formItemLayout}>
-            {getFieldDecorator("userName", {
-              rules: [{ required: true, message: "请输入用户名" }],
-              initialValue: config.userName,
-            })(
-              <Input placeholder="请输入用户名" />
-            )}
-          </FormItem>
-          <FormItem label="密码" {...formItemLayout}>
-            {getFieldDecorator("password", {
-              rules: [{ required: true, message: "请输入password" }],
-              initialValue: config.password,
-            })(
-              <Input placeholder="请输入password" />
-            )}
-          </FormItem>
           <Divider />
         </Fragment>
       )

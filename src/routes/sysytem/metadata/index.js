@@ -181,6 +181,7 @@ export default class Metadata extends Component {
       )
     });
   };
+
   enableClick = () => {
     const { dispatch } = this.props;
     const { appName, currentPage, selectedRowKeys } = this.state;
@@ -215,6 +216,7 @@ export default class Metadata extends Component {
       message.warn("请选择数据");
     }
   };
+
   syncData = () => {
     const { dispatch } = this.props;
     dispatch({
@@ -233,43 +235,50 @@ export default class Metadata extends Component {
         align: "center",
         title: "应用名称",
         dataIndex: "appName",
-        key: "appName"
+        key: "appName",
+        width: 120
       },
       {
         align: "center",
         title: "路径",
         dataIndex: "path",
-        key: "path"
+        key: "path",
+        width: 150
       },
       {
         align: "center",
         title: "路径描述",
         dataIndex: "pathDesc",
-        key: "pathDesc"
+        key: "pathDesc",
+        width: 200
       },
       {
         align: "center",
         title: "服务接口",
         dataIndex: "serviceName",
-        key: "serviceName"
+        key: "serviceName",
+        width: 150
       },
       {
         align: "center",
         title: "方法名称",
         dataIndex: "methodName",
-        key: "methodName"
+        key: "methodName",
+        width: 120
       },
       {
         align: "center",
         title: "参数类型",
         dataIndex: "parameterTypes",
-        key: "parameterTypes"
+        key: "parameterTypes",
+        width: 120
       },
       {
         align: "center",
         title: "rpc类型",
         dataIndex: "rpcType",
-        key: "rpcType"
+        key: "rpcType",
+        width: 100
       },
       {
         align: "center",
@@ -281,6 +290,7 @@ export default class Metadata extends Component {
         align: "center",
         title: "状态",
         dataIndex: "enabled",
+        width: 90,
         key: "enabled",
         render: text => {
           if (text) {
@@ -293,6 +303,7 @@ export default class Metadata extends Component {
       {
         align: "center",
         title: "操作",
+        width: 90,
         dataIndex: "operate",
         key: "operate",
         render: (text, record) => {
@@ -368,9 +379,6 @@ export default class Metadata extends Component {
           >
             同步数据
           </Button>
-          
-          
-          
           
         </div>
 
