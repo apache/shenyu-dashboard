@@ -501,18 +501,20 @@ class AddModal extends Component {
                   }}
                 />
               </li>
-              <li>
-                <Input
-                  addonBefore={<div>最大并发量</div>}
-                  value={maxConcurrentRequests}
-                  style={{ width: 280 }}
-                  placeholder="maxConcurrentRequests"
-                  onChange={e => {
-                    const value = e.target.value;
-                    this.onHandleNumberChange("maxConcurrentRequests", value);
-                  }}
-                />
-              </li>
+              {
+                this.state.executionIsolationStrategy == 1&&( <li>
+                  <Input
+                    addonBefore={<div>最大并发量</div>}
+                    value={maxConcurrentRequests}
+                    style={{ width: 280 }}
+                    placeholder="maxConcurrentRequests"
+                    onChange={e => {
+                      const value = e.target.value;
+                      this.onHandleNumberChange("maxConcurrentRequests", value);
+                    }}
+                  />
+                </li>)
+              }
               <li>
                 <Input
                   addonBefore={<div>跳闸休眠时间(ms)</div>}
