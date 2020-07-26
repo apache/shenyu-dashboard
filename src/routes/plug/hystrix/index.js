@@ -493,7 +493,7 @@ export default class Hystrix extends Component {
               style={{ marginTop: 30 }}
               bordered
               columns={rulesColumns}
-              expandedRowRender={record => <p>{record.handle}</p>}
+              expandedRowRender={record => <span style={{ wordBreak:'break-all', width:'100%'}}>{record.handle}</span>}
               dataSource={ruleList}
               pagination={{
                 total: ruleTotal,

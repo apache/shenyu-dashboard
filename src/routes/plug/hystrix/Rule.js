@@ -26,7 +26,15 @@ class AddModal extends Component {
       maxConcurrentRequests = "100",
       sleepWindowInMilliseconds = "5000",
       groupKey = "",
-      commandKey = "";
+      commandKey = "",
+      callBackUri="",
+      executionIsolationStrategy=1,
+      hystrixThreadPoolConfig = {
+        coreSize: 10,
+        maximumSize: 10,
+        maxQueueSize: 12
+      }
+      ;
     if (props.handle) {
       const myHandle = JSON.parse(props.handle);
       requestVolumeThreshold = myHandle.requestVolumeThreshold;
@@ -35,6 +43,13 @@ class AddModal extends Component {
       sleepWindowInMilliseconds = myHandle.sleepWindowInMilliseconds;
       groupKey = myHandle.groupKey;
       commandKey = myHandle.commandKey;
+      if (typeof(myHandle.executionIsolationStrategy) != 'undefined' ) {
+        executionIsolationStrategy = myHandle.executionIsolationStrategy;
+      }
+      if (myHandle.hystrixThreadPoolConfig) {
+        hystrixThreadPoolConfig = myHandle.hystrixThreadPoolConfig;
+      }
+      callBackUri = myHandle.callBackUri;
     }
     this.state = {
       requestVolumeThreshold,
@@ -42,7 +57,10 @@ class AddModal extends Component {
       maxConcurrentRequests,
       sleepWindowInMilliseconds,
       groupKey,
-      commandKey
+      commandKey,
+      executionIsolationStrategy,
+      hystrixThreadPoolConfig,
+      callBackUri
     };
 
     ruleConditions.forEach((item, index) => {
@@ -107,7 +125,10 @@ class AddModal extends Component {
       maxConcurrentRequests,
       sleepWindowInMilliseconds,
       groupKey,
-      commandKey
+      commandKey,
+      executionIsolationStrategy,
+      hystrixThreadPoolConfig,
+      callBackUri
     } = this.state;
     const myRequestVolumeThreshold =
       requestVolumeThreshold > 0 ? requestVolumeThreshold : "0";
@@ -117,7 +138,9 @@ class AddModal extends Component {
       maxConcurrentRequests > 0 ? maxConcurrentRequests : "0";
     const mySleepWindowInMilliseconds =
       sleepWindowInMilliseconds > 0 ? sleepWindowInMilliseconds : "0";
-
+    const myCoreSize = hystrixThreadPoolConfig.coreSize > 0 ? hystrixThreadPoolConfig.coreSize : "0";
+    const myMaximumSize = hystrixThreadPoolConfig.maximumSize > 0 ? hystrixThreadPoolConfig.maximumSize : "0";
+    const myMaxQueueSize = hystrixThreadPoolConfig.maxQueueSize > 0 ? hystrixThreadPoolConfig.maxQueueSize : "0";
     form.validateFieldsAndScroll((err, values) => {
       const {
         name,
@@ -132,11 +155,22 @@ class AddModal extends Component {
         statusCode,
         requestVolumeThreshold: myRequestVolumeThreshold,
         errorThresholdPercentage: myErrorThresholdPercentage,
-        maxConcurrentRequests: myMaxConcurrentRequests,
         sleepWindowInMilliseconds: mySleepWindowInMilliseconds,
+        executionIsolationStrategy,
+        callBackUri,
         groupKey,
         commandKey
       };
+      if (handle.executionIsolationStrategy == 1) {
+        handle.maxConcurrentRequests = myMaxConcurrentRequests;
+      } else{
+        handle.hystrixThreadPoolConfig={
+          coreSize: myCoreSize,
+          maximumSize: myMaximumSize,
+          maxQueueSize: myMaxQueueSize
+        }
+      }
+
       if (!err) {
         const submit = this.checkConditions(permission, statusCode);
         if (submit) {
@@ -225,7 +259,10 @@ class AddModal extends Component {
       maxConcurrentRequests,
       sleepWindowInMilliseconds,
       groupKey,
-      commandKey
+      commandKey,
+      executionIsolationStrategy,
+      hystrixThreadPoolConfig,
+      callBackUri
     } = this.state;
     let permission = "";
     let statusCode = "";
@@ -235,7 +272,7 @@ class AddModal extends Component {
       statusCode = myHandle.statusCode;
     }
 
-    let { matchModeEnums, operatorEnums, paramTypeEnums, wafEnums } = platform;
+    let { matchModeEnums, operatorEnums, paramTypeEnums, hystrixIsolationModeEnums} = platform;
 
     if (operatorEnums) {
       operatorEnums = operatorEnums.filter(item => {
@@ -252,10 +289,10 @@ class AddModal extends Component {
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 3 }
+        sm: { span: 4 }
       },
       wrapperCol: {
-        sm: { span: 21 }
+        sm: { span: 18 }
       }
     };
     const formCheckLayout = {
@@ -282,14 +319,14 @@ class AddModal extends Component {
             {getFieldDecorator("name", {
               rules: [{ required: true, message: "请输入名称" }],
               initialValue: name
-            })(<Input placeholder="名称" />)}
+            })(<Input placeholder="名称" style={{width:500}} />)}
           </FormItem>
           <FormItem label="匹配方式" {...formItemLayout}>
             {getFieldDecorator("matchMode", {
               rules: [{ required: true, message: "请选择匹配方式" }],
               initialValue: matchMode
             })(
-              <Select>
+              <Select style={{width:500}}>
                 {matchModeEnums.map(item => {
                   return (
                     <Option key={item.code} value={item.code}>
@@ -327,7 +364,7 @@ class AddModal extends Component {
                     </li>
                     <li style={{display: this.state[`paramTypeValueEn${index}`]?'none':'block'}}>
                       <Input
-                       
+
                         onChange={e => {
                           this.conditionChange(
                             index,
@@ -406,6 +443,27 @@ class AddModal extends Component {
               </Select>
             )}
           </FormItem> */}
+          <FormItem label="Hystrix隔离模式" {...formItemLayout}>
+            {getFieldDecorator("executionIsolationStrategy", {
+              rules: [{ required: true, message: "请选择隔离模式" }],
+              initialValue: executionIsolationStrategy
+            })(
+              <Select
+                onChange={value => {
+                  this.onHandleChange("executionIsolationStrategy", value);
+                }}
+                style={{width:500}}
+              >
+                {hystrixIsolationModeEnums.map(item => {
+                  return (
+                    <Option key={item.code} value={item.code}>
+                      {item.name}
+                    </Option>
+                  );
+                })}
+              </Select>
+            )}
+          </FormItem>
           <div className={styles.handleWrap}>
             <div className={styles.header}>
               <h3>Hystrix处理: </h3>
@@ -420,7 +478,7 @@ class AddModal extends Component {
                 <Input
                   addonBefore={<div>跳闸最小请求数量</div>}
                   value={requestVolumeThreshold}
-                  style={{ width: 320 }}
+                  style={{ width: 250 }}
                   placeholder="requestVolumeThreshold"
                   onChange={e => {
                     const value = e.target.value;
@@ -430,9 +488,9 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>错误半分比阀值</div>}
+                  addonBefore={<div>错误百分比阀值</div>}
                   value={errorThresholdPercentage}
-                  style={{ width: 320 }}
+                  style={{ width: 250 }}
                   placeholder="errorThresholdPercentage"
                   onChange={e => {
                     const value = e.target.value;
@@ -484,6 +542,18 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
+                  addonBefore={<div>失败降级url</div>}
+                  value={callBackUri}
+                  style={{ width: 320 }}
+                  placeholder="失败回调uri,eg: /fallBack"
+                  onChange={e => {
+                    const value = e.target.value;
+                    this.onHandleChange("callBackUri", value);
+                  }}
+                />
+              </li>
+              <li>
+                <Input
                   addonBefore={<div>命令Key</div>}
                   value={commandKey}
                   style={{ width: 320 }}
@@ -494,8 +564,58 @@ class AddModal extends Component {
                   }}
                 />
               </li>
+              {
+                this.state.executionIsolationStrategy == 0 && (
+                <li>
+                  <Input
+                    addonBefore={<div>线程池coreSize</div>}
+                    value={hystrixThreadPoolConfig.coreSize}
+                    style={{ width: 320 }}
+                    placeholder="hystrix 线程池线程核心数量"
+                    onChange={e => {
+                        const value = e.target.value;
+                        this.onHandleChange("hystrixThreadPoolConfig.coreSize", value);
+                      }}
+                  />
+                </li>
+              )}
+
+              {
+                this.state.executionIsolationStrategy == 0 && (
+                <li>
+                  <Input
+                    addonBefore={<div>线程池maximumSize</div>}
+                    value={hystrixThreadPoolConfig.maximumSize}
+                    style={{ width: 320 }}
+                    placeholder="hystrix 线程池线程最大数量"
+                    onChange={e => {
+                      const value = e.target.value;
+                      this.onHandleChange("hystrixThreadPoolConfig.maximumSize", value);
+                    }}
+                  />
+                </li>
+              )}
+              {
+                this.state.executionIsolationStrategy == 0&& (
+                <li>
+                  <Input
+                    addonBefore={<div>线程池maxQueueSize</div>}
+                    value={hystrixThreadPoolConfig.maxQueueSize}
+                    style={{ width: 320 }}
+                    placeholder="hystrix 线程池任务队列最大size"
+                    onChange={e => {
+                      const value = e.target.value;
+                      this.onHandleChange("hystrixThreadPoolConfig.maximumSize", value);
+                    }}
+                  />
+                </li>
+              )}
+
+
             </ul>
+
           </div>
+
           {/* <FormItem label="状态码" {...formItemLayout}>
             {getFieldDecorator("statusCode", {
               initialValue: statusCode,
@@ -509,7 +629,7 @@ class AddModal extends Component {
           </FormItem> */}
           <div className={styles.layout}>
             <FormItem
-              style={{ margin: "0 30px" }}
+              style={{ margin: "0 20px" }}
               {...formCheckLayout}
               label="打印日志"
             >
@@ -541,7 +661,7 @@ class AddModal extends Component {
                   message: "请输入1-100数字"
                 }
               ]
-            })(<Input placeholder="可以填写1-100之间的数字标志执行先后顺序" />)}
+            })(<Input style={{width:360}} placeholder="可以填写1-100之间的数字标志执行先后顺序" />)}
           </FormItem>
         </Form>
       </Modal>
