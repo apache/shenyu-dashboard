@@ -39,7 +39,7 @@ export async function getAllMetadata(params) {
   } else {
     myParams = { currentPage, pageSize };
   }
-  
+
   return request(`${baseUrl}/meta-data/queryList?${stringify(myParams)}`, {
     method: `GET`
   });
@@ -94,7 +94,7 @@ export async function syncData() {
   return request(`${baseUrl}/meta-data/syncData`, {
     method: `POST`,
     body: {
-      
+
     }
   });
 }
@@ -115,7 +115,7 @@ export async function deleteMetadata(params) {
 }
 /* 元数据中的批量启用或禁用 */
 export async function updateEnabled(params) {
-  
+
   return request(`${baseUrl}/meta-data/batchEnabled`, {
     method: `POST`,
     body: {
@@ -289,7 +289,7 @@ export async function getAllMetadatas(params) {
 }
 /* 修改Auth */
 export async function updateAuthData(params) {
-  
+
   return request(`${baseUrl}/appAuth/updateDetail`, {
     method: `POST`,
     body: {
@@ -437,5 +437,51 @@ export async function asyncPlugin() {
 export async function asyncOnePlugin(params) {
   return request(`${baseUrl}/plugin/syncPluginData/${params.id}`, {
     method: `PUT`
+  });
+}
+// 根据插件id 获取插件处理字段列表
+export async function fetchPluginHandles(params) {
+  return request(`${baseUrl}/plugin-handle?${stringify(params)}`,{
+    method: `GET`
+  });
+}
+// 添加插件处理字段
+export async function addPluginHandle(params) {
+  return request(`${baseUrl}/plugin-handle`,{
+    method: `POST`,
+    body: {
+      ...params
+    }
+  });
+}
+// 获取插件处理字段详情
+export async function findPluginHandle(params) {
+  return request(`${baseUrl}/plugin-handle/${params.id}`,{
+    method: 'GET'
+  })
+}
+
+// 更新插件处理字段
+export async function updatePluginHandle(params) {
+  return request(`${baseUrl}/plugin-handle/${params.id}`,{
+    method: `PUT`,
+    body: {
+      ...params
+    }
+  })
+}
+
+// 批量删除插件处理字段
+
+export async function batchDeletePluginHandle(params) {
+  return request(`${baseUrl}/plugin-handle/batch`,{
+    method: `DELETE`,
+    body: [...params.list]
+  });
+}
+
+export function fetchPluginHandleByPluginId(params) {
+  return request(`${baseUrl}/plugin-handle/all/${params.pluginId}`,{
+    method: `GET`
   });
 }

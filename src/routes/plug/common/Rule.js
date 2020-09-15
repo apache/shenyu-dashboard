@@ -1,13 +1,15 @@
 import React, { Component } from "react";
-import { Modal, Form, Select, Input, Switch, Button, message } from "antd";
+import { Modal, Form, Select, Input, InputNumber,Switch, Button, message } from "antd";
 import { connect } from "dva";
 import styles from "../index.less";
 
+import classnames from "classnames";
+
 const FormItem = Form.Item;
 const { Option } = Select;
-const { TextArea } = Input;
 
-@connect(({ global }) => ({
+@connect(({pluginHandle, global }) => ({
+  pluginHandle,
   platform: global.platform
 }))
 class AddModal extends Component {
@@ -22,7 +24,6 @@ class AddModal extends Component {
       }
     ];
     this.state = {};
-
     ruleConditions.forEach((item, index) => {
       const { paramType } = item;
 
@@ -37,6 +38,31 @@ class AddModal extends Component {
 
     this.state.ruleConditions = ruleConditions;
   }
+
+
+
+
+  componentWillMount() {
+    const { dispatch,pluginId, handle } = this.props;
+    this.setState({pluginHandleList: []})
+    dispatch({
+      type: "pluginHandle/fetchByPluginId",
+      payload:{
+        pluginId,
+        handle,
+        callBack: pluginHandles => {
+          this.setPluginHandleList(pluginHandles);
+        }
+      }
+    });
+  }
+
+
+  setPluginHandleList = pluginHandles=>{
+
+    this.setState({pluginHandleList: pluginHandles})
+  }
+
 
   checkConditions = () => {
     let { ruleConditions } = this.state;
@@ -71,18 +97,23 @@ class AddModal extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, handleOk } = this.props;
-    const { ruleConditions } = this.state;
+    const { form, handleOk} = this.props;
+    const { ruleConditions,pluginHandleList } = this.state;
+    let handle ={};
+
+    pluginHandleList.forEach(item => {
+      handle[item.field] = item.value;
+    });
 
     form.validateFieldsAndScroll((err, values) => {
-      const { name, matchMode, handle, loged, enabled } = values;
+      const { name, matchMode, loged, enabled } = values;
       if (!err) {
         const submit = this.checkConditions();
         if (submit) {
           handleOk({
             name,
             matchMode,
-            handle,
+            handle: JSON.stringify(handle),
             loged,
             enabled,
             sort: Number(values.sort),
@@ -136,6 +167,8 @@ class AddModal extends Component {
     this.setState({ ruleConditions });
   };
 
+
+
   render() {
     let {
       onCancel,
@@ -143,14 +176,13 @@ class AddModal extends Component {
       platform,
       name = "",
       matchMode = "",
-      handle,
       loged = true,
       enabled = true,
       sort = ""
     } = this.props;
-    const { ruleConditions } = this.state;
+    const { ruleConditions,pluginHandleList } = this.state;
+    console.log(pluginHandleList);
     let { matchModeEnums, operatorEnums, paramTypeEnums } = platform;
-
     if (operatorEnums) {
       operatorEnums = operatorEnums.filter(item => {
         return item.support === true;
@@ -309,12 +341,53 @@ class AddModal extends Component {
               </Button>
             </div>
           </div>
-          <FormItem label="处理" {...formItemLayout}>
-            {getFieldDecorator("handle", {
-              initialValue: handle,
-              rules: [{ required: true, message: "自定义处理不能为空" }]
-            })(<TextArea rows={4} placeholder="请输入json字符串" />)}
-          </FormItem>
+          <div className={styles.handleWrap}>
+            <div className={styles.header}>
+              <h3>处理: </h3>
+            </div>
+            <ul
+              className={classnames({
+                [styles.handleUl]: true,
+                [styles.springUl]: true
+              })}
+            >
+              {
+                pluginHandleList.map(item=> {
+                  if (item.dataType === "1") {
+                  return   (<Input
+                          addonBefore={<div>{item.label}</div>}
+                          style={{width: 250}}
+                          defaultValue={item.value}
+                          placeholder={item.label}
+                          key={item.field}
+                          type="number"
+                          onChange={e => {
+                            item.value = e.target.value;
+                            }
+                          }
+                    />)
+                  } else {
+                    return (<Input
+                      addonBefore={<div>{item.label}</div>}
+                      style={{width: 250}}
+                      defaultValue={item.value}
+                      placeholder={item.label}
+                      key={item.field}
+                      onChange={e => {
+                        item.value = e.target.value;
+                      }
+                      }
+                    />)
+                  }
+
+                })
+              }
+              <li>
+
+              </li>
+
+            </ul>
+          </div>
           <div className={styles.layout}>
             <FormItem
               style={{ margin: "0 30px" }}

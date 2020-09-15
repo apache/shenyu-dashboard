@@ -64,13 +64,14 @@ export default class Common extends Component {
   getAllSelectors = (page, plugins) => {
     const { dispatch } = this.props;
     let name = this.props.match.params ? this.props.match.params.id : '';
-    const pluginId = this.getPluginId(plugins, name);
+    const tempPluginId = this.getPluginId(plugins, name);
+    this.setState({pluginId : tempPluginId});
     dispatch({
       type: "common/fetchSelector",
       payload: {
         currentPage: page,
         pageSize: 12,
-        pluginId
+        pluginId: tempPluginId
       }
     });
   };
@@ -129,13 +130,15 @@ export default class Common extends Component {
   };
 
   addRule = () => {
-    const { rulePage } = this.state;
+    const { rulePage,pluginId } = this.state;
     const { dispatch, currentSelector } = this.props;
+
     if (currentSelector && currentSelector.id) {
       const selectorId = currentSelector.id;
       this.setState({
         popup: (
           <Rule
+            pluginId={pluginId}
             handleOk={rule => {
               dispatch({
                 type: "common/addRule",
@@ -253,7 +256,7 @@ export default class Common extends Component {
 
   editRule = record => {
     const { dispatch, currentSelector } = this.props;
-    const { rulePage } = this.state;
+    const { rulePage,pluginId } = this.state;
     const selectorId = currentSelector ? currentSelector.id : "";
     const { id } = record;
     dispatch({
@@ -266,6 +269,7 @@ export default class Common extends Component {
           popup: (
             <Rule
               {...rule}
+              pluginId={pluginId}
               handleOk={values => {
                 dispatch({
                   type: "common/updateRule",
@@ -319,6 +323,7 @@ export default class Common extends Component {
       }
     });
   };
+
 
   render() {
     const { popup, selectorPage, rulePage } = this.state;
