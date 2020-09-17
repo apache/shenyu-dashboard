@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from 'dva/router';
 import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
@@ -227,11 +228,16 @@ export default class Plugin extends Component {
     })
   }
 
+  // 插件处理管理
+  pluginHandleManage = record =>{
+    this.props.history.push(`/plugin/handle/${record.id}`)
+  }
+
   render() {
     const { plugin, loading } = this.props;
     const { pluginList, total } = plugin;
     const { currentPage, selectedRowKeys, name, popup } = this.state;
-    
+    const pluginHandlePath = "/plugin/handle/";
     const pluginColumns = [
       {
         align: "center",
@@ -293,17 +299,27 @@ export default class Plugin extends Component {
         title: "操作",
         dataIndex: "time",
         key: "time",
-        width: 150,
+        width: 300,
         render: (text, record) => {
           return (
-            <div
-              className="edit"
-              onClick={() => {
-                this.editClick(record);
-              }}
-            >
-              编辑
+            <div>
+              <div
+                className="edit"
+                onClick={() => {
+                  this.editClick(record);
+                }}
+              >
+                编辑
+              </div>
+
+              <div
+                className="edit"
+                style={{display: record.role===0?'None':'block'}}
+              >
+                <Link to={pluginHandlePath+record.id}>插件处理管理</Link>
+              </div>
             </div>
+
           );
         }
       }
@@ -313,7 +329,7 @@ export default class Plugin extends Component {
       selectedRowKeys,
       onChange: this.onSelectChange
     };
-   
+
     return (
       <div className="plug-content-wrap">
         <div style={{ display: "flex" }}>
