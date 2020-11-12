@@ -1,6 +1,10 @@
 const path = require("path");
 
 export default {
+  es5ImcompatibleVersions: true,
+  extraBabelIncludes:[
+    "node_modules",
+  ],
   entry: "./src/index.js",
   extraBabelPlugins: [
     ["import", { libraryName: "antd", libraryDirectory: "es", style: true }]
