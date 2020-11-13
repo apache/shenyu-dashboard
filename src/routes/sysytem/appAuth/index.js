@@ -1,12 +1,13 @@
 import React, { Component } from "react";
-import { Table, Input, Button, message,Popconfirm } from "antd";
+import { Table, Button, message,Popconfirm } from "antd";
 import { connect } from "dva";
+import dayjs from "dayjs";
 import AddModal from "./AddModal";
 import RelateMetadata from "./RelateMetadata"
 import AddTable from "./AddTable"
-import dayjs from "dayjs";
 
 import SearchContent from "./SearchContent"
+
 @connect(({ auth, loading }) => ({
   auth,
   loading: loading.effects["auth/fetch"]
@@ -71,8 +72,6 @@ export default class Auth extends Component {
   // 关闭弹框
 
   closeModal = () => {
-    console.log("关闭弹窗")
-    console.log(this.state.selectedRowKeys)
     this.setState({ popup: "" });
   };
 
@@ -88,7 +87,7 @@ export default class Auth extends Component {
         id: record.id
       },
       callback: (auth) => {
-       
+
         this.setState({
           popup: (
             <AddModal
@@ -103,7 +102,7 @@ export default class Auth extends Component {
                     ...values
                   },
                   fetchValue: {
-                    
+
                     currentPage,
                     pageSize: 20
                   },
@@ -121,7 +120,7 @@ export default class Auth extends Component {
       }
     });
   };
-  
+
   editClickMeta = record => {
     const { currentPage } = this.state;
     const { dispatch } = this.props;
@@ -131,7 +130,7 @@ export default class Auth extends Component {
         id: record.id
       },
       callback: (auth)=>{
-        
+
         dispatch({
           type: "auth/fetchMeta",
           payload: {
@@ -144,7 +143,7 @@ export default class Auth extends Component {
                 <RelateMetadata
                   {...auth}
                   {...datas}
-                  authName={ 'appKey:  ' + record.appKey }
+                  authName={`appKey:  ${  record.appKey}`}
                   id={record.id}
                   handleCancel={() => {
                     this.closeModal();
@@ -156,7 +155,7 @@ export default class Auth extends Component {
                       type: "auth/updateDel",
                       payload: values,
                       fetchValue: {
-                        
+
                         currentPage,
                         pageSize: 20
                       },
@@ -170,12 +169,12 @@ export default class Auth extends Component {
             })
           }
         })
-       
+
       }
     })
   }
-  
-  
+
+
 
   // 点击搜索事件
 
@@ -232,7 +231,7 @@ export default class Auth extends Component {
       type: "auth/fetchMetaGroup",
       payload: {},
       callback: (metaGroup)=>{
-        
+
         this.setState({
           popup: (
             <AddTable
@@ -308,7 +307,7 @@ export default class Auth extends Component {
   render() {
     const { auth, loading } = this.props;
     const { authList, total } = auth;
-    const { currentPage, selectedRowKeys, appKey,phone, popup } = this.state;
+    const { currentPage, selectedRowKeys, popup } = this.state;
     const authColumns = [
       {
         align: "center",
@@ -411,7 +410,7 @@ export default class Auth extends Component {
         {/* 头部导航栏 */}
         <div style={{ display: "flex",alignItems: 'center' }}>
 
-         
+
           {/* 内联查询 */}
           <SearchContent onClick={res=>this.searchClick(res)} />
 
@@ -462,7 +461,7 @@ export default class Auth extends Component {
           size="small"
           style={{ marginTop: 30 }}
           bordered
-          rowKey={record => record.id} 
+          rowKey={record => record.id}
           loading={loading}
           columns={authColumns}
           dataSource={authList}

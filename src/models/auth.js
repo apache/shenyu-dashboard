@@ -1,6 +1,5 @@
 import { message } from 'antd';
 import { getAllAuths, findAuthData,findAuthDataDel, updateAuthData,updateAuthDel,updateAuthEnabled, deleteAuths, addAuthData, syncAuthsData,getAllMetadata, getAllMetadatas, getfetchMetaGroup } from '../services/api';
-import { get } from 'https';
 
 export default {
   namespace: "auth",
@@ -50,7 +49,7 @@ export default {
         const json = yield call(getAllMetadatas, payload);
         if (json.code === 200) {
           // let { page, dataList } = json.data;
-          
+
         let  dataList = json.data.map(item => {
             // item.key = item.id;
             item = {id:item.id,path:item.path,appName:item.appName,enabled:item.enabled}
@@ -70,7 +69,7 @@ export default {
       const {payload,callback} = params;
       const json = yield call(getfetchMetaGroup,payload);
       if(json.code === 200) {
-        
+
         callback(json.data)
       }
     },
@@ -87,7 +86,7 @@ export default {
     },
     *delete(params, { call, put }) {
       const { payload, fetchValue, callback } = params;
-     
+
       const json = yield call(deleteAuths, payload );
       if (json.code === 200) {
         message.success("删除成功");
@@ -99,7 +98,7 @@ export default {
     },
     *update(params, { call, put }) {
       const { payload, callback, fetchValue } = params;
-     
+
       const json = yield call(updateAuthData, payload);
       if (json.code === 200) {
         message.success("修改成功");

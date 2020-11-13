@@ -76,7 +76,6 @@ export default class Divide extends Component {
     const { selectorPage } = this.state;
     const { dispatch, plugins } = this.props;
     const pluginId = this.getPluginId(plugins, "divide");
-    console.log(plugins,pluginId)
     this.setState({
       popup: (
         <Selector
@@ -128,7 +127,7 @@ export default class Divide extends Component {
       message.warn("请先添加选择器");
     }
   };
-  
+
   // 打开编辑弹窗
 
   editSelector = record => {

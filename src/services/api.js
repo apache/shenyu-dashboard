@@ -100,7 +100,7 @@ export async function syncData() {
 }
 
 /* 获取所有(按照应用名称分组) */
-export async function getfetchMetaGroup(params) {
+export async function getfetchMetaGroup() {
   return request(`${baseUrl}/meta-data/findAllGroup`,{
     method: `GET`
   })
@@ -282,7 +282,7 @@ export async function findAuthDataDel(params) {
   });
 }
 /* 查询所有需用到的元数据 */
-export async function getAllMetadatas(params) {
+export async function getAllMetadatas() {
   return request(`${baseUrl}/meta-data/findAll`,{
     method: `GET`
   })

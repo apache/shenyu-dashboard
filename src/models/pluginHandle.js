@@ -97,7 +97,6 @@ export default {
           }
           return item;
         });
-        console.log("执行set plugin handle list")
         callback(dataList);
       }
     },

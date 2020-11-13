@@ -21,7 +21,7 @@ class AddModal extends Component {
         paramValue: ""
       }
     ];
-    let selectValue = props.type + "" || null;
+    let selectValue = `${props.type  }` || null;
     this.state = {
       selectValue
     };

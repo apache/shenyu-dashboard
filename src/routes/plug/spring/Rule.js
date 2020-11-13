@@ -217,12 +217,6 @@ class AddModal extends Component {
     } = this.props;
     const {
       ruleConditions,
-      requestVolumeThreshold,
-      errorThresholdPercentage,
-      maxConcurrentRequests,
-      sleepWindowInMilliseconds,
-      groupKey,
-      commandKey,
       timeout,
       path
     } = this.state;
@@ -319,7 +313,6 @@ class AddModal extends Component {
                     </li>
                     <li style={{display: this.state[`paramTypeValueEn${index}`]?'none':'block'}}>
                       <Input
-                       
                         onChange={e => {
                           this.conditionChange(
                             index,

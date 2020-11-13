@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import { Modal, Form, Select, Input, InputNumber,Switch, Button, message } from "antd";
+import { Modal, Form, Select, Input, Switch, Button, message } from "antd";
 import { connect } from "dva";
+import classnames from "classnames";
 import styles from "../index.less";
 
-import classnames from "classnames";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -181,7 +181,6 @@ class AddModal extends Component {
       sort = ""
     } = this.props;
     const { ruleConditions,pluginHandleList } = this.state;
-    console.log(pluginHandleList);
     let { matchModeEnums, operatorEnums, paramTypeEnums } = platform;
     if (operatorEnums) {
       operatorEnums = operatorEnums.filter(item => {
@@ -354,37 +353,39 @@ class AddModal extends Component {
               {
                 pluginHandleList.map(item=> {
                   if (item.dataType === "1") {
-                  return   (<Input
-                          addonBefore={<div>{item.label}</div>}
-                          style={{width: 250}}
-                          defaultValue={item.value}
-                          placeholder={item.label}
-                          key={item.field}
-                          type="number"
-                          onChange={e => {
-                            item.value = e.target.value;
-                            }
-                          }
-                    />)
-                  } else {
-                    return (<Input
+                  return   (
+                    <Input
                       addonBefore={<div>{item.label}</div>}
                       style={{width: 250}}
                       defaultValue={item.value}
                       placeholder={item.label}
                       key={item.field}
+                      type="number"
                       onChange={e => {
+                            item.value = e.target.value;
+                            }
+                          }
+                    />
+)
+                  } else {
+                    return (
+                      <Input
+                        addonBefore={<div>{item.label}</div>}
+                        style={{width: 250}}
+                        defaultValue={item.value}
+                        placeholder={item.label}
+                        key={item.field}
+                        onChange={e => {
                         item.value = e.target.value;
                       }
                       }
-                    />)
+                      />
+)
                   }
 
                 })
               }
-              <li>
-
-              </li>
+              <li />
 
             </ul>
           </div>
