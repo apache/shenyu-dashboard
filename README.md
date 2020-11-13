@@ -1,4 +1,4 @@
-# soul网关管理
+# Soul网关管理
 
 ![build](https://github.com/dromara/soul-dashboard/workflows/build/badge.svg)
 
@@ -16,3 +16,7 @@
   运行 `npm run build` 进行打包
 
   在 `index.ejs`中 配置 线上地址  例如: http://192.168.1.160:5000
+
+### 后端服务API
+
+https://github.com/dromara/soul/tree/master/soul-admin/README.md
