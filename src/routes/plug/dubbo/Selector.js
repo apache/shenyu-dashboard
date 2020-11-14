@@ -21,7 +21,7 @@ class AddModal extends Component {
         paramValue: ""
       }
     ];
-    let selectValue = props.type + "" || null;
+    let selectValue = `${props.type  }` || null;
     this.state = {
       selectValue
     };
@@ -151,25 +151,11 @@ class AddModal extends Component {
       continued = true,
       loged = true,
       enabled = true,
-      sort,
-      handle
+      sort
     } = this.props;
     const { selectorConditions, selectValue } = this.state;
 
-    let appName = "",
-      protocol = "",
-      port = "",
-      registry = "";
-
     type = `${type}`;
-
-    if (handle) {
-      const myHandle = JSON.parse(handle);
-      appName = myHandle.appName;
-      protocol = myHandle.protocol;
-      port = myHandle.port;
-      registry = myHandle.registry;
-    }
 
     let {
       selectorTypeEnums,
@@ -205,15 +191,6 @@ class AddModal extends Component {
       },
       wrapperCol: {
         sm: { span: 4 }
-      }
-    };
-
-    const formItemDubLayout = {
-      labelCol: {
-        sm: { span: 5 }
-      },
-      wrapperCol: {
-        sm: { span: 19 }
       }
     };
 

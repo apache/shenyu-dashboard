@@ -132,22 +132,22 @@ class AddModal extends Component {
                         <div className={styles.title}>appName:</div>
                       </li>
                       <li>
-                      <Input 
-                       onChange={e => { this.conditionChange(index,"appName",e.target.value)} } 
-                       value={item.appName}
-                       className={styles.appName}
-                      />
+                        <Input 
+                          onChange={e => { this.conditionChange(index,"appName",e.target.value)}} 
+                          value={item.appName}
+                          className={styles.appName}
+                        />
                       </li>
                       <li>
                         <div className={styles.title}>appParam:</div>
                       </li>
                       <li>
-                      <TextArea
-                        rows={3}
-                        onChange={ e => { this.conditionChange( index,"appParam", e.target.value ); } }
-                        value={item.appParam}
-                        className={styles.appParam}
-                      />
+                        <TextArea
+                          rows={3}
+                          onChange={e => { this.conditionChange( index,"appParam", e.target.value ); }}
+                          value={item.appParam}
+                          className={styles.appParam}
+                        />
                       </li>
                       <li>
                         <Button

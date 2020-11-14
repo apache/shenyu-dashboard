@@ -153,16 +153,16 @@ class AddModal extends Component {
           {this.props.isShow?
           (
             <FormItem
-            {...formItemLayout}
-            label="状态"
-          >
-            {getFieldDecorator('enabled', {
+              {...formItemLayout}
+              label="状态"
+            >
+              {getFieldDecorator('enabled', {
               initialValue: enabled,
               valuePropName: 'checked',
             })(
               <Switch />
             )}
-          </FormItem>
+            </FormItem>
           ) : ''}
         </Form>
       </Modal>

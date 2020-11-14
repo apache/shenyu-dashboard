@@ -43,7 +43,7 @@ class AddModal extends Component {
       sleepWindowInMilliseconds = myHandle.sleepWindowInMilliseconds;
       groupKey = myHandle.groupKey;
       commandKey = myHandle.commandKey;
-      if (typeof(myHandle.executionIsolationStrategy) != 'undefined' ) {
+      if (typeof(myHandle.executionIsolationStrategy) !== 'undefined' ) {
         executionIsolationStrategy = myHandle.executionIsolationStrategy;
       }
       if (myHandle.hystrixThreadPoolConfig) {
@@ -161,7 +161,7 @@ class AddModal extends Component {
         groupKey,
         commandKey
       };
-      if (handle.executionIsolationStrategy == 1) {
+      if (handle.executionIsolationStrategy === 1) {
         handle.maxConcurrentRequests = myMaxConcurrentRequests;
       } else{
         handle.hystrixThreadPoolConfig={
@@ -247,7 +247,6 @@ class AddModal extends Component {
       platform,
       name = "",
       matchMode = "",
-      handle,
       loged = true,
       enabled = true,
       sort = ""
@@ -264,13 +263,6 @@ class AddModal extends Component {
       hystrixThreadPoolConfig,
       callBackUri
     } = this.state;
-    let permission = "";
-    let statusCode = "";
-    if (handle) {
-      const myHandle = JSON.parse(handle);
-      permission = myHandle.permission;
-      statusCode = myHandle.statusCode;
-    }
 
     let { matchModeEnums, operatorEnums, paramTypeEnums, hystrixIsolationModeEnums} = platform;
 
@@ -364,7 +356,6 @@ class AddModal extends Component {
                     </li>
                     <li style={{display: this.state[`paramTypeValueEn${index}`]?'none':'block'}}>
                       <Input
-
                         onChange={e => {
                           this.conditionChange(
                             index,
@@ -502,7 +493,8 @@ class AddModal extends Component {
                 />
               </li>
               {
-                this.state.executionIsolationStrategy == 1&&( <li>
+                this.state.executionIsolationStrategy === 1&&(
+                <li>
                   <Input
                     addonBefore={<div>最大并发量</div>}
                     value={maxConcurrentRequests}
@@ -513,7 +505,8 @@ class AddModal extends Component {
                       this.onHandleNumberChange("maxConcurrentRequests", value);
                     }}
                   />
-                </li>)
+                </li>
+)
               }
               <li>
                 <Input
@@ -567,7 +560,7 @@ class AddModal extends Component {
                 />
               </li>
               {
-                this.state.executionIsolationStrategy == 0 && (
+                this.state.executionIsolationStrategy === 0 && (
                 <li>
                   <Input
                     addonBefore={<div>线程池coreSize</div>}
@@ -583,7 +576,7 @@ class AddModal extends Component {
               )}
 
               {
-                this.state.executionIsolationStrategy == 0 && (
+                this.state.executionIsolationStrategy === 0 && (
                 <li>
                   <Input
                     addonBefore={<div>线程池maximumSize</div>}
@@ -598,7 +591,7 @@ class AddModal extends Component {
                 </li>
               )}
               {
-                this.state.executionIsolationStrategy == 0&& (
+                this.state.executionIsolationStrategy === 0&& (
                 <li>
                   <Input
                     addonBefore={<div>线程池maxQueueSize</div>}
