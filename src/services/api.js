@@ -485,3 +485,61 @@ export function fetchPluginHandleByPluginId(params) {
     method: `GET`
   });
 }
+
+// 获取字典列表
+export async function fetchSoulDicts(params) {
+  return request(`${baseUrl}/soul-dict?${stringify(params)}`,{
+    method: `GET`
+  });
+}
+
+// 添加字典
+export async function addSoulDict(params) {
+  return request(`${baseUrl}/soul-dict`,{
+    method: `POST`,
+    body: {
+      ...params
+    }
+  });
+}
+
+// 获取字典详情
+export async function findSoulDict(params) {
+  return request(`${baseUrl}/soul-dict/${params.id}`,{
+    method: 'GET'
+  })
+}
+
+// 更新字典
+export async function updateSoulDict(params) {
+  return request(`${baseUrl}/soul-dict/${params.id}`,{
+    method: `PUT`,
+    body: {
+      ...params
+    }
+  })
+}
+
+// 批量删除字典
+export async function batchDeleteSoulDict(params) {
+  return request(`${baseUrl}/soul-dict/batch`,{
+    method: `DELETE`,
+    body: [...params.list]
+  });
+}
+
+export function fetchSoulDictByType(params) {
+  return request(`${baseUrl}/soul-dict/all/${params.type}`,{
+    method: `GET`
+  });
+}
+
+export async function updateSoulDictEnabled(params) {
+  return request(`${baseUrl}/soul-dict/batchEnabled`, {
+    method: `POST`,
+    body: {
+      ids: params.list,
+      enabled: params.enabled
+    }
+  })
+}

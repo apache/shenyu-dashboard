@@ -72,6 +72,7 @@ class AddPluginHandle extends Component {
               <Select>
                 <Option key="1" value="1">数字</Option>
                 <Option key="2" value="2">字符串</Option>
+                <Option key="3" value="3">下拉框</Option>
               </Select>
             )}
           </FormItem>
