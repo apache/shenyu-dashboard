@@ -119,7 +119,9 @@ export const getRouterData = app => {
     '/system/auth': { // 认证管理
       component: dynamicWrapper(app, ['auth'], () => import('../routes/sysytem/appAuth')),
     },
-
+    '/system/dict': { // 字典管理
+    component: dynamicWrapper(app, ['soulDict'], () => import('../routes/sysytem/dict')),
+    },
     '/exception/403': {
       component: dynamicWrapper(app, [], () => import('../routes/Exception/403')),
     },

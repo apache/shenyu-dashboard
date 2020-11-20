@@ -39,9 +39,6 @@ class AddModal extends Component {
     this.state.ruleConditions = ruleConditions;
   }
 
-
-
-
   componentWillMount() {
     const { dispatch,pluginId, handle } = this.props;
     this.setState({pluginHandleList: []})
@@ -57,12 +54,10 @@ class AddModal extends Component {
     });
   }
 
-
   setPluginHandleList = pluginHandles=>{
 
     this.setState({pluginHandleList: pluginHandles})
   }
-
 
   checkConditions = () => {
     let { ruleConditions } = this.state;
@@ -166,8 +161,6 @@ class AddModal extends Component {
 
     this.setState({ ruleConditions });
   };
-
-
 
   render() {
     let {
@@ -354,39 +347,61 @@ class AddModal extends Component {
                 pluginHandleList.map(item=> {
                   if (item.dataType === "1") {
                   return   (
-                    <Input
-                      addonBefore={<div>{item.label}</div>}
-                      style={{width: 250}}
-                      defaultValue={item.value}
-                      placeholder={item.label}
-                      key={item.field}
-                      type="number"
-                      onChange={e => {
-                            item.value = e.target.value;
-                            }
-                          }
-                    />
-)
-                  } else {
-                    return (
+                    <li key={item.field}>
                       <Input
                         addonBefore={<div>{item.label}</div>}
                         style={{width: 250}}
                         defaultValue={item.value}
                         placeholder={item.label}
                         key={item.field}
+                        type="number"
                         onChange={e => {
-                        item.value = e.target.value;
-                      }
-                      }
+                            item.value = e.target.value;
+                            }
+                          }
                       />
+                    </li>
 )
+                  } else if (item.dataType === "3" && item.dictOptions) {
+                    return (
+                      <li key={item.field}>{item.label}：
+                        <Select
+                          placeholder={item.label}
+                          onChange={value => {
+                          item.value = value;
+                            this.setState({pluginHandleList})
+                        }}
+                          value={item.value || undefined}
+                          style={{ width: 250 }}
+                        >
+                          {item.dictOptions.map(option => {
+                          return (
+                            <Option key={option.dictValue} value={option.dictValue}>
+                              {option.dictName}
+                            </Option>
+                          );
+                        })}
+                        </Select>
+                      </li>
+                    )
+                  } else {
+                    return (
+                      <li key={item.field}><Input
+                        addonBefore={<div>{item.label}</div>}
+                        style={{width: 250}}
+                        defaultValue={item.value}
+                        placeholder={item.label}
+                        key={item.field}
+                        onChange={e => {
+                          item.value = e.target.value;
+                        }
+                        }
+                      />
+                      </li>
+                    )
                   }
-
                 })
               }
-              <li />
-
             </ul>
           </div>
           <div className={styles.layout}>

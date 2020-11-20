@@ -206,9 +206,12 @@ export default class PluginHandle extends Component {
         render: text => {
           if (text === "1") {
             return <div>数字</div>;
-          } else {
+          } else if (text === "2") {
             return <div>字符串</div>;
+          } else if (text === "3") {
+            return <div>下拉框</div>;
           }
+          return <div>未知类型</div>;
         }
       },
       {
