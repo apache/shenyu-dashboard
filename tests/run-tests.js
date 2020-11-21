@@ -17,6 +17,7 @@ startServer.on('exit', () => {
 });
 
 // eslint-disable-next-li
+// eslint-disable-next-line no-console
 console.log('Starting development server for e2e tests...');
 startServer.stdout.on('data', data => {
   // eslint-disable-next-line

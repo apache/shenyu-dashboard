@@ -75,52 +75,52 @@ export const getRouterData = app => {
       component: dynamicWrapper(app, ['user', 'login'], () => import('../layouts/BasicLayout')),
     },
     '/home': {
-      component: dynamicWrapper(app, [], () => import('../routes/home')),
+      component: dynamicWrapper(app, [], () => import('../routes/Home')),
     },
     '/plug/waf': {
-      component: dynamicWrapper(app, ['waf'], () => import('../routes/plug/waf')),
+      component: dynamicWrapper(app, ['waf'], () => import('../routes/Plugin/Waf')),
     },
     '/plug/hystrix': {
-      component: dynamicWrapper(app, ['hystrix'], () => import('../routes/plug/hystrix')),
+      component: dynamicWrapper(app, ['hystrix'], () => import('../routes/Plugin/Hystrix')),
     },
     '/plug/sign': {
-      component: dynamicWrapper(app, ['sign'], () => import('../routes/plug/sign')),
+      component: dynamicWrapper(app, ['sign'], () => import('../routes/Plugin/Sign')),
     },
     '/plug/monitor': {
-      component: dynamicWrapper(app, ['monitor'], () => import('../routes/plug/monitor')),
+      component: dynamicWrapper(app, ['monitor'], () => import('../routes/Plugin/Monitor')),
     },
     '/plug/rewrite': {
-      component: dynamicWrapper(app, ['rewrite'], () => import('../routes/plug/rewrite')),
+      component: dynamicWrapper(app, ['rewrite'], () => import('../routes/Plugin/Rewrite')),
     },
     '/plug/rate_limiter': {
-      component: dynamicWrapper(app, ['limiter'], () => import('../routes/plug/limiter')),
+      component: dynamicWrapper(app, ['limiter'], () => import('../routes/Plugin/Limiter')),
     },
     '/plug/divide': {
-      component: dynamicWrapper(app, ['divide'], () => import('../routes/plug/divide')),
+      component: dynamicWrapper(app, ['divide'], () => import('../routes/Plugin/Divide')),
     },
     '/plug/dubbo': {
-      component: dynamicWrapper(app, ['dubbo'], () => import('../routes/plug/dubbo')),
+      component: dynamicWrapper(app, ['dubbo'], () => import('../routes/Plugin/Dubbo')),
     },
     '/plug/springCloud': {
-      component: dynamicWrapper(app, ['spring'], () => import('../routes/plug/spring')),
+      component: dynamicWrapper(app, ['spring'], () => import('../routes/Plugin/Spring')),
     },
     '/plug/:id': {
-      component: dynamicWrapper(app, ['common'], () => import('../routes/plug/common')),
+      component: dynamicWrapper(app, ['common'], () => import('../routes/Plugin/Common')),
     },
     '/system/manage': { // 用户管理
-      component: dynamicWrapper(app, ['manage'], () => import('../routes/system/user')),
+      component: dynamicWrapper(app, ['manage'], () => import('../routes/System/User')),
     },
     '/system/metadata': { // 元数据管理
-      component: dynamicWrapper(app, ['metadata'], () => import('../routes/system/metadata')),
+      component: dynamicWrapper(app, ['metadata'], () => import('../routes/System/Metadata')),
     },
     '/system/plugin': { // 插件管理
-      component: dynamicWrapper(app, ['plugin'], () => import('../routes/system/plugin')),
+      component: dynamicWrapper(app, ['plugin'], () => import('../routes/System/Plugin')),
     },
     '/system/auth': { // 认证管理
-      component: dynamicWrapper(app, ['auth'], () => import('../routes/system/appAuth')),
+      component: dynamicWrapper(app, ['auth'], () => import('../routes/System/AppAuth')),
     },
     '/system/dict': { // 字典管理
-    component: dynamicWrapper(app, ['soulDict'], () => import('../routes/system/dict')),
+    component: dynamicWrapper(app, ['soulDict'], () => import('../routes/System/Dict')),
     },
     '/exception/403': {
       component: dynamicWrapper(app, [], () => import('../routes/Exception/403')),
@@ -143,7 +143,7 @@ export const getRouterData = app => {
       component: dynamicWrapper(app, ['login'], () => import('../routes/User/Login')),
     },
     '/plugin/handle/:pluginId': {
-      component: dynamicWrapper(app, ['pluginHandle'], () => import('../routes/system/plugin/PluginHandle')),
+      component: dynamicWrapper(app, ['pluginHandle'], () => import('../routes/System/Plugin/PluginHandle')),
     },
   };
   // Get name from ./menu.js or just set it in the router data.
