@@ -108,19 +108,19 @@ export const getRouterData = app => {
       component: dynamicWrapper(app, ['common'], () => import('../routes/plug/common')),
     },
     '/system/manage': { // 用户管理
-      component: dynamicWrapper(app, ['manage'], () => import('../routes/sysytem/user')),
+      component: dynamicWrapper(app, ['manage'], () => import('../routes/system/user')),
     },
     '/system/metadata': { // 元数据管理
-      component: dynamicWrapper(app, ['metadata'], () => import('../routes/sysytem/metadata')),
+      component: dynamicWrapper(app, ['metadata'], () => import('../routes/system/metadata')),
     },
     '/system/plugin': { // 插件管理
-      component: dynamicWrapper(app, ['plugin'], () => import('../routes/sysytem/plugin')),
+      component: dynamicWrapper(app, ['plugin'], () => import('../routes/system/plugin')),
     },
     '/system/auth': { // 认证管理
-      component: dynamicWrapper(app, ['auth'], () => import('../routes/sysytem/appAuth')),
+      component: dynamicWrapper(app, ['auth'], () => import('../routes/system/appAuth')),
     },
     '/system/dict': { // 字典管理
-    component: dynamicWrapper(app, ['soulDict'], () => import('../routes/sysytem/dict')),
+    component: dynamicWrapper(app, ['soulDict'], () => import('../routes/system/dict')),
     },
     '/exception/403': {
       component: dynamicWrapper(app, [], () => import('../routes/Exception/403')),
@@ -143,7 +143,7 @@ export const getRouterData = app => {
       component: dynamicWrapper(app, ['login'], () => import('../routes/User/Login')),
     },
     '/plugin/handle/:pluginId': {
-      component: dynamicWrapper(app, ['pluginHandle'], () => import('../routes/sysytem/plugin/PluginHandle')),
+      component: dynamicWrapper(app, ['pluginHandle'], () => import('../routes/system/plugin/PluginHandle')),
     },
   };
   // Get name from ./menu.js or just set it in the router data.
