@@ -515,7 +515,7 @@ export default class Common extends Component {
               <div style={{ display: "flex" }}>
                 <h3 style={{ marginRight: 30 }}>选择器规则列表</h3>
                 <Button icon="reload" onClick={this.asyncClick} type="primary">
-                  同步自定义
+                  同步自定义{this.props.match.params ? this.props.match.params.id : ''}
                 </Button>
               </div>
               <Button type="primary" onClick={this.addRule}>

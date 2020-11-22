@@ -77,17 +77,8 @@ export const getRouterData = app => {
     '/home': {
       component: dynamicWrapper(app, [], () => import('../routes/Home')),
     },
-    '/plug/waf': {
-      component: dynamicWrapper(app, ['waf'], () => import('../routes/Plugin/Waf')),
-    },
     '/plug/hystrix': {
       component: dynamicWrapper(app, ['hystrix'], () => import('../routes/Plugin/Hystrix')),
-    },
-    '/plug/sign': {
-      component: dynamicWrapper(app, ['sign'], () => import('../routes/Plugin/Sign')),
-    },
-    '/plug/monitor': {
-      component: dynamicWrapper(app, ['monitor'], () => import('../routes/Plugin/Monitor')),
     },
     '/plug/rewrite': {
       component: dynamicWrapper(app, ['rewrite'], () => import('../routes/Plugin/Rewrite')),
