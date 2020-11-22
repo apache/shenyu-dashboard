@@ -38,11 +38,6 @@ const menuData = [
         id: 'divide6'
       },
       {
-        name: 'dubbo',
-        path: 'dubbo',
-        id: 'dubbo7'
-      },
-      {
         name: 'springCloud',
         path: 'springCloud',
         id: 'springCloud8'
