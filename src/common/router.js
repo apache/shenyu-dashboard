@@ -98,9 +98,6 @@ export const getRouterData = app => {
     '/plug/divide': {
       component: dynamicWrapper(app, ['divide'], () => import('../routes/Plugin/Divide')),
     },
-    '/plug/dubbo': {
-      component: dynamicWrapper(app, ['dubbo'], () => import('../routes/Plugin/Dubbo')),
-    },
     '/plug/springCloud': {
       component: dynamicWrapper(app, ['spring'], () => import('../routes/Plugin/Spring')),
     },

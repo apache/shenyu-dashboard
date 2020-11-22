@@ -155,7 +155,7 @@ class BasicLayout extends React.PureComponent {
   render() {
     const { collapsed, routerData, match, location, plugins, dispatch, } = this.props;
     const bashRedirect = this.getBaseRedirect();
-    const systemRoute = ['waf', "sign", "monitor", "rewrite", "rate_limiter", "divide", "dubbo", "springCloud","hystrix"];
+    const systemRoute = ['waf', "sign", "monitor", "rewrite", "rate_limiter", "divide", "springCloud","hystrix"];
     let menus = getMenuData();
     plugins.forEach((item) => {
       if (systemRoute.indexOf(item.name) === -1) {
