@@ -83,9 +83,6 @@ export const getRouterData = app => {
     '/plug/rewrite': {
       component: dynamicWrapper(app, ['rewrite'], () => import('../routes/Plugin/Rewrite')),
     },
-    '/plug/rate_limiter': {
-      component: dynamicWrapper(app, ['limiter'], () => import('../routes/Plugin/Limiter')),
-    },
     '/plug/divide': {
       component: dynamicWrapper(app, ['divide'], () => import('../routes/Plugin/Divide')),
     },

@@ -13,11 +13,6 @@ const menuData = [
         id: 'rewrite4'
       },
       {
-        name: 'rate_limiter',
-        path: 'rate_limiter',
-        id: 'rate_limiter5'
-      },
-      {
         name: 'divide',
         path: 'divide',
         id: 'divide6'
