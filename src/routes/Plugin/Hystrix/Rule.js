@@ -569,7 +569,8 @@ class AddModal extends Component {
                     placeholder="hystrix 线程池线程核心数量"
                     onChange={e => {
                         const value = e.target.value;
-                        this.onHandleChange("hystrixThreadPoolConfig.coreSize", value);
+                        hystrixThreadPoolConfig.coreSize = value;
+                        this.setState({hystrixThreadPoolConfig})
                       }}
                   />
                 </li>
@@ -585,7 +586,8 @@ class AddModal extends Component {
                     placeholder="hystrix 线程池线程最大数量"
                     onChange={e => {
                       const value = e.target.value;
-                      this.onHandleChange("hystrixThreadPoolConfig.maximumSize", value);
+                      hystrixThreadPoolConfig.maximumSize = value;
+                      this.setState({hystrixThreadPoolConfig})
                     }}
                   />
                 </li>
@@ -600,7 +602,8 @@ class AddModal extends Component {
                     placeholder="hystrix 线程池任务队列最大size"
                     onChange={e => {
                       const value = e.target.value;
-                      this.onHandleChange("hystrixThreadPoolConfig.maximumSize", value);
+                      hystrixThreadPoolConfig.maxQueueSize = value;
+                      this.setState({hystrixThreadPoolConfig})
                     }}
                   />
                 </li>
