@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal, Form, Select, Input, Switch, Button, message } from "antd";
+import { Modal, Form, Select, Input, Switch, Button, message, Tooltip  } from "antd";
 import { connect } from "dva";
 import classnames from "classnames";
 import styles from "../index.less";
@@ -364,24 +364,26 @@ class AddModal extends Component {
 )
                   } else if (item.dataType === "3" && item.dictOptions) {
                     return (
-                      <li key={item.field}>{item.label}：
-                        <Select
-                          placeholder={item.label}
-                          onChange={value => {
+                      <li key={item.field}>
+                        <Tooltip title={item.label}>
+                          <Select
+                            placeholder={item.label}
+                            onChange={value => {
                           item.value = value;
                             this.setState({pluginHandleList})
                         }}
-                          value={item.value || undefined}
-                          style={{ width: 250 }}
-                        >
-                          {item.dictOptions.map(option => {
+                            value={item.value || undefined}
+                            style={{ width: 250 }}
+                          >
+                            {item.dictOptions.map(option => {
                           return (
                             <Option key={option.dictValue} value={option.dictValue}>
-                              {option.dictName}
+                              {option.dictName} ({item.label})
                             </Option>
                           );
                         })}
-                        </Select>
+                          </Select>
+                        </Tooltip>
                       </li>
                     )
                   } else {
