@@ -85,6 +85,7 @@ class AddTable extends Component {
       },
     ];
 
+
     //   根据下拉框选项自动更换数据
     const data = metaGroup[this.state.initialData];
     const {getFieldDecorator} = form;
