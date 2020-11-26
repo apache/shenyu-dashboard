@@ -16,6 +16,7 @@ class AddTable extends Component {
   handleChange = (value) => {
     this.setState({initialData: value,})
   }
+
   handleSubmit = e => {
     const {form, handleOk, metaGroup} = this.props;
     const {selectedRowKeys, initialData} = this.state;
@@ -35,11 +36,14 @@ class AddTable extends Component {
   onSelectChange = selectedRowKeys => {
     this.setState({selectedRowKeys});
   }
+
   handleTableInput = (value, record) => {
-    for (var i in value) {
-      record[i] = value[i];//这一句是必须的，不然状态无法更改
+    // eslint-disable-next-line guard-for-in
+    for (let i in value) {
+      record[i] = value[i];// 这一句是必须的，不然状态无法更改
       this.setState({
-        size: this.state.size.map((item, key) => item.key == record.key ? {...item, [i]: value[i]} : item)
+        // eslint-disable-next-line react/no-access-state-in-setstate
+        size: this.state.size.map((item) => item.key === record.key ? {...item, [i]: value[i]} : item)
       })
     }
   }
