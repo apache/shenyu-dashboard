@@ -481,7 +481,7 @@ export async function batchDeletePluginHandle(params) {
 }
 
 export function fetchPluginHandleByPluginId(params) {
-  return request(`${baseUrl}/plugin-handle/all/${params.pluginId}`,{
+  return request(`${baseUrl}/plugin-handle/all/${params.pluginId}/${params.type}`,{
     method: `GET`
   });
 }
