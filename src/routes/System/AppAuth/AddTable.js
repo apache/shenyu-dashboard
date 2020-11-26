@@ -2,9 +2,9 @@ import React, {Component} from "react";
 import {Modal, Form, Select, Input, Table} from 'antd';
 
 
-
 const FormItem = Form.Item;
 const {Option} = Select;
+
 class AddTable extends Component {
   state = {
     selectedRowKeys: [], // Check here to configure the default column
@@ -66,14 +66,22 @@ class AddTable extends Component {
       {
         title: '资源路径',
         dataIndex: 'path',
-        render: (text, record) => <Input value={text}
-                                         onChange={(e) => this.handleTableInput({path: e.target.value}, record)}/>
+        render: (text, record) => (
+          <Input
+            value={text}
+            onChange={(e) => this.handleTableInput({path: e.target.value}, record)}
+          />
+        )
       },
       {
         title: '路径描述',
         dataIndex: 'pathDesc',
-        render: (text, record) => <Input value={text}
-                                         onChange={(e) => this.handleTableInput({pathDesc: e.target.value}, record)}/>
+        render: (text, record) => (
+          <Input
+            value={text}
+            onChange={(e) => this.handleTableInput({pathDesc: e.target.value}, record)}
+          />
+        )
       },
     ];
 
@@ -122,8 +130,9 @@ class AddTable extends Component {
                 })}
               </Select>)}
           </FormItem>
-          <FormItem label="电话"
-                    {...formItemLayout}
+          <FormItem
+            label="电话"
+            {...formItemLayout}
           >
             {getFieldDecorator("phone", {
               rules: [{
@@ -131,7 +140,7 @@ class AddTable extends Component {
                 message: "请输入phone"
               }],
             })(
-              <Input placeholder="phone"/>
+              <Input placeholder="phone" />
             )}
           </FormItem>
           <FormItem label="app参数" {...formItemLayout}>
@@ -141,7 +150,7 @@ class AddTable extends Component {
                 message: "请输入appParam"
               }],
             })(
-              <Input placeholder="appParam"/>
+              <Input placeholder="appParam" />
             )}
           </FormItem>
           <FormItem label="用户ID" {...formItemLayout}>
@@ -150,7 +159,7 @@ class AddTable extends Component {
                 required: true,
                 message: "请输入userId"
               }],
-            })(<Input placeholder="userId"/>)}
+            })(<Input placeholder="userId" />)}
           </FormItem>
           <FormItem label="扩展信息" {...formItemLayout}>
             {getFieldDecorator("extInfo", {
@@ -158,11 +167,17 @@ class AddTable extends Component {
                 required: true,
                 message: "请输入extInfo"
               }],
-            })(<Input placeholder="extInfo"/>)}
+            })(<Input placeholder="extInfo" />)}
           </FormItem>
           {/* 下拉框关联表格 */}
-          <Table bordered rowSelection={rowSelection} columns={columns} dataSource={data}
-                 rowKey={record => record.id} pagination={{current: 1, pageSize: 10}}/>
+          <Table
+            bordered
+            rowSelection={rowSelection}
+            columns={columns}
+            dataSource={data}
+            rowKey={record => record.id}
+            pagination={{current: 1, pageSize: 10}}
+          />
         </Form>
       </Modal>
     );
