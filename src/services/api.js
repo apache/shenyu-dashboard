@@ -261,11 +261,8 @@ export async function getAllAuths(params) {
   } else {
     myParams = { currentPage, pageSize };
   }
-  return request(`${baseUrl}/appAuth/findPageByQuery`, {
-    method: `POST`,
-    body: {
-      ...myParams
-    }
+  return request(`${baseUrl}/appAuth/findPageByQuery?${stringify(myParams)}`, {
+    method: `GET`
   });
 }
 
