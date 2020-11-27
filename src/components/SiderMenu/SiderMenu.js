@@ -62,7 +62,8 @@ export default class SiderMenu extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { location } = this.props;
+    const { location, menuData } = this.props;
+    this.flatMenuKeys = getFlatMenuKeys(menuData);
     if (nextProps.location.pathname !== location.pathname) {
       this.setState({
         openKeys: this.getDefaultCollapsedSubMenus(nextProps),
