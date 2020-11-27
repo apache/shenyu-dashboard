@@ -217,11 +217,11 @@ export default class PluginHandle extends Component {
         key: "dataType",
         width: 200,
         render: text => {
-          if (text === "1") {
+          if (text === 1) {
             return <div>数字</div>;
-          } else if (text === "2") {
+          } else if (text === 2) {
             return <div>字符串</div>;
-          } else if (text === "3") {
+          } else if (text === 3) {
             return <div>下拉框</div>;
           }
           return <div>未知类型</div>;
@@ -234,9 +234,9 @@ export default class PluginHandle extends Component {
         key: "type",
         width: 200,
         render: text => {
-          if (text === "1") {
+          if (text === 1) {
             return <div>选择器</div>;
-          } else if (text === "2") {
+          } else if (text === 2) {
             return <div>规则</div>;
           }return <div>未知类型</div>;
         }

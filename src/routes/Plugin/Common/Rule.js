@@ -42,7 +42,7 @@ class AddModal extends Component {
   componentWillMount() {
     const { dispatch,pluginId, handle } = this.props;
     this.setState({pluginHandleList: []})
-    let type = "2"
+    let type = 2
     dispatch({
       type: "pluginHandle/fetchByPluginId",
       payload:{

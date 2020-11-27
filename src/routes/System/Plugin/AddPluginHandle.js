@@ -67,7 +67,7 @@ class AddPluginHandle extends Component {
           <FormItem label="数据类型" {...formItemLayout}>
             {getFieldDecorator("dataType", {
               rules: [{required: true, message: "描述"}],
-              initialValue: dataType,
+              initialValue: dataType+"" || undefined,
             })(
               <Select>
                 <Option key="1" value="1">数字</Option>
@@ -79,7 +79,7 @@ class AddPluginHandle extends Component {
           <FormItem label="字段所属类型" {...formItemLayout}>
             {getFieldDecorator("type", {
               rules: [{required: true, message: "描述"}],
-              initialValue: type,
+              initialValue: type+"" || undefined,
             })(
               <Select>
                 <Option key="1" value="1">选择器</Option>
