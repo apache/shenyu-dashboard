@@ -59,7 +59,7 @@ export default class PluginHandle extends Component {
               disabled={true}
               {...pluginHandle}
               handleOk={values => {
-                const { field, label, id, pluginId,dataType } = values;
+                const { field, label, id, pluginId,dataType,type,sort } = values;
                 dispatch({
                   type: "pluginHandle/update",
                   payload: {
@@ -67,7 +67,9 @@ export default class PluginHandle extends Component {
                     label,
                     id,
                     pluginId,
-                    dataType
+                    dataType,
+                    type,
+                    sort
                   },
                   fetchValue: {
                     name: localPluginId,
@@ -107,14 +109,16 @@ export default class PluginHandle extends Component {
           pluginId={localPluginId}
           handleOk={values => {
             const {dispatch} = this.props;
-            const {pluginId, label, field, dataType} = values;
+            const {pluginId, label, field, dataType,type,sort} = values;
             dispatch({
               type: "pluginHandle/add",
               payload: {
                 pluginId,
                 label,
                 field,
-                dataType
+                dataType,
+                type,
+                sort
               },
               fetchValue: {
                 pluginId: localPluginId,
@@ -169,6 +173,15 @@ export default class PluginHandle extends Component {
               callback: () => { }
             }
           });
+
+          dispatch({
+            type: "pluginHandle/fetch",
+            payload: {
+              pluginId,
+              currentPage: {currentPage},
+              pageSize: 12
+            }
+          });
         }
       });
     } else {
@@ -204,15 +217,36 @@ export default class PluginHandle extends Component {
         key: "dataType",
         width: 200,
         render: text => {
-          if (text === "1") {
+          if (text === 1) {
             return <div>数字</div>;
-          } else if (text === "2") {
+          } else if (text === 2) {
             return <div>字符串</div>;
-          } else if (text === "3") {
+          } else if (text === 3) {
             return <div>下拉框</div>;
           }
           return <div>未知类型</div>;
         }
+      },
+      {
+        align: "center",
+        title: "字段所属类型",
+        dataIndex: "type",
+        key: "type",
+        width: 200,
+        render: text => {
+          if (text === 1) {
+            return <div>选择器</div>;
+          } else if (text === 2) {
+            return <div>规则</div>;
+          }return <div>未知类型</div>;
+        }
+      },
+      {
+        align: "center",
+        title: "排序",
+        dataIndex: "sort",
+        key: "sort",
+        width: 160
       },
       {
         align: "center",

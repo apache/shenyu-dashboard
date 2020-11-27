@@ -15,15 +15,15 @@ class AddPluginHandle extends Component {
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
 
-        let { field, label,dataType} = values;
-        handleOk({ field, label, id, pluginId,dataType });
+        let { field, label,dataType,type,sort} = values;
+        handleOk({ field, label, id, pluginId,dataType,type,sort });
       }
     });
   };
 
 
   render() {
-    let {handleCancel,  form, label="", field="", dataType ="1" } = this.props;
+    let {handleCancel,  form, label="", field="", dataType ="1",type="2",sort=0 } = this.props;
 
     const {getFieldDecorator} = form;
 
@@ -38,7 +38,7 @@ class AddPluginHandle extends Component {
 
     return (
       <Modal
-        width={520}
+        width={550}
         centered
         title="插件"
         visible
@@ -67,13 +67,32 @@ class AddPluginHandle extends Component {
           <FormItem label="数据类型" {...formItemLayout}>
             {getFieldDecorator("dataType", {
               rules: [{required: true, message: "描述"}],
-              initialValue: dataType,
+              initialValue: `${dataType}` || undefined,
             })(
               <Select>
                 <Option key="1" value="1">数字</Option>
                 <Option key="2" value="2">字符串</Option>
                 <Option key="3" value="3">下拉框</Option>
               </Select>
+            )}
+          </FormItem>
+          <FormItem label="字段所属类型" {...formItemLayout}>
+            {getFieldDecorator("type", {
+              rules: [{required: true, message: "描述"}],
+              initialValue: `${type}` || undefined,
+            })(
+              <Select>
+                <Option key="1" value="1">选择器</Option>
+                <Option key="2" value="2">规则</Option>
+              </Select>
+            )}
+          </FormItem>
+          <FormItem label="排序" {...formItemLayout}>
+            {getFieldDecorator("sort", {
+              rules: [{required: true, message: "请输入排序"}],
+              initialValue: sort,
+            })(
+              <Input placeholder="sort" type="number" />
             )}
           </FormItem>
         </Form>
