@@ -114,8 +114,7 @@ class AddModal extends Component {
       configWrap = (
         <FormItem label="配置" {...formItemLayout}>
           {getFieldDecorator("config", {
-            rules: [{ required: true, message: "请输入配置" }],
-            initialValue: config,
+            initialValue: config
           })(
             <TextArea placeholder="请输入配置" rows={4} />
           )}
