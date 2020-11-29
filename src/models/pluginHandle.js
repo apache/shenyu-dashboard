@@ -83,7 +83,7 @@ export default {
       let handle = payload.handle;
       let callback = payload.callBack;
       let handleJson;
-      if (typeof (handle) !== "undefined") {
+      if (handle != null && handle !== "" && typeof (handle) !== "undefined") {
         handleJson = JSON.parse(handle);
       }
       const json = yield call(fetchPluginHandleByPluginId, payload);

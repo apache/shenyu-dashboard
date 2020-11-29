@@ -8,11 +8,6 @@ const menuData = [
     path: 'plug',
     children: [
       {
-        name: 'rewrite',
-        path: 'rewrite',
-        id: 'rewrite4'
-      },
-      {
         name: 'divide',
         path: 'divide',
         id: 'divide6'

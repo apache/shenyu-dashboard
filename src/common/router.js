@@ -80,9 +80,6 @@ export const getRouterData = app => {
     '/plug/hystrix': {
       component: dynamicWrapper(app, ['hystrix'], () => import('../routes/Plugin/Hystrix')),
     },
-    '/plug/rewrite': {
-      component: dynamicWrapper(app, ['rewrite'], () => import('../routes/Plugin/Rewrite')),
-    },
     '/plug/divide': {
       component: dynamicWrapper(app, ['divide'], () => import('../routes/Plugin/Divide')),
     },
