@@ -347,7 +347,7 @@ class AddModal extends Component {
             >
               {
                 pluginHandleList.map(item=> {
-                  if (item.dataType === "1") {
+                  if (item.dataType === 1) {
                   return   (
                     <li key={item.field}>
                       <Input
@@ -364,7 +364,7 @@ class AddModal extends Component {
                       />
                     </li>
 )
-                  } else if (item.dataType === "3" && item.dictOptions) {
+                  } else if (item.dataType === 3 && item.dictOptions) {
                     return (
                       <li key={item.field}>
                         <Tooltip title={item.label}>
