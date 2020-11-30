@@ -1,13 +1,15 @@
 import React, { Component, Fragment } from "react";
-import { Modal, Form, Select, Input, Switch, Button, message } from "antd";
+import {Modal, Form, Select, Input, Switch, Button, message, Tooltip} from "antd";
 import { connect } from "dva";
+import classnames from "classnames";
 import styles from "../index.less";
-import { getIntContent } from '../../../utils/IntlUtils'
+import { getIntContent, getIntlContent } from '../../../utils/IntlUtils'
 
 const FormItem = Form.Item;
 const { Option } = Select;
 
-@connect(({ global }) => ({
+@connect(({ pluginHandle, global }) => ({
+  pluginHandle,
   platform: global.platform
 }))
 class AddModal extends Component {
@@ -42,6 +44,27 @@ class AddModal extends Component {
     this.state.selectorConditions = selectorConditions;
   }
 
+  componentWillMount() {
+    const { dispatch, pluginId, handle } = this.props;
+    this.setState({pluginHandleList: []})
+    let type = 1
+    dispatch({
+      type: "pluginHandle/fetchByPluginId",
+      payload:{
+        pluginId,
+        type,
+        handle,
+        callBack: pluginHandles => {
+          this.setPluginHandleList(pluginHandles);
+        }
+      }
+    });
+  }
+
+  setPluginHandleList = pluginHandles=>{
+    this.setState({pluginHandleList: pluginHandles})
+  }
+
   checkConditions = selectorConditions => {
     let result = true;
     if (selectorConditions) {
@@ -72,10 +95,15 @@ class AddModal extends Component {
   };
 
   handleSubmit = e => {
-    const { form, handleOk } = this.props;
-    const { selectorConditions, selectValue } = this.state;
-
     e.preventDefault();
+    const { form, handleOk } = this.props;
+    const { selectorConditions, selectValue, pluginHandleList } = this.state;
+    let handle = {};
+
+    pluginHandleList.forEach(item => {
+      handle[item.field] = item.value;
+    });
+
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         const mySubmit =
@@ -83,6 +111,7 @@ class AddModal extends Component {
         if (mySubmit || selectValue === "0") {
           handleOk({
             ...values,
+            handle: JSON.stringify(handle),
             sort: Number(values.sort),
             selectorConditions
           });
@@ -154,7 +183,7 @@ class AddModal extends Component {
       enabled = true,
       sort
     } = this.props;
-    const { selectorConditions, selectValue } = this.state;
+    const { selectorConditions, selectValue, pluginHandleList } = this.state;
 
     type = `${type}`;
     let {
@@ -197,23 +226,23 @@ class AddModal extends Component {
       <Modal
         width={700}
         centered
-        title={getIntContent("SOUL.SELECTOR.NAME")}
+        title={getIntlContent("SOUL.SELECTOR.NAME")}
         visible
-        okText={getIntContent("SOUL.COMMON.SURE")}
-        cancelText={getIntContent("SOUL.COMMON.CALCEL")}
+        okText={getIntlContent("SOUL.COMMON.SURE")}
+        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={onCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label={getIntContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} {...formItemLayout}>
             {getFieldDecorator("name", {
-              rules: [{ required: true, message: getIntContent("SOUL.COMMON.INPUTNAME") }],
+              rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTNAME") }],
               initialValue: name
-            })(<Input placeholder={getIntContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} />)}
+            })(<Input placeholder={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} />)}
           </FormItem>
-          <FormItem label={getIntContent("SOUL.COMMON.TYPE")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.COMMON.TYPE")} {...formItemLayout}>
             {getFieldDecorator("type", {
-              rules: [{ required: true, message: getIntContent("SOUL.COMMON.INPUTTYPE") }],
+              rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTTYPE") }],
               initialValue: type || "1"
             })(
               <Select onChange={value => this.getSelectValue(value)}>
@@ -229,9 +258,9 @@ class AddModal extends Component {
           </FormItem>
           {selectValue !== "0" && (
             <Fragment>
-              <FormItem label={getIntContent("SOUL.COMMON.MATCHTYPE")} {...formItemLayout}>
+              <FormItem label={getIntlContent("SOUL.COMMON.MATCHTYPE")} {...formItemLayout}>
                 {getFieldDecorator("matchMode", {
-                  rules: [{ required: true, message: getIntContent("SOUL.COMMON.INPUTMATCHTYPE") }],
+                  rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTMATCHTYPE") }],
                   initialValue: matchMode
                 })(
                   <Select>
@@ -247,7 +276,7 @@ class AddModal extends Component {
               </FormItem>
               <div className={styles.condition}>
                 <h3 className={styles.header}>
-                  <strong>*</strong>{getIntContent("SOUL.COMMON.CONDITION")}:{" "}
+                  <strong>*</strong>{getIntlContent("SOUL.COMMON.CONDITION")}:{" "}
                 </h3>
                 <div>
                   {selectorConditions.map((item, index) => {
@@ -330,7 +359,7 @@ class AddModal extends Component {
                               this.handleDelete(index);
                             }}
                           >
-                            {getIntContent("SOUL.COMMON.DELETE.NAME")}
+                            {getIntlContent("SOUL.COMMON.DELETE.NAME")}
                           </Button>
                         </li>
                       </ul>
@@ -339,7 +368,7 @@ class AddModal extends Component {
                 </div>
 
                 <Button onClick={this.handleAdd} type="primary">
-                  {getIntContent("SOUL.COMMON.ADD")}
+                  {getIntlContent("SOUL.COMMON.ADD")}
                 </Button>
               </div>
             </Fragment>
@@ -371,6 +400,82 @@ class AddModal extends Component {
               })(<Switch />)}
             </FormItem>
           </div>
+
+          {(pluginHandleList && pluginHandleList.length > 0) && (
+            <div className={styles.handleWrap}>
+              <div className={styles.header}>
+                <h3>处理: </h3>
+              </div>
+              <ul
+                className={classnames({
+                  [styles.handleUl]: true,
+                  [styles.springUl]: true
+                })}
+              >
+                {
+                  pluginHandleList.map(item=> {
+                    if (item.dataType === 1) {
+                      return   (
+                        <li key={item.field}>
+                          <Input
+                            addonBefore={<div>{item.label}</div>}
+                            style={{width: 250}}
+                            defaultValue={item.value}
+                            placeholder={item.label}
+                            key={item.field}
+                            type="number"
+                            onChange={e => {
+                              item.value = e.target.value;
+                            }
+                            }
+                          />
+                        </li>
+                      )
+                    } else if (item.dataType === 3 && item.dictOptions) {
+                      return (
+                        <li key={item.field}>
+                          <Tooltip title={item.label}>
+                            <Select
+                              placeholder={item.label}
+                              onChange={value => {
+                                item.value = value;
+                                this.setState({pluginHandleList})
+                              }}
+                              value={item.value || undefined}
+                              style={{ width: 250 }}
+                            >
+                              {item.dictOptions.map(option => {
+                                return (
+                                  <Option key={option.dictValue} value={option.dictValue}>
+                                    {option.dictName} ({item.label})
+                                  </Option>
+                                );
+                              })}
+                            </Select>
+                          </Tooltip>
+                        </li>
+                      )
+                    } else {
+                      return (
+                        <li key={item.field}><Input
+                          addonBefore={<div>{item.label}</div>}
+                          style={{width: 250}}
+                          defaultValue={item.value}
+                          placeholder={item.label}
+                          key={item.field}
+                          onChange={e => {
+                            item.value = e.target.value;
+                          }
+                          }
+                        />
+                        </li>
+                      )
+                    }
+                  })
+                }
+              </ul>
+            </div>
+          )}
 
           <FormItem label="执行顺序" {...formItemLayout}>
             {getFieldDecorator("sort", {

@@ -16,6 +16,14 @@
   "SOUL.COMMON.SYN": "Synchronous",
   "SOUL.COMMON.ADD.RULE": "Add Rule",
 
+  "SOUL.COMMON.ADD": "Add",
+  "SOUL.COMMON.INPUTNAME": "Please Input Name",
+  "SOUL.COMMON.TYPE": "Type",
+  "SOUL.COMMON.INPUTTYPE":"Please Input Type",
+  "SOUL.COMMON.MATCHTYPE": "Match Type",
+  "SOUL.COMMON.INPUTMATCHTYPE":"Please Select Match Mode",
+  "SOUL.COMMON.CONDITION": "Conditions",
+
   "SOUL.MENU.PLUGIN.LIST": "Plugin List",
   "SOUL.MENU.SYSTEM.MANAGMENT": "System Management",
   "SOUL.MENU.SYSTEM.MANAGMENT.USER": "User Management",
@@ -26,7 +34,9 @@
 
   "SOUL.PLUGIN.SELECTOR.LIST.TITLE": "Selector List",
   "SOUL.PLUGIN.SELECTOR.LIST.ADD" : "Add Selector",
-  "SOUL.PLUGIN.SELECTOR.RULE.LIST": "Select Selector List",
+  "SOUL.PLUGIN.SELECTOR.RULE.LIST": "Selector Rules List",
   "SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME": "Name",
-  "SOUL.PLUGIN.SELECTOR.LIST.COLUMN.OPEN": "Open"
+  "SOUL.PLUGIN.SELECTOR.LIST.COLUMN.OPEN": "Open",
+
+  "SOUL.SELECTOR.NAME": "Selector"
 }

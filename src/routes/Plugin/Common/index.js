@@ -404,13 +404,13 @@ export default class Common extends Component {
     const rulesColumns = [
       {
         align: "center",
-        title: "规则名称",
+        title: getIntlContent("SOUL.COMMON.RULE.NAME"),
         dataIndex: "name",
         key: "name"
       },
       {
         align: "center",
-        title: "开启",
+        title: getIntlContent("SOUL.COMMON.OPEN"),
         dataIndex: "enabled",
         key: "enabled",
         render: text => {
@@ -423,13 +423,13 @@ export default class Common extends Component {
       },
       {
         align: "center",
-        title: "更新时间",
+        title: getIntlContent("SOUL.COMMON.UPDATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated"
       },
       {
         align: "center",
-        title: "操作",
+        title: getIntlContent("SOUL.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
         render: (text, record) => {
@@ -446,7 +446,7 @@ export default class Common extends Component {
                 修改
               </span>
               <Popconfirm
-                title="你确认删除吗"
+                title={getIntlContent("SOUL.COMMON.DELETE")}
                 placement='bottom'
                 onCancel={(e) => {
                   e.stopPropagation()
@@ -455,8 +455,8 @@ export default class Common extends Component {
                   e.stopPropagation()
                   this.deleteRule(record);
                 }}
-                okText="确认"
-                cancelText="取消"
+                okText={getIntlContent("SOUL.COMMON.SURE")}
+                cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
               >
                 <span
                   className="edit"
@@ -464,7 +464,7 @@ export default class Common extends Component {
                     e.stopPropagation()
                   }}
                 >
-                  删除
+                 {getIntlContent("SOUL.COMMON.DELETE.NAME")}
                 </span>
               </Popconfirm>
             </div>
@@ -478,9 +478,9 @@ export default class Common extends Component {
         <Row gutter={20}>
           <Col span={8}>
             <div className="table-header">
-              <h3>选择器列表</h3>
+              <h3>{getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
               <Button type="primary" onClick={this.addSelector}>
-                添加选择器
+                {getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.ADD")}
               </Button>
             </div>
             <Table
@@ -514,13 +514,13 @@ export default class Common extends Component {
           <Col span={16}>
             <div className="table-header">
               <div style={{ display: "flex" }}>
-                <h3 style={{ marginRight: 30 }}>选择器规则列表</h3>
+                <h3 style={{ marginRight: 30 }}>{getIntlContent("SOUL.PLUGIN.SELECTOR.RULE.LIST")}</h3>
                 <Button icon="reload" onClick={this.asyncClick} type="primary">
-                  同步自定义{this.props.match.params ? this.props.match.params.id : ''}
+                  {getIntlContent("SOUL.COMMON.SYN")} {this.props.match.params ? this.props.match.params.id : ''}
                 </Button>
               </div>
               <Button type="primary" onClick={this.addRule}>
-                添加规则
+                {getIntlContent("SOUL.COMMON.ADD.RULE")}
               </Button>
             </div>
             <Table

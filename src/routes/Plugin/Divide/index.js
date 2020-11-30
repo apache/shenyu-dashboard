@@ -3,6 +3,8 @@ import { Table, Row, Col, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
+import { getInitOptions } from "react-intl-universal";
+import { getIntlContent } from "../../../utils/IntlUtils";
 
 @connect(({ divide, global, loading }) => ({
   ...global,
@@ -439,9 +441,9 @@ export default class Divide extends Component {
         <Row gutter={20}>
           <Col span={8}>
             <div className="table-header">
-              <h3>选择器列表</h3>
+              <h3>{getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
               <Button type="primary" onClick={this.addSelector}>
-                添加选择器
+                {getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.ADD")}
               </Button>
             </div>
             <Table
@@ -475,13 +477,13 @@ export default class Divide extends Component {
           <Col span={16}>
             <div className="table-header">
               <div style={{ display: "flex" }}>
-                <h3 style={{ marginRight: 30 }}>选择器规则列表</h3>
+                <h3 style={{ marginRight: 30 }}>{getIntlContent("SOUL.PLUGIN.SELECTOR.RULE.LIST")}</h3>
                 <Button icon="reload" onClick={this.asyncClick} type="primary">
-                  同步divide
+                  {getIntlContent("SOUL.COMMON.SYN")} divide
                 </Button>
               </div>
               <Button type="primary" onClick={this.addRule}>
-                添加规则
+                {getIntlContent("SOUL.COMMON.ADD.RULE")}
               </Button>
             </div>
             <Table
