@@ -8,19 +8,9 @@ const menuData = [
     path: 'plug',
     children: [
       {
-        name: 'rewrite',
-        path: 'rewrite',
-        id: 'rewrite4'
-      },
-      {
         name: 'divide',
         path: 'divide',
         id: 'divide6'
-      },
-      {
-        name: 'springCloud',
-        path: 'springCloud',
-        id: 'springCloud8'
       },
       {
         name: 'hystrix',
