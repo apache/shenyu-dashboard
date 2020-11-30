@@ -6,7 +6,6 @@ import LoginItem from './LoginItem';
 import LoginTab from './LoginTab';
 import LoginSubmit from './LoginSubmit';
 import styles from './index.less';
-
 class Login extends Component {
   static propTypes = {
     className: PropTypes.string,

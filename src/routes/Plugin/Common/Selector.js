@@ -2,6 +2,7 @@ import React, { Component, Fragment } from "react";
 import { Modal, Form, Select, Input, Switch, Button, message } from "antd";
 import { connect } from "dva";
 import styles from "../index.less";
+import { getIntContent } from '../../../utils/IntlUtils'
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -196,23 +197,23 @@ class AddModal extends Component {
       <Modal
         width={700}
         centered
-        title="选择器"
+        title={getIntContent("SOUL.SELECTOR.NAME")}
         visible
-        okText="确定"
-        cancelText="取消"
+        okText={getIntContent("SOUL.COMMON.SURE")}
+        cancelText={getIntContent("SOUL.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={onCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label="名称" {...formItemLayout}>
+          <FormItem label={getIntContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} {...formItemLayout}>
             {getFieldDecorator("name", {
-              rules: [{ required: true, message: "请输入名称" }],
+              rules: [{ required: true, message: getIntContent("SOUL.COMMON.INPUTNAME") }],
               initialValue: name
-            })(<Input placeholder="名称" />)}
+            })(<Input placeholder={getIntContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} />)}
           </FormItem>
-          <FormItem label="类型" {...formItemLayout}>
+          <FormItem label={getIntContent("SOUL.COMMON.TYPE")} {...formItemLayout}>
             {getFieldDecorator("type", {
-              rules: [{ required: true, message: "请选择类型" }],
+              rules: [{ required: true, message: getIntContent("SOUL.COMMON.INPUTTYPE") }],
               initialValue: type || "1"
             })(
               <Select onChange={value => this.getSelectValue(value)}>
@@ -228,9 +229,9 @@ class AddModal extends Component {
           </FormItem>
           {selectValue !== "0" && (
             <Fragment>
-              <FormItem label="匹配方式" {...formItemLayout}>
+              <FormItem label={getIntContent("SOUL.COMMON.MATCHTYPE")} {...formItemLayout}>
                 {getFieldDecorator("matchMode", {
-                  rules: [{ required: true, message: "请选择匹配方式" }],
+                  rules: [{ required: true, message: getIntContent("SOUL.COMMON.INPUTMATCHTYPE") }],
                   initialValue: matchMode
                 })(
                   <Select>
@@ -246,7 +247,7 @@ class AddModal extends Component {
               </FormItem>
               <div className={styles.condition}>
                 <h3 className={styles.header}>
-                  <strong>*</strong>条件:{" "}
+                  <strong>*</strong>{getIntContent("SOUL.COMMON.CONDITION")}:{" "}
                 </h3>
                 <div>
                   {selectorConditions.map((item, index) => {
@@ -329,7 +330,7 @@ class AddModal extends Component {
                               this.handleDelete(index);
                             }}
                           >
-                            删除
+                            {getIntContent("SOUL.COMMON.DELETE.NAME")}
                           </Button>
                         </li>
                       </ul>
@@ -338,7 +339,7 @@ class AddModal extends Component {
                 </div>
 
                 <Button onClick={this.handleAdd} type="primary">
-                  新增
+                  {getIntContent("SOUL.COMMON.ADD")}
                 </Button>
               </div>
             </Fragment>

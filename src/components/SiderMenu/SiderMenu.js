@@ -4,7 +4,8 @@ import pathToRegexp from 'path-to-regexp';
 import { Link } from 'dva/router';
 import styles from './index.less';
 import { urlToList } from '../_utils/pathTools';
-
+import { getIntlContent } from '../../utils/IntlUtils'
+import { emit } from '../../utils/emit';
 const { Sider } = Layout;
 const { SubMenu } = Menu;
 
@@ -58,9 +59,47 @@ export default class SiderMenu extends PureComponent {
     this.flatMenuKeys = getFlatMenuKeys(props.menuData);
     this.state = {
       openKeys: this.getDefaultCollapsedSubMenus(props),
+      localeName: ''
     };
   }
 
+  /** 根据当前语言 修改 菜单 */
+  updateMenuData() {
+    if (this.props.menuData.length > 0) {
+      for ( let i = 0 ; i < this.props.menuData.length; i++) {
+        if(this.props.menuData[i].path === '/plug') {
+          this.props.menuData[i].name = getIntlContent("SOUL.MENU.PLUGIN.LIST");
+        } else if(this.props.menuData[i].path === '/system'){
+          this.props.menuData[i].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT");
+          if(this.props.menuData[i].children.length > 0) {
+            for(let j = 0; j < this.props.menuData[i].children.length; j++) {
+              const childrenPath = this.props.menuData[i].children[j].path;
+              if(childrenPath === '/system/manage') {
+                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.USER");
+              } else if(childrenPath === '/system/plugin') {
+                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.PLUGIN");
+              } else if(childrenPath === '/system/auth') {
+                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.AUTHEN");
+              } else if(childrenPath === '/system/metadata') {
+                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.METADATA");
+              } else if(childrenPath === '/system/dict') {
+                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.DICTIONARY");
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  /** 手动 修改 中英文 为了触发 页面刷新 */
+  changeLocales(locale) {
+    this.setState({
+      localeName: locale
+    })
+  }
+  componentDidMount() {
+    emit.on('change_language', lang => this.changeLocales(lang));
+  }
   componentWillReceiveProps(nextProps) {
     const { location, menuData } = this.props;
     this.flatMenuKeys = getFlatMenuKeys(menuData);
@@ -226,6 +265,7 @@ export default class SiderMenu extends PureComponent {
   };
 
   render() {
+    this.updateMenuData();
     const { logo, menuData, collapsed, onCollapse } = this.props;
     const { openKeys } = this.state;
     // Don't show popup menu when it is been collapsed
@@ -253,7 +293,8 @@ export default class SiderMenu extends PureComponent {
         <div className={styles.logo} key="logo">
           <Link to="/">
             <img src={logo} alt="logo" />
-            <h1>Soul网关管理</h1>
+              {/* <h1>"SOUL.SIDERMENU.LOGO"</h1> */}
+              <span>{getIntlContent("SOUL.SIDERMENU.LOGO")}</span>
           </Link>
         </div>
         <Menu

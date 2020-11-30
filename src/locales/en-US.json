@@ -1,0 +1,32 @@
+{
+  "SOUL.GLOBALHEADER.LOGOUT": "Logout",
+  "SOUL.HOME.WELCOME": "Welcome to the Soul Gateway management system",
+  "SOUL.SIDERMENU.LOGO": "Soul Gateway Managment",
+
+  "SOUL.COMMON.OPEN": "Open",
+  "SOUL.COMMON.CLOSE": "Close",
+  "SOUL.COMMON.OPERAT": "Operation",
+  "SOUL.COMMON.CHANGE": "Modify",
+  "SOUL.COMMON.DELETE": "Are You Sure Delete?",
+  "SOUL.COMMON.DELETE.NAME": "Delete",
+  "SOUL.COMMON.SURE": "Sure",
+  "SOUL.COMMON.CALCEL": "Cancel",
+  "SOUL.COMMON.RULE.NAME": "Rule Name",
+  "SOUL.COMMON.UPDATETIME": "Update Time",
+  "SOUL.COMMON.SYN": "Synchronous",
+  "SOUL.COMMON.ADD.RULE": "Add Rule",
+
+  "SOUL.MENU.PLUGIN.LIST": "Plugin List",
+  "SOUL.MENU.SYSTEM.MANAGMENT": "System Management",
+  "SOUL.MENU.SYSTEM.MANAGMENT.USER": "User Management",
+  "SOUL.MENU.SYSTEM.MANAGMENT.PLUGIN": "Plugin Management",
+  "SOUL.MENU.SYSTEM.MANAGMENT.AUTHEN": "Authentication Management",
+  "SOUL.MENU.SYSTEM.MANAGMENT.METADATA":"Metadata Management",
+  "SOUL.MENU.SYSTEM.MANAGMENT.DICTIONARY":"Dictionary Management",
+
+  "SOUL.PLUGIN.SELECTOR.LIST.TITLE": "Selector List",
+  "SOUL.PLUGIN.SELECTOR.LIST.ADD" : "Add Selector",
+  "SOUL.PLUGIN.SELECTOR.RULE.LIST": "Select Selector List",
+  "SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME": "Name",
+  "SOUL.PLUGIN.SELECTOR.LIST.COLUMN.OPEN": "Open"
+}
