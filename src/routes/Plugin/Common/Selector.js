@@ -374,7 +374,7 @@ class AddModal extends Component {
             </Fragment>
           )}
           <div className={styles.layout}>
-            <FormItem {...formCheckLayout} label="继续后续选择器">
+            <FormItem {...formCheckLayout} label={getIntlContent("SOUL.SELECTOR.CONTINUE")}>
               {getFieldDecorator("continued", {
                 initialValue: continued,
                 valuePropName: "checked",
@@ -384,7 +384,7 @@ class AddModal extends Component {
             <FormItem
               style={{ margin: "0 30px" }}
               {...formCheckLayout}
-              label="打印日志"
+              label={getIntlContent("SOUL.SELECTOR.PRINTLOG")}
             >
               {getFieldDecorator("loged", {
                 initialValue: loged,
@@ -392,7 +392,7 @@ class AddModal extends Component {
                 rules: [{ required: true }]
               })(<Switch />)}
             </FormItem>
-            <FormItem {...formCheckLayout} label="是否开启">
+            <FormItem {...formCheckLayout} label={getIntlContent("SOUL.SELECTOR.WHETHEROPEN")}>
               {getFieldDecorator("enabled", {
                 initialValue: enabled,
                 valuePropName: "checked",
@@ -477,20 +477,20 @@ class AddModal extends Component {
             </div>
           )}
 
-          <FormItem label="执行顺序" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.SELECTOR.EXEORDER")} {...formItemLayout}>
             {getFieldDecorator("sort", {
               initialValue: sort,
               rules: [
                 {
                   required: true,
-                  message: "请输入1-100数字"
+                  message: getIntlContent("SOUL.SELECTOR.INPUTNUMBER")
                 },
                 {
                   pattern: /^([1-9][0-9]{0,1}|100)$/,
-                  message: "请输入1-100数字"
+                  message: getIntlContent("SOUL.SELECTOR.INPUTNUMBER")
                 }
               ]
-            })(<Input placeholder="可以填写1-100之间的数字标志执行先后顺序" />)}
+            })(<Input placeholder={getIntlContent("SOUL.SELECTOR.INPUTORDER")} />)}
           </FormItem>
         </Form>
       </Modal>

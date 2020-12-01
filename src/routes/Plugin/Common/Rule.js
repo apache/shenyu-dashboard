@@ -3,7 +3,7 @@ import { Modal, Form, Select, Input, Switch, Button, message, Tooltip  } from "a
 import { connect } from "dva";
 import classnames from "classnames";
 import styles from "../index.less";
-
+import { getIntlContent } from "../../../utils/IntlUtils"
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -210,23 +210,23 @@ class AddModal extends Component {
       <Modal
         width={800}
         centered
-        title="规则"
+        title={getIntlContent("SOUL.RULE.NAME")}
         visible
-        okText="确定"
-        cancelText="取消"
+        okText={getIntlContent("SOUL.COMMON.SURE")}
+        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={onCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label="名称" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} {...formItemLayout}>
             {getFieldDecorator("name", {
-              rules: [{ required: true, message: "请输入名称" }],
+              rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTNAME") }],
               initialValue: name
-            })(<Input placeholder="名称" />)}
+            })(<Input placeholder={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} />)}
           </FormItem>
-          <FormItem label="匹配方式" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.COMMON.MATCHTYPE")} {...formItemLayout}>
             {getFieldDecorator("matchMode", {
-              rules: [{ required: true, message: "请选择匹配方式" }],
+              rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTMATCHTYPE") }],
               initialValue: matchMode
             })(
               <Select>
@@ -242,7 +242,7 @@ class AddModal extends Component {
           </FormItem>
           <div className={styles.ruleConditions}>
             <h3 className={styles.header}>
-              <strong>*</strong>条件:
+              <strong>*</strong>{getIntlContent("SOUL.COMMON.CONDITION")}:
             </h3>
             <div className={styles.content}>
               {ruleConditions.map((item, index) => {
@@ -322,7 +322,7 @@ class AddModal extends Component {
                           this.handleDelete(index);
                         }}
                       >
-                        删除
+                        {getIntlContent("SOUL.COMMON.DELETE.NAME")}
                       </Button>
                     </li>
                   </ul>
@@ -331,13 +331,13 @@ class AddModal extends Component {
             </div>
             <div>
               <Button onClick={this.handleAdd} type="primary">
-                新增
+                {getIntlContent("SOUL.COMMON.ADD")}
               </Button>
             </div>
           </div>
           <div className={styles.handleWrap}>
             <div className={styles.header}>
-              <h3>处理: </h3>
+              <h3>{getIntlContent("SOUL.COMMON.DEAL")}: </h3>
             </div>
             <ul
               className={classnames({
@@ -412,7 +412,7 @@ class AddModal extends Component {
             <FormItem
               style={{ margin: "0 30px" }}
               {...formCheckLayout}
-              label="打印日志"
+              label={getIntlContent("SOUL.SELECTOR.PRINTLOG")}
             >
               {getFieldDecorator("loged", {
                 initialValue: loged,
@@ -420,7 +420,7 @@ class AddModal extends Component {
                 rules: [{ required: true }]
               })(<Switch />)}
             </FormItem>
-            <FormItem {...formCheckLayout} label="是否开启">
+            <FormItem {...formCheckLayout} label={getIntlContent("SOUL.SELECTOR.WHETHEROPEN")}>
               {getFieldDecorator("enabled", {
                 initialValue: enabled,
                 valuePropName: "checked",
@@ -429,20 +429,20 @@ class AddModal extends Component {
             </FormItem>
           </div>
 
-          <FormItem label="执行顺序" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.SELECTOR.EXEORDER")} {...formItemLayout}>
             {getFieldDecorator("sort", {
               initialValue: sort,
               rules: [
                 {
                   required: true,
-                  message: "请输入1-100数字"
+                  message: getIntlContent("SOUL.SELECTOR.INPUTNUMBER")
                 },
                 {
                   pattern: /^([1-9][0-9]{0,1}|100)$/,
-                  message: "请输入1-100数字"
+                  message: getIntlContent("SOUL.SELECTOR.INPUTNUMBER")
                 }
               ]
-            })(<Input placeholder="可以填写1-100之间的数字标志执行先后顺序" />)}
+            })(<Input placeholder={getIntlContent("SOUL.SELECTOR.INPUTORDER")} />)}
           </FormItem>
         </Form>
       </Modal>

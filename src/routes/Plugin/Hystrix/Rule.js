@@ -3,6 +3,7 @@ import { Modal, Form, Select, Input, Switch, Button, message } from "antd";
 import { connect } from "dva";
 import classnames from "classnames";
 import styles from "../index.less";
+import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -299,23 +300,23 @@ class AddModal extends Component {
       <Modal
         width={800}
         centered
-        title="规则"
+        title={getIntlContent("SOUL.RULE.NAME")}
         visible
-        okText="确定"
-        cancelText="取消"
+        okText={getIntlContent("SOUL.COMMON.SURE")}
+        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={onCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label="名称" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")}x {...formItemLayout}>
             {getFieldDecorator("name", {
-              rules: [{ required: true, message: "请输入名称" }],
+              rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTNAME") }],
               initialValue: name
-            })(<Input placeholder="名称" style={{width:500}} />)}
+            })(<Input placeholder={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} style={{width:500}} />)}
           </FormItem>
-          <FormItem label="匹配方式" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.COMMON.MATCHTYPE")} {...formItemLayout}>
             {getFieldDecorator("matchMode", {
-              rules: [{ required: true, message: "请选择匹配方式" }],
+              rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTMATCHTYPE") }],
               initialValue: matchMode
             })(
               <Select style={{width:500}}>
@@ -331,7 +332,7 @@ class AddModal extends Component {
           </FormItem>
           <div className={styles.ruleConditions}>
             <h3 className={styles.header}>
-              <strong>*</strong>条件:
+              <strong>*</strong>{getIntlContent("SOUL.COMMON.CONDITION")}:
             </h3>
             <div className={styles.content}>
               {ruleConditions.map((item, index) => {
@@ -405,7 +406,7 @@ class AddModal extends Component {
                           this.handleDelete(index);
                         }}
                       >
-                        删除
+                        {getIntlContent("SOUL.COMMON.DELETE.NAME")}
                       </Button>
                     </li>
                   </ul>
@@ -414,7 +415,7 @@ class AddModal extends Component {
             </div>
             <div>
               <Button onClick={this.handleAdd} type="primary">
-                新增
+              {getIntlContent("SOUL.COMMON.ADD")}
               </Button>
             </div>
           </div>
@@ -434,9 +435,9 @@ class AddModal extends Component {
               </Select>
             )}
           </FormItem> */}
-          <FormItem label="Hystrix隔离模式" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.HYSTRIX.LSOLATION.MODE")} {...formItemLayout}>
             {getFieldDecorator("executionIsolationStrategy", {
-              rules: [{ required: true, message: "请选择隔离模式" }],
+              rules: [{ required: true, message: getIntlContent("SOUL.HYSTRIX.LSOLATION.SELECT") }],
               initialValue: executionIsolationStrategy
             })(
               <Select
@@ -457,7 +458,7 @@ class AddModal extends Component {
           </FormItem>
           <div className={styles.handleWrap}>
             <div className={styles.header}>
-              <h3>Hystrix处理: </h3>
+              <h3>Hystrix{getIntlContent("SOUL.COMMON.DEAL")}: </h3>
             </div>
             <ul
               className={classnames({
@@ -467,7 +468,7 @@ class AddModal extends Component {
             >
               <li>
                 <Input
-                  addonBefore={<div>跳闸最小请求数量</div>}
+                  addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.TRIPPING.REQUEST.NUMBER")}</div>}
                   value={requestVolumeThreshold}
                   style={{ width: 250 }}
                   placeholder="requestVolumeThreshold"
@@ -479,7 +480,7 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>错误百分比阀值</div>}
+                  addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.ERROR.PERCENT")}</div>}
                   value={errorThresholdPercentage}
                   style={{ width: 250 }}
                   placeholder="errorThresholdPercentage"
@@ -496,7 +497,7 @@ class AddModal extends Component {
                 this.state.executionIsolationStrategy === 1&&(
                 <li>
                   <Input
-                    addonBefore={<div>最大并发量</div>}
+                    addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.MAX.CONCURRENCY")}</div>}
                     value={maxConcurrentRequests}
                     style={{ width: 280 }}
                     placeholder="maxConcurrentRequests"
@@ -510,7 +511,7 @@ class AddModal extends Component {
               }
               <li>
                 <Input
-                  addonBefore={<div>跳闸休眠时间(ms)</div>}
+                  addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.TRIPPING.SLEEPTIME")}</div>}
                   value={sleepWindowInMilliseconds}
                   style={{ width: 360 }}
                   placeholder="sleepWindowInMilliseconds"
@@ -525,7 +526,7 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>分组Key</div>}
+                  addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.GROUPKEY")}</div>}
                   value={groupKey}
                   style={{ width: 320 }}
                   placeholder="groupKey"
@@ -537,10 +538,10 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>失败降级url</div>}
+                  addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.FAILEDDEMOTION")}</div>}
                   value={callBackUri}
                   style={{ width: 320 }}
-                  placeholder="失败回调uri,eg: /fallBack"
+                  placeholder={getIntlContent("SOUL.HYSTRIX.FAILEDCALLBACK")}
                   onChange={e => {
                     const value = e.target.value;
                     this.onHandleChange("callBackUri", value);
@@ -549,7 +550,7 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>命令Key</div>}
+                  addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.COMMANDKEY")}</div>}
                   value={commandKey}
                   style={{ width: 320 }}
                   placeholder="commandKey"
@@ -563,10 +564,10 @@ class AddModal extends Component {
                 this.state.executionIsolationStrategy === 0 && (
                 <li>
                   <Input
-                    addonBefore={<div>线程池coreSize</div>}
+                    addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.CORETHREADSIZE")}</div>}
                     value={hystrixThreadPoolConfig.coreSize}
                     style={{ width: 320 }}
-                    placeholder="hystrix 线程池线程核心数量"
+                    placeholder={getIntlContent("SOUL.HYSTRIX.CORENUM")}
                     onChange={e => {
                         const value = e.target.value;
                         hystrixThreadPoolConfig.coreSize = value;
@@ -580,10 +581,10 @@ class AddModal extends Component {
                 this.state.executionIsolationStrategy === 0 && (
                 <li>
                   <Input
-                    addonBefore={<div>线程池maximumSize</div>}
+                    addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.MAXSIZE")}</div>}
                     value={hystrixThreadPoolConfig.maximumSize}
                     style={{ width: 320 }}
-                    placeholder="hystrix 线程池线程最大数量"
+                    placeholder={getIntlContent("SOUL.HYSTRIX.MAXTHREADNUM")}
                     onChange={e => {
                       const value = e.target.value;
                       hystrixThreadPoolConfig.maximumSize = value;
@@ -596,10 +597,10 @@ class AddModal extends Component {
                 this.state.executionIsolationStrategy === 0&& (
                 <li>
                   <Input
-                    addonBefore={<div>线程池maxQueueSize</div>}
+                    addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.MAXTHREADQUEUE")}</div>}
                     value={hystrixThreadPoolConfig.maxQueueSize}
                     style={{ width: 320 }}
-                    placeholder="hystrix 线程池任务队列最大size"
+                    placeholder={getIntlContent("SOUL.HYSTRIX.MAXTHREAD")}
                     onChange={e => {
                       const value = e.target.value;
                       hystrixThreadPoolConfig.maxQueueSize = value;
@@ -629,7 +630,7 @@ class AddModal extends Component {
             <FormItem
               style={{ margin: "0 20px" }}
               {...formCheckLayout}
-              label="打印日志"
+              label={getIntlContent("SOUL.SELECTOR.PRINTLOG")}
             >
               {getFieldDecorator("loged", {
                 initialValue: loged,
@@ -637,7 +638,7 @@ class AddModal extends Component {
                 rules: [{ required: true }]
               })(<Switch />)}
             </FormItem>
-            <FormItem {...formCheckLayout} label="是否开启">
+            <FormItem {...formCheckLayout} label={getIntlContent("SOUL.SELECTOR.WHETHEROPEN")}>
               {getFieldDecorator("enabled", {
                 initialValue: enabled,
                 valuePropName: "checked",
@@ -646,20 +647,20 @@ class AddModal extends Component {
             </FormItem>
           </div>
 
-          <FormItem label="执行顺序" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.SELECTOR.EXEORDER")} {...formItemLayout}>
             {getFieldDecorator("sort", {
               initialValue: sort,
               rules: [
                 {
                   required: true,
-                  message: "请输入1-100数字"
+                  message: getIntlContent("SOUL.SELECTOR.INPUTNUMBER")
                 },
                 {
                   pattern: /^([1-9][0-9]{0,1}|100)$/,
-                  message: "请输入1-100数字"
+                  message: getIntlContent("SOUL.SELECTOR.INPUTNUMBER")
                 }
               ]
-            })(<Input style={{width:360}} placeholder="可以填写1-100之间的数字标志执行先后顺序" />)}
+            })(<Input style={{width:360}} placeholder={getIntlContent("SOUL.SELECTOR.INPUTORDER")} />)}
           </FormItem>
         </Form>
       </Modal>

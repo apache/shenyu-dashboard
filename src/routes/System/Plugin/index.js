@@ -3,7 +3,8 @@ import { Link } from 'dva/router';
 import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
-
+import { getIntlContent } from "../../../utils/IntlUtils";
+import { emit } from '../../../utils/emit'
 @connect(({ plugin, loading }) => ({
   plugin,
   loading: loading.effects["plugin/fetch"]
@@ -15,10 +16,19 @@ export default class Plugin extends Component {
       currentPage: 1,
       selectedRowKeys: [],
       name: "",
-      popup: ""
+      popup: "",
+      localeName:''
     };
   }
 
+  changeLocale(locale) {
+    this.setState({
+      localeName: locale
+    })
+  }
+  componentDidMount() {
+    emit.on('change_language', lang => this.changeLocale(lang))
+  }
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllPlugins(currentPage);
@@ -241,62 +251,62 @@ export default class Plugin extends Component {
     const pluginColumns = [
       {
         align: "center",
-        title: "插件名",
+        title: getIntlContent("SOUL.PLUGIN.PLUGIN.NAME"),
         dataIndex: "name",
         key: "name",
         width: 200
       },
       {
         align: "center",
-        title: "角色",
+        title: getIntlContent("SOUL.SYSTEM.ROLE"),
         dataIndex: "role",
         width: 200,
         key: "role",
         render: (text) => {
           const map = {
-            0: "系统",
-            1: "自定义"
+            0: getIntlContent("SOUL.SYSTEM.SYSTEM"),
+            1: getIntlContent("SOUL.SYSTEM.CUSTOM")
           }
           return <div>{map[text] || '----'}</div>
         }
       },
       {
         align: "center",
-        title: "配置",
+        title: getIntlContent("SOUL.COMMON.SETTING"),
         dataIndex: "config",
         key: "config"
       },
       {
         align: "center",
-        title: "创建时间",
+        title: getIntlContent("SOUL.SYSTEM.CREATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated",
         width: 160
       },
       {
         align: "center",
-        title: "更新时间",
+        title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
         dataIndex: "dateUpdated",
         key: "dateUpdated",
         width: 160
       },
       {
         align: "center",
-        title: "状态",
+        title: getIntlContent("SOUL.SYSTEM.STATUS"),
         dataIndex: "enabled",
         key: "enabled",
         width: 150,
         render: text => {
           if (text) {
-            return <div className="open">开启</div>;
+            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
           } else {
-            return <div className="close">关闭</div>;
+            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
           }
         }
       },
       {
         align: "center",
-        title: "操作",
+        title: getIntlContent("SOUL.COMMON.OPERAT"),
         dataIndex: "time",
         key: "time",
         width: 300,
@@ -309,14 +319,14 @@ export default class Plugin extends Component {
                   this.editClick(record);
                 }}
               >
-                编辑
+               {getIntlContent("SOUL.SYSTEM.EDITOR")}
               </div>
 
               <div
                 className="edit"
                 style={{display: record.role===0?'None':'block'}}
               >
-                <Link to={pluginHandlePath+record.id}>插件处理管理</Link>
+                <Link to={pluginHandlePath+record.id}>{getIntlContent("SOUL.PLUGIN.DEALMANAGER")}</Link>
               </div>
             </div>
 
@@ -336,7 +346,7 @@ export default class Plugin extends Component {
           <Input
             value={name}
             onChange={this.searchOnchange}
-            placeholder="请输入插件名"
+            placeholder={getIntlContent("SOUL.PLUGIN.INPUTNAME")}
             style={{ width: 240 }}
           />
           <Button
@@ -344,23 +354,23 @@ export default class Plugin extends Component {
             style={{ marginLeft: 20 }}
             onClick={this.searchClick}
           >
-            查询
+            {getIntlContent("SOUL.SYSTEM.SEARCH")}
           </Button>
 
           <Popconfirm
-            title="你确认删除吗"
+            title={getIntlContent("SOUL.COMMON.DELETE")}
             placement='bottom'
             onConfirm={() => {
               this.deleteClick()
             }}
-            okText="确认"
-            cancelText="取消"
+            okText={getIntlContent("SOUL.COMMON.SURE")}
+            cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
           >
             <Button
               style={{ marginLeft: 20 }}
               type="danger"
             >
-              删除勾选数据
+              {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
             </Button>
           </Popconfirm>
           <Button
@@ -368,7 +378,7 @@ export default class Plugin extends Component {
             type="primary"
             onClick={this.addClick}
           >
-            添加数据
+            {getIntlContent("SOUL.SYSTEM.ADDDATA")}
           </Button>
           <Button
             style={{ marginLeft: 20 }}
@@ -376,14 +386,14 @@ export default class Plugin extends Component {
             type="primary"
             onClick={this.syncAllClick}
           >
-            同步所有数据
+            {getIntlContent("SOUL.PLUGIN.SYNCALLDATA")}
           </Button>
           <Button
             style={{ marginLeft: 20 }}
             type="primary"
             onClick={this.enableClick}
           >
-            批量启用或禁用
+           {getIntlContent("SOUL.PLUGIN.BATCH")}
           </Button>
         </div>
 

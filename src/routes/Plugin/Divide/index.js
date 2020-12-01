@@ -3,8 +3,8 @@ import { Table, Row, Col, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
-import { getInitOptions } from "react-intl-universal";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import { emit } from "../../../utils/emit"
 
 @connect(({ divide, global, loading }) => ({
   ...global,
@@ -17,11 +17,18 @@ export default class Divide extends Component {
     this.state = {
       selectorPage: 1,
       rulePage: 1,
-      popup: ""
+      popup: "",
+      localeName:''
     };
   }
 
+  changeLocales(locale) {
+    this.setState({
+      localeName: locale
+    })
+  }
   componentDidMount() {
+    emit.on('change_language', lang => this.changeLocales(lang))
     const { dispatch } = this.props;
     dispatch({
       type: "global/fetchPlugins",
@@ -301,26 +308,26 @@ export default class Divide extends Component {
     const selectColumns = [
       {
         align: "center",
-        title: "名称",
+        title: getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME"),
         dataIndex: "name",
         key: "name"
       },
       {
         align: "center",
-        title: "开启",
+        title: getIntlContent("SOUL.COMMON.OPEN"),
         dataIndex: "enabled",
         key: "enabled",
         render: text => {
           if (text) {
-            return <div className="open">开启</div>;
+            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
           } else {
-            return <div className="close">关闭</div>;
+            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
           }
         }
       },
       {
         align: "center",
-        title: "操作",
+        title: getIntlContent("SOUL.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
         render: (text, record) => {
@@ -334,10 +341,10 @@ export default class Divide extends Component {
                   this.editSelector(record);
                 }}
               >
-                修改
+               {getIntlContent("SOUL.COMMON.CHANGE")}
               </span>
               <Popconfirm
-                title="你确认删除吗"
+                title={getIntlContent("SOUL.COMMON.DELETE")}
                 placement='bottom'
                 onCancel={(e) => {
                   e.stopPropagation()
@@ -346,8 +353,8 @@ export default class Divide extends Component {
                   e.stopPropagation()
                   this.deleteSelector(record);
                 }}
-                okText="确认"
-                cancelText="取消"
+                okText={getIntlContent("SOUL.COMMON.SURE")}
+                cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
               >
                 <span
                   className="edit"
@@ -355,7 +362,7 @@ export default class Divide extends Component {
                     e.stopPropagation()
                   }}
                 >
-                  删除
+                  {getIntlContent("SOUL.COMMON.DELETE.NAME")}
                 </span>
               </Popconfirm>
             </div>
@@ -367,32 +374,32 @@ export default class Divide extends Component {
     const rulesColumns = [
       {
         align: "center",
-        title: "规则名称",
+        title: getIntlContent("SOUL.COMMON.RULE.NAME"),
         dataIndex: "name",
         key: "name"
       },
       {
         align: "center",
-        title: "开启",
+        title: getIntlContent("SOUL.COMMON.OPEN"),
         dataIndex: "enabled",
         key: "enabled",
         render: text => {
           if (text) {
-            return <div className="open">开启</div>;
+            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
           } else {
-            return <div className="close">关闭</div>;
+            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
           }
         }
       },
       {
         align: "center",
-        title: "更新时间",
+        title: getIntlContent("SOUL.COMMON.UPDATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated"
       },
       {
         align: "center",
-        title: "操作",
+        title: getIntlContent("SOUL.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
         render: (text, record) => {
@@ -406,10 +413,10 @@ export default class Divide extends Component {
                   this.editRule(record);
                 }}
               >
-                修改
+                {getIntlContent("SOUL.COMMON.CHANGE")}
               </span>
               <Popconfirm
-                title="你确认删除吗"
+                title={getIntlContent("SOUL.COMMON.DELETE")}
                 placement='bottom'
                 onCancel={(e) => {
                   e.stopPropagation()
@@ -418,8 +425,8 @@ export default class Divide extends Component {
                   e.stopPropagation()
                   this.deleteRule(record);
                 }}
-                okText="确认"
-                cancelText="取消"
+                okText={getIntlContent("SOUL.COMMON.SURE")}
+                cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
               >
                 <span
                   className="edit"
@@ -427,7 +434,7 @@ export default class Divide extends Component {
                     e.stopPropagation()
                   }}
                 >
-                  删除
+                  {getIntlContent("SOUL.COMMON.DELETE.NAME")}
                 </span>
               </Popconfirm>
             </div>

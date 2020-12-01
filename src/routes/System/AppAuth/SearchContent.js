@@ -1,5 +1,6 @@
 import React from "react";
 import { Form, Input, Button } from 'antd';
+import { getIntlContent } from "../../../utils/IntlUtils";
 
 class InlineSearch extends React.Component {
 
@@ -8,7 +9,7 @@ class InlineSearch extends React.Component {
     const searchCont= this.props.form.getFieldsValue()
     this.props.onClick(searchCont)
     // console.log(searchCont)
-    
+
   };
 
   render() {
@@ -20,7 +21,7 @@ class InlineSearch extends React.Component {
               initialValue:null
           })(
             <Input
-              placeholder="请输入appKey"
+              placeholder={getIntlContent("SOUL.AUTH.INPUT")+" AppKey"}
             />,
           )}
         </Form.Item>
@@ -30,13 +31,13 @@ class InlineSearch extends React.Component {
           })(
             <Input
               type="phone"
-              placeholder="请输入手机号码"
+              placeholder={getIntlContent("SOUL.AUTH.TELPHONE")}
             />,
           )}
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            查询
+            {getIntlContent("SOUL.SYSTEM.SEARCH")}
           </Button>
         </Form.Item>
       </Form>

@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {Modal, Form, Select, Input, Table} from 'antd';
+import { getIntlContent } from "../../../utils/IntlUtils";
 
 
 const FormItem = Form.Item;
@@ -64,7 +65,7 @@ class AddTable extends Component {
     };
     const columns = [
       {
-        title: '资源路径',
+        title: getIntlContent("SOUL.AUTH.RESOUCE.PATH"),
         dataIndex: 'path',
         render: (text, record) => (
           <Input
@@ -74,7 +75,7 @@ class AddTable extends Component {
         )
       },
       {
-        title: '路径描述',
+        title: getIntlContent("SOUL.AUTH.PATH.DESCRIBE"),
         dataIndex: 'pathDesc',
         render: (text, record) => (
           <Input
@@ -102,23 +103,23 @@ class AddTable extends Component {
       <Modal
         width={550}
         centered
-        title="认证"
+        title={getIntlContent("SOUL.AUTH.AUTH")}
         visible
-        okText="确定"
-        cancelText="取消"
+        okText={getIntlContent("SOUL.COMMON.SURE")}
+        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem
-            label="应用名称"
+            label={getIntlContent("SOUL.AUTH.APPNAME")}
             {...formItemLayout}
           >
             {getFieldDecorator('appName', {
               rules: [{
                 required: true,
-                message: '请选择 appName'
-              }], initialValue: '请选择 appName',
+                message: getIntlContent("SOUL.AUTH.INPUT") + ' appName'
+              }], initialValue: getIntlContent("SOUL.AUTH.INPUT")+' appName',
             })
             (
               <Select showSearch onChange={this.handleChange}>
@@ -132,41 +133,41 @@ class AddTable extends Component {
               </Select>)}
           </FormItem>
           <FormItem
-            label="电话"
+            label={getIntlContent("SOUL.AUTH.PHONE")}
             {...formItemLayout}
           >
             {getFieldDecorator("phone", {
               rules: [{
                 required: true,
-                message: "请输入phone"
+                message: getIntlContent("SOUL.AUTH.INPUT")+ " phone"
               }],
             })(
               <Input placeholder="phone" />
             )}
           </FormItem>
-          <FormItem label="app参数" {...formItemLayout}>
+          <FormItem label={"app" + getIntlContent("SOUL.AUTH.PARAMS")} {...formItemLayout}>
             {getFieldDecorator("appParam", {
               rules: [{
                 required: true,
-                message: "请输入appParam"
+                message: getIntlContent("SOUL.SYSTEM.USER")+ " AppParam"
               }],
             })(
               <Input placeholder="appParam" />
             )}
           </FormItem>
-          <FormItem label="用户ID" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.SYSTEM.USER") + " ID"} {...formItemLayout}>
             {getFieldDecorator("userId", {
               rules: [{
                 required: true,
-                message: "请输入userId"
+                message: getIntlContent("SOUL.AUTH.INPUT") + " userId"
               }],
             })(<Input placeholder="userId" />)}
           </FormItem>
-          <FormItem label="扩展信息" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.AUTH.EXPANDINFO")} {...formItemLayout}>
             {getFieldDecorator("extInfo", {
               rules: [{
                 required: true,
-                message: "请输入extInfo"
+                message: getIntlContent("SOUL.AUTH.INPUT")+" extInfo"
               }],
             })(<Input placeholder="extInfo" />)}
           </FormItem>

@@ -4,6 +4,7 @@ import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
 import { getIntlContent } from '../../../utils/IntlUtils'
+import { emit } from "../../../utils/emit";
 
 @connect(({ common, global, loading }) => ({
   ...global,
@@ -16,11 +17,17 @@ export default class Common extends Component {
     this.state = {
       selectorPage: 1,
       rulePage: 1,
-      popup: ""
+      popup: "",
+      localeName:''
     };
   }
-
+  changeLocales(locale) {
+    this.setState({
+      localeName: locale
+    })
+  }
   componentDidMount() {
+    emit.on('change_language', lang => this.changeLocales(lang))
     const { dispatch } = this.props;
     dispatch({
       type: "global/fetchPlugins",
@@ -344,7 +351,7 @@ export default class Common extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.OPEN"),
+        title: getIntlContent("SOUL.COMMON.OPEN"),
         dataIndex: "enabled",
         key: "enabled",
         render: text => {
@@ -443,7 +450,7 @@ export default class Common extends Component {
                   this.editRule(record);
                 }}
               >
-                修改
+               {getIntlContent("SOUL.COMMON.CHANGE")}
               </span>
               <Popconfirm
                 title={getIntlContent("SOUL.COMMON.DELETE")}

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Modal,Button, Form, Input, Switch, message} from "antd";
 import styles from "./index.less";
+import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -79,41 +80,41 @@ class AddModal extends Component {
       <Modal
         width={550}
         centered
-        title="认证"
+        title={getIntlContent("SOUL.AUTH.AUTH")}
         visible
-        okText="确定"
-        cancelText="取消"
+        okText={getIntlContent("SOUL.COMMON.SURE")}
+        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem label="appKey" {...formItemLayout}>
             {getFieldDecorator("appKey", {
-              rules: [{ required: true, message: "请输入appKey" }],
+              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") +" appKey" }],
               initialValue: appKey
             })(<Input placeholder="appKey" />)}
           </FormItem>
           <FormItem label="appSecret" {...formItemLayout}>
             {getFieldDecorator("appSecret", {
-              rules: [{ required: true, message: "请输入appSecret" }],
+              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + "appSecret" }],
               initialValue: appSecret
             })(<Input placeholder="appSecret" />)}
           </FormItem>
           <FormItem label="userId" {...formItemLayout}>
             {getFieldDecorator("userId", {
-              rules: [{ required: true, message: "请输入userId" }],
+              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + " userId" }],
               initialValue: userId
             })(<Input placeholder="userId" />)}
           </FormItem>
           <FormItem label="phone" {...formItemLayout}>
             {getFieldDecorator("phone", {
-              rules: [{ required: true, message: "请输入phone" }],
+              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") +  " phone" }],
               initialValue: phone
             })(<Input placeholder="phone" />)}
           </FormItem>
           <FormItem label="extInfo" {...formItemLayout}>
             {getFieldDecorator("extInfo", {
-              rules: [{  message: "请输入extInfo" }],
+              rules: [{  message: getIntlContent("SOUL.AUTH.INPUT") + "extInfo" }],
               initialValue: extInfo
             })(<TextArea placeholder="extInfo" rows={3} />)}
           </FormItem>
@@ -132,8 +133,8 @@ class AddModal extends Component {
                         <div className={styles.title}>appName:</div>
                       </li>
                       <li>
-                        <Input 
-                          onChange={e => { this.conditionChange(index,"appName",e.target.value)}} 
+                        <Input
+                          onChange={e => { this.conditionChange(index,"appName",e.target.value)}}
                           value={item.appName}
                           className={styles.appName}
                         />
@@ -157,7 +158,7 @@ class AddModal extends Component {
                             this.handleDelete(index);
                           }}
                         >
-                          删除
+                        {getIntlContent( "SOUL.COMMON.DELETE.NAME")}
                         </Button>
                       </li>
                     </ul>
@@ -166,13 +167,13 @@ class AddModal extends Component {
               }
             </div>
             <Button onClick={this.handleAdd} className={styles.btn} type="primary">
-              新增
+             {getIntlContent("SOUL.COMMON.ADD")}
             </Button>
           </div>
 
 
 
-          <FormItem {...formItemLayout} label="状态">
+          <FormItem {...formItemLayout} label={getIntlContent("SOUL.SYSTEM.STATUS")}>
             {getFieldDecorator("enabled", {
               initialValue: enabled,
               valuePropName: "checked"

@@ -4,7 +4,6 @@ import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
 import { getIntlContent } from '../../../utils/IntlUtils'
-import { emit } from '../../../utils/emit';
 @connect(({ rewrite, global, loading }) => ({
   ...global,
   ...rewrite,
@@ -17,17 +16,9 @@ export default class Rewrite extends Component {
       selectorPage: 1,
       rulePage: 1,
       popup: "",
-      localeName:''
     };
   }
-  changeLocales(locale) {
-    this.setState({
-      localeName: locale
-    })
-  }
   componentDidMount() {
-    emit.on('change_language', lang => this.changeLocales(lang));
-
     const { dispatch } = this.props;
     dispatch({
       type: "global/fetchPlugins",
@@ -311,7 +302,7 @@ export default class Rewrite extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.OPEN"),
+        title: getIntlContent("SOUL.COMMON.OPEN"),
         dataIndex: "enabled",
         key: "enabled",
         render: text => {
@@ -377,7 +368,7 @@ export default class Rewrite extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.OPEN"),
+        title: getIntlContent("SOUL.COMMON.OPEN"),
         dataIndex: "enabled",
         key: "enabled",
         render: text => {
