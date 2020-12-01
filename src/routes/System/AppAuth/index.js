@@ -313,25 +313,29 @@ export default class Auth extends Component {
         align: "center",
         title: "appkey",
         dataIndex: "appKey",
-        key: "appKey"
+        key: "appKey",
+        ellipsis:true,
       },
       {
         align: "center",
         title: "appSecret",
         dataIndex: "appSecret",
-        key: "appSecret"
+        key: "appSecret",
+        ellipsis:true,
       },
       {
         align: "center",
         title: "userId",
         dataIndex: "userId",
-        key: "userId"
+        key: "userId",
+        ellipsis:true,
       },
       {
         align: "center",
         title: "phone",
         dataIndex: "phone",
-        key: "phone"
+        key: "phone",
+        ellipsis:true,
       },
 
       {
@@ -339,6 +343,7 @@ export default class Auth extends Component {
         title: "状态",
         dataIndex: "enabled",
         key: "enabled",
+        ellipsis:true,
         render: text => {
           if (text) {
             return <div className="open">开启</div>;
@@ -358,13 +363,15 @@ export default class Auth extends Component {
         title: "更新时间",
         dataIndex: "dateUpdated",
         render: dateUpdated => dayjs(dateUpdated).format('YYYY-MM-DD HH:mm:ss' ),
-        key: "dateUpdated"
+        key: "dateUpdated",
+        ellipsis:true,
       },
       {
         align: "center",
         title: "操作1",
         dataIndex: "operate",
         key: "operate",
+        ellipsis:true,
         render: (text, record) => {
           return (
             // 弹窗中的编辑事件
@@ -384,6 +391,7 @@ export default class Auth extends Component {
         title: "操作2",
         dataIndex: "operates",
         key: "operates",
+        ellipsis:true,
         render: (text, record) => {
           return (
             // 弹窗中的编辑事件

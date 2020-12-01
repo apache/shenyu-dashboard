@@ -244,13 +244,13 @@ export default class Plugin extends Component {
         title: "插件名",
         dataIndex: "name",
         key: "name",
-        width: 200
+        ellipsis:true,
       },
       {
         align: "center",
         title: "角色",
         dataIndex: "role",
-        width: 200,
+        ellipsis:true,
         key: "role",
         render: (text) => {
           const map = {
@@ -264,28 +264,29 @@ export default class Plugin extends Component {
         align: "center",
         title: "配置",
         dataIndex: "config",
-        key: "config"
+        key: "config",
+        ellipsis:true,
       },
       {
         align: "center",
         title: "创建时间",
         dataIndex: "dateCreated",
         key: "dateCreated",
-        width: 160
+        ellipsis:true,
       },
       {
         align: "center",
         title: "更新时间",
         dataIndex: "dateUpdated",
         key: "dateUpdated",
-        width: 160
+        ellipsis:true,
       },
       {
         align: "center",
         title: "状态",
         dataIndex: "enabled",
         key: "enabled",
-        width: 150,
+        ellipsis:true,
         render: text => {
           if (text) {
             return <div className="open">开启</div>;
@@ -299,7 +300,7 @@ export default class Plugin extends Component {
         title: "操作",
         dataIndex: "time",
         key: "time",
-        width: 300,
+        ellipsis:true,
         render: (text, record) => {
           return (
             <div>

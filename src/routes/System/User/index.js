@@ -173,13 +173,15 @@ export default class Manage extends Component {
         align: "center",
         title: "用户名",
         dataIndex: "userName",
-        key: "userName"
+        key: "userName",
+        ellipsis:true,
       },
       {
         align: "center",
         title: "状态",
         dataIndex: "enabled",
         key: "enabled",
+        ellipsis:true,
         render: text => {
           if (text) {
             return <div className="open">开启</div>;
@@ -192,19 +194,22 @@ export default class Manage extends Component {
         align: "center",
         title: "创建时间",
         dataIndex: "dateCreated",
-        key: "dateCreated"
+        key: "dateCreated",
+        ellipsis:true,
       },
       {
         align: "center",
         title: "更新时间",
         dataIndex: "dateUpdated",
-        key: "dateUpdated"
+        key: "dateUpdated",
+        ellipsis:true,
       },
       {
         align: "center",
         title: "操作",
         dataIndex: "operate",
         key: "operate",
+        ellipsis:true,
         render: (text, record) => {
           return (
             <div
