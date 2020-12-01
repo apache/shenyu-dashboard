@@ -87,36 +87,37 @@ class AddModal extends Component {
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label="appKey" {...formItemLayout}>
+          <FormItem label="应用标识" {...formItemLayout}>
             {getFieldDecorator("appKey", {
               rules: [{ required: true, message: "请输入appKey" }],
               initialValue: appKey
-            })(<Input placeholder="appKey" />)}
+            })(<Input placeholder="请输入appKey" />)}
           </FormItem>
-          <FormItem label="appSecret" {...formItemLayout}>
+          <FormItem label="应用密码" {...formItemLayout}>
             {getFieldDecorator("appSecret", {
               rules: [{ required: true, message: "请输入appSecret" }],
               initialValue: appSecret
-            })(<Input placeholder="appSecret" />)}
+            })(<Input placeholder="请输入appSecret" />)}
           </FormItem>
-          <FormItem label="userId" {...formItemLayout}>
+          <FormItem label="用户Id" {...formItemLayout}>
             {getFieldDecorator("userId", {
-              rules: [{ required: true, message: "请输入userId" }],
+              rules: [{ required: true, message: "请输入用户Id" }],
               initialValue: userId
-            })(<Input placeholder="userId" />)}
+            })(<Input placeholder="请输入用户Id" />)}
           </FormItem>
-          <FormItem label="phone" {...formItemLayout}>
+          <FormItem label="手机号" {...formItemLayout}>
             {getFieldDecorator("phone", {
-              rules: [{ required: true, message: "请输入phone" }],
+              rules: [{ required: true, message: "请输入手机号" }],
               initialValue: phone
-            })(<Input placeholder="phone" />)}
+            })(<Input placeholder="请输入手机号" />)}
           </FormItem>
-          <FormItem label="extInfo" {...formItemLayout}>
+          <FormItem label="扩展信息" {...formItemLayout}>
             {getFieldDecorator("extInfo", {
-              rules: [{  message: "请输入extInfo" }],
+              rules: [{  message: "请输入扩展信息" }],
               initialValue: extInfo
-            })(<TextArea placeholder="extInfo" rows={3} />)}
+            })(<TextArea placeholder="请输入扩展信息" rows={3} />)}
           </FormItem>
+
           {/* 添加删除行 */}
           <div className={styles.condition}>
             {/* 输入框左侧标题
@@ -129,7 +130,7 @@ class AddModal extends Component {
                   return (
                     <ul key={index}>
                       <li>
-                        <div className={styles.title}>appName:</div>
+                        <div className={styles.title}>应用名称:</div>
                       </li>
                       <li>
                         <Input 
@@ -139,7 +140,7 @@ class AddModal extends Component {
                         />
                       </li>
                       <li>
-                        <div className={styles.title}>appParam:</div>
+                        <div className={styles.title}>应用参数:</div>
                       </li>
                       <li>
                         <TextArea
