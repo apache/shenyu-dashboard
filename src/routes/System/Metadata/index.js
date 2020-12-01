@@ -39,7 +39,7 @@ export default class Metadata extends Component {
       }
     });
   };
-  
+
   pageOnchange = page => {
     this.setState({ currentPage: page });
     this.getAllMetadata(page);
@@ -186,14 +186,14 @@ export default class Metadata extends Component {
     const { dispatch } = this.props;
     const { appName, currentPage, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
-      
+
       dispatch({
         type: "metadata/fetchItem",
         payload: {
           id: selectedRowKeys[0]
         },
         callback: user => {
-         
+
           dispatch({
             type: "metadata/updateEn",
             payload: {
@@ -221,14 +221,14 @@ export default class Metadata extends Component {
     const { dispatch } = this.props;
     dispatch({
       type: "metadata/syncDa"
-      
+
     })
   };
 
   render() {
     const { metadata, loading } = this.props;
     const { userList, total } = metadata;
-    
+
     const { currentPage, selectedRowKeys, appName, popup } = this.state;
     const userColumns = [
       {
@@ -236,62 +236,63 @@ export default class Metadata extends Component {
         title: "应用名称",
         dataIndex: "appName",
         key: "appName",
-        width: 120
+        ellipsis:true,
       },
       {
         align: "center",
         title: "路径",
         dataIndex: "path",
         key: "path",
-        width: 150
-      },
-      {
-        align: "center",
-        title: "路径描述",
-        dataIndex: "pathDesc",
-        key: "pathDesc",
-        width: 200
+        ellipsis:true,
       },
       {
         align: "center",
         title: "服务接口",
         dataIndex: "serviceName",
         key: "serviceName",
-        width: 150
+        ellipsis:true,
       },
       {
         align: "center",
         title: "方法名称",
         dataIndex: "methodName",
         key: "methodName",
-        width: 120
+        ellipsis:true,
       },
       {
         align: "center",
         title: "参数类型",
         dataIndex: "parameterTypes",
         key: "parameterTypes",
-        width: 120
+        ellipsis:true,
       },
       {
         align: "center",
         title: "rpc类型",
         dataIndex: "rpcType",
         key: "rpcType",
-        width: 100
+        ellipsis:true,
       },
       {
         align: "center",
         title: "rpc扩展参数",
         dataIndex: "rpcExt",
-        key: "rpcExt"
+        key: "rpcExt",
+        ellipsis:true,
+      },
+      {
+        align: "center",
+        title: "路径描述",
+        dataIndex: "pathDesc",
+        key: "pathDesc",
+        ellipsis:true,
       },
       {
         align: "center",
         title: "状态",
         dataIndex: "enabled",
-        width: 90,
         key: "enabled",
+        ellipsis:true,
         render: text => {
           if (text) {
             return <div className="open">开启</div>;
@@ -303,7 +304,7 @@ export default class Metadata extends Component {
       {
         align: "center",
         title: "操作",
-        width: 90,
+        ellipsis:true,
         dataIndex: "operate",
         key: "operate",
         render: (text, record) => {
@@ -379,14 +380,14 @@ export default class Metadata extends Component {
           >
             同步数据
           </Button>
-          
+
         </div>
 
         <Table
           size="small"
           style={{ marginTop: 30 }}
           bordered
-          rowKey={record => record.id} 
+          rowKey={record => record.id}
           loading={loading}
           columns={userColumns}
           dataSource={userList}

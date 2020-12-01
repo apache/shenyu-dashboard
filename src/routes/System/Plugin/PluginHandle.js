@@ -201,21 +201,21 @@ export default class PluginHandle extends Component {
         title: "字段名",
         dataIndex: "field",
         key: "field",
-        width: 200
+        ellipsis:true,
       },
       {
         align: "center",
         title: "标签",
         dataIndex: "label",
         key: "label",
-        width: 200
+        ellipsis:true,
       },
       {
         align: "center",
         title: "数据类型",
         dataIndex: "dataType",
         key: "dataType",
-        width: 200,
+        ellipsis:true,
         render: text => {
           if (text === 1) {
             return <div>数字</div>;
@@ -232,7 +232,7 @@ export default class PluginHandle extends Component {
         title: "字段所属类型",
         dataIndex: "type",
         key: "type",
-        width: 200,
+        ellipsis:true,
         render: text => {
           if (text === 1) {
             return <div>选择器</div>;
@@ -246,21 +246,21 @@ export default class PluginHandle extends Component {
         title: "排序",
         dataIndex: "sort",
         key: "sort",
-        width: 160
+        ellipsis:true,
       },
       {
         align: "center",
         title: "创建时间",
         dataIndex: "dateCreated",
         key: "dateCreated",
-        width: 160
+        ellipsis:true,
       },
       {
         align: "center",
         title: "更新时间",
         dataIndex: "dateUpdated",
         key: "dateUpdated",
-        width: 160
+        ellipsis:true,
       },
 
       {
@@ -268,7 +268,7 @@ export default class PluginHandle extends Component {
         title: "操作",
         dataIndex: "time",
         key: "time",
-        width: 300,
+        ellipsis:true,
         render: (text, record) => {
           return (
             <div>
