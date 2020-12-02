@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Modal, Form, Select, Input, Switch } from 'antd';
+import { getIntlContent } from '../../../utils/IntlUtils';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -32,53 +33,53 @@ class AddModal extends Component {
       <Modal
         width={450}
         centered
-        title="用户"
+        title={getIntlContent("SOUL.SYSTEM.USER")}
         visible
-        okText="确定"
-        cancelText="取消"
+        okText={getIntlContent("SOUL.COMMON.SURE")}
+        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem
-            label="用户名"
+            label={getIntlContent("SOUL.SYSTEM.USERNAME")}
             {...formItemLayout}
           >
             {getFieldDecorator('userName', {
-              rules: [{ required: true, message: '请输入用户名' }],
+              rules: [{ required: true, message: getIntlContent("SOUL.SYSTEM.USER.NAME") }],
               initialValue: userName,
             })(
-              <Input placeholder="用户名" />
+              <Input placeholder={getIntlContent("SOUL.SYSTEM.USERNAME")} />
             )}
           </FormItem>
           <FormItem
-            label="密码"
+            label={getIntlContent("SOUL.SYSTEM.PASSWORD")}
             {...formItemLayout}
           >
             {getFieldDecorator('password', {
-              rules: [{ required: true, message: '请输入密码密码' }],
+              rules: [{ required: true, message: getIntlContent("SOUL.SYSTEM.USER.PASSWORD") }],
               initialValue: password,
             })(
-              <Input placeholder="密码" />
+              <Input placeholder={getIntlContent("SOUL.SYSTEM.PASSWORD")} />
             )}
           </FormItem>
           <FormItem
-            label="角色"
+            label={getIntlContent("SOUL.SYSTEM.ROLE")}
             {...formItemLayout}
           >
             {getFieldDecorator('role', {
-              rules: [{ required: true, message: '请选择角色' }],
+              rules: [{ required: true, message: getIntlContent("SOUL.SYSTEM.SELECTROLE")}],
               initialValue: role.toString(),
             })(
               <Select>
-                <Option value="0">管理员</Option>
-                <Option value="1">用户</Option>
+                <Option value="0">{getIntlContent("SOUL.SYSTEM.ADMIN")}</Option>
+                <Option value="1">{getIntlContent("SOUL.SYSTEM.USER")}</Option>
               </Select>
             )}
           </FormItem>
           <FormItem
             {...formItemLayout}
-            label="状态"
+            label={getIntlContent("SOUL.SYSTEM.STATUS")}
           >
             {getFieldDecorator('enabled', {
               initialValue: enabled,

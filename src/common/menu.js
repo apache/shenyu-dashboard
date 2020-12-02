@@ -1,9 +1,9 @@
 import { isUrl } from '../utils/utils';
-
-
-const menuData = [
+import { getIntlContent } from '../utils/IntlUtils'
+/** 菜单 移到 统一地方 处理 */
+export const menuData = [
   {
-    name: '插件列表',
+    name: getIntlContent("SOUL.MENU.PLUGIN.LIST"),
     icon: 'dashboard',
     path: 'plug',
     children: [
@@ -20,35 +20,34 @@ const menuData = [
     ],
   },
   {
-    name: '系统管理',
+    name: getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT"),
     icon: 'setting',
     path: 'system',
     children: [
       {
-        name: '用户管理',
+        name: getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.USER"),
         path: 'manage',
       },
       {
-        name: '插件管理',
+        name: getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.PLUGIN"),
         path: 'plugin',
       },
       {
-        name: '认证管理',
+        name: getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.AUTHEN"),
         path: 'auth'
       },
       {
-        name: '元数据管理',
+        name: getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.METADATA"),
         path: 'metadata'
       },
       {
-        name: '字典管理',
+        name: getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.DICTIONARY"),
         path: 'dict'
       }
 
     ],
   },
 ];
-
 function formatter(data, parentPath = '/', parentAuthority) {
   return data.map(item => {
     let { path } = item;

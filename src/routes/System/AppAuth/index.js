@@ -7,6 +7,8 @@ import RelateMetadata from "./RelateMetadata"
 import AddTable from "./AddTable"
 
 import SearchContent from "./SearchContent"
+import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
+import {emit} from '../../../utils/emit'
 
 @connect(({ auth, loading }) => ({
   auth,
@@ -20,13 +22,18 @@ export default class Auth extends Component {
       selectedRowKeys: [],
       appKey: "",
       phone: "",
-      popup: ""
+      popup: "",
+      localeName:''
     };
   }
 
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllAuths(currentPage);
+  }
+
+  componentDidMount(){
+    emit.on('change_language', lang => this.changeLocale(lang))
   }
 
   onSelectChange = selectedRowKeys => {
@@ -304,6 +311,13 @@ export default class Auth extends Component {
     })
   }
 
+  changeLocale(locale){
+    this.setState({
+      localeName: locale
+    });
+    getCurrentLocale(this.state.localeName);
+  }
+
   render() {
     const { auth, loading } = this.props;
     const { authList, total } = auth;
@@ -318,21 +332,21 @@ export default class Auth extends Component {
       },
       {
         align: "center",
-        title: "加密密钥",
+        title: getIntlContent("SOUL.AUTH.ENCRYPTKEY"),
         dataIndex: "appSecret",
         key: "appSecret",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "用户Id",
+        title: `${getIntlContent("SOUL.SYSTEM.USER")} Id`,
         dataIndex: "userId",
         key: "userId",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "手机号",
+        title: getIntlContent("SOUL.AUTH.TEL"),
         dataIndex: "phone",
         key: "phone",
         ellipsis:true,
@@ -340,15 +354,15 @@ export default class Auth extends Component {
 
       {
         align: "center",
-        title: "状态",
+        title: getIntlContent("SOUL.SYSTEM.STATUS"),
         dataIndex: "enabled",
         key: "enabled",
         ellipsis:true,
         render: text => {
           if (text) {
-            return <div className="open">开启</div>;
+            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
           } else {
-            return <div className="close">关闭</div>;
+            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
           }
         }
       },
@@ -360,7 +374,7 @@ export default class Auth extends Component {
       // },
       {
         align: "center",
-        title: "更新时间",
+        title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
         dataIndex: "dateUpdated",
         render: dateUpdated => dayjs(dateUpdated).format('YYYY-MM-DD HH:mm:ss' ),
         key: "dateUpdated",
@@ -368,7 +382,7 @@ export default class Auth extends Component {
       },
       {
         align: "center",
-        title: "操作",
+        title: getIntlContent("SOUL.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
         ellipsis:true,
@@ -381,14 +395,14 @@ export default class Auth extends Component {
                 this.editClick(record);
               }}
             >
-              编辑
+              {getIntlContent("SOUL.SYSTEM.EDITOR")}
             </div>
           );
         }
       },
       {
         align: "center",
-        title: "路径操作",
+        title: getIntlContent("SOUL.AUTH.OPERATPATH"),
         dataIndex: "operates",
         key: "operates",
         ellipsis:true,
@@ -401,7 +415,7 @@ export default class Auth extends Component {
                 this.editClickMeta(record);
               }}
             >
-              编辑资源详情
+              {getIntlContent("SOUL.AUTH.EDITOR.RESOURCE")}
             </div>
           );
         }
@@ -424,19 +438,19 @@ export default class Auth extends Component {
 
           {/* 删除勾选按钮 */}
           <Popconfirm
-            title="你确认删除吗"
+            title={getIntlContent("SOUL.COMMON.DELETE")}
             placement='bottom'
             onConfirm={() => {
               this.deleteClick()
             }}
-            okText="确认"
-            cancelText="取消"
+            okText={getIntlContent("SOUL.COMMON.SURE")}
+            cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
           >
             <Button
               style={{ marginLeft: 20 }}
               type="danger"
             >
-              删除勾选数据
+              {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
             </Button>
           </Popconfirm>
           {/* 添加数据按钮 */}
@@ -445,7 +459,7 @@ export default class Auth extends Component {
             type="primary"
             onClick={this.addClick}
           >
-            添加数据
+            {getIntlContent("SOUL.SYSTEM.ADDDATA")}
           </Button>
           {/* 批量启用或禁用按钮 */}
           <Button
@@ -453,7 +467,7 @@ export default class Auth extends Component {
             type="primary"
             onClick={this.enableClick}
           >
-            批量启用或禁用
+            {getIntlContent("SOUL.PLUGIN.BATCH")}
           </Button>
           {/* 同步数据按钮 */}
           <Button
@@ -461,7 +475,7 @@ export default class Auth extends Component {
             type="primary"
             onClick={this.syncData}
           >
-            同步数据
+            {getIntlContent("SOUL.AUTH.SYNCDATA")}
           </Button>
         </div>
         {/* 表格 */}

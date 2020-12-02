@@ -2,6 +2,8 @@ import React, {Component} from "react";
 import {Table, Button, Popconfirm, message} from "antd";
 import {connect} from "dva";
 import AddPluginHandle from "./AddPluginHandle";
+import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
+import { emit } from "../../../utils/emit";
 
 @connect(({pluginHandle, loading}) => ({
   pluginHandle,
@@ -14,7 +16,8 @@ export default class PluginHandle extends Component {
       currentPage: 1,
       selectedRowKeys: [],
       pluginId: this.props.match.params.pluginId,
-      popup: ""
+      popup: "",
+      localeName:''
     };
   }
 
@@ -23,6 +26,9 @@ export default class PluginHandle extends Component {
     this.getPluginHandlesByPluginId(currentPage);
   }
 
+  componentDidMount(){
+    emit.on('change_language', lang => this.changeLocale(lang))
+  }
 
   getPluginHandlesByPluginId = page => {
     const {dispatch} = this.props;
@@ -190,6 +196,13 @@ export default class PluginHandle extends Component {
     }
   };
 
+  changeLocale(locale){
+    this.setState({
+      localeName:locale
+    });
+    getCurrentLocale(this.state.localeName);
+  }
+
   render() {
     const {pluginHandle, loading} = this.props;
     const {pluginHandleList, total} = pluginHandle;
@@ -198,66 +211,66 @@ export default class PluginHandle extends Component {
     const pluginColumns = [
       {
         align: "center",
-        title: "字段名",
+        title: getIntlContent("SOUL.PLUGIN.FIELDNAME"),
         dataIndex: "field",
         key: "field",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "标签",
+        title: getIntlContent("SOUL.PLUGIN.LABEL"),
         dataIndex: "label",
         key: "label",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "数据类型",
+        title: getIntlContent("SOUL.PLUGIN.DATATYPE"),
         dataIndex: "dataType",
         key: "dataType",
         ellipsis:true,
         render: text => {
           if (text === 1) {
-            return <div>数字</div>;
+            return <div>{getIntlContent("SOUL.PLUGIN.DIGITAL")}</div>;
           } else if (text === 2) {
-            return <div>字符串</div>;
+            return <div>{getIntlContent("SOUL.PLUGIN.STRING")}</div>;
           } else if (text === 3) {
-            return <div>下拉框</div>;
+            return <div>{getIntlContent("SOUL.PLUGIN.DROPDOWN")}</div>;
           }
-          return <div>未知类型</div>;
+          return <div>{getIntlContent("SOUL.PLUGIN.UNDEFINETYPE")}</div>;
         }
       },
       {
         align: "center",
-        title: "字段所属类型",
+        title: getIntlContent("SOUL.PLUGIN.FIELDTYPE"),
         dataIndex: "type",
         key: "type",
         ellipsis:true,
         render: text => {
           if (text === 1) {
-            return <div>选择器</div>;
+            return <div>{getIntlContent("SOUL.SELECTOR.NAME")}</div>;
           } else if (text === 2) {
-            return <div>规则</div>;
-          }return <div>未知类型</div>;
+            return <div>{getIntlContent("SOUL.PLUGIN.RULES")}</div>;
+          }return <div>{getIntlContent("SOUL.PLUGIN.UNDEFINETYPE")}</div>;
         }
       },
       {
         align: "center",
-        title: "排序",
+        title: getIntlContent("SOUL.PLUGIN.SORT"),
         dataIndex: "sort",
         key: "sort",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "创建时间",
+        title: getIntlContent("SOUL.SYSTEM.CREATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "更新时间",
+        title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
         dataIndex: "dateUpdated",
         key: "dateUpdated",
         ellipsis:true,
@@ -265,7 +278,7 @@ export default class PluginHandle extends Component {
 
       {
         align: "center",
-        title: "操作",
+        title: getIntlContent("SOUL.COMMON.OPERAT"),
         dataIndex: "time",
         key: "time",
         ellipsis:true,
@@ -278,7 +291,7 @@ export default class PluginHandle extends Component {
                   this.editClick(record);
                 }}
               >
-                编辑
+                {getIntlContent("SOUL.SYSTEM.EDITOR")}
               </div>
             </div>
 
@@ -296,19 +309,19 @@ export default class PluginHandle extends Component {
       <div className="plug-content-wrap">
         <div style={{display: "flex"}}>
           <Popconfirm
-            title="你确认删除吗"
+            title={getIntlContent("SOUL.COMMON.DELETE")}
             placement='bottom'
             onConfirm={() => {
               this.deleteClick()
             }}
-            okText="确认"
-            cancelText="取消"
+            okText={getIntlContent("SOUL.COMMON.SURE")}
+            cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
           >
             <Button
               style={{marginLeft: 20}}
               type="danger"
             >
-              删除勾选数据
+              {getIntlContent("SOUL.COMMON.DELETE")}
             </Button>
           </Popconfirm>
           <Button
@@ -316,10 +329,9 @@ export default class PluginHandle extends Component {
             type="primary"
             onClick={this.addClick}
           >
-            添加数据
+            {getIntlContent("SOUL.SYSTEM.ADDDATA")}
           </Button>
         </div>
-
         <Table
           size="small"
           style={{marginTop: 30}}

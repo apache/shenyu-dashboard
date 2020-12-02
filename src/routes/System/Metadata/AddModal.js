@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Modal, Form, Select, Input, Switch } from 'antd';
 
 import { connect } from "dva";
+import { getIntlContent } from '../../../utils/IntlUtils';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -26,9 +27,9 @@ class AddModal extends Component {
     let { handleCancel, platform, form, appName = '', serviceName='', rpcType='', methodName='',rpcExt='', path='',pathDesc, parameterTypes = '', enabled = true } = this.props;
     let {
       rpcTypeEnums,
-     
+
     } = platform;
-   
+
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
@@ -42,100 +43,100 @@ class AddModal extends Component {
       <Modal
         width={450}
         centered
-        title="元数据"
+        title={getIntlContent("SOUL.META.DATA")}
         visible
-        okText="确定"
-        cancelText="取消"
+        okText={getIntlContent("SOUL.COMMON.SURE")}
+        cancelText={getIntlContent( "SOUL.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem
-            label="应用名称"
+            label={getIntlContent("SOUL.AUTH.APPNAME")}
             {...formItemLayout}
           >
             {getFieldDecorator('appName', {
-              rules: [{ required: true, message: '请输入appName' }],
+              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.APPNAME")` }],
               initialValue: appName,
             })(
-              <Input placeholder="应用名称" />
+              <Input placeholder={getIntlContent("SOUL.AUTH.APPNAME")} />
             )}
           </FormItem>
-          
+
           <FormItem
-            label="方法名称"
+            label={getIntlContent("SOUL.META.FUNC.NAME")}
             {...formItemLayout}
           >
             {getFieldDecorator('methodName', {
-              rules: [{ required: true, message: '请输入方法名称' }],
+              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.META.FUNC.NAME")` }],
               initialValue: methodName,
             })(
-              <Input placeholder="方法名称" />
+              <Input placeholder={getIntlContent("SOUL.META.FUNC.NAME")} />
             )}
           </FormItem>
           <FormItem
-            label="路径"
+            label={getIntlContent("SOUL.META.PATH")}
             {...formItemLayout}
           >
             {getFieldDecorator('path', {
-              rules: [{ required: true, message: '请输入路径' }],
+              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.META.PATH")` }],
               initialValue: path,
             })(
-              <Input placeholder="路径" />
+              <Input placeholder={getIntlContent("SOUL.META.PATH")} />
             )}
           </FormItem>
           <FormItem
-            label="路径描述"
+            label={getIntlContent("SOUL.AUTH.PATH.DESCRIBE")}
             {...formItemLayout}
           >
             {getFieldDecorator('pathDesc', {
-              rules: [{ required: true, message: '请输入路径描述' }],
+              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.PATH.DESCRIBE")`}],
               initialValue: pathDesc,
             })(
-              <Input placeholder="路径描述" />
+              <Input placeholder={getIntlContent("SOUL.AUTH.PATH.DESCRIBE")} />
             )}
           </FormItem>
           <FormItem
-            label="参数类型"
+            label={`${getIntlContent("SOUL.AUTH.PARAMS")} ${getIntlContent("SOUL.COMMON.TYPE")}`}
             {...formItemLayout}
           >
             {getFieldDecorator('parameterTypes', {
-              rules: [{ required: true, message: '请输入参数类型' }],
+              rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")} ${getIntlContent("SOUL.AUTH.PARAMS")} ${getIntlContent("SOUL.COMMON.TYPE")}` }],
               initialValue: parameterTypes,
             })(
-              <Input placeholder="参数类型" />
+              <Input placeholder={`${getIntlContent("SOUL.AUTH.PARAMS")} ${getIntlContent("SOUL.COMMON.TYPE")}`} />
             )}
           </FormItem>
           <FormItem
-            label="rpc扩展参数"
+            label={`Rpc ${getIntlContent("SOUL.META.EXPAND.PARAMS")}`}
             {...formItemLayout}
           >
             {getFieldDecorator('rpcExt', {
-              rules: [{ message: '请输入rpc扩展参数' }],
+              rules: [{ message: `${getIntlContent("SOUL.AUTH.INPUT")} Rpc ${getIntlContent("SOUL.META.EXPAND.PARAMS")}` }],
               initialValue: rpcExt,
             })(
-              <TextArea placeholder="rpc扩展参数" rows={3} />
+              <TextArea placeholder={`Rpc ${getIntlContent( "SOUL.META.EXPAND.PARAMS")}`} rows={3} />
               // <Input placeholder="rpc扩展参数" />
             )}
           </FormItem>
           <FormItem
-            label="服务接口"
+            label={getIntlContent("SOUL.META.SERVER.INTER")}
             {...formItemLayout}
           >
             {getFieldDecorator('serviceName', {
-              rules: [{ required: true, message: '请输入服务接口' }],
+              rules: [{ required: true, message: getIntlContent("SOUL.META.INPUTSERVICEINTERFACE") }],
               initialValue: serviceName,
             })(
-              <Input placeholder="服务接口" />
+              <Input placeholder={getIntlContent("SOUL.META.SERVER.INTER")} />
             )}
           </FormItem>
           {/* 下拉 */}
           <FormItem
-            label="rpc类型"
+            label={`Rpc ${getIntlContent("SOUL.COMMON.TYPE")}`}
             {...formItemLayout}
           >
             {getFieldDecorator('rpcType', {
-              rules: [{ required: true, message: '请选择 rpc类型' }],
+              rules: [{ required: true, message: getIntlContent("SOUL.META.SELECTRPCTYPE") }],
               initialValue: rpcType,
             })(
               <Select>
@@ -154,7 +155,7 @@ class AddModal extends Component {
           (
             <FormItem
               {...formItemLayout}
-              label="状态"
+              label={getIntlContent("SOUL.SYSTEM.STATUS")}
             >
               {getFieldDecorator('enabled', {
               initialValue: enabled,

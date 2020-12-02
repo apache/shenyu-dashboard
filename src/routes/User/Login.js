@@ -11,9 +11,9 @@ const { UserName, Password, Submit } = Login;
   submitting: loading.effects['login/login'],
 }))
 export default class LoginPage extends Component {
-  
+
   handleSubmit = (err, values) => {
-   
+
     const { dispatch } = this.props;
     if (!err) {
       dispatch({
@@ -31,15 +31,15 @@ export default class LoginPage extends Component {
 
   render() {
     const {  submitting } = this.props;
-  
+
     return (
       <div className={styles.main}>
         <Login onSubmit={this.handleSubmit}>
           <div>
-            <UserName name="userName" placeholder="账号" />
-            <Password name="password" placeholder="密码" />
+            <UserName name="userName" placeholder="Account" />
+            <Password name="password" placeholder="Password" />
           </div>
-          <Submit loading={submitting}>登录</Submit>
+          <Submit loading={submitting}>Login</Submit>
         </Login>
       </div>
     );

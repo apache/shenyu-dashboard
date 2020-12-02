@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Modal,Button, Form, Input, Switch, message} from "antd";
 import styles from "./index.less";
+import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -79,43 +80,43 @@ class AddModal extends Component {
       <Modal
         width={550}
         centered
-        title="认证"
+        title={getIntlContent("SOUL.AUTH.AUTH")}
         visible
-        okText="确定"
-        cancelText="取消"
+        okText={getIntlContent("SOUL.COMMON.SURE")}
+        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label="应用标识" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.AUTH.APPID")} {...formItemLayout}>
             {getFieldDecorator("appKey", {
-              rules: [{ required: true, message: "请输入appKey" }],
+              rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")} AppKey` }],
               initialValue: appKey
-            })(<Input placeholder="请输入appKey" />)}
+            })(<Input placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} AppKey`} />)}
           </FormItem>
-          <FormItem label="应用密码" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.AUTH.APPPASSWORD")} {...formItemLayout}>
             {getFieldDecorator("appSecret", {
-              rules: [{ required: true, message: "请输入appSecret" }],
+              rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")} AppSecret` }],
               initialValue: appSecret
-            })(<Input placeholder="请输入appSecret" />)}
+            })(<Input placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} AppSecret`} />)}
           </FormItem>
-          <FormItem label="用户Id" {...formItemLayout}>
+          <FormItem label={`${getIntlContent("SOUL.SYSTEM.USER")} Id`} {...formItemLayout}>
             {getFieldDecorator("userId", {
-              rules: [{ required: true, message: "请输入用户Id" }],
+              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUTUSERID")}],
               initialValue: userId
-            })(<Input placeholder="请输入用户Id" />)}
+            })(<Input placeholder={getIntlContent("SOUL.AUTH.INPUTUSERID")} />)}
           </FormItem>
-          <FormItem label="手机号" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.AUTH.TEL")} {...formItemLayout}>
             {getFieldDecorator("phone", {
-              rules: [{ required: true, message: "请输入手机号" }],
+              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.TELPHONE")}],
               initialValue: phone
-            })(<Input placeholder="请输入手机号" />)}
+            })(<Input placeholder={getIntlContent("SOUL.AUTH.TELPHONE")} />)}
           </FormItem>
           <FormItem label="扩展信息" {...formItemLayout}>
             {getFieldDecorator("extInfo", {
-              rules: [{  message: "请输入扩展信息" }],
+              rules: [{  message: getIntlContent("SOUL.AUTH.EXPANDINFO") }],
               initialValue: extInfo
-            })(<TextArea placeholder="请输入扩展信息" rows={3} />)}
+            })(<TextArea placeholder={getIntlContent("SOUL.AUTH.INPUTEXPANDINFO")} rows={3} />)}
           </FormItem>
 
           {/* 添加删除行 */}
@@ -130,17 +131,17 @@ class AddModal extends Component {
                   return (
                     <ul key={index}>
                       <li>
-                        <div className={styles.title}>应用名称:</div>
+                        <div className={styles.title}>{getIntlContent("SOUL.AUTH.APPNAME")}:</div>
                       </li>
                       <li>
-                        <Input 
-                          onChange={e => { this.conditionChange(index,"appName",e.target.value)}} 
+                        <Input
+                          onChange={e => { this.conditionChange(index,"appName",e.target.value)}}
                           value={item.appName}
                           className={styles.appName}
                         />
                       </li>
                       <li>
-                        <div className={styles.title}>应用参数:</div>
+                        <div className={styles.title}>{getIntlContent("SOUL.AUTH.PARAMS")}:</div>
                       </li>
                       <li>
                         <TextArea
@@ -158,7 +159,7 @@ class AddModal extends Component {
                             this.handleDelete(index);
                           }}
                         >
-                          删除
+                          {getIntlContent( "SOUL.COMMON.DELETE.NAME")}
                         </Button>
                       </li>
                     </ul>
@@ -167,13 +168,13 @@ class AddModal extends Component {
               }
             </div>
             <Button onClick={this.handleAdd} className={styles.btn} type="primary">
-              新增
+              {getIntlContent("SOUL.COMMON.ADD")}
             </Button>
           </div>
 
 
 
-          <FormItem {...formItemLayout} label="状态">
+          <FormItem {...formItemLayout} label={getIntlContent("SOUL.SYSTEM.STATUS")}>
             {getFieldDecorator("enabled", {
               initialValue: enabled,
               valuePropName: "checked"

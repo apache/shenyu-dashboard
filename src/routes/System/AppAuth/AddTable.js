@@ -1,6 +1,6 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import { Modal, Form, Select, Input, Table, Button, Popconfirm } from 'antd';
-
+import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -10,7 +10,7 @@ class AddTable extends Component {
     super(props);
     this.columns = [
       {
-        title: '资源路径',
+        title: getIntlContent("SOUL.AUTH.RESOUCE.PATH"),
         dataIndex: 'path',
         editable: 'true',
         render: (text, record) => (
@@ -22,7 +22,7 @@ class AddTable extends Component {
         )
       },
       {
-        title: '路径描述',
+        title: getIntlContent("SOUL.AUTH.PATH.DESCRIBE"),
         dataIndex: 'pathDesc',
         editable: 'true',
         render: (text, record) => (
@@ -33,12 +33,12 @@ class AddTable extends Component {
         )
       },
       {
-        title: '操作',
+        title: getIntlContent("SOUL.COMMON.OPERAT"),
         dataIndex: 'operation',
         render: (text, record) =>
           this.state.allData.length > 1 ? (
-            <Popconfirm title="确定删除?" onConfirm={() => this.handleDelete(record.key)}>
-              <a>删除</a>
+            <Popconfirm title={getIntlContent("SOUL.COMMON.DELETE")} onConfirm={() => this.handleDelete(record.key)}>
+              <a>{getIntlContent("SOUL.COMMON.DELETE.NAME")}</a>
             </Popconfirm>
           ) : null,
       },
@@ -149,6 +149,28 @@ class AddTable extends Component {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
+    // const columns = [
+    //   {
+    //     title: getIntlContent("SOUL.AUTH.RESOUCE.PATH"),
+    //     dataIndex: 'path',
+    //     render: (text, record) => (
+    //       <Input
+    //         value={text}
+    //         onChange={(e) => this.handleTableInput({path: e.target.value}, record)}
+    //       />
+    //     )
+    //   },
+    //   {
+    //     title: getIntlContent("SOUL.AUTH.PATH.DESCRIBE"),
+    //     dataIndex: 'pathDesc',
+    //     render: (text, record) => (
+    //       <Input
+    //         value={text}
+    //         onChange={(e) => this.handleTableInput({pathDesc: e.target.value}, record)}
+    //       />
+    //     )
+    //   },
+    // ];
     const columns = this.columns
 
 
@@ -168,29 +190,28 @@ class AddTable extends Component {
       <Modal
         width={550}
         centered
-        title="认证"
+        title={getIntlContent("SOUL.AUTH.AUTH")}
         visible
-        okText="确定"
-        cancelText="取消"
+        okText={getIntlContent("SOUL.COMMON.SURE")}
+        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem
-            label="应用名称"
+            label={getIntlContent("SOUL.AUTH.APPNAME")}
             {...formItemLayout}
           >
             {getFieldDecorator('appName', {
               rules: [{
                 required: true,
-                message: '请选择 应用名称',
-
+                message: getIntlContent("SOUL.AUTH.SELECT.APP"),
               }],
             })
               (
                 <Select
                   showSearch
-                  placeholder="请选择 应用名称"
+                  placeholder={getIntlContent("SOUL.AUTH.SELECT.APP")}
                   onChange={this.handleChange}
                   onSearch={value => this.onSearchSelect(value, '0')}
                   onBlur={() => this.onBlurSelect('0')}
@@ -205,41 +226,41 @@ class AddTable extends Component {
                 </Select>)}
           </FormItem>
           <FormItem
-            label="电话"
+            label={getIntlContent("SOUL.AUTH.PHONE")}
             {...formItemLayout}
           >
             {getFieldDecorator("phone", {
               rules: [{
                 required: true,
-                message: "请输入phone"
+                message: `${getIntlContent("SOUL.AUTH.INPUT")} Phone`
               }],
             })(
               <Input placeholder="phone" />
             )}
           </FormItem>
-          <FormItem label="app参数" {...formItemLayout}>
+          <FormItem label={`App ${getIntlContent("SOUL.AUTH.PARAMS")}`} {...formItemLayout}>
             {getFieldDecorator("appParam", {
               rules: [{
                 required: true,
-                message: "请输入appParam"
+                message: `${getIntlContent("SOUL.SYSTEM.USER")} AppParam`
               }],
             })(
               <Input placeholder="appParam" />
             )}
           </FormItem>
-          <FormItem label="用户ID" {...formItemLayout}>
+          <FormItem label={`${getIntlContent("SOUL.SYSTEM.USER")} ID`} {...formItemLayout}>
             {getFieldDecorator("userId", {
               rules: [{
                 required: true,
-                message: "请输入userId"
+                message: `${getIntlContent("SOUL.AUTH.INPUT")} UserId`
               }],
             })(<Input placeholder="userId" />)}
           </FormItem>
-          <FormItem label="扩展信息" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.AUTH.EXPANDINFO")} {...formItemLayout}>
             {getFieldDecorator("extInfo", {
               rules: [{
                 required: true,
-                message: "请输入extInfo"
+                message: `${getIntlContent("SOUL.AUTH.INPUT")} ExtInfo`
               }],
             })(<Input placeholder="extInfo" />)}
           </FormItem>
@@ -256,7 +277,7 @@ class AddTable extends Component {
                       marginBottom: 16,
                     }}
                   >
-                    添加
+                    {getIntlContent("SOUL.AUTH.ADD")}
                   </Button>
                 ) :
                 (
@@ -267,7 +288,7 @@ class AddTable extends Component {
                       marginBottom: 16,
                     }}
                   >
-                    添加
+                    {getIntlContent("SOUL.AUTH.ADD")}
                   </Button>
                 )
             }
