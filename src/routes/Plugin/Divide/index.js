@@ -3,7 +3,7 @@ import { Table, Row, Col, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
-import { getIntlContent } from "../../../utils/IntlUtils";
+import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import { emit } from "../../../utils/emit"
 
 @connect(({ divide, global, loading }) => ({
@@ -22,11 +22,6 @@ export default class Divide extends Component {
     };
   }
 
-  changeLocales(locale) {
-    this.setState({
-      localeName: locale
-    })
-  }
   componentDidMount() {
     emit.on('change_language', lang => this.changeLocales(lang))
     const { dispatch } = this.props;
@@ -296,6 +291,13 @@ export default class Divide extends Component {
     });
   };
 
+  changeLocales(locale) {
+    this.setState({
+      localeName: locale
+    });
+    getCurrentLocale(this.state.localeName);
+  }
+
   render() {
     const { popup, selectorPage, rulePage } = this.state;
     const {
@@ -341,7 +343,7 @@ export default class Divide extends Component {
                   this.editSelector(record);
                 }}
               >
-               {getIntlContent("SOUL.COMMON.CHANGE")}
+                {getIntlContent("SOUL.COMMON.CHANGE")}
               </span>
               <Popconfirm
                 title={getIntlContent("SOUL.COMMON.DELETE")}

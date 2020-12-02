@@ -3,7 +3,7 @@ import { Table, Row, Col, Button, message,Popconfirm } from "antd";
 import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
-import { getIntlContent } from '../../../utils/IntlUtils'
+import { getIntlContent, getCurrentLocale } from '../../../utils/IntlUtils'
 import { emit } from "../../../utils/emit";
 
 @connect(({ common, global, loading }) => ({
@@ -21,11 +21,7 @@ export default class Common extends Component {
       localeName:''
     };
   }
-  changeLocales(locale) {
-    this.setState({
-      localeName: locale
-    })
-  }
+
   componentDidMount() {
     emit.on('change_language', lang => this.changeLocales(lang))
     const { dispatch } = this.props;
@@ -332,6 +328,12 @@ export default class Common extends Component {
     });
   };
 
+  changeLocales(locale) {
+    this.setState({
+      localeName: locale
+    });
+    getCurrentLocale(this.state.localeName);
+  }
 
   render() {
     const { popup, selectorPage, rulePage } = this.state;
@@ -450,7 +452,7 @@ export default class Common extends Component {
                   this.editRule(record);
                 }}
               >
-               {getIntlContent("SOUL.COMMON.CHANGE")}
+                {getIntlContent("SOUL.COMMON.CHANGE")}
               </span>
               <Popconfirm
                 title={getIntlContent("SOUL.COMMON.DELETE")}
@@ -471,7 +473,7 @@ export default class Common extends Component {
                     e.stopPropagation()
                   }}
                 >
-                 {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                  {getIntlContent("SOUL.COMMON.DELETE.NAME")}
                 </span>
               </Popconfirm>
             </div>

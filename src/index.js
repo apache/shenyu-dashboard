@@ -5,7 +5,7 @@ import createHistory from 'history/createHashHistory';
 // user BrowserHistory
 // import createHistory from 'history/createBrowserHistory';
 import createLoading from 'dva-loading';
-import { initIntl, reloadInit } from './utils/IntlUtils'
+import { initIntl } from './utils/IntlUtils'
 
 // import 'moment/locale/zh-cn';
 // import './rollbar';
@@ -18,7 +18,7 @@ const middlewares = [];
 
 //   middlewares.push(logger);
 // }
-console.log(window.sessionStorage.getItem('locale'))
+
 /** get session storage */
 if (window.sessionStorage.getItem('locale') === undefined || window.sessionStorage.getItem('locale') === null) {
   initIntl('en-US');

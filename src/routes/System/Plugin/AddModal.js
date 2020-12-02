@@ -104,7 +104,7 @@ class AddModal extends Component {
               rules: [],
               initialValue: config.password,
             })(
-              <Input placeholder={getIntlContent("SOUL.SYSTEM.USER.PASSWORD")}/>
+              <Input placeholder={getIntlContent("SOUL.SYSTEM.USER.PASSWORD")} />
             )}
           </FormItem>
 

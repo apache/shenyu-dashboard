@@ -3,7 +3,7 @@ import { Table, Row, Col, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
-import { getIntlContent } from "../../../utils/IntlUtils";
+import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import { emit } from "../../../utils/emit";
 
 @connect(({ hystrix, global, loading }) => ({
@@ -21,11 +21,7 @@ export default class Hystrix extends Component {
       localeName:''
     };
   }
-  changeLocales(locale) {
-    this.setState({
-      localeName: locale
-    })
-  }
+
   componentDidMount() {
     emit.on('change_language', lang => this.changeLocales(lang))
     const { dispatch } = this.props;
@@ -294,6 +290,13 @@ export default class Hystrix extends Component {
     });
   };
 
+  changeLocales(locale) {
+    this.setState({
+      localeName: locale
+    });
+    getCurrentLocale(this.state.localeName);
+  }
+
   render() {
     const { popup, selectorPage, rulePage } = this.state;
     const {
@@ -330,8 +333,6 @@ export default class Hystrix extends Component {
         key: "operate",
         render: (text, record) => {
           return (
-
-
             <div>
               <span
                 style={{ marginRight: 8 }}
@@ -341,7 +342,7 @@ export default class Hystrix extends Component {
                   this.editSelector(record);
                 }}
               >
-               {getIntlContent("SOUL.COMMON.CHANGE")}
+                {getIntlContent("SOUL.COMMON.CHANGE")}
               </span>
               <Popconfirm
                 title={getIntlContent("SOUL.COMMON.DELETE")}
@@ -435,7 +436,7 @@ export default class Hystrix extends Component {
                     e.stopPropagation()
                   }}
                 >
-                 {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                  {getIntlContent("SOUL.COMMON.DELETE.NAME")}
                 </span>
               </Popconfirm>
 
@@ -452,7 +453,7 @@ export default class Hystrix extends Component {
             <div className="table-header">
               <h3>{getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
               <Button type="primary" onClick={this.addSelector}>
-              {getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.ADD")}
+                {getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.ADD")}
               </Button>
             </div>
             <Table
@@ -488,12 +489,12 @@ export default class Hystrix extends Component {
               <div style={{ display: "flex" }}>
                 <h3 style={{ marginRight: 30 }}>{getIntlContent("SOUL.PLUGIN.SELECTOR.RULE.LIST")}</h3>
                 <Button icon="reload" onClick={this.asyncClick} type="primary">
-                {getIntlContent("SOUL.COMMON.SYN")} hystrix
+                  {getIntlContent("SOUL.COMMON.SYN")} hystrix
                 </Button>
               </div>
 
               <Button type="primary" onClick={this.addRule}>
-              {getIntlContent("SOUL.COMMON.ADD.RULE")}
+                {getIntlContent("SOUL.COMMON.ADD.RULE")}
               </Button>
             </div>
             <Table

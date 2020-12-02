@@ -1,17 +1,14 @@
 import React, { PureComponent } from 'react';
-import { Dropdown, Icon,  Select, Menu, Button} from 'antd';
+import { Dropdown, Icon, Menu } from 'antd';
 import { TranslationOutlined } from '@ant-design/icons'
 import styles from './index.less';
-import { getIntlContent } from '../../utils/IntlUtils'
+import { getIntlContent, getCurrentLocale } from '../../utils/IntlUtils'
 import { emit } from '../../utils/emit';
-
-const { Option } = Select;
 
 export default class GlobalHeader extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      localeName: '',
       menu: (
         <Menu onClick={this.handleLocalesValueChange}>
           <Menu.Item key='0'>
@@ -21,25 +18,30 @@ export default class GlobalHeader extends PureComponent {
             <span>中文</span>
           </Menu.Item>
         </Menu>
-      )
+      ),
+      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US'
     }
   }
-  changeLocales(locale) {
-    this.setState({
-      localeName: locale
-    })
-  }
+
 
   handleLocalesValueChange = value => {
     if (value.key === '0') {
       emit.emit('change_language', 'en-US');
       window.sessionStorage.setItem('locale', 'en-US');
+      this.setState({
+        localeName: 'en-Us'
+      })
     } else {
       emit.emit('change_language', 'zh-CN');
       window.sessionStorage.setItem('locale', 'zh-CN');
+      this.setState({
+        localeName: 'zh-CN'
+      })
     }
-    this.changeLocales(value);
+    getCurrentLocale(this.state.localeName);
   }
+
+
   render() {
    const { onLogout } = this.props;
     return (

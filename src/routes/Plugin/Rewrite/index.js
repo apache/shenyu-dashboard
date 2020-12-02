@@ -4,6 +4,7 @@ import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
 import { getIntlContent } from '../../../utils/IntlUtils'
+
 @connect(({ rewrite, global, loading }) => ({
   ...global,
   ...rewrite,
@@ -18,6 +19,7 @@ export default class Rewrite extends Component {
       popup: "",
     };
   }
+
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
@@ -329,7 +331,7 @@ export default class Rewrite extends Component {
                   this.editSelector(record);
                 }}
               >
-                {getIntlContent("SOUL.COMMON.CHANGE")} 
+                {getIntlContent("SOUL.COMMON.CHANGE")}
               </span>
               <Popconfirm
                 title={getIntlContent("SOUL.COMMON.DELETE")}
@@ -401,7 +403,7 @@ export default class Rewrite extends Component {
                   this.editRule(record);
                 }}
               >
-                {getIntlContent("SOUL.COMMON.CHANGE")} 
+                {getIntlContent("SOUL.COMMON.CHANGE")}
               </span>
               <Popconfirm
                 title={getIntlContent("SOUL.COMMON.DELETE")}
@@ -478,7 +480,7 @@ export default class Rewrite extends Component {
                 </Button>
               </div>
               <Button type="primary" onClick={this.addRule}>
-                  {getIntlContent("SOUL.COMMON.ADD.RULE")}
+                {getIntlContent("SOUL.COMMON.ADD.RULE")}
               </Button>
             </div>
             <Table

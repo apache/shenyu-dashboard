@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
-import { getIntlContent } from "../../../utils/IntlUtils";
-import { emit } from '../../../utils/emit'
+import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
+import { emit } from '../../../utils/emit';
+
 @connect(({ manage, loading }) => ({
   manage,
   loading: loading.effects["manage/fetch"]
@@ -20,17 +21,13 @@ export default class Manage extends Component {
     };
   }
 
-  changeLocale(locale) {
-    this.setState({
-      localeName: locale
-    })
-  }
-  componentDidMount() {
-    emit.on('change_language', lang => this.changeLocale(lang))
-  }
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllUsers(currentPage);
+  }
+
+  componentDidMount() {
+    emit.on('change_language', lang => this.changeLocale(lang))
   }
 
   onSelectChange = selectedRowKeys => {
@@ -174,6 +171,13 @@ export default class Manage extends Component {
     });
   };
 
+  changeLocale(locale) {
+    this.setState({
+      localeName: locale
+    });
+    getCurrentLocale(this.state.localeName);
+  };
+
   render() {
     const { manage, loading } = this.props;
     const { userList, total } = manage;
@@ -269,7 +273,7 @@ export default class Manage extends Component {
               style={{ marginLeft: 20 }}
               type="danger"
             >
-             {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
+              {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
             </Button>
           </Popconfirm>
           <Button

@@ -11,3 +11,11 @@ export function initIntl(lang) {
 export function getIntlContent(key) {
   return intl.get(key);
 }
+
+export function getCurrentLocale(locale) {
+  if (locale === 'en-US') {
+    return "English";
+  } else {
+    return "中文";
+  }
+}

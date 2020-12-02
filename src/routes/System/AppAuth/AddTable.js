@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { Modal, Form, Select, Input, Table, Button, Popconfirm } from 'antd';;
+import { Modal, Form, Select, Input, Table, Button, Popconfirm } from 'antd';
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;
@@ -232,27 +232,27 @@ class AddTable extends Component {
             {getFieldDecorator("phone", {
               rules: [{
                 required: true,
-                message: getIntlContent("SOUL.AUTH.INPUT")+ " phone"
+                message: `${getIntlContent("SOUL.AUTH.INPUT")} Phone`
               }],
             })(
               <Input placeholder="phone" />
             )}
           </FormItem>
-          <FormItem label={"App " + getIntlContent("SOUL.AUTH.PARAMS")} {...formItemLayout}>
+          <FormItem label={`App ${getIntlContent("SOUL.AUTH.PARAMS")}`} {...formItemLayout}>
             {getFieldDecorator("appParam", {
               rules: [{
                 required: true,
-                message: getIntlContent("SOUL.SYSTEM.USER")+ " AppParam"
+                message: `${getIntlContent("SOUL.SYSTEM.USER")} AppParam`
               }],
             })(
               <Input placeholder="appParam" />
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.SYSTEM.USER") + " ID"} {...formItemLayout}>
+          <FormItem label={`${getIntlContent("SOUL.SYSTEM.USER")} ID`} {...formItemLayout}>
             {getFieldDecorator("userId", {
               rules: [{
                 required: true,
-                message: getIntlContent("SOUL.AUTH.INPUT") + " userId"
+                message: `${getIntlContent("SOUL.AUTH.INPUT")} UserId`
               }],
             })(<Input placeholder="userId" />)}
           </FormItem>
@@ -260,7 +260,7 @@ class AddTable extends Component {
             {getFieldDecorator("extInfo", {
               rules: [{
                 required: true,
-                message: getIntlContent("SOUL.AUTH.INPUT")+" extInfo"
+                message: `${getIntlContent("SOUL.AUTH.INPUT")} ExtInfo`
               }],
             })(<Input placeholder="extInfo" />)}
           </FormItem>

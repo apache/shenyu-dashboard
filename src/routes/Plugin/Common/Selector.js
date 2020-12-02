@@ -3,7 +3,7 @@ import {Modal, Form, Select, Input, Switch, Button, message, Tooltip} from "antd
 import { connect } from "dva";
 import classnames from "classnames";
 import styles from "../index.less";
-import { getIntContent, getIntlContent } from '../../../utils/IntlUtils'
+import { getIntlContent } from '../../../utils/IntlUtils'
 
 const FormItem = Form.Item;
 const { Option } = Select;

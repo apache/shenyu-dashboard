@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
-import { getIntlContent } from "../../../utils/IntlUtils";
+import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import { emit } from '../../../utils/emit'
 
 @connect(({ metadata, loading }) => ({
@@ -20,17 +20,14 @@ export default class Metadata extends Component {
       localeName:''
     };
   }
-  changeLocale(locale){
-    this.setState({
-      localeName: locale
-    })
-  }
-  componentDidMount(){
-    emit.on('change_language', lang => this.changeLocale(lang))
-  }
+
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllMetadata(currentPage);
+  }
+
+  componentDidMount(){
+    emit.on('change_language', lang => this.changeLocale(lang))
   }
 
   onSelectChange = selectedRowKeys => {
@@ -235,6 +232,13 @@ export default class Metadata extends Component {
     })
   };
 
+  changeLocale(locale){
+    this.setState({
+      localeName: locale
+    });
+    getCurrentLocale(this.state.localeName);
+  }
+
   render() {
     const { metadata, loading } = this.props;
     const { userList, total } = metadata;
@@ -271,21 +275,21 @@ export default class Metadata extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.AUTH.PARAMS") + getIntlContent("SOUL.COMMON.TYPE"),
+        title: `${getIntlContent("SOUL.AUTH.PARAMS")} ${getIntlContent("SOUL.COMMON.TYPE")}`,
         dataIndex: "parameterTypes",
         key: "parameterTypes",
         ellipsis:true,
       },
       {
         align: "center",
-        title: 'Rpc' + getIntlContent("SOUL.COMMON.TYPE"),
+        title: `Rpc ${getIntlContent("SOUL.COMMON.TYPE")}`,
         dataIndex: "rpcType",
         key: "rpcType",
         ellipsis:true,
       },
       {
         align: "center",
-        title: 'Rpc' + getIntlContent("SOUL.META.EXPAND.PARAMS"),
+        title: `Rpc ${getIntlContent("SOUL.META.EXPAND.PARAMS")}`,
         dataIndex: "rpcExt",
         key: "rpcExt",
         ellipsis:true,
@@ -343,7 +347,7 @@ export default class Metadata extends Component {
           <Input
             value={appName}
             onChange={this.searchOnchange}
-            placeholder={getIntlContent("SOUL.AUTH.INPUT")+" AppName"}
+            placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} AppName`}
             style={{ width: 240 }}
           />
           <Button

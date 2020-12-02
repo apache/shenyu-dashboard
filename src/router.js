@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { routerRedux, Route, Switch } from 'dva/router';
-import { LocaleProvider, message } from 'antd';
+import { LocaleProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
 import { getRouterData } from './common/router';
 import Authorized from './utils/Authorized';

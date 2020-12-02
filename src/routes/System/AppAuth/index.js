@@ -7,7 +7,7 @@ import RelateMetadata from "./RelateMetadata"
 import AddTable from "./AddTable"
 
 import SearchContent from "./SearchContent"
-import { getIntlContent } from "../../../utils/IntlUtils";
+import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import {emit} from '../../../utils/emit'
 
 @connect(({ auth, loading }) => ({
@@ -26,17 +26,14 @@ export default class Auth extends Component {
       localeName:''
     };
   }
-  changeLocale(locale){
-    this.setState({
-      localeName: locale
-    })
-  }
-  componentDidMount(){
-    emit.on('change_language', lang => this.changeLocale(lang))
-  }
+
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllAuths(currentPage);
+  }
+
+  componentDidMount(){
+    emit.on('change_language', lang => this.changeLocale(lang))
   }
 
   onSelectChange = selectedRowKeys => {
@@ -314,6 +311,13 @@ export default class Auth extends Component {
     })
   }
 
+  changeLocale(locale){
+    this.setState({
+      localeName: locale
+    });
+    getCurrentLocale(this.state.localeName);
+  }
+
   render() {
     const { auth, loading } = this.props;
     const { authList, total } = auth;
@@ -335,7 +339,7 @@ export default class Auth extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.USER")+" Id",
+        title: `${getIntlContent("SOUL.SYSTEM.USER")} Id`,
         dataIndex: "userId",
         key: "userId",
         ellipsis:true,
@@ -391,7 +395,7 @@ export default class Auth extends Component {
                 this.editClick(record);
               }}
             >
-             {getIntlContent("SOUL.SYSTEM.EDITOR")}
+              {getIntlContent("SOUL.SYSTEM.EDITOR")}
             </div>
           );
         }
@@ -411,7 +415,7 @@ export default class Auth extends Component {
                 this.editClickMeta(record);
               }}
             >
-             {getIntlContent("SOUL.AUTH.EDITOR.RESOURCE")}
+              {getIntlContent("SOUL.AUTH.EDITOR.RESOURCE")}
             </div>
           );
         }
@@ -455,7 +459,7 @@ export default class Auth extends Component {
             type="primary"
             onClick={this.addClick}
           >
-           {getIntlContent("SOUL.SYSTEM.ADDDATA")}
+            {getIntlContent("SOUL.SYSTEM.ADDDATA")}
           </Button>
           {/* 批量启用或禁用按钮 */}
           <Button
@@ -471,7 +475,7 @@ export default class Auth extends Component {
             type="primary"
             onClick={this.syncData}
           >
-           {getIntlContent("SOUL.AUTH.SYNCDATA")}
+            {getIntlContent("SOUL.AUTH.SYNCDATA")}
           </Button>
         </div>
         {/* 表格 */}

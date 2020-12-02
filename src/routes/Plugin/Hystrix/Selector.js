@@ -340,7 +340,7 @@ class AddModal extends Component {
                 </div>
 
                 <Button onClick={this.handleAdd} type="primary">
-                {getIntlContent("SOUL.COMMON.ADD")}
+                  {getIntlContent("SOUL.COMMON.ADD")}
                 </Button>
               </div>
             </Fragment>

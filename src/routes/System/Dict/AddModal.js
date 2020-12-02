@@ -51,7 +51,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('type', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + " " + getIntlContent("SOUL.DIC.TYPE") }],
+              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + " " + getIntlContent("SOUL.DIC.TYPE")` }],
               initialValue: type,
             })(
               <Input placeholder={getIntlContent("SOUL.DIC.TYPE")} />
@@ -63,7 +63,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('dictCode', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + " " + getIntlContent("SOUL.DIC.CODE") }],
+              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + " " + getIntlContent("SOUL.DIC.CODE")` }],
               initialValue: dictCode,
             })(
               <Input placeholder={getIntlContent("SOUL.DIC.CODE")} />
@@ -74,7 +74,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('dictName', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + " " + getIntlContent("SOUL.DIC.NAME") }],
+              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + " " + getIntlContent("SOUL.DIC.NAME")` }],
               initialValue: dictName,
             })(
               <Input placeholder={getIntlContent("SOUL.DIC.NAME")} />
@@ -85,7 +85,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('dictValue', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") +" " + getIntlContent("SOUL.DIC.VALUE") }],
+              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") +" " + getIntlContent("SOUL.DIC.VALUE")` }],
               initialValue: dictValue,
             })(
               <Input placeholder={getIntlContent("SOUL.DIC.VALUE")} />
@@ -109,7 +109,7 @@ class AddModal extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SOUL.AUTH.INPUT")+ " " + getIntlContent("SOUL.PLUGIN.SORT")
+                  message: `getIntlContent("SOUL.AUTH.INPUT")+ " " + getIntlContent("SOUL.PLUGIN.SORT")`
                 }
               ],
               initialValue: sort,

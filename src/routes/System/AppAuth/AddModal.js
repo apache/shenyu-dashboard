@@ -90,17 +90,17 @@ class AddModal extends Component {
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem label={getIntlContent("SOUL.AUTH.APPID")} {...formItemLayout}>
             {getFieldDecorator("appKey", {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") +" appKey" }],
+              rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")} AppKey` }],
               initialValue: appKey
-            })(<Input placeholder={getIntlContent("SOUL.AUTH.INPUT")+ " AppKey"} />)}
+            })(<Input placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} AppKey`} />)}
           </FormItem>
           <FormItem label={getIntlContent("SOUL.AUTH.APPPASSWORD")} {...formItemLayout}>
             {getFieldDecorator("appSecret", {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + "appSecret" }],
+              rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")} AppSecret` }],
               initialValue: appSecret
-            })(<Input placeholder={getIntlContent("SOUL.AUTH.INPUT") + " AppSecret"} />)}
+            })(<Input placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} AppSecret`} />)}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.SYSTEM.USER")+" Id"} {...formItemLayout}>
+          <FormItem label={`${getIntlContent("SOUL.SYSTEM.USER")} Id`} {...formItemLayout}>
             {getFieldDecorator("userId", {
               rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUTUSERID")}],
               initialValue: userId
@@ -110,7 +110,7 @@ class AddModal extends Component {
             {getFieldDecorator("phone", {
               rules: [{ required: true, message: getIntlContent("SOUL.AUTH.TELPHONE")}],
               initialValue: phone
-            })(<Input placeholder={getIntlContent("SOUL.AUTH.TELPHONE")}/>)}
+            })(<Input placeholder={getIntlContent("SOUL.AUTH.TELPHONE")} />)}
           </FormItem>
           <FormItem label="扩展信息" {...formItemLayout}>
             {getFieldDecorator("extInfo", {
@@ -159,7 +159,7 @@ class AddModal extends Component {
                             this.handleDelete(index);
                           }}
                         >
-                        {getIntlContent( "SOUL.COMMON.DELETE.NAME")}
+                          {getIntlContent( "SOUL.COMMON.DELETE.NAME")}
                         </Button>
                       </li>
                     </ul>
@@ -168,7 +168,7 @@ class AddModal extends Component {
               }
             </div>
             <Button onClick={this.handleAdd} className={styles.btn} type="primary">
-             {getIntlContent("SOUL.COMMON.ADD")}
+              {getIntlContent("SOUL.COMMON.ADD")}
             </Button>
           </div>
 

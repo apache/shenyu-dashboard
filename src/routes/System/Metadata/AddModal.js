@@ -56,7 +56,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('appName', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.APPNAME") }],
+              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.APPNAME")` }],
               initialValue: appName,
             })(
               <Input placeholder={getIntlContent("SOUL.AUTH.APPNAME")} />
@@ -68,7 +68,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('methodName', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.META.FUNC.NAME") }],
+              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.META.FUNC.NAME")` }],
               initialValue: methodName,
             })(
               <Input placeholder={getIntlContent("SOUL.META.FUNC.NAME")} />
@@ -79,7 +79,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('path', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.META.PATH") }],
+              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.META.PATH")` }],
               initialValue: path,
             })(
               <Input placeholder={getIntlContent("SOUL.META.PATH")} />
@@ -90,32 +90,32 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('pathDesc', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.PATH.DESCRIBE")}],
+              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.PATH.DESCRIBE")`}],
               initialValue: pathDesc,
             })(
               <Input placeholder={getIntlContent("SOUL.AUTH.PATH.DESCRIBE")} />
             )}
           </FormItem>
           <FormItem
-            label={getIntlContent("SOUL.AUTH.PARAMS")+ getIntlContent("SOUL.COMMON.TYPE")}
+            label={`${getIntlContent("SOUL.AUTH.PARAMS")} ${getIntlContent("SOUL.COMMON.TYPE")}`}
             {...formItemLayout}
           >
             {getFieldDecorator('parameterTypes', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.PARAMS")+ getIntlContent("SOUL.COMMON.TYPE") }],
+              rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")} ${getIntlContent("SOUL.AUTH.PARAMS")} ${getIntlContent("SOUL.COMMON.TYPE")}` }],
               initialValue: parameterTypes,
             })(
-              <Input placeholder={getIntlContent("SOUL.AUTH.PARAMS")+getIntlContent("SOUL.COMMON.TYPE")} />
+              <Input placeholder={`${getIntlContent("SOUL.AUTH.PARAMS")} ${getIntlContent("SOUL.COMMON.TYPE")}`} />
             )}
           </FormItem>
           <FormItem
-            label={'Rpc' + getIntlContent("SOUL.META.EXPAND.PARAMS")}
+            label={`Rpc ${getIntlContent("SOUL.META.EXPAND.PARAMS")}`}
             {...formItemLayout}
           >
             {getFieldDecorator('rpcExt', {
-              rules: [{ message: getIntlContent("SOUL.AUTH.INPUT") + 'Rpc' + getIntlContent("SOUL.META.EXPAND.PARAMS") }],
+              rules: [{ message: `${getIntlContent("SOUL.AUTH.INPUT")} Rpc ${getIntlContent("SOUL.META.EXPAND.PARAMS")}` }],
               initialValue: rpcExt,
             })(
-              <TextArea placeholder={'Rpc' + getIntlContent( "SOUL.META.EXPAND.PARAMS")} rows={3} />
+              <TextArea placeholder={`Rpc ${getIntlContent( "SOUL.META.EXPAND.PARAMS")}`} rows={3} />
               // <Input placeholder="rpc扩展参数" />
             )}
           </FormItem>
@@ -132,7 +132,7 @@ class AddModal extends Component {
           </FormItem>
           {/* 下拉 */}
           <FormItem
-            label={'Rpc' + getIntlContent("SOUL.COMMON.TYPE")}
+            label={`Rpc ${getIntlContent("SOUL.COMMON.TYPE")}`}
             {...formItemLayout}
           >
             {getFieldDecorator('rpcType', {

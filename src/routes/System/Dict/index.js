@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import {Table, Input, Button, message, Popconfirm} from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
-import { getIntlContent } from "../../../utils/IntlUtils";
+import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import { emit } from '../../../utils/emit'
 
 @connect(({ soulDict, loading }) => ({
@@ -22,18 +22,14 @@ export default class SoulDict extends Component {
       localeName:''
     };
   }
-  changeLocale(locale) {
-    this.setState({
-      localeName: locale
-    })
+
+  componentWillMount() {
+    const { currentPage } = this.state;
+    this.getAllDict(currentPage);
   }
 
   componentDidMount(){
     emit.on('change_language', lang => this.changeLocale(lang))
-  }
-  componentWillMount() {
-    const { currentPage } = this.state;
-    this.getAllDict(currentPage);
   }
 
   onSelectChange = selectedRowKeys => {
@@ -271,6 +267,13 @@ export default class SoulDict extends Component {
     }
   };
 
+  changeLocale(locale) {
+    this.setState({
+      localeName: locale
+    });
+    getCurrentLocale(this.state.localeName);
+  };
+
   render() {
     const { soulDict, loading } = this.props;
     const { soulDictList, total } = soulDict;
@@ -364,19 +367,19 @@ export default class SoulDict extends Component {
         <div style={{ display: "flex" }}>
           <Input
             value={type}
-            placeholder={getIntlContent("SOUL.AUTH.INPUT") + " " + getIntlContent("SOUL.COMMON.TYPE")}
+            placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} ${getIntlContent("SOUL.COMMON.TYPE")}`}
             onChange={this.searchTypeOnchange}
             style={{ width: 240 }}
           />&nbsp;&nbsp;
           <Input
             value={dictCode}
-            placeholder={getIntlContent("SOUL.AUTH.INPUT") +  " " + getIntlContent("SOUL.DIC.CODE")}
+            placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} ${getIntlContent("SOUL.DIC.CODE")}`}
             onChange={this.searchDictCodeOnchange}
             style={{ width: 240 }}
           />&nbsp;&nbsp;
           <Input
             value={dictName}
-            placeholder={getIntlContent("SOUL.AUTH.INPUT") +  " " + getIntlContent("SOUL.DIC.NAME")}
+            placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} ${getIntlContent("SOUL.DIC.NAME")}`}
             onChange={this.searchDictNameOnchange}
             style={{ width: 240 }}
           />
@@ -400,7 +403,7 @@ export default class SoulDict extends Component {
               style={{ marginLeft: 20 }}
               type="danger"
             >
-             {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
+              {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
             </Button>
           </Popconfirm>
           <Button
@@ -415,7 +418,7 @@ export default class SoulDict extends Component {
             type="primary"
             onClick={this.enableClick}
           >
-           {getIntlContent("SOUL.PLUGIN.BATCH")}
+            {getIntlContent("SOUL.PLUGIN.BATCH")}
           </Button>
 
         </div>
