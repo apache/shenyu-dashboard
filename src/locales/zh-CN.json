@@ -119,10 +119,29 @@
   "SOUL.AUTH.PHONE":"电话",
   "SOUL.AUTH.APPNAME":"应用名称",
   "SOUL.AUTH.RESOUCE.PATH":"资源路径",
-  "SOUL.AUTH.PATH.DESCRIBE":"路径描述"
-
-
-
-
+  "SOUL.AUTH.PATH.DESCRIBE":"路径描述",
+  "SOUL.AUTH.OPERATPATH":"路径操作",
+  "SOUL.AUTH.SELECT.APP":"请选择 应用名称",
+  "SOUL.AUTH.ADD":"添加",
+  "SOUL.AUTH.TEL":"手机号",
+  "SOUL.AUTH.ENCRYPTKEY":"加密秘钥",
+  "SOUL.AUTH.APPID":"应用标识",
+  "SOUL.AUTH.APPPASSWORD":"应用密码",
+  "SOUL.AUTH.INPUTUSERID":"请输入用户ID",
+  "SOUL.AUTH.INPUTEXPANDINFO":"请输入扩展信息",
+  "SOUL.META.PAGE.QUERY":"分页查询",
+  "SOUL.META.EXPAND.PARAMS":"拓展参数",
+  "SOUL.META.FUNC.NAME":"方法名称",
+  "SOUL.META.SERVER.INTER":"服务接口",
+  "SOUL.META.PATH":"路径",
+  "SOUL.META.SELECTRPCTYPE":"请选择Rpc类型",
+  "SOUL.META.INPUTSERVICEINTERFACE":"请输入服务接口",
+  "SOUL.META.DATA":"元数据",
+  "SOUL.DIC.CODE":"字典编码",
+  "SOUL.DIC.NAME":"字典名称",
+  "SOUL.DIC.TYPE":"字典类型",
+  "SOUL.DIC.VALUE":"字典值",
+  "SOUL.DIC.DESCRIBE":"字典描述或备注",
+  "SOUL.DIC":"字典"
 
 }

@@ -238,7 +238,7 @@ class AddTable extends Component {
               <Input placeholder="phone" />
             )}
           </FormItem>
-          <FormItem label={"app" + getIntlContent("SOUL.AUTH.PARAMS")} {...formItemLayout}>
+          <FormItem label={"App " + getIntlContent("SOUL.AUTH.PARAMS")} {...formItemLayout}>
             {getFieldDecorator("appParam", {
               rules: [{
                 required: true,

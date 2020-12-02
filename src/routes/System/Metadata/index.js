@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
+import { getIntlContent } from "../../../utils/IntlUtils";
+import { emit } from '../../../utils/emit'
 
 @connect(({ metadata, loading }) => ({
   metadata,
@@ -14,10 +16,18 @@ export default class Metadata extends Component {
       currentPage: 1,
       selectedRowKeys: [],
       appName: "",
-      popup: ""
+      popup: "",
+      localeName:''
     };
   }
-
+  changeLocale(locale){
+    this.setState({
+      localeName: locale
+    })
+  }
+  componentDidMount(){
+    emit.on('change_language', lang => this.changeLocale(lang))
+  }
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllMetadata(currentPage);
@@ -233,77 +243,77 @@ export default class Metadata extends Component {
     const userColumns = [
       {
         align: "center",
-        title: "应用名称",
+        title: getIntlContent("SOUL.AUTH.APPNAME"),
         dataIndex: "appName",
         key: "appName",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "路径",
+        title: getIntlContent("SOUL.META.PATH"),
         dataIndex: "path",
         key: "path",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "服务接口",
+        title: getIntlContent("SOUL.META.SERVER.INTER"),
         dataIndex: "serviceName",
         key: "serviceName",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "方法名称",
+        title: getIntlContent("SOUL.META.FUNC.NAME"),
         dataIndex: "methodName",
         key: "methodName",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "参数类型",
+        title: getIntlContent("SOUL.AUTH.PARAMS") + getIntlContent("SOUL.COMMON.TYPE"),
         dataIndex: "parameterTypes",
         key: "parameterTypes",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "rpc类型",
+        title: 'Rpc' + getIntlContent("SOUL.COMMON.TYPE"),
         dataIndex: "rpcType",
         key: "rpcType",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "rpc扩展参数",
+        title: 'Rpc' + getIntlContent("SOUL.META.EXPAND.PARAMS"),
         dataIndex: "rpcExt",
         key: "rpcExt",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "路径描述",
+        title: getIntlContent("SOUL.AUTH.PATH.DESCRIBE"),
         dataIndex: "pathDesc",
         key: "pathDesc",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "状态",
+        title: getIntlContent("SOUL.SYSTEM.STATUS"),
         dataIndex: "enabled",
         key: "enabled",
         ellipsis:true,
         render: text => {
           if (text) {
-            return <div className="open">开启</div>;
+            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
           } else {
-            return <div className="close">关闭</div>;
+            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
           }
         }
       },
       {
         align: "center",
-        title: "操作",
+        title: getIntlContent("SOUL.COMMON.OPERAT"),
         ellipsis:true,
         dataIndex: "operate",
         key: "operate",
@@ -315,7 +325,7 @@ export default class Metadata extends Component {
                 this.editClick(record);
               }}
             >
-              编辑
+              {getIntlContent("SOUL.SYSTEM.EDITOR")}
             </div>
           );
         }
@@ -333,7 +343,7 @@ export default class Metadata extends Component {
           <Input
             value={appName}
             onChange={this.searchOnchange}
-            placeholder="请输入appName"
+            placeholder={getIntlContent("SOUL.AUTH.INPUT")+" AppName"}
             style={{ width: 240 }}
           />
           <Button
@@ -341,22 +351,22 @@ export default class Metadata extends Component {
             type="primary"
             onClick={this.searchClick}
           >
-            分页查询
+            {getIntlContent("SOUL.META.PAGE.QUERY")}
           </Button>
           <Popconfirm
-            title="你确认删除吗"
+            title={getIntlContent("SOUL.COMMON.DELETE")}
             placement='bottom'
             onConfirm={() => {
               this.deleteClick()
             }}
-            okText="确认"
-            cancelText="取消"
+            okText={getIntlContent("SOUL.COMMON.SURE")}
+            cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
           >
             <Button
               style={{ marginLeft: 20 }}
               type="danger"
             >
-              删除勾选数据
+              {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
             </Button>
           </Popconfirm>
           <Button
@@ -364,23 +374,22 @@ export default class Metadata extends Component {
             type="primary"
             onClick={this.addClick}
           >
-            创建
+            {getIntlContent("SOUL.COMMON.ADD")}
           </Button>
           <Button
             style={{ marginLeft: 20 }}
             type="primary"
             onClick={this.enableClick}
           >
-            批量启用或禁用
+            {getIntlContent("SOUL.PLUGIN.BATCH")}
           </Button>
           <Button
             style={{ marginLeft: 20 }}
             type="primary"
             onClick={this.syncData}
           >
-            同步数据
+            {getIntlContent("SOUL.AUTH.SYNCDATA")}
           </Button>
-
         </div>
 
         <Table

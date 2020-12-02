@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Modal, Form, Input, Switch } from 'antd';
 
 import { connect } from "dva";
+import { getIntlContent } from '../../../utils/IntlUtils';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -37,83 +38,83 @@ class AddModal extends Component {
       <Modal
         width={450}
         centered
-        title="字典"
+        title={getIntlContent("SOUL.DIC")}
         visible
-        okText="确定"
-        cancelText="取消"
+        okText={getIntlContent("SOUL.COMMON.SURE")}
+        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem
-            label="字典类型"
+            label={getIntlContent("SOUL.DIC.TYPE")}
             {...formItemLayout}
           >
             {getFieldDecorator('type', {
-              rules: [{ required: true, message: '请输入字典类型' }],
+              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + " " + getIntlContent("SOUL.DIC.TYPE") }],
               initialValue: type,
             })(
-              <Input placeholder="字典类型" />
+              <Input placeholder={getIntlContent("SOUL.DIC.TYPE")} />
             )}
           </FormItem>
 
           <FormItem
-            label="字典编码"
+            label={getIntlContent("SOUL.DIC.CODE")}
             {...formItemLayout}
           >
             {getFieldDecorator('dictCode', {
-              rules: [{ required: true, message: '请输入字典编码' }],
+              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + " " + getIntlContent("SOUL.DIC.CODE") }],
               initialValue: dictCode,
             })(
-              <Input placeholder="字典编码" />
+              <Input placeholder={getIntlContent("SOUL.DIC.CODE")} />
             )}
           </FormItem>
           <FormItem
-            label="字典名称"
+            label={getIntlContent("SOUL.DIC.NAME")}
             {...formItemLayout}
           >
             {getFieldDecorator('dictName', {
-              rules: [{ required: true, message: '请输入字典名称' }],
+              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + " " + getIntlContent("SOUL.DIC.NAME") }],
               initialValue: dictName,
             })(
-              <Input placeholder="字典名称" />
+              <Input placeholder={getIntlContent("SOUL.DIC.NAME")} />
             )}
           </FormItem>
           <FormItem
-            label="字典值"
+            label={getIntlContent("SOUL.DIC.VALUE")}
             {...formItemLayout}
           >
             {getFieldDecorator('dictValue', {
-              rules: [{ required: true, message: '请输入字典值' }],
+              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") +" " + getIntlContent("SOUL.DIC.VALUE") }],
               initialValue: dictValue,
             })(
-              <Input placeholder="字典值" />
+              <Input placeholder={getIntlContent("SOUL.DIC.VALUE")} />
             )}
           </FormItem>
           <FormItem
-            label="字典描述或备注"
+            label={getIntlContent("SOUL.DIC.DESCRIBE")}
             {...formItemLayout}
           >
             {getFieldDecorator('desc', {
               initialValue: desc,
             })(
-              <TextArea placeholder="字典描述或备注" rows={3} />
+              <TextArea placeholder={getIntlContent("SOUL.DIC.DESCRIBE")} rows={3} />
             )}
           </FormItem>
           <FormItem
-            label="排序"
+            label={getIntlContent("SOUL.PLUGIN.SORT")}
             {...formItemLayout}
           >
             {getFieldDecorator('sort', {
               rules: [
                 {
                   required: true,
-                  message: "请输入排序"
+                  message: getIntlContent("SOUL.AUTH.INPUT")+ " " + getIntlContent("SOUL.PLUGIN.SORT")
                 }
               ],
               initialValue: sort,
             })(
-              <Input placeholder="排序" type="number" />
+              <Input placeholder={getIntlContent("SOUL.PLUGIN.SORT")} type="number" />
             )}
           </FormItem>
           {/* 状态 */}
@@ -121,7 +122,7 @@ class AddModal extends Component {
           (
             <FormItem
               {...formItemLayout}
-              label="状态"
+              label={getIntlContent("SOUL.SYSTEM.STATUS")}
             >
               {getFieldDecorator('enabled', {
               initialValue: enabled,
