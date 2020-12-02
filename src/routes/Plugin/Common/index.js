@@ -430,7 +430,7 @@ export default class Common extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.COMMON.UPDATETIME"),
+        title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated"
       },

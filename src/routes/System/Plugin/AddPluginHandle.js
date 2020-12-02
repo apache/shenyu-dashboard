@@ -83,7 +83,7 @@ class AddPluginHandle extends Component {
               initialValue: `${type}` || undefined,
             })(
               <Select>
-                <Option key="1" value="1">{getIntlContent("SOUL.PLUGIN.SELECTOR")}</Option>
+                <Option key="1" value="1">{getIntlContent("SOUL.SELECTOR.NAME")}</Option>
                 <Option key="2" value="2">{getIntlContent("SOUL.PLUGIN.RULES")}</Option>
               </Select>
             )}

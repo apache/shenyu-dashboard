@@ -329,7 +329,7 @@ export default class Rewrite extends Component {
                   this.editSelector(record);
                 }}
               >
-                修改
+                {getIntlContent("SOUL.COMMON.CHANGE")} 
               </span>
               <Popconfirm
                 title={getIntlContent("SOUL.COMMON.DELETE")}
@@ -381,7 +381,7 @@ export default class Rewrite extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.COMMON.UPDATETIME"),
+        title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated"
       },
@@ -401,7 +401,7 @@ export default class Rewrite extends Component {
                   this.editRule(record);
                 }}
               >
-                修改
+                {getIntlContent("SOUL.COMMON.CHANGE")} 
               </span>
               <Popconfirm
                 title={getIntlContent("SOUL.COMMON.DELETE")}

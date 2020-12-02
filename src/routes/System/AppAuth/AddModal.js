@@ -88,36 +88,37 @@ class AddModal extends Component {
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label="appKey" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.AUTH.APPID")} {...formItemLayout}>
             {getFieldDecorator("appKey", {
               rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") +" appKey" }],
               initialValue: appKey
-            })(<Input placeholder="appKey" />)}
+            })(<Input placeholder={getIntlContent("SOUL.AUTH.INPUT")+ " AppKey"} />)}
           </FormItem>
-          <FormItem label="appSecret" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.AUTH.APPPASSWORD")} {...formItemLayout}>
             {getFieldDecorator("appSecret", {
               rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + "appSecret" }],
               initialValue: appSecret
-            })(<Input placeholder="appSecret" />)}
+            })(<Input placeholder={getIntlContent("SOUL.AUTH.INPUT") + " AppSecret"} />)}
           </FormItem>
-          <FormItem label="userId" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.SYSTEM.USER")+" Id"} {...formItemLayout}>
             {getFieldDecorator("userId", {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + " userId" }],
+              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUTUSERID")}],
               initialValue: userId
-            })(<Input placeholder="userId" />)}
+            })(<Input placeholder={getIntlContent("SOUL.AUTH.INPUTUSERID")} />)}
           </FormItem>
-          <FormItem label="phone" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.AUTH.TEL")} {...formItemLayout}>
             {getFieldDecorator("phone", {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") +  " phone" }],
+              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.TELPHONE")}],
               initialValue: phone
-            })(<Input placeholder="phone" />)}
+            })(<Input placeholder={getIntlContent("SOUL.AUTH.TELPHONE")}/>)}
           </FormItem>
-          <FormItem label="extInfo" {...formItemLayout}>
+          <FormItem label="扩展信息" {...formItemLayout}>
             {getFieldDecorator("extInfo", {
-              rules: [{  message: getIntlContent("SOUL.AUTH.INPUT") + "extInfo" }],
+              rules: [{  message: getIntlContent("SOUL.AUTH.EXPANDINFO") }],
               initialValue: extInfo
-            })(<TextArea placeholder="extInfo" rows={3} />)}
+            })(<TextArea placeholder={getIntlContent("SOUL.AUTH.INPUTEXPANDINFO")} rows={3} />)}
           </FormItem>
+
           {/* 添加删除行 */}
           <div className={styles.condition}>
             {/* 输入框左侧标题
@@ -130,7 +131,7 @@ class AddModal extends Component {
                   return (
                     <ul key={index}>
                       <li>
-                        <div className={styles.title}>appName:</div>
+                        <div className={styles.title}>{getIntlContent("SOUL.AUTH.APPNAME")}:</div>
                       </li>
                       <li>
                         <Input
@@ -140,7 +141,7 @@ class AddModal extends Component {
                         />
                       </li>
                       <li>
-                        <div className={styles.title}>appParam:</div>
+                        <div className={styles.title}>{getIntlContent("SOUL.AUTH.PARAMS")}:</div>
                       </li>
                       <li>
                         <TextArea

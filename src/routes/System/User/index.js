@@ -183,13 +183,15 @@ export default class Manage extends Component {
         align: "center",
         title: getIntlContent("SOUL.SYSTEM.USERNAME"),
         dataIndex: "userName",
-        key: "userName"
+        key: "userName",
+        ellipsis:true,
       },
       {
         align: "center",
         title: getIntlContent("SOUL.SYSTEM.STATUS"),
         dataIndex: "enabled",
         key: "enabled",
+        ellipsis:true,
         render: text => {
           if (text) {
             return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
@@ -202,19 +204,22 @@ export default class Manage extends Component {
         align: "center",
         title: getIntlContent("SOUL.SYSTEM.CREATETIME"),
         dataIndex: "dateCreated",
-        key: "dateCreated"
+        key: "dateCreated",
+        ellipsis:true,
       },
       {
         align: "center",
         title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
         dataIndex: "dateUpdated",
-        key: "dateUpdated"
+        key: "dateUpdated",
+        ellipsis:true,
       },
       {
         align: "center",
         title: getIntlContent("SOUL.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
+        ellipsis:true,
         render: (text, record) => {
           return (
             <div

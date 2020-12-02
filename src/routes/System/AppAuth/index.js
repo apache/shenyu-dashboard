@@ -321,27 +321,31 @@ export default class Auth extends Component {
     const authColumns = [
       {
         align: "center",
-        title: "appkey",
+        title: "appKey",
         dataIndex: "appKey",
-        key: "appKey"
+        key: "appKey",
+        ellipsis:true,
       },
       {
         align: "center",
-        title: "appSecret",
+        title: getIntlContent("SOUL.AUTH.ENCRYPTKEY"),
         dataIndex: "appSecret",
-        key: "appSecret"
+        key: "appSecret",
+        ellipsis:true,
       },
       {
         align: "center",
-        title: "userId",
+        title: getIntlContent("SOUL.SYSTEM.USER")+" Id",
         dataIndex: "userId",
-        key: "userId"
+        key: "userId",
+        ellipsis:true,
       },
       {
         align: "center",
-        title: "phone",
+        title: getIntlContent("SOUL.AUTH.TEL"),
         dataIndex: "phone",
-        key: "phone"
+        key: "phone",
+        ellipsis:true,
       },
 
       {
@@ -349,6 +353,7 @@ export default class Auth extends Component {
         title: getIntlContent("SOUL.SYSTEM.STATUS"),
         dataIndex: "enabled",
         key: "enabled",
+        ellipsis:true,
         render: text => {
           if (text) {
             return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
@@ -368,13 +373,15 @@ export default class Auth extends Component {
         title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
         dataIndex: "dateUpdated",
         render: dateUpdated => dayjs(dateUpdated).format('YYYY-MM-DD HH:mm:ss' ),
-        key: "dateUpdated"
+        key: "dateUpdated",
+        ellipsis:true,
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.COMMON.OPERAT")+' 1',
+        title: getIntlContent("SOUL.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
+        ellipsis:true,
         render: (text, record) => {
           return (
             // 弹窗中的编辑事件
@@ -391,9 +398,10 @@ export default class Auth extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.COMMON.OPERAT")+' 2',
+        title: getIntlContent("SOUL.AUTH.OPERATPATH"),
         dataIndex: "operates",
         key: "operates",
+        ellipsis:true,
         render: (text, record) => {
           return (
             // 弹窗中的编辑事件

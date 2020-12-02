@@ -254,13 +254,13 @@ export default class Plugin extends Component {
         title: getIntlContent("SOUL.PLUGIN.PLUGIN.NAME"),
         dataIndex: "name",
         key: "name",
-        width: 200
+        ellipsis:true,
       },
       {
         align: "center",
         title: getIntlContent("SOUL.SYSTEM.ROLE"),
         dataIndex: "role",
-        width: 200,
+        ellipsis:true,
         key: "role",
         render: (text) => {
           const map = {
@@ -274,28 +274,29 @@ export default class Plugin extends Component {
         align: "center",
         title: getIntlContent("SOUL.COMMON.SETTING"),
         dataIndex: "config",
-        key: "config"
+        key: "config",
+        ellipsis:true,
       },
       {
         align: "center",
         title: getIntlContent("SOUL.SYSTEM.CREATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated",
-        width: 160
+        ellipsis:true,
       },
       {
         align: "center",
         title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
         dataIndex: "dateUpdated",
         key: "dateUpdated",
-        width: 160
+        ellipsis:true,
       },
       {
         align: "center",
         title: getIntlContent("SOUL.SYSTEM.STATUS"),
         dataIndex: "enabled",
         key: "enabled",
-        width: 150,
+        ellipsis:true,
         render: text => {
           if (text) {
             return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
@@ -309,7 +310,7 @@ export default class Plugin extends Component {
         title: getIntlContent("SOUL.COMMON.OPERAT"),
         dataIndex: "time",
         key: "time",
-        width: 300,
+        ellipsis:true,
         render: (text, record) => {
           return (
             <div>

@@ -271,48 +271,48 @@ export default class SoulDict extends Component {
         title: "字典类型",
         dataIndex: "type",
         key: "type",
-        width: 120
+        ellipsis:true,
       },
       {
         align: "center",
         title: "字典编码",
         dataIndex: "dictCode",
         key: "dictCode",
-        width: 150
+        ellipsis:true,
       },
       {
         align: "center",
         title: "字典名称",
         dataIndex: "dictName",
         key: "dictName",
-        width: 200
+        ellipsis:true,
       },
       {
         align: "center",
         title: "字典值",
         dataIndex: "dictValue",
         key: "dictValue",
-        width: 150
+        ellipsis:true,
       },
       {
         align: "center",
         title: "字典描述或备注",
         dataIndex: "desc",
         key: "desc",
-        width: 120
+        ellipsis:true,
       },
       {
         align: "center",
         title: "排序",
         dataIndex: "sort",
         key: "sort",
-        width: 120
+        ellipsis:true,
       },
       {
         align: "center",
         title: "状态",
         dataIndex: "enabled",
-        width: 90,
+        ellipsis:true,
         key: "enabled",
         render: text => {
           if (text) {
@@ -325,7 +325,7 @@ export default class SoulDict extends Component {
       {
         align: "center",
         title: "操作",
-        width: 90,
+        ellipsis:true,
         dataIndex: "operate",
         key: "operate",
         render: (text, record) => {

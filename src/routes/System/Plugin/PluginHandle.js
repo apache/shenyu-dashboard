@@ -211,21 +211,21 @@ export default class PluginHandle extends Component {
         title: getIntlContent("SOUL.PLUGIN.FIELDNAME"),
         dataIndex: "field",
         key: "field",
-        width: 200
+        ellipsis:true,
       },
       {
         align: "center",
         title: getIntlContent("SOUL.PLUGIN.LABEL"),
         dataIndex: "label",
         key: "label",
-        width: 200
+        ellipsis:true,
       },
       {
         align: "center",
         title: getIntlContent("SOUL.PLUGIN.DATATYPE"),
         dataIndex: "dataType",
         key: "dataType",
-        width: 200,
+        ellipsis:true,
         render: text => {
           if (text === 1) {
             return <div>{getIntlContent("SOUL.PLUGIN.DIGITAL")}</div>;
@@ -242,7 +242,7 @@ export default class PluginHandle extends Component {
         title: getIntlContent("SOUL.PLUGIN.FIELDTYPE"),
         dataIndex: "type",
         key: "type",
-        width: 200,
+        ellipsis:true,
         render: text => {
           if (text === 1) {
             return <div>{getIntlContent("SOUL.SELECTOR.NAME")}</div>;
@@ -256,21 +256,21 @@ export default class PluginHandle extends Component {
         title: getIntlContent("SOUL.PLUGIN.SORT"),
         dataIndex: "sort",
         key: "sort",
-        width: 160
+        ellipsis:true,
       },
       {
         align: "center",
         title: getIntlContent("SOUL.SYSTEM.CREATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated",
-        width: 160
+        ellipsis:true,
       },
       {
         align: "center",
         title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
         dataIndex: "dateUpdated",
         key: "dateUpdated",
-        width: 160
+        ellipsis:true,
       },
 
       {
@@ -278,7 +278,7 @@ export default class PluginHandle extends Component {
         title: getIntlContent("SOUL.COMMON.OPERAT"),
         dataIndex: "time",
         key: "time",
-        width: 300,
+        ellipsis:true,
         render: (text, record) => {
           return (
             <div>
