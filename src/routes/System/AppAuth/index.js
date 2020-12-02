@@ -311,28 +311,28 @@ export default class Auth extends Component {
     const authColumns = [
       {
         align: "center",
-        title: "appkey",
+        title: "appKey",
         dataIndex: "appKey",
         key: "appKey",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "appSecret",
+        title: "加密密钥",
         dataIndex: "appSecret",
         key: "appSecret",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "userId",
+        title: "用户Id",
         dataIndex: "userId",
         key: "userId",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "phone",
+        title: "手机号",
         dataIndex: "phone",
         key: "phone",
         ellipsis:true,
@@ -368,7 +368,7 @@ export default class Auth extends Component {
       },
       {
         align: "center",
-        title: "操作1",
+        title: "操作",
         dataIndex: "operate",
         key: "operate",
         ellipsis:true,
@@ -388,7 +388,7 @@ export default class Auth extends Component {
       },
       {
         align: "center",
-        title: "操作2",
+        title: "路径操作",
         dataIndex: "operates",
         key: "operates",
         ellipsis:true,
