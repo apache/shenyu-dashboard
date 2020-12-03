@@ -2,11 +2,7 @@ import React, { Component } from "react";
 import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
-<<<<<<< HEAD
-import { getIntlContent } from "../../../utils/IntlUtils";
-=======
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
 import { emit } from '../../../utils/emit'
 
 @connect(({ metadata, loading }) => ({
@@ -24,14 +20,7 @@ export default class Metadata extends Component {
       localeName:''
     };
   }
-  changeLocale(locale){
-    this.setState({
-      localeName: locale
-    })
-  }
-  componentDidMount(){
-    emit.on('change_language', lang => this.changeLocale(lang))
-  }
+
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllMetadata(currentPage);
@@ -286,33 +275,21 @@ export default class Metadata extends Component {
       },
       {
         align: "center",
-<<<<<<< HEAD
-        title: getIntlContent("SOUL.AUTH.PARAMS") + getIntlContent("SOUL.COMMON.TYPE"),
-=======
         title: `${getIntlContent("SOUL.AUTH.PARAMS")} ${getIntlContent("SOUL.COMMON.TYPE")}`,
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
         dataIndex: "parameterTypes",
         key: "parameterTypes",
         ellipsis:true,
       },
       {
         align: "center",
-<<<<<<< HEAD
-        title: 'Rpc' + getIntlContent("SOUL.COMMON.TYPE"),
-=======
         title: `Rpc ${getIntlContent("SOUL.COMMON.TYPE")}`,
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
         dataIndex: "rpcType",
         key: "rpcType",
         ellipsis:true,
       },
       {
         align: "center",
-<<<<<<< HEAD
-        title: 'Rpc' + getIntlContent("SOUL.META.EXPAND.PARAMS"),
-=======
         title: `Rpc ${getIntlContent("SOUL.META.EXPAND.PARAMS")}`,
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
         dataIndex: "rpcExt",
         key: "rpcExt",
         ellipsis:true,
@@ -370,11 +347,7 @@ export default class Metadata extends Component {
           <Input
             value={appName}
             onChange={this.searchOnchange}
-<<<<<<< HEAD
-            placeholder={getIntlContent("SOUL.AUTH.INPUT")+" AppName"}
-=======
             placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} AppName`}
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
             style={{ width: 240 }}
           />
           <Button

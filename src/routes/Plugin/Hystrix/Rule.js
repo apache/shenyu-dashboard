@@ -308,11 +308,7 @@ class AddModal extends Component {
         onCancel={onCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-<<<<<<< HEAD
-          <FormItem label={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")}x {...formItemLayout}>
-=======
           <FormItem label={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} {...formItemLayout}>
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
             {getFieldDecorator("name", {
               rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTNAME") }],
               initialValue: name
@@ -419,11 +415,7 @@ class AddModal extends Component {
             </div>
             <div>
               <Button onClick={this.handleAdd} type="primary">
-<<<<<<< HEAD
-              {getIntlContent("SOUL.COMMON.ADD")}
-=======
                 {getIntlContent("SOUL.COMMON.ADD")}
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               </Button>
             </div>
           </div>

@@ -2,11 +2,7 @@ import React, {Component} from "react";
 import {Table, Button, Popconfirm, message} from "antd";
 import {connect} from "dva";
 import AddPluginHandle from "./AddPluginHandle";
-<<<<<<< HEAD
-import { getIntlContent } from "../../../utils/IntlUtils";
-=======
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
 import { emit } from "../../../utils/emit";
 
 @connect(({pluginHandle, loading}) => ({
@@ -24,14 +20,7 @@ export default class PluginHandle extends Component {
       localeName:''
     };
   }
-  changeLocale(locale){
-    this.setState({
-      localeName:locale
-    })
-  }
-  componentDidMount(){
-    emit.on('change_language', lang => this.changeLocale(lang))
-  }
+
   componentWillMount() {
     let {currentPage} = this.state;
     this.getPluginHandlesByPluginId(currentPage);

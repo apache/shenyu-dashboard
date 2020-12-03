@@ -22,11 +22,7 @@ export default class Common extends Component {
       localeName:''
     };
   }
-  changeLocales(locale) {
-    this.setState({
-      localeName: locale
-    })
-  }
+
   componentDidMount() {
     emit.on('change_language', lang => this.changeLocales(lang))
     const { dispatch } = this.props;

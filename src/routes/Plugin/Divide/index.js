@@ -22,11 +22,6 @@ export default class Divide extends Component {
     };
   }
 
-  changeLocales(locale) {
-    this.setState({
-      localeName: locale
-    })
-  }
   componentDidMount() {
     emit.on('change_language', lang => this.changeLocales(lang))
     const { dispatch } = this.props;
@@ -348,11 +343,7 @@ export default class Divide extends Component {
                   this.editSelector(record);
                 }}
               >
-<<<<<<< HEAD
-               {getIntlContent("SOUL.COMMON.CHANGE")}
-=======
                 {getIntlContent("SOUL.COMMON.CHANGE")}
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               </span>
               <Popconfirm
                 title={getIntlContent("SOUL.COMMON.DELETE")}

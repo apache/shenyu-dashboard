@@ -2,14 +2,9 @@ import React, { Component } from "react";
 import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
-<<<<<<< HEAD
-import { getIntlContent } from "../../../utils/IntlUtils";
-import { emit } from '../../../utils/emit'
-=======
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import { emit } from '../../../utils/emit';
 
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
 @connect(({ manage, loading }) => ({
   manage,
   loading: loading.effects["manage/fetch"]
@@ -26,14 +21,6 @@ export default class Manage extends Component {
     };
   }
 
-  changeLocale(locale) {
-    this.setState({
-      localeName: locale
-    })
-  }
-  componentDidMount() {
-    emit.on('change_language', lang => this.changeLocale(lang))
-  }
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllUsers(currentPage);
@@ -286,11 +273,7 @@ export default class Manage extends Component {
               style={{ marginLeft: 20 }}
               type="danger"
             >
-<<<<<<< HEAD
-             {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
-=======
               {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
             </Button>
           </Popconfirm>
           <Button

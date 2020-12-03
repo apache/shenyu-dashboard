@@ -4,10 +4,7 @@ import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
 import { getIntlContent } from '../../../utils/IntlUtils'
-<<<<<<< HEAD
-=======
 
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
 @connect(({ rewrite, global, loading }) => ({
   ...global,
   ...rewrite,
@@ -22,10 +19,7 @@ export default class Rewrite extends Component {
       popup: "",
     };
   }
-<<<<<<< HEAD
-=======
 
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
@@ -337,11 +331,7 @@ export default class Rewrite extends Component {
                   this.editSelector(record);
                 }}
               >
-<<<<<<< HEAD
-                {getIntlContent("SOUL.COMMON.CHANGE")} 
-=======
                 {getIntlContent("SOUL.COMMON.CHANGE")}
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               </span>
               <Popconfirm
                 title={getIntlContent("SOUL.COMMON.DELETE")}
@@ -413,11 +403,7 @@ export default class Rewrite extends Component {
                   this.editRule(record);
                 }}
               >
-<<<<<<< HEAD
-                {getIntlContent("SOUL.COMMON.CHANGE")} 
-=======
                 {getIntlContent("SOUL.COMMON.CHANGE")}
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               </span>
               <Popconfirm
                 title={getIntlContent("SOUL.COMMON.DELETE")}
@@ -494,11 +480,7 @@ export default class Rewrite extends Component {
                 </Button>
               </div>
               <Button type="primary" onClick={this.addRule}>
-<<<<<<< HEAD
-                  {getIntlContent("SOUL.COMMON.ADD.RULE")}
-=======
                 {getIntlContent("SOUL.COMMON.ADD.RULE")}
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               </Button>
             </div>
             <Table

@@ -51,11 +51,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('type', {
-<<<<<<< HEAD
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + " " + getIntlContent("SOUL.DIC.TYPE") }],
-=======
               rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + " " + getIntlContent("SOUL.DIC.TYPE")` }],
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               initialValue: type,
             })(
               <Input placeholder={getIntlContent("SOUL.DIC.TYPE")} />
@@ -67,11 +63,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('dictCode', {
-<<<<<<< HEAD
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + " " + getIntlContent("SOUL.DIC.CODE") }],
-=======
               rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + " " + getIntlContent("SOUL.DIC.CODE")` }],
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               initialValue: dictCode,
             })(
               <Input placeholder={getIntlContent("SOUL.DIC.CODE")} />
@@ -82,11 +74,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('dictName', {
-<<<<<<< HEAD
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + " " + getIntlContent("SOUL.DIC.NAME") }],
-=======
               rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + " " + getIntlContent("SOUL.DIC.NAME")` }],
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               initialValue: dictName,
             })(
               <Input placeholder={getIntlContent("SOUL.DIC.NAME")} />
@@ -97,11 +85,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('dictValue', {
-<<<<<<< HEAD
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") +" " + getIntlContent("SOUL.DIC.VALUE") }],
-=======
               rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") +" " + getIntlContent("SOUL.DIC.VALUE")` }],
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               initialValue: dictValue,
             })(
               <Input placeholder={getIntlContent("SOUL.DIC.VALUE")} />
@@ -125,11 +109,7 @@ class AddModal extends Component {
               rules: [
                 {
                   required: true,
-<<<<<<< HEAD
-                  message: getIntlContent("SOUL.AUTH.INPUT")+ " " + getIntlContent("SOUL.PLUGIN.SORT")
-=======
                   message: `getIntlContent("SOUL.AUTH.INPUT")+ " " + getIntlContent("SOUL.PLUGIN.SORT")`
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
                 }
               ],
               initialValue: sort,

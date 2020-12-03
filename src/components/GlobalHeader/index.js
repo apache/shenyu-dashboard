@@ -39,6 +39,7 @@ export default class GlobalHeader extends PureComponent {
     }
     getCurrentLocale(this.state.localeName);
   }
+
   render() {
    const { onLogout } = this.props;
     return (

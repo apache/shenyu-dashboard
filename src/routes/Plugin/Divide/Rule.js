@@ -305,11 +305,7 @@ class AddModal extends Component {
             {getFieldDecorator("name", {
               rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTNAME") }],
               initialValue: name
-<<<<<<< HEAD
-            })(<Input placeholder={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")}/>)}
-=======
             })(<Input placeholder={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} />)}
->>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
           </FormItem>
           <FormItem label={getIntlContent("SOUL.COMMON.MATCHTYPE")} {...formItemLayout}>
             {getFieldDecorator("matchMode", {
