@@ -56,7 +56,11 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('appName', {
+<<<<<<< HEAD
               rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.APPNAME") }],
+=======
+              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.APPNAME")` }],
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               initialValue: appName,
             })(
               <Input placeholder={getIntlContent("SOUL.AUTH.APPNAME")} />
@@ -68,7 +72,11 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('methodName', {
+<<<<<<< HEAD
               rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.META.FUNC.NAME") }],
+=======
+              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.META.FUNC.NAME")` }],
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               initialValue: methodName,
             })(
               <Input placeholder={getIntlContent("SOUL.META.FUNC.NAME")} />
@@ -79,7 +87,11 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('path', {
+<<<<<<< HEAD
               rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.META.PATH") }],
+=======
+              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.META.PATH")` }],
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               initialValue: path,
             })(
               <Input placeholder={getIntlContent("SOUL.META.PATH")} />
@@ -90,13 +102,18 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('pathDesc', {
+<<<<<<< HEAD
               rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.PATH.DESCRIBE")}],
+=======
+              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.PATH.DESCRIBE")`}],
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               initialValue: pathDesc,
             })(
               <Input placeholder={getIntlContent("SOUL.AUTH.PATH.DESCRIBE")} />
             )}
           </FormItem>
           <FormItem
+<<<<<<< HEAD
             label={getIntlContent("SOUL.AUTH.PARAMS")+ getIntlContent("SOUL.COMMON.TYPE")}
             {...formItemLayout}
           >
@@ -116,6 +133,27 @@ class AddModal extends Component {
               initialValue: rpcExt,
             })(
               <TextArea placeholder={'Rpc' + getIntlContent( "SOUL.META.EXPAND.PARAMS")} rows={3} />
+=======
+            label={`${getIntlContent("SOUL.AUTH.PARAMS")} ${getIntlContent("SOUL.COMMON.TYPE")}`}
+            {...formItemLayout}
+          >
+            {getFieldDecorator('parameterTypes', {
+              rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")} ${getIntlContent("SOUL.AUTH.PARAMS")} ${getIntlContent("SOUL.COMMON.TYPE")}` }],
+              initialValue: parameterTypes,
+            })(
+              <Input placeholder={`${getIntlContent("SOUL.AUTH.PARAMS")} ${getIntlContent("SOUL.COMMON.TYPE")}`} />
+            )}
+          </FormItem>
+          <FormItem
+            label={`Rpc ${getIntlContent("SOUL.META.EXPAND.PARAMS")}`}
+            {...formItemLayout}
+          >
+            {getFieldDecorator('rpcExt', {
+              rules: [{ message: `${getIntlContent("SOUL.AUTH.INPUT")} Rpc ${getIntlContent("SOUL.META.EXPAND.PARAMS")}` }],
+              initialValue: rpcExt,
+            })(
+              <TextArea placeholder={`Rpc ${getIntlContent( "SOUL.META.EXPAND.PARAMS")}`} rows={3} />
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               // <Input placeholder="rpc扩展参数" />
             )}
           </FormItem>
@@ -132,7 +170,11 @@ class AddModal extends Component {
           </FormItem>
           {/* 下拉 */}
           <FormItem
+<<<<<<< HEAD
             label={'Rpc' + getIntlContent("SOUL.COMMON.TYPE")}
+=======
+            label={`Rpc ${getIntlContent("SOUL.COMMON.TYPE")}`}
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
             {...formItemLayout}
           >
             {getFieldDecorator('rpcType', {

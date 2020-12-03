@@ -3,8 +3,14 @@ import { Link } from 'dva/router';
 import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
+<<<<<<< HEAD
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { emit } from '../../../utils/emit'
+=======
+import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
+import { emit } from '../../../utils/emit';
+
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
 @connect(({ plugin, loading }) => ({
   plugin,
   loading: loading.effects["plugin/fetch"]
@@ -32,6 +38,10 @@ export default class Plugin extends Component {
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllPlugins(currentPage);
+  }
+
+  componentDidMount() {
+    emit.on('change_language', lang => this.changeLocale(lang))
   }
 
   onSelectChange = selectedRowKeys => {
@@ -243,6 +253,13 @@ export default class Plugin extends Component {
     this.props.history.push(`/plugin/handle/${record.id}`)
   }
 
+  changeLocale(locale) {
+    this.setState({
+      localeName: locale
+    });
+    getCurrentLocale(this.state.localeName);
+  }
+
   render() {
     const { plugin, loading } = this.props;
     const { pluginList, total } = plugin;
@@ -320,7 +337,11 @@ export default class Plugin extends Component {
                   this.editClick(record);
                 }}
               >
+<<<<<<< HEAD
                {getIntlContent("SOUL.SYSTEM.EDITOR")}
+=======
+                {getIntlContent("SOUL.SYSTEM.EDITOR")}
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               </div>
 
               <div
@@ -394,7 +415,11 @@ export default class Plugin extends Component {
             type="primary"
             onClick={this.enableClick}
           >
+<<<<<<< HEAD
            {getIntlContent("SOUL.PLUGIN.BATCH")}
+=======
+            {getIntlContent("SOUL.PLUGIN.BATCH")}
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
           </Button>
         </div>
 

@@ -90,6 +90,7 @@ class AddModal extends Component {
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem label={getIntlContent("SOUL.AUTH.APPID")} {...formItemLayout}>
             {getFieldDecorator("appKey", {
+<<<<<<< HEAD
               rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") +" appKey" }],
               initialValue: appKey
             })(<Input placeholder={getIntlContent("SOUL.AUTH.INPUT")+ " AppKey"} />)}
@@ -101,6 +102,19 @@ class AddModal extends Component {
             })(<Input placeholder={getIntlContent("SOUL.AUTH.INPUT") + " AppSecret"} />)}
           </FormItem>
           <FormItem label={getIntlContent("SOUL.SYSTEM.USER")+" Id"} {...formItemLayout}>
+=======
+              rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")} AppKey` }],
+              initialValue: appKey
+            })(<Input placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} AppKey`} />)}
+          </FormItem>
+          <FormItem label={getIntlContent("SOUL.AUTH.APPPASSWORD")} {...formItemLayout}>
+            {getFieldDecorator("appSecret", {
+              rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")} AppSecret` }],
+              initialValue: appSecret
+            })(<Input placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} AppSecret`} />)}
+          </FormItem>
+          <FormItem label={`${getIntlContent("SOUL.SYSTEM.USER")} Id`} {...formItemLayout}>
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
             {getFieldDecorator("userId", {
               rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUTUSERID")}],
               initialValue: userId
@@ -110,7 +124,11 @@ class AddModal extends Component {
             {getFieldDecorator("phone", {
               rules: [{ required: true, message: getIntlContent("SOUL.AUTH.TELPHONE")}],
               initialValue: phone
+<<<<<<< HEAD
             })(<Input placeholder={getIntlContent("SOUL.AUTH.TELPHONE")}/>)}
+=======
+            })(<Input placeholder={getIntlContent("SOUL.AUTH.TELPHONE")} />)}
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
           </FormItem>
           <FormItem label="扩展信息" {...formItemLayout}>
             {getFieldDecorator("extInfo", {
@@ -159,7 +177,11 @@ class AddModal extends Component {
                             this.handleDelete(index);
                           }}
                         >
+<<<<<<< HEAD
                         {getIntlContent( "SOUL.COMMON.DELETE.NAME")}
+=======
+                          {getIntlContent( "SOUL.COMMON.DELETE.NAME")}
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
                         </Button>
                       </li>
                     </ul>
@@ -168,7 +190,11 @@ class AddModal extends Component {
               }
             </div>
             <Button onClick={this.handleAdd} className={styles.btn} type="primary">
+<<<<<<< HEAD
              {getIntlContent("SOUL.COMMON.ADD")}
+=======
+              {getIntlContent("SOUL.COMMON.ADD")}
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
             </Button>
           </div>
 

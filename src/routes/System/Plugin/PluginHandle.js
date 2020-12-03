@@ -2,7 +2,11 @@ import React, {Component} from "react";
 import {Table, Button, Popconfirm, message} from "antd";
 import {connect} from "dva";
 import AddPluginHandle from "./AddPluginHandle";
+<<<<<<< HEAD
 import { getIntlContent } from "../../../utils/IntlUtils";
+=======
+import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
 import { emit } from "../../../utils/emit";
 
 @connect(({pluginHandle, loading}) => ({
@@ -33,6 +37,9 @@ export default class PluginHandle extends Component {
     this.getPluginHandlesByPluginId(currentPage);
   }
 
+  componentDidMount(){
+    emit.on('change_language', lang => this.changeLocale(lang))
+  }
 
   getPluginHandlesByPluginId = page => {
     const {dispatch} = this.props;
@@ -199,6 +206,13 @@ export default class PluginHandle extends Component {
       message.warn("请选择数据");
     }
   };
+
+  changeLocale(locale){
+    this.setState({
+      localeName:locale
+    });
+    getCurrentLocale(this.state.localeName);
+  }
 
   render() {
     const {pluginHandle, loading} = this.props;

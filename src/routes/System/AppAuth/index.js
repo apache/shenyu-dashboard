@@ -7,7 +7,11 @@ import RelateMetadata from "./RelateMetadata"
 import AddTable from "./AddTable"
 
 import SearchContent from "./SearchContent"
+<<<<<<< HEAD
 import { getIntlContent } from "../../../utils/IntlUtils";
+=======
+import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
 import {emit} from '../../../utils/emit'
 
 @connect(({ auth, loading }) => ({
@@ -37,6 +41,10 @@ export default class Auth extends Component {
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllAuths(currentPage);
+  }
+
+  componentDidMount(){
+    emit.on('change_language', lang => this.changeLocale(lang))
   }
 
   onSelectChange = selectedRowKeys => {
@@ -314,6 +322,13 @@ export default class Auth extends Component {
     })
   }
 
+  changeLocale(locale){
+    this.setState({
+      localeName: locale
+    });
+    getCurrentLocale(this.state.localeName);
+  }
+
   render() {
     const { auth, loading } = this.props;
     const { authList, total } = auth;
@@ -335,7 +350,11 @@ export default class Auth extends Component {
       },
       {
         align: "center",
+<<<<<<< HEAD
         title: getIntlContent("SOUL.SYSTEM.USER")+" Id",
+=======
+        title: `${getIntlContent("SOUL.SYSTEM.USER")} Id`,
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
         dataIndex: "userId",
         key: "userId",
         ellipsis:true,
@@ -391,7 +410,11 @@ export default class Auth extends Component {
                 this.editClick(record);
               }}
             >
+<<<<<<< HEAD
              {getIntlContent("SOUL.SYSTEM.EDITOR")}
+=======
+              {getIntlContent("SOUL.SYSTEM.EDITOR")}
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
             </div>
           );
         }
@@ -411,7 +434,11 @@ export default class Auth extends Component {
                 this.editClickMeta(record);
               }}
             >
+<<<<<<< HEAD
              {getIntlContent("SOUL.AUTH.EDITOR.RESOURCE")}
+=======
+              {getIntlContent("SOUL.AUTH.EDITOR.RESOURCE")}
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
             </div>
           );
         }
@@ -455,7 +482,11 @@ export default class Auth extends Component {
             type="primary"
             onClick={this.addClick}
           >
+<<<<<<< HEAD
            {getIntlContent("SOUL.SYSTEM.ADDDATA")}
+=======
+            {getIntlContent("SOUL.SYSTEM.ADDDATA")}
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
           </Button>
           {/* 批量启用或禁用按钮 */}
           <Button
@@ -471,7 +502,11 @@ export default class Auth extends Component {
             type="primary"
             onClick={this.syncData}
           >
+<<<<<<< HEAD
            {getIntlContent("SOUL.AUTH.SYNCDATA")}
+=======
+            {getIntlContent("SOUL.AUTH.SYNCDATA")}
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
           </Button>
         </div>
         {/* 表格 */}

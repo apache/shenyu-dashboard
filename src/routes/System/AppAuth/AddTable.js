@@ -1,5 +1,9 @@
 import React, {Component} from "react";
+<<<<<<< HEAD
 import { Modal, Form, Select, Input, Table, Button, Popconfirm } from 'antd';;
+=======
+import { Modal, Form, Select, Input, Table, Button, Popconfirm } from 'antd';
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;
@@ -232,27 +236,47 @@ class AddTable extends Component {
             {getFieldDecorator("phone", {
               rules: [{
                 required: true,
+<<<<<<< HEAD
                 message: getIntlContent("SOUL.AUTH.INPUT")+ " phone"
+=======
+                message: `${getIntlContent("SOUL.AUTH.INPUT")} Phone`
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               }],
             })(
               <Input placeholder="phone" />
             )}
           </FormItem>
+<<<<<<< HEAD
           <FormItem label={"App " + getIntlContent("SOUL.AUTH.PARAMS")} {...formItemLayout}>
             {getFieldDecorator("appParam", {
               rules: [{
                 required: true,
                 message: getIntlContent("SOUL.SYSTEM.USER")+ " AppParam"
+=======
+          <FormItem label={`App ${getIntlContent("SOUL.AUTH.PARAMS")}`} {...formItemLayout}>
+            {getFieldDecorator("appParam", {
+              rules: [{
+                required: true,
+                message: `${getIntlContent("SOUL.SYSTEM.USER")} AppParam`
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               }],
             })(
               <Input placeholder="appParam" />
             )}
           </FormItem>
+<<<<<<< HEAD
           <FormItem label={getIntlContent("SOUL.SYSTEM.USER") + " ID"} {...formItemLayout}>
             {getFieldDecorator("userId", {
               rules: [{
                 required: true,
                 message: getIntlContent("SOUL.AUTH.INPUT") + " userId"
+=======
+          <FormItem label={`${getIntlContent("SOUL.SYSTEM.USER")} ID`} {...formItemLayout}>
+            {getFieldDecorator("userId", {
+              rules: [{
+                required: true,
+                message: `${getIntlContent("SOUL.AUTH.INPUT")} UserId`
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               }],
             })(<Input placeholder="userId" />)}
           </FormItem>
@@ -260,7 +284,11 @@ class AddTable extends Component {
             {getFieldDecorator("extInfo", {
               rules: [{
                 required: true,
+<<<<<<< HEAD
                 message: getIntlContent("SOUL.AUTH.INPUT")+" extInfo"
+=======
+                message: `${getIntlContent("SOUL.AUTH.INPUT")} ExtInfo`
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
               }],
             })(<Input placeholder="extInfo" />)}
           </FormItem>

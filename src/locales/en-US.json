@@ -61,11 +61,16 @@
   "SOUL.HYSTRIX.TRIPPING.REQUEST.NUMBER":"Minimum Number Of Tripping Requests",
   "SOUL.HYSTRIX.LSOLATION.MODE":"Hystrix Isolation Mode",
   "SOUL.HYSTRIX.LSOLATION.SELECT":"Select Quarantine Mode",
+<<<<<<< HEAD
 
   "SOUL.SYSTEM.USER.NAME":"Input User Name",
   "SOUL.SYSTEM.USER.PASSWORD":"Input Password",
   "SOUL.SYSTEM.USER.NAME":"Input UserName",
   "SOUL.SYSTEM.USER.PASSWORD":"Input Password",
+=======
+  "SOUL.SYSTEM.USER.NAME":"Input User Name",
+  "SOUL.SYSTEM.USER.PASSWORD":"Input Password",
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
   "SOUL.SYSTEM.USER":"User",
   "SOUL.SYSTEM.PASSWORD":"Password",
   "SOUL.SYSTEM.ROLE":"Role",
@@ -81,7 +86,10 @@
   "SOUL.SYSTEM.EDITOR":"Editor",
   "SOUL.SYSTEM.CUSTOM":"Custom",
   "SOUL.SYSTEM.SYSTEM":"System",
+<<<<<<< HEAD
 
+=======
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
   "SOUL.PLUGIN.INPUTNAME":"Input Plugin Name",
   "SOUL.PLUGIN.SYNCALLDATA":"Synchronize All Data",
   "SOUL.PLUGIN.BATCH":"Batch Enable Or Disabled",
@@ -119,6 +127,7 @@
   "SOUL.AUTH.APPNAME":"App Name",
   "SOUL.AUTH.RESOUCE.PATH":"Resource Path",
   "SOUL.AUTH.PATH.DESCRIBE":"Path Describe",
+  "SOUL.AUTH.OPERATPATH":"Path Operation",
   "SOUL.AUTH.SELECT.APP":"Select App Name",
   "SOUL.AUTH.ADD":"Add",
   "SOUL.AUTH.TEL":"Tel",

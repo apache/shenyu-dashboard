@@ -340,7 +340,11 @@ class AddModal extends Component {
                 </div>
 
                 <Button onClick={this.handleAdd} type="primary">
+<<<<<<< HEAD
                 {getIntlContent("SOUL.COMMON.ADD")}
+=======
+                  {getIntlContent("SOUL.COMMON.ADD")}
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
                 </Button>
               </div>
             </Fragment>

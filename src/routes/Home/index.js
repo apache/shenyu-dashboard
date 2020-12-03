@@ -3,6 +3,9 @@ import { connect } from "dva";
 import styles from "./home.less";
 import { getIntlContent } from '../../utils/IntlUtils'
 import { emit } from "../../utils/emit";
+import { getCurrentLocale, getIntlContent } from '../../utils/IntlUtils'
+import { emit } from "../../utils/emit";
+
 @connect(({ global }) => ({
   global
 }))
@@ -14,11 +17,6 @@ export default class Home extends Component {
       localeName: ''
     }
   }
-  changeLocales(locale) {
-    this.setState({
-      localeName: locale
-    })
-  }
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -26,6 +24,14 @@ export default class Home extends Component {
       type: "global/fetchPlatform"
     });
     emit.on('change_language', lang => this.changeLocales(lang))
+  }
+
+  changeLocales(locale) {
+    this.setState({
+      localeName: locale
+    });
+    getCurrentLocale(this.state.localeName);
+
   }
   render() {
     return (

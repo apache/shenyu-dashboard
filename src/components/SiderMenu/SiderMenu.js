@@ -4,8 +4,14 @@ import pathToRegexp from 'path-to-regexp';
 import { Link } from 'dva/router';
 import styles from './index.less';
 import { urlToList } from '../_utils/pathTools';
+<<<<<<< HEAD
 import { getIntlContent } from '../../utils/IntlUtils'
 import { emit } from '../../utils/emit';
+=======
+import { getCurrentLocale, getIntlContent } from '../../utils/IntlUtils'
+import { emit } from '../../utils/emit'
+
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
 const { Sider } = Layout;
 const { SubMenu } = Menu;
 
@@ -63,6 +69,7 @@ export default class SiderMenu extends PureComponent {
     };
   }
 
+<<<<<<< HEAD
   /** 根据当前语言 修改 菜单 */
   updateMenuData() {
     if (this.props.menuData.length > 0) {
@@ -100,6 +107,12 @@ export default class SiderMenu extends PureComponent {
   componentDidMount() {
     emit.on('change_language', lang => this.changeLocales(lang));
   }
+=======
+  componentDidMount(){
+    emit.on('change_language', lang => this.changeLocale(lang))
+  }
+
+>>>>>>> 848b18d16733a27859c21045b8416a806a902d3e
   componentWillReceiveProps(nextProps) {
     const { location, menuData } = this.props;
     this.flatMenuKeys = getFlatMenuKeys(menuData);
@@ -264,6 +277,42 @@ export default class SiderMenu extends PureComponent {
     });
   };
 
+  /** 根据当前语言 修改 菜单 */
+  updateMenuData() {
+    if (this.props.menuData.length > 0) {
+      for ( let i = 0 ; i < this.props.menuData.length; i+=1) {
+        if(this.props.menuData[i].path === '/plug') {
+          this.props.menuData[i].name = getIntlContent("SOUL.MENU.PLUGIN.LIST");
+        } else if(this.props.menuData[i].path === '/system'){
+          this.props.menuData[i].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT");
+          if(this.props.menuData[i].children.length > 0) {
+            for(let j = 0; j < this.props.menuData[i].children.length; j+=1) {
+              const childrenPath = this.props.menuData[i].children[j].path;
+              if(childrenPath === '/system/manage') {
+                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.USER");
+              } else if(childrenPath === '/system/plugin') {
+                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.PLUGIN");
+              } else if(childrenPath === '/system/auth') {
+                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.AUTHEN");
+              } else if(childrenPath === '/system/metadata') {
+                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.METADATA");
+              } else if(childrenPath === '/system/dict') {
+                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.DICTIONARY");
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  changeLocale(locale) {
+    this.setState({
+      localeName: locale
+    });
+    getCurrentLocale(this.state.localeName);
+  }
+
   render() {
     this.updateMenuData();
     const { logo, menuData, collapsed, onCollapse } = this.props;
@@ -293,8 +342,7 @@ export default class SiderMenu extends PureComponent {
         <div className={styles.logo} key="logo">
           <Link to="/">
             <img src={logo} alt="logo" />
-              {/* <h1>"SOUL.SIDERMENU.LOGO"</h1> */}
-              <span>{getIntlContent("SOUL.SIDERMENU.LOGO")}</span>
+            <span>{getIntlContent("SOUL.SIDERMENU.LOGO")}</span>
           </Link>
         </div>
         <Menu
