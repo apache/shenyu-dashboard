@@ -1,22 +1,35 @@
-# Soul网关管理
+# Soul DashBoard
 
 ![build](https://github.com/dromara/soul-dashboard/workflows/build/badge.svg)
 
-### 开发环境
-  本地调试需要安装 node( 版本 > 8)
+### Overview
+Soul DashBoard is frontend of a management background for [soul](https://github.com/dromara/soul).
 
-  在根目录下 运行 `npm install` 安装 需要的开发包
+#### Soul Admin Backend
+soul-admin is a standard spring boot project。click [here](https://github.com/dromara/soul/tree/master/soul-admin) for more information;
 
-  本地调试 在 `index.ejs` 中配置 接口地址  例： http://192.168.1.100:8000
+### Prerequisite
+- node v8.0+
 
-  启动  在根目录下 运行 npm start
+### How Build
 
-### 线上环境 
+#### modify api url
 
-  运行 `npm run build` 进行打包
+modify the api url for different environment, eg: `http://192.168.1.100:8000`
 
-  在 `index.ejs`中 配置 线上地址  例如: http://192.168.1.160:5000
+#### develop environment
 
-### 后端服务API
+```shell
+# install dependencies in this project root path.
+npm install
 
-https://github.com/dromara/soul/tree/master/soul-admin/README.md
+# start
+npm start
+```
+
+#### production environment
+
+```shell
+# build for production
+npm run build
+```
