@@ -16,15 +16,15 @@ class AddPluginHandle extends Component {
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
 
-        let { field, label,dataType,type,sort} = values;
-        handleOk({ field, label, id, pluginId,dataType,type,sort });
+        let { field, label,dataType,type,sort,required,defaultValue} = values;
+        handleOk({ field, label, id, pluginId,dataType,type,sort,required,defaultValue});
       }
     });
   };
 
 
   render() {
-    let {handleCancel,  form, label="", field="", dataType ="1",type="2",sort=0 } = this.props;
+    let {handleCancel,  form, label="", field="", dataType ="1",type="2",sort=0,required=undefined,defaultValue=undefined } = this.props;
 
     const {getFieldDecorator} = form;
 
@@ -94,6 +94,25 @@ class AddPluginHandle extends Component {
               initialValue: sort,
             })(
               <Input placeholder="sort" type="number" />
+            )}
+          </FormItem>
+          <FormItem label={getIntlContent("SOUL.PLUGIN.REQUIRED")} {...formItemLayout}>
+            {getFieldDecorator("required", {
+              rules: [{required: false}],
+              initialValue: required,
+            })(
+              <Select placeholder="required">
+                <Option key="1" value="1">{getIntlContent("SOUL.COMMON.YES")}</Option>
+                <Option key="0" value="0">{getIntlContent("SOUL.COMMON.NO")}</Option>
+              </Select>
+            )}
+          </FormItem>
+          <FormItem label={getIntlContent("SOUL.PLUGIN.DEFAULTVALUE")} {...formItemLayout}>
+            {getFieldDecorator("defaultValue", {
+              rules: [{required: false}],
+              initialValue: defaultValue,
+            })(
+              <Input placeholder="defaultValue" />
             )}
           </FormItem>
         </Form>

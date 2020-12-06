@@ -59,13 +59,25 @@ export default class PluginHandle extends Component {
         id: record.id
       },
       callback: pluginHandle => {
+        let obj = JSON.parse(pluginHandle.extObj)
+        Object.assign(
+          pluginHandle,
+          obj
+        )
         this.setState({
           popup: (
             <AddPluginHandle
               disabled={true}
               {...pluginHandle}
               handleOk={values => {
-                const { field, label, id, pluginId,dataType,type,sort } = values;
+                const { field, label, id, pluginId,dataType,type,sort,required,defaultValue } = values;
+                let extObj
+                if(required || defaultValue){
+                  extObj=JSON.stringify({
+                    'required':required,
+                    'defaultValue':defaultValue
+                  })
+                }
                 dispatch({
                   type: "pluginHandle/update",
                   payload: {
@@ -75,7 +87,8 @@ export default class PluginHandle extends Component {
                     pluginId,
                     dataType,
                     type,
-                    sort
+                    sort,
+                    extObj
                   },
                   fetchValue: {
                     name: localPluginId,
@@ -115,7 +128,14 @@ export default class PluginHandle extends Component {
           pluginId={localPluginId}
           handleOk={values => {
             const {dispatch} = this.props;
-            const {pluginId, label, field, dataType,type,sort} = values;
+            const {pluginId, label, field, dataType,type,sort,required,defaultValue} = values;
+            let extObj
+            if(required || defaultValue){
+              extObj=JSON.stringify({
+                'required':required,
+                'defaultValue':defaultValue
+              })
+            }
             dispatch({
               type: "pluginHandle/add",
               payload: {
@@ -124,7 +144,8 @@ export default class PluginHandle extends Component {
                 field,
                 dataType,
                 type,
-                sort
+                sort,
+                extObj
               },
               fetchValue: {
                 pluginId: localPluginId,
@@ -207,6 +228,19 @@ export default class PluginHandle extends Component {
     const {pluginHandle, loading} = this.props;
     const {pluginHandleList, total} = pluginHandle;
     const {currentPage, selectedRowKeys, popup} = this.state;
+    if(pluginHandleList){
+      pluginHandleList.forEach(item=>{
+        if(item.extObj){
+          let obj = JSON.parse(item.extObj)
+          if(obj.required){
+            item.required = obj.required
+          }
+          if(obj.defaultValue){
+            item.defaultValue = obj.defaultValue
+          }
+        }
+      })
+    }
 
     const pluginColumns = [
       {
@@ -259,6 +293,27 @@ export default class PluginHandle extends Component {
         title: getIntlContent("SOUL.PLUGIN.SORT"),
         dataIndex: "sort",
         key: "sort",
+        ellipsis:true,
+      },
+      {
+        align: "center",
+        title: getIntlContent("SOUL.PLUGIN.REQUIRED"),
+        dataIndex: "required",
+        key: "required",
+        ellipsis:true,
+        render: text => {
+          if (text === "1") {
+            return <div>{getIntlContent("SOUL.COMMON.YES")}</div>;
+          } else if (text === "0") {
+            return <div>{getIntlContent("SOUL.COMMON.NO")}</div>;
+          }
+        }
+      },
+      {
+        align: "center",
+        title: getIntlContent("SOUL.PLUGIN.DEFAULTVALUE"),
+        dataIndex: "defaultValue",
+        key: "defaultValue",
         ellipsis:true,
       },
       {
