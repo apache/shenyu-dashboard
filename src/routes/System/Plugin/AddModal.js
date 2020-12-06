@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { Modal, Form, Switch, Input, Select, Divider } from "antd";
 import { connect } from "dva";
+import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -64,10 +65,10 @@ class AddModal extends Component {
       const reMaster = !!((ruleMaster === 'cluster' || ruleMaster === 'sentinel'))
       configWrap = (
         <Fragment>
-          <Divider>redis 配置</Divider>
-          <FormItem label="方式" {...formItemLayout}>
+          <Divider>redis {getIntlContent("SOUL.COMMON.SETTING")}</Divider>
+          <FormItem label={getIntlContent("SOUL.PLUGIN.WAY")} {...formItemLayout}>
             {getFieldDecorator("mode", {
-              rules: [{ required: true, message: "请选择方式" }],
+              rules: [{ required: true, message: getIntlContent("SOUL.PLUGIN.SELECT.WAY") }],
               initialValue: config.mode
             })(
               <Select>
@@ -83,27 +84,27 @@ class AddModal extends Component {
           </FormItem>
           <FormItem label="master" {...formItemLayout}>
             {getFieldDecorator("master", {
-              rules: reMaster ? [{ required: true, message: "请输入master" }] : [],
+              rules: reMaster ? [{ required: true, message: getIntlContent("SOUL.PLUGIN.INPUT.MASTER") }] : [],
               initialValue: config.master,
             })(
-              <Input placeholder="请输入master" />
+              <Input placeholder={getIntlContent("SOUL.PLUGIN.INPUT.MASTER")} />
             )}
           </FormItem>
 
           <FormItem label="URL" {...formItemLayout}>
             {getFieldDecorator("url", {
-              rules: [{ required: true, message: "请输入URL" }],
+              rules: [{ required: true, message: getIntlContent("SOUL.PLUGIN.INPUT.URL") }],
               initialValue: config.url,
             })(
-              <TextArea placeholder="请输入URL。如果是cluster 或者 sentinel 多个地址使用分号（;）分隔" rows={3} />
+              <TextArea placeholder={getIntlContent("SOUL.PLUGIN.INPUT")} rows={3} />
             )}
           </FormItem>
-          <FormItem label="密码" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.SYSTEM.PASSWORD")} {...formItemLayout}>
             {getFieldDecorator("password", {
               rules: [],
               initialValue: config.password,
             })(
-              <Input placeholder="请输入password" />
+              <Input placeholder={getIntlContent("SOUL.SYSTEM.USER.PASSWORD")} />
             )}
           </FormItem>
 
@@ -112,11 +113,11 @@ class AddModal extends Component {
       )
     } else {
       configWrap = (
-        <FormItem label="配置" {...formItemLayout}>
+        <FormItem label={getIntlContent("SOUL.COMMON.SETTING")} {...formItemLayout}>
           {getFieldDecorator("config", {
             initialValue: config
           })(
-            <TextArea placeholder="请输入配置" rows={4} />
+            <TextArea placeholder={getIntlContent("SOUL.PLUGIN.INPUTSETTING")} rows={4} />
           )}
         </FormItem>
       )
@@ -126,39 +127,39 @@ class AddModal extends Component {
       <Modal
         width={520}
         centered
-        title="插件"
+        title={getIntlContent("SOUL.PLUGIN")}
         visible
-        okText="确定"
-        cancelText="取消"
+        okText={getIntlContent("SOUL.COMMON.SURE")}
+        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label="插件" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.PLUGIN")} {...formItemLayout}>
             {getFieldDecorator("name", {
-              rules: [{ required: true, message: "请选择插件" }],
+              rules: [{ required: true, message: getIntlContent("SOUL.PLUGIN.SELECT") }],
               initialValue: name,
             })(
-              <Input placeholder="插件名" disabled={disable} />
+              <Input placeholder={getIntlContent("SOUL.PLUGIN.PLUGIN.NAME")} disabled={disable} />
             )}
           </FormItem>
           {configWrap}
           <FormItem
-            label="角色"
+            label={getIntlContent("SOUL.SYSTEM.ROLE")}
             {...formItemLayout}
           >
             {getFieldDecorator('role', {
-              rules: [{ required: true, message: '请选择角色' }],
+              rules: [{ required: true, message: getIntlContent("SOUL.SYSTEM.SELECTROLE") }],
               initialValue: `${role}`,
             })(
               <Select disabled>
-                <Option value="0">系统</Option>
-                <Option value="1">自定义</Option>
+                <Option value="0">{getIntlContent("SOUL.SYSTEM.SYSTEM")}</Option>
+                <Option value="1">{getIntlContent("SOUL.SYSTEM.CUSTOM")}</Option>
               </Select>
             )}
           </FormItem>
 
-          <FormItem {...formItemLayout} label="状态">
+          <FormItem {...formItemLayout} label={getIntlContent("SOUL.SYSTEM.STATUS")}>
             {getFieldDecorator("enabled", {
               initialValue: enabled,
               valuePropName: "checked"

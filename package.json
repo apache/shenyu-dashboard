@@ -20,6 +20,7 @@
     "prettier": "prettier --write ./src/**/**/**/*"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.3.0",
     "@babel/polyfill": "^7.0.0-beta.36",
     "antd": "^3.8.2",
     "classnames": "^2.2.5",
@@ -38,6 +39,7 @@
     "react-document-title": "^2.0.3",
     "react-dom": "^16.4.1",
     "react-fittext": "^1.0.0",
+    "react-intl-universal": "^2.4.2",
     "redux-logger": "^3.0.6",
     "setprototypeof": "^1.1.0",
     "url-polyfill": "^1.0.10"

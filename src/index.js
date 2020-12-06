@@ -5,10 +5,12 @@ import createHistory from 'history/createHashHistory';
 // user BrowserHistory
 // import createHistory from 'history/createBrowserHistory';
 import createLoading from 'dva-loading';
+import { initIntl } from './utils/IntlUtils'
 
 // import 'moment/locale/zh-cn';
 // import './rollbar';
 import './index.less';
+import { emit } from './utils/emit';
 
 const middlewares = [];
 // if (process.env.NODE_ENV === `development`) {
@@ -16,6 +18,16 @@ const middlewares = [];
 
 //   middlewares.push(logger);
 // }
+
+/** get session storage */
+if (window.sessionStorage.getItem('locale') === undefined || window.sessionStorage.getItem('locale') === null) {
+  initIntl('en-US');
+  window.sessionStorage.setItem('locale', 'en-US');
+} else {
+  initIntl(window.sessionStorage.getItem('locale'));
+}
+
+emit.on('change_language', lang => initIntl(lang));
 
 // 1. Initialize
 const app = dva({

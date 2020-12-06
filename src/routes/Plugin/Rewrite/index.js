@@ -3,27 +3,24 @@ import { Table, Row, Col, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
-import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
-import { emit } from "../../../utils/emit"
+import { getIntlContent } from '../../../utils/IntlUtils'
 
-@connect(({ divide, global, loading }) => ({
+@connect(({ rewrite, global, loading }) => ({
   ...global,
-  ...divide,
+  ...rewrite,
   loading: loading.effects["global/fetchPlatform"]
 }))
-export default class Divide extends Component {
+export default class Rewrite extends Component {
   constructor(props) {
     super(props);
     this.state = {
       selectorPage: 1,
       rulePage: 1,
       popup: "",
-      localeName:''
     };
   }
 
   componentDidMount() {
-    emit.on('change_language', lang => this.changeLocales(lang))
     const { dispatch } = this.props;
     dispatch({
       type: "global/fetchPlugins",
@@ -35,11 +32,11 @@ export default class Divide extends Component {
     })
   }
 
-  getAllSelectors = (page,plugins) => {
+  getAllSelectors = (page, plugins) => {
     const { dispatch } = this.props;
-    const pluginId = this.getPluginId(plugins, "divide");
+    const pluginId = this.getPluginId(plugins, "rewrite");
     dispatch({
-      type: "divide/fetchSelector",
+      type: "rewrite/fetchSelector",
       payload: {
         currentPage: page,
         pageSize: 12,
@@ -52,7 +49,7 @@ export default class Divide extends Component {
     const { dispatch, currentSelector } = this.props;
     const selectorId = currentSelector ? currentSelector.id : "";
     dispatch({
-      type: "divide/fetchRule",
+      type: "rewrite/fetchRule",
       payload: {
         selectorId,
         currentPage: page,
@@ -79,14 +76,14 @@ export default class Divide extends Component {
   addSelector = () => {
     const { selectorPage } = this.state;
     const { dispatch, plugins } = this.props;
-    const pluginId = this.getPluginId(plugins, "divide");
+    const pluginId = this.getPluginId(plugins, "rewrite");
     this.setState({
       popup: (
         <Selector
           pluginId={pluginId}
           handleOk={selector => {
             dispatch({
-              type: "divide/addSelector",
+              type: "rewrite/addSelector",
               payload: { pluginId, ...selector },
               fetchValue: { pluginId, currentPage: selectorPage, pageSize: 12 },
               callback: () => {
@@ -110,7 +107,7 @@ export default class Divide extends Component {
           <Rule
             handleOk={rule => {
               dispatch({
-                type: "divide/addRule",
+                type: "rewrite/addRule",
                 payload: { selectorId, ...rule },
                 fetchValue: {
                   selectorId,
@@ -132,15 +129,13 @@ export default class Divide extends Component {
     }
   };
 
-  // 打开编辑弹窗
-
   editSelector = record => {
     const { dispatch, plugins } = this.props;
     const { selectorPage } = this.state;
-    const pluginId = this.getPluginId(plugins, "divide");
+    const pluginId = this.getPluginId(plugins, "rewrite");
     const { id } = record;
     dispatch({
-      type: "divide/fetchSeItem",
+      type: "rewrite/fetchSeItem",
       payload: {
         id
       },
@@ -151,7 +146,7 @@ export default class Divide extends Component {
               {...selector}
               handleOk={values => {
                 dispatch({
-                  type: "divide/updateSelector",
+                  type: "rewrite/updateSelector",
                   payload: {
                     pluginId,
                     ...values,
@@ -178,9 +173,9 @@ export default class Divide extends Component {
   deleteSelector = record => {
     const { dispatch, plugins } = this.props;
     const { selectorPage } = this.state;
-    const pluginId = this.getPluginId(plugins, "divide");
+    const pluginId = this.getPluginId(plugins, "rewrite");
     dispatch({
-      type: "divide/deleteSelector",
+      type: "rewrite/deleteSelector",
       payload: {
         list: [record.id]
       },
@@ -208,13 +203,13 @@ export default class Divide extends Component {
     const { id } = record;
     const { dispatch } = this.props;
     dispatch({
-      type: "divide/saveCurrentSelector",
+      type: "rewrite/saveCurrentSelector",
       payload: {
         currentSelector: record
       }
     });
     dispatch({
-      type: "divide/fetchRule",
+      type: "rewrite/fetchRule",
       payload: {
         currentPage: 1,
         pageSize: 12,
@@ -229,7 +224,7 @@ export default class Divide extends Component {
     const selectorId = currentSelector ? currentSelector.id : "";
     const { id } = record;
     dispatch({
-      type: "divide/fetchRuleItem",
+      type: "rewrite/fetchRuleItem",
       payload: {
         id
       },
@@ -240,7 +235,7 @@ export default class Divide extends Component {
               {...rule}
               handleOk={values => {
                 dispatch({
-                  type: "divide/updateRule",
+                  type: "rewrite/updateRule",
                   payload: {
                     selectorId,
                     ...values,
@@ -268,7 +263,7 @@ export default class Divide extends Component {
     const { dispatch, currentSelector } = this.props;
     const { rulePage } = this.state;
     dispatch({
-      type: "divide/deleteRule",
+      type: "rewrite/deleteRule",
       payload: {
         list: [record.id]
       },
@@ -282,7 +277,7 @@ export default class Divide extends Component {
 
   asyncClick = () => {
     const { dispatch, plugins } = this.props;
-    const id = this.getPluginId(plugins, "divide");
+    const id = this.getPluginId(plugins, "rewrite");
     dispatch({
       type: "global/asyncPlugin",
       payload: {
@@ -290,13 +285,6 @@ export default class Divide extends Component {
       }
     });
   };
-
-  changeLocales(locale) {
-    this.setState({
-      localeName: locale
-    });
-    getCurrentLocale(this.state.localeName);
-  }
 
   render() {
     const { popup, selectorPage, rulePage } = this.state;
@@ -488,7 +476,7 @@ export default class Divide extends Component {
               <div style={{ display: "flex" }}>
                 <h3 style={{ marginRight: 30 }}>{getIntlContent("SOUL.PLUGIN.SELECTOR.RULE.LIST")}</h3>
                 <Button icon="reload" onClick={this.asyncClick} type="primary">
-                  {getIntlContent("SOUL.COMMON.SYN")} divide
+                  {getIntlContent("SOUL.COMMON.SYN")} rewrite
                 </Button>
               </div>
               <Button type="primary" onClick={this.addRule}>

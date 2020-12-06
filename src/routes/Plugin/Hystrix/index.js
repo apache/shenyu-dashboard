@@ -3,6 +3,8 @@ import { Table, Row, Col, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
+import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
+import { emit } from "../../../utils/emit";
 
 @connect(({ hystrix, global, loading }) => ({
   ...global,
@@ -15,11 +17,13 @@ export default class Hystrix extends Component {
     this.state = {
       selectorPage: 1,
       rulePage: 1,
-      popup: ""
+      popup: "",
+      localeName:''
     };
   }
 
   componentDidMount() {
+    emit.on('change_language', lang => this.changeLocales(lang))
     const { dispatch } = this.props;
 
     dispatch({
@@ -286,6 +290,13 @@ export default class Hystrix extends Component {
     });
   };
 
+  changeLocales(locale) {
+    this.setState({
+      localeName: locale
+    });
+    getCurrentLocale(this.state.localeName);
+  }
+
   render() {
     const { popup, selectorPage, rulePage } = this.state;
     const {
@@ -298,32 +309,30 @@ export default class Hystrix extends Component {
     const selectColumns = [
       {
         align: "center",
-        title: "名称",
+        title: getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME"),
         dataIndex: "name",
         key: "name"
       },
       {
         align: "center",
-        title: "开启",
+        title: getIntlContent("SOUL.COMMON.OPEN") ,
         dataIndex: "enabled",
         key: "enabled",
         render: text => {
           if (text) {
-            return <div className="open">开启</div>;
+            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
           } else {
-            return <div className="close">关闭</div>;
+            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
           }
         }
       },
       {
         align: "center",
-        title: "操作",
+        title: getIntlContent("SOUL.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
         render: (text, record) => {
           return (
-
-
             <div>
               <span
                 style={{ marginRight: 8 }}
@@ -333,10 +342,10 @@ export default class Hystrix extends Component {
                   this.editSelector(record);
                 }}
               >
-                修改
+                {getIntlContent("SOUL.COMMON.CHANGE")}
               </span>
               <Popconfirm
-                title="你确认删除吗"
+                title={getIntlContent("SOUL.COMMON.DELETE")}
                 placement='bottom'
                 onCancel={(e) => {
                   e.stopPropagation()
@@ -345,8 +354,8 @@ export default class Hystrix extends Component {
                   e.stopPropagation()
                   this.deleteSelector(record);
                 }}
-                okText="确认"
-                cancelText="取消"
+                okText={getIntlContent("SOUL.COMMON.SURE")}
+                cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
               >
                 <span
                   className="edit"
@@ -354,7 +363,7 @@ export default class Hystrix extends Component {
                     e.stopPropagation()
                   }}
                 >
-                  删除
+                  {getIntlContent("SOUL.COMMON.DELETE.NAME")}
                 </span>
               </Popconfirm>
             </div>
@@ -366,32 +375,32 @@ export default class Hystrix extends Component {
     const rulesColumns = [
       {
         align: "center",
-        title: "规则名称",
+        title: getIntlContent("SOUL.COMMON.RULE.NAME"),
         dataIndex: "name",
         key: "name"
       },
       {
         align: "center",
-        title: "开启",
+        title: getIntlContent("SOUL.COMMON.OPEN"),
         dataIndex: "enabled",
         key: "enabled",
         render: text => {
           if (text) {
-            return <div className="open">开启</div>;
+            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
           } else {
-            return <div className="close">关闭</div>;
+            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
           }
         }
       },
       {
         align: "center",
-        title: "更新时间",
+        title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated"
       },
       {
         align: "center",
-        title: "操作",
+        title: getIntlContent("SOUL.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
         render: (text, record) => {
@@ -405,11 +414,11 @@ export default class Hystrix extends Component {
                   this.editRule(record);
                 }}
               >
-                修改
+                {getIntlContent("SOUL.COMMON.CHANGE")}
               </span>
 
               <Popconfirm
-                title="你确认删除吗"
+                title={getIntlContent("SOUL.COMMON.DELETE")}
                 placement='bottom'
                 onCancel={(e) => {
                   e.stopPropagation()
@@ -418,8 +427,8 @@ export default class Hystrix extends Component {
                   e.stopPropagation()
                   this.deleteRule(record);
                 }}
-                okText="确认"
-                cancelText="取消"
+                okText={getIntlContent("SOUL.COMMON.SURE")}
+                cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
               >
                 <span
                   className="edit"
@@ -427,7 +436,7 @@ export default class Hystrix extends Component {
                     e.stopPropagation()
                   }}
                 >
-                  删除
+                  {getIntlContent("SOUL.COMMON.DELETE.NAME")}
                 </span>
               </Popconfirm>
 
@@ -442,9 +451,9 @@ export default class Hystrix extends Component {
         <Row gutter={20}>
           <Col span={8}>
             <div className="table-header">
-              <h3>选择器列表</h3>
+              <h3>{getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
               <Button type="primary" onClick={this.addSelector}>
-                添加选择器
+                {getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.ADD")}
               </Button>
             </div>
             <Table
@@ -478,14 +487,14 @@ export default class Hystrix extends Component {
           <Col span={16}>
             <div className="table-header">
               <div style={{ display: "flex" }}>
-                <h3 style={{ marginRight: 30 }}>选择器规则列表</h3>
+                <h3 style={{ marginRight: 30 }}>{getIntlContent("SOUL.PLUGIN.SELECTOR.RULE.LIST")}</h3>
                 <Button icon="reload" onClick={this.asyncClick} type="primary">
-                  同步hystrix
+                  {getIntlContent("SOUL.COMMON.SYN")} hystrix
                 </Button>
               </div>
 
               <Button type="primary" onClick={this.addRule}>
-                添加规则
+                {getIntlContent("SOUL.COMMON.ADD.RULE")}
               </Button>
             </div>
             <Table

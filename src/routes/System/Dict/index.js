@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import {Table, Input, Button, message, Popconfirm} from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
+import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
+import { emit } from '../../../utils/emit'
 
 @connect(({ soulDict, loading }) => ({
   soulDict,
@@ -16,13 +18,18 @@ export default class SoulDict extends Component {
       type: "",
       dictName: "",
       dictCode: "",
-      popup: ""
+      popup: "",
+      localeName:''
     };
   }
 
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllDict(currentPage);
+  }
+
+  componentDidMount(){
+    emit.on('change_language', lang => this.changeLocale(lang))
   }
 
   onSelectChange = selectedRowKeys => {
@@ -260,6 +267,13 @@ export default class SoulDict extends Component {
     }
   };
 
+  changeLocale(locale) {
+    this.setState({
+      localeName: locale
+    });
+    getCurrentLocale(this.state.localeName);
+  };
+
   render() {
     const { soulDict, loading } = this.props;
     const { soulDictList, total } = soulDict;
@@ -268,63 +282,63 @@ export default class SoulDict extends Component {
     const userColumns = [
       {
         align: "center",
-        title: "字典类型",
+        title: getIntlContent("SOUL.DIC.TYPE"),
         dataIndex: "type",
         key: "type",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "字典编码",
+        title: getIntlContent("SOUL.DIC.CODE"),
         dataIndex: "dictCode",
         key: "dictCode",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "字典名称",
+        title: getIntlContent("SOUL.DIC.NAME"),
         dataIndex: "dictName",
         key: "dictName",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "字典值",
+        title: getIntlContent("SOUL.DIC.VALUE"),
         dataIndex: "dictValue",
         key: "dictValue",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "字典描述或备注",
+        title: getIntlContent("SOUL.DIC.DESCRIBE"),
         dataIndex: "desc",
         key: "desc",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "排序",
+        title: getIntlContent("SOUL.PLUGIN.SORT"),
         dataIndex: "sort",
         key: "sort",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "状态",
+        title: getIntlContent("SOUL.SYSTEM.STATUS"),
         dataIndex: "enabled",
         ellipsis:true,
         key: "enabled",
         render: text => {
           if (text) {
-            return <div className="open">开启</div>;
+            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
           } else {
-            return <div className="close">关闭</div>;
+            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
           }
         }
       },
       {
         align: "center",
-        title: "操作",
+        title: getIntlContent("SOUL.COMMON.OPERAT"),
         ellipsis:true,
         dataIndex: "operate",
         key: "operate",
@@ -336,7 +350,7 @@ export default class SoulDict extends Component {
                 this.editClick(record);
               }}
             >
-              编辑
+              {getIntlContent("SOUL.SYSTEM.EDITOR")}
             </div>
           );
         }
@@ -353,19 +367,19 @@ export default class SoulDict extends Component {
         <div style={{ display: "flex" }}>
           <Input
             value={type}
-            placeholder="请输入类型"
+            placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} ${getIntlContent("SOUL.COMMON.TYPE")}`}
             onChange={this.searchTypeOnchange}
             style={{ width: 240 }}
           />&nbsp;&nbsp;
           <Input
             value={dictCode}
-            placeholder="请输入字典编码"
+            placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} ${getIntlContent("SOUL.DIC.CODE")}`}
             onChange={this.searchDictCodeOnchange}
             style={{ width: 240 }}
           />&nbsp;&nbsp;
           <Input
             value={dictName}
-            placeholder="请输入字典名称"
+            placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} ${getIntlContent("SOUL.DIC.NAME")}`}
             onChange={this.searchDictNameOnchange}
             style={{ width: 240 }}
           />
@@ -374,22 +388,22 @@ export default class SoulDict extends Component {
             type="primary"
             onClick={this.searchClick}
           >
-            分页查询
+            {getIntlContent("SOUL.META.PAGE.QUERY")}
           </Button>
           <Popconfirm
-            title="你确认删除吗"
+            title={getIntlContent("SOUL.COMMON.DELETE")}
             placement='bottom'
             onConfirm={() => {
               this.deleteClick()
             }}
-            okText="确认"
-            cancelText="取消"
+            okText={getIntlContent("SOUL.COMMON.SURE")}
+            cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
           >
             <Button
               style={{ marginLeft: 20 }}
               type="danger"
             >
-              删除勾选数据
+              {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
             </Button>
           </Popconfirm>
           <Button
@@ -397,14 +411,14 @@ export default class SoulDict extends Component {
             type="primary"
             onClick={this.addClick}
           >
-            创建
+            {getIntlContent("SOUL.COMMON.ADD")}
           </Button>
           <Button
             style={{ marginLeft: 20 }}
             type="primary"
             onClick={this.enableClick}
           >
-            批量启用或禁用
+            {getIntlContent("SOUL.PLUGIN.BATCH")}
           </Button>
 
         </div>

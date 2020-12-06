@@ -1,6 +1,7 @@
 import React from 'react';
 import { Input, Icon } from 'antd';
 import styles from './index.less';
+import { getIntlContent } from '../../utils/IntlUtils';
 
 const map = {
   UserName: {
@@ -13,7 +14,7 @@ const map = {
     rules: [
       {
         required: true,
-        message: '请输入用户名',
+        message: getIntlContent("SOUL.SYSTEM.USER.NAME"),
       },
     ],
   },
@@ -28,7 +29,7 @@ const map = {
     rules: [
       {
         required: true,
-        message: '请输入密码',
+        message: getIntlContent("SOUL.SYSTEM.USER.PASSWORD"),
       },
     ],
   },
