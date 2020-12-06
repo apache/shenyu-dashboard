@@ -17,10 +17,10 @@ soul-admin is a standard spring boot project。click [here](https://github.com/d
 ### Configuration
 
 modify the api url for different environment, eg: `http://192.168.1.100:8000`
-![index.ejs](./doc/img/index.ejs.png)
+![index.ejs](https://raw.githubusercontent.com/dromara/soul-dashboard/master/doc/img/index.ejs.png)
 
 
-### develop environment
+### Develop Environment
 
 ```shell
 # install dependencies in this project root path.
@@ -29,7 +29,7 @@ npm install
 npm start
 ```
 
-### production environment
+### Production Environment
 
 ```shell
 # install dependencies in this project root path.
@@ -40,12 +40,12 @@ npm run build
 
 ## Screenshot
 
-#### divide plugin
-![index](./doc/img/index.jpg)
+#### Divide Plugin
+![index](https://raw.githubusercontent.com/dromara/soul-dashboard/master/doc/img/index.jpg)
 
-#### add rules
-![add rules](./doc/img/add-rules.png)
+#### Add Rules
+![add rules](https://raw.githubusercontent.com/dromara/soul-dashboard/master/doc/img/add-rules.png)
 
 #### Plugin Management
-![Plugin Management](./doc/img/plugin-management.jpg)
+![Plugin Management](https://raw.githubusercontent.com/dromara/soul-dashboard/master/doc/img/plugin-management.jpg)
 
