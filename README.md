@@ -6,22 +6,8 @@
 ## Overview
 Soul DashBoard is frontend of a management background for [soul](https://github.com/dromara/soul).
 
-### ui
-
-#### divide plugin
-![index](./doc/img/index.jpg)
-
-#### add rules
-![add rules](./doc/img/add-rules.png)
-
-#### Plugin Management
-![Plugin Management](./doc/img/plugin-management.jpg)
-
 ### Soul Admin Backend
 soul-admin is a standard spring boot project。click [here](https://github.com/dromara/soul/tree/master/soul-admin) for more information;
-
-
-
 
 ## Prerequisite
 - node v8.0+
@@ -51,3 +37,15 @@ npm install
 # build for production
 npm run build
 ```
+
+## Screenshot
+
+#### divide plugin
+![index](./doc/img/index.jpg)
+
+#### add rules
+![add rules](./doc/img/add-rules.png)
+
+#### Plugin Management
+![Plugin Management](./doc/img/plugin-management.jpg)
+
