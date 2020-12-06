@@ -7,7 +7,7 @@
 Soul DashBoard is frontend of a management background for [soul](https://github.com/dromara/soul).
 
 ### Soul Admin Backend
-soul-admin is a standard spring boot project。click [here](https://github.com/dromara/soul/tree/master/soul-admin) for more information;
+soul-admin is a standard spring boot project,click [here](https://github.com/dromara/soul/tree/master/soul-admin) for more information.
 
 ## Prerequisite
 - node v8.0+
