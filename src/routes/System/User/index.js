@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
+import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
+import { emit } from '../../../utils/emit';
 
 @connect(({ manage, loading }) => ({
   manage,
@@ -14,13 +16,18 @@ export default class Manage extends Component {
       currentPage: 1,
       selectedRowKeys: [],
       userName: "",
-      popup: ""
+      popup: "",
+      localeName: ''
     };
   }
 
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllUsers(currentPage);
+  }
+
+  componentDidMount() {
+    emit.on('change_language', lang => this.changeLocale(lang))
   }
 
   onSelectChange = selectedRowKeys => {
@@ -164,6 +171,13 @@ export default class Manage extends Component {
     });
   };
 
+  changeLocale(locale) {
+    this.setState({
+      localeName: locale
+    });
+    getCurrentLocale(this.state.localeName);
+  };
+
   render() {
     const { manage, loading } = this.props;
     const { userList, total } = manage;
@@ -171,42 +185,42 @@ export default class Manage extends Component {
     const userColumns = [
       {
         align: "center",
-        title: "用户名",
+        title: getIntlContent("SOUL.SYSTEM.USERNAME"),
         dataIndex: "userName",
         key: "userName",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "状态",
+        title: getIntlContent("SOUL.SYSTEM.STATUS"),
         dataIndex: "enabled",
         key: "enabled",
         ellipsis:true,
         render: text => {
           if (text) {
-            return <div className="open">开启</div>;
+            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
           } else {
-            return <div className="close">关闭</div>;
+            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
           }
         }
       },
       {
         align: "center",
-        title: "创建时间",
+        title: getIntlContent("SOUL.SYSTEM.CREATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "更新时间",
+        title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
         dataIndex: "dateUpdated",
         key: "dateUpdated",
         ellipsis:true,
       },
       {
         align: "center",
-        title: "操作",
+        title: getIntlContent("SOUL.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
         ellipsis:true,
@@ -218,7 +232,7 @@ export default class Manage extends Component {
                 this.editClick(record);
               }}
             >
-              编辑
+              {getIntlContent("SOUL.SYSTEM.EDITOR")}
             </div>
           );
         }
@@ -236,7 +250,7 @@ export default class Manage extends Component {
           <Input
             value={userName}
             onChange={this.searchOnchange}
-            placeholder="请输入用户名"
+            placeholder={getIntlContent("SOUL.SYSTEM.USER.NAME")}
             style={{ width: 240 }}
           />
           <Button
@@ -244,22 +258,22 @@ export default class Manage extends Component {
             type="primary"
             onClick={this.searchClick}
           >
-            查询
+            {getIntlContent("SOUL.SYSTEM.SEARCH")}
           </Button>
           <Popconfirm
-            title="你确认删除吗"
+            title={getIntlContent("SOUL.COMMON.DELETE")}
             placement='bottom'
             onConfirm={() => {
               this.deleteClick()
             }}
-            okText="确认"
-            cancelText="取消"
+            okText={getIntlContent("SOUL.COMMON.SURE")}
+            cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
           >
             <Button
               style={{ marginLeft: 20 }}
               type="danger"
             >
-              删除勾选数据
+              {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
             </Button>
           </Popconfirm>
           <Button
@@ -267,7 +281,7 @@ export default class Manage extends Component {
             type="primary"
             onClick={this.addClick}
           >
-            添加数据
+            {getIntlContent("SOUL.SYSTEM.ADDDATA")}
           </Button>
         </div>
 

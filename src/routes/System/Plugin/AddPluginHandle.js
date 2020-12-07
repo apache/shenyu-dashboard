@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {Modal, Form, Input, Select} from "antd";
 import {connect} from "dva";
+import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Option } = Select;
 const FormItem = Form.Item;
@@ -15,15 +16,15 @@ class AddPluginHandle extends Component {
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
 
-        let { field, label,dataType,type,sort} = values;
-        handleOk({ field, label, id, pluginId,dataType,type,sort });
+        let { field, label,dataType,type,sort,required,defaultValue} = values;
+        handleOk({ field, label, id, pluginId,dataType,type,sort,required,defaultValue});
       }
     });
   };
 
 
   render() {
-    let {handleCancel,  form, label="", field="", dataType ="1",type="2",sort=0 } = this.props;
+    let {handleCancel,  form, label="", field="", dataType ="1",type="2",sort=0,required=undefined,defaultValue=undefined } = this.props;
 
     const {getFieldDecorator} = form;
 
@@ -40,59 +41,78 @@ class AddPluginHandle extends Component {
       <Modal
         width={550}
         centered
-        title="插件"
+        title={getIntlContent("SOUL.PLUGIN")}
         visible
-        okText="确定"
-        cancelText="取消"
+        okText={getIntlContent("SOUL.COMMON.SURE")}
+        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label="字段" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.PLUGIN.FIELD")} {...formItemLayout}>
             {getFieldDecorator("field", {
-              rules: [{required: true, message: "字段"}],
+              rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.FIELD")}],
               initialValue: field,
             })(
               <Input placeholder="field" />
             )}
           </FormItem>
-          <FormItem label="描述" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.PLUGIN.DESCRIBE")} {...formItemLayout}>
             {getFieldDecorator("label", {
-              rules: [{required: true, message: "描述"}],
+              rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.DESCRIBE")}],
               initialValue: label,
             })(
               <Input placeholder="label" />
             )}
           </FormItem>
-          <FormItem label="数据类型" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.PLUGIN.DATATYPE")} {...formItemLayout}>
             {getFieldDecorator("dataType", {
-              rules: [{required: true, message: "描述"}],
+              rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.DESCRIBE")}],
               initialValue: `${dataType}` || undefined,
             })(
               <Select>
-                <Option key="1" value="1">数字</Option>
-                <Option key="2" value="2">字符串</Option>
-                <Option key="3" value="3">下拉框</Option>
+                <Option key="1" value="1">{getIntlContent("SOUL.PLUGIN.DIGITAL")}</Option>
+                <Option key="2" value="2">{getIntlContent("SOUL.PLUGIN.STRING")}</Option>
+                <Option key="3" value="3">{getIntlContent("SOUL.PLUGIN.DROPDOWN")}</Option>
               </Select>
             )}
           </FormItem>
-          <FormItem label="字段所属类型" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.PLUGIN.FIELDTYPE")} {...formItemLayout}>
             {getFieldDecorator("type", {
-              rules: [{required: true, message: "描述"}],
+              rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.DESCRIBE")}],
               initialValue: `${type}` || undefined,
             })(
               <Select>
-                <Option key="1" value="1">选择器</Option>
-                <Option key="2" value="2">规则</Option>
+                <Option key="1" value="1">{getIntlContent("SOUL.SELECTOR.NAME")}</Option>
+                <Option key="2" value="2">{getIntlContent("SOUL.PLUGIN.RULES")}</Option>
               </Select>
             )}
           </FormItem>
-          <FormItem label="排序" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.PLUGIN.SORT")} {...formItemLayout}>
             {getFieldDecorator("sort", {
-              rules: [{required: true, message: "请输入排序"}],
+              rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.INPUTSORT")}],
               initialValue: sort,
             })(
               <Input placeholder="sort" type="number" />
+            )}
+          </FormItem>
+          <FormItem label={getIntlContent("SOUL.PLUGIN.REQUIRED")} {...formItemLayout}>
+            {getFieldDecorator("required", {
+              rules: [{required: false}],
+              initialValue: required,
+            })(
+              <Select placeholder="required">
+                <Option key="1" value="1">{getIntlContent("SOUL.COMMON.YES")}</Option>
+                <Option key="0" value="0">{getIntlContent("SOUL.COMMON.NO")}</Option>
+              </Select>
+            )}
+          </FormItem>
+          <FormItem label={getIntlContent("SOUL.PLUGIN.DEFAULTVALUE")} {...formItemLayout}>
+            {getFieldDecorator("defaultValue", {
+              rules: [{required: false}],
+              initialValue: defaultValue,
+            })(
+              <Input placeholder="defaultValue" />
             )}
           </FormItem>
         </Form>

@@ -1,22 +1,40 @@
 import React, { Component } from "react";
 import { connect } from "dva";
 import styles from "./home.less";
+import { getCurrentLocale, getIntlContent } from '../../utils/IntlUtils'
+import { emit } from "../../utils/emit";
 
 @connect(({ global }) => ({
   global
 }))
 export default class Home extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      localeName: ''
+    }
+  }
+
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
       type: "global/fetchPlatform"
     });
+    emit.on('change_language', lang => this.changeLocales(lang))
+  }
+
+  changeLocales(locale) {
+    this.setState({
+      localeName: locale
+    });
+    getCurrentLocale(this.state.localeName);
   }
 
   render() {
     return (
       <div className={styles.content}>
-        <span>欢迎登录soul网关管理系统</span>
+        <span>{getIntlContent("SOUL.HOME.WELCOME")}</span>
       </div>
     );
   }
