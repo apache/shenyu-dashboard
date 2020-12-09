@@ -18,6 +18,7 @@ class AddModal extends Component {
  }
 
   handleSubmit = e => {
+    console.log("push")
     const { form, handleOk, id = "" } = this.props;
     const {selectorConditions} = this.state;
     e.preventDefault();
@@ -90,17 +91,17 @@ class AddModal extends Component {
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem label={getIntlContent("SOUL.AUTH.APPID")} {...formItemLayout}>
             {getFieldDecorator("appKey", {
-              rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")} AppKey` }],
+              rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")}AppKey` }],
               initialValue: appKey
-            })(<Input placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} AppKey`} />)}
+            })(<Input placeholder={`${getIntlContent("SOUL.AUTH.INPUT")}AppKey`} />)}
           </FormItem>
           <FormItem label={getIntlContent("SOUL.AUTH.APPPASSWORD")} {...formItemLayout}>
             {getFieldDecorator("appSecret", {
-              rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")} AppSecret` }],
+              rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")}AppSecret` }],
               initialValue: appSecret
-            })(<Input placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} AppSecret`} />)}
+            })(<Input placeholder={`${getIntlContent("SOUL.AUTH.INPUT")}AppSecret`} />)}
           </FormItem>
-          <FormItem label={`${getIntlContent("SOUL.SYSTEM.USER")} Id`} {...formItemLayout}>
+          <FormItem label={`${getIntlContent("SOUL.SYSTEM.USER")}Id`} {...formItemLayout}>
             {getFieldDecorator("userId", {
               rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUTUSERID")}],
               initialValue: userId
@@ -112,7 +113,7 @@ class AddModal extends Component {
               initialValue: phone
             })(<Input placeholder={getIntlContent("SOUL.AUTH.TELPHONE")} />)}
           </FormItem>
-          <FormItem label="扩展信息" {...formItemLayout}>
+          <FormItem label={getIntlContent("SOUL.AUTH.EXPANDINFO")} {...formItemLayout}>
             {getFieldDecorator("extInfo", {
               rules: [{  message: getIntlContent("SOUL.AUTH.EXPANDINFO") }],
               initialValue: extInfo

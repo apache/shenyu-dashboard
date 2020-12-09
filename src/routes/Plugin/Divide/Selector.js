@@ -271,7 +271,7 @@ class AddModal extends Component {
     };
     return (
       <Modal
-        width={700}
+        width={900}
         centered
         title={getIntlContent("SOUL.SELECTOR.NAME")}
         visible
@@ -338,7 +338,7 @@ class AddModal extends Component {
                               this.conditionChange(index, "paramType", value);
                             }}
                             value={item.paramType}
-                            style={{ width: 100 }}
+                            style={{ width: 90}}
                           >
                             {paramTypeEnums.map(typeItem => {
                               return (
@@ -368,7 +368,7 @@ class AddModal extends Component {
                               );
                             }}
                             value={item.paramName}
-                            style={{ width: 110 }}
+                            style={{ width: 100 }}
                           />
                         </li>
                         <li>
@@ -377,7 +377,7 @@ class AddModal extends Component {
                               this.conditionChange(index, "operator", value);
                             }}
                             value={item.operator}
-                            style={{ width: 100 }}
+                            style={{ width: 80 }}
                           >
                             {operatorEnums.map(opearte => {
                               return (
@@ -399,7 +399,7 @@ class AddModal extends Component {
                               );
                             }}
                             value={item.paramValue}
-                            style={{ width: 100 }}
+                            style={{ width: 300 }}
                           />
                         </li>
                         <li>
@@ -452,8 +452,8 @@ class AddModal extends Component {
           </div>
           {/* http配置 */}
           <div className={styles.condition}>
-            <h3 className={styles.header} style={{ width: 120 }}>
-              <strong>*</strong>http {getIntlContent("SOUL.COMMON.SETTING")}:
+            <h3 className={styles.header} style={{width:105}}>
+              <strong>*</strong>{getIntlContent("SOUL.COMMON.SETTING")}:
             </h3>
             <div className={styles.content}>
               {upstreamList.map((item, index) => {
@@ -468,9 +468,9 @@ class AddModal extends Component {
                             e.target.value
                           );
                         }}
-                        placeholder="hostName"
+                        placeholder="HostName"
                         value={item.upstreamHost}
-                        style={{ width: 100 }}
+                        style={{ width: 110 }}
                       />
                     </li>
                     <li>
@@ -498,7 +498,7 @@ class AddModal extends Component {
                         }}
                         placeholder="ip:port"
                         value={item.upstreamUrl}
-                        style={{ width: 100 }}
+                        style={{ width: 280 }}
                       />
                     </li>
 

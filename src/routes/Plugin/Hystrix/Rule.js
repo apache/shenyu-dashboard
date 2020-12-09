@@ -264,6 +264,7 @@ class AddModal extends Component {
       hystrixThreadPoolConfig,
       callBackUri
     } = this.state;
+    const labelWidth = 175
 
     let { matchModeEnums, operatorEnums, paramTypeEnums, hystrixIsolationModeEnums} = platform;
 
@@ -282,10 +283,10 @@ class AddModal extends Component {
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 4 }
+        sm: { span: 3 }
       },
       wrapperCol: {
-        sm: { span: 18 }
+        sm: { span: 21 }
       }
     };
     const formCheckLayout = {
@@ -298,7 +299,7 @@ class AddModal extends Component {
     };
     return (
       <Modal
-        width={800}
+        width={900}
         centered
         title={getIntlContent("SOUL.RULE.NAME")}
         visible
@@ -312,14 +313,14 @@ class AddModal extends Component {
             {getFieldDecorator("name", {
               rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTNAME") }],
               initialValue: name
-            })(<Input placeholder={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} style={{width:500}} />)}
+            })(<Input placeholder={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} />)}
           </FormItem>
           <FormItem label={getIntlContent("SOUL.COMMON.MATCHTYPE")} {...formItemLayout}>
             {getFieldDecorator("matchMode", {
               rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTMATCHTYPE") }],
               initialValue: matchMode
             })(
-              <Select style={{width:500}}>
+              <Select>
                 {matchModeEnums.map(item => {
                   return (
                     <Option key={item.code} value={item.code}>
@@ -331,8 +332,9 @@ class AddModal extends Component {
             )}
           </FormItem>
           <div className={styles.ruleConditions}>
-            <h3 className={styles.header}>
-              <strong>*</strong>{getIntlContent("SOUL.COMMON.CONDITION")}:
+            <h3 className={styles.header} style={{width:105}}>
+              <strong>*</strong>
+              {getIntlContent("SOUL.COMMON.CONDITION")}:
             </h3>
             <div className={styles.content}>
               {ruleConditions.map((item, index) => {
@@ -344,7 +346,7 @@ class AddModal extends Component {
                           this.conditionChange(index, "paramType", value);
                         }}
                         value={item.paramType}
-                        style={{ width: 110 }}
+                        style={{ width: 90 }}
                       >
                         {paramTypeEnums.map(type => {
                           return (
@@ -365,7 +367,7 @@ class AddModal extends Component {
                           );
                         }}
                         value={item.paramName}
-                        style={{ width: 110 }}
+                        style={{ width: 100 }}
                       />
                     </li>
                     <li>
@@ -374,7 +376,7 @@ class AddModal extends Component {
                           this.conditionChange(index, "operator", value);
                         }}
                         value={item.operator}
-                        style={{ width: 110 }}
+                        style={{ width: 80 }}
                       >
                         {operatorEnums.map(opearte => {
                           return (
@@ -396,7 +398,7 @@ class AddModal extends Component {
                           );
                         }}
                         value={item.paramValue}
-                        style={{ width: 110 }}
+                        style={{ width: 280 }}
                       />
                     </li>
                     <li>
@@ -444,7 +446,6 @@ class AddModal extends Component {
                 onChange={value => {
                   this.onHandleChange("executionIsolationStrategy", value);
                 }}
-                style={{width:500}}
               >
                 {hystrixIsolationModeEnums.map(item => {
                   return (
@@ -458,7 +459,7 @@ class AddModal extends Component {
           </FormItem>
           <div className={styles.handleWrap}>
             <div className={styles.header}>
-              <h3>Hystrix{getIntlContent("SOUL.COMMON.DEAL")}: </h3>
+              <h3>{getIntlContent("SOUL.COMMON.DEAL")}: </h3>
             </div>
             <ul
               className={classnames({
@@ -468,9 +469,8 @@ class AddModal extends Component {
             >
               <li>
                 <Input
-                  addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.TRIPPING.REQUEST.NUMBER")}</div>}
+                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.TRIPPING.REQUEST.NUMBER")}</div>}
                   value={requestVolumeThreshold}
-                  style={{ width: 250 }}
                   placeholder="requestVolumeThreshold"
                   onChange={e => {
                     const value = e.target.value;
@@ -480,9 +480,8 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.ERROR.PERCENT")}</div>}
+                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.ERROR.PERCENT")}</div>}
                   value={errorThresholdPercentage}
-                  style={{ width: 250 }}
                   placeholder="errorThresholdPercentage"
                   onChange={e => {
                     const value = e.target.value;
@@ -497,9 +496,8 @@ class AddModal extends Component {
                 this.state.executionIsolationStrategy === 1&&(
                 <li>
                   <Input
-                    addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.MAX.CONCURRENCY")}</div>}
+                    addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.MAX.CONCURRENCY")}</div>}
                     value={maxConcurrentRequests}
-                    style={{ width: 280 }}
                     placeholder="maxConcurrentRequests"
                     onChange={e => {
                       const value = e.target.value;
@@ -507,13 +505,12 @@ class AddModal extends Component {
                     }}
                   />
                 </li>
-)
+                )
               }
               <li>
                 <Input
-                  addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.TRIPPING.SLEEPTIME")}</div>}
+                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.TRIPPING.SLEEPTIME")}</div>}
                   value={sleepWindowInMilliseconds}
-                  style={{ width: 360 }}
                   placeholder="sleepWindowInMilliseconds"
                   onChange={e => {
                     const value = e.target.value;
@@ -526,10 +523,9 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.GROUPKEY")}</div>}
+                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.GROUPKEY")}</div>}
                   value={groupKey}
-                  style={{ width: 320 }}
-                  placeholder="groupKey"
+                  placeholder="GroupKey"
                   onChange={e => {
                     const value = e.target.value;
                     this.onHandleChange("groupKey", value);
@@ -538,9 +534,8 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.FAILEDDEMOTION")}</div>}
+                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.FAILEDDEMOTION")}</div>}
                   value={callBackUri}
-                  style={{ width: 320 }}
                   placeholder={getIntlContent("SOUL.HYSTRIX.FAILEDCALLBACK")}
                   onChange={e => {
                     const value = e.target.value;
@@ -550,10 +545,9 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.COMMANDKEY")}</div>}
+                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.COMMANDKEY")}</div>}
                   value={commandKey}
-                  style={{ width: 320 }}
-                  placeholder="commandKey"
+                  placeholder="CommandKey"
                   onChange={e => {
                     const value = e.target.value;
                     this.onHandleChange("commandKey", value);
@@ -564,9 +558,8 @@ class AddModal extends Component {
                 this.state.executionIsolationStrategy === 0 && (
                 <li>
                   <Input
-                    addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.CORETHREADSIZE")}</div>}
+                    addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.CORETHREADSIZE")}</div>}
                     value={hystrixThreadPoolConfig.coreSize}
-                    style={{ width: 320 }}
                     placeholder={getIntlContent("SOUL.HYSTRIX.CORENUM")}
                     onChange={e => {
                         const value = e.target.value;
@@ -581,9 +574,8 @@ class AddModal extends Component {
                 this.state.executionIsolationStrategy === 0 && (
                 <li>
                   <Input
-                    addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.MAXSIZE")}</div>}
+                    addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.MAXSIZE")}</div>}
                     value={hystrixThreadPoolConfig.maximumSize}
-                    style={{ width: 320 }}
                     placeholder={getIntlContent("SOUL.HYSTRIX.MAXTHREADNUM")}
                     onChange={e => {
                       const value = e.target.value;
@@ -597,9 +589,8 @@ class AddModal extends Component {
                 this.state.executionIsolationStrategy === 0&& (
                 <li>
                   <Input
-                    addonBefore={<div>{getIntlContent("SOUL.HYSTRIX.MAXTHREADQUEUE")}</div>}
+                    addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.MAXTHREADQUEUE")}</div>}
                     value={hystrixThreadPoolConfig.maxQueueSize}
-                    style={{ width: 320 }}
                     placeholder={getIntlContent("SOUL.HYSTRIX.MAXTHREAD")}
                     onChange={e => {
                       const value = e.target.value;
@@ -660,7 +651,7 @@ class AddModal extends Component {
                   message: getIntlContent("SOUL.SELECTOR.INPUTNUMBER")
                 }
               ]
-            })(<Input style={{width:360}} placeholder={getIntlContent("SOUL.SELECTOR.INPUTORDER")} />)}
+            })(<Input placeholder={getIntlContent("SOUL.SELECTOR.INPUTORDER")} />)}
           </FormItem>
         </Form>
       </Modal>

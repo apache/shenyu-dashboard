@@ -492,7 +492,6 @@ export default class Hystrix extends Component {
                   {getIntlContent("SOUL.COMMON.SYN")} hystrix
                 </Button>
               </div>
-
               <Button type="primary" onClick={this.addRule}>
                 {getIntlContent("SOUL.COMMON.ADD.RULE")}
               </Button>

@@ -232,37 +232,37 @@ class AddTable extends Component {
             {getFieldDecorator("phone", {
               rules: [{
                 required: true,
-                message: `${getIntlContent("SOUL.AUTH.INPUT")} Phone`
+                message: `${getIntlContent("SOUL.AUTH.INPUT")}Phone`
               }],
             })(
-              <Input placeholder="phone" />
+              <Input placeholder="Phone" />
             )}
           </FormItem>
-          <FormItem label={`App ${getIntlContent("SOUL.AUTH.PARAMS")}`} {...formItemLayout}>
+          <FormItem label={`App${getIntlContent("SOUL.AUTH.PARAMS")}`} {...formItemLayout}>
             {getFieldDecorator("appParam", {
               rules: [{
                 required: true,
-                message: `${getIntlContent("SOUL.SYSTEM.USER")} AppParam`
+                message: `${getIntlContent("SOUL.SYSTEM.USER")}AppParam`
               }],
             })(
-              <Input placeholder="appParam" />
+              <Input placeholder="AppParams" />
             )}
           </FormItem>
-          <FormItem label={`${getIntlContent("SOUL.SYSTEM.USER")} ID`} {...formItemLayout}>
+          <FormItem label={`${getIntlContent("SOUL.SYSTEM.USER")}Id`} {...formItemLayout}>
             {getFieldDecorator("userId", {
               rules: [{
                 required: true,
-                message: `${getIntlContent("SOUL.AUTH.INPUT")} UserId`
+                message: `${getIntlContent("SOUL.AUTH.INPUT")}UserId`
               }],
-            })(<Input placeholder="userId" />)}
+            })(<Input placeholder="UserId" />)}
           </FormItem>
           <FormItem label={getIntlContent("SOUL.AUTH.EXPANDINFO")} {...formItemLayout}>
             {getFieldDecorator("extInfo", {
               rules: [{
                 required: true,
-                message: `${getIntlContent("SOUL.AUTH.INPUT")} ExtInfo`
+                message: `${getIntlContent("SOUL.AUTH.INPUT")}ExpandInfo`
               }],
-            })(<Input placeholder="extInfo" />)}
+            })(<Input placeholder="ExpandInfo" />)}
           </FormItem>
           {/* 下拉框关联表格 */}
           <div>

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "dva";
 import styles from "./home.less";
-import { getCurrentLocale, getIntlContent } from '../../utils/IntlUtils'
 import { emit } from "../../utils/emit";
+import { getCurrentLocale, getIntlContent } from '../../utils/IntlUtils'
 
 @connect(({ global }) => ({
   global
@@ -29,6 +29,7 @@ export default class Home extends Component {
       localeName: locale
     });
     getCurrentLocale(this.state.localeName);
+
   }
 
   render() {

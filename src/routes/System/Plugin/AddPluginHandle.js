@@ -54,7 +54,7 @@ class AddPluginHandle extends Component {
               rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.FIELD")}],
               initialValue: field,
             })(
-              <Input placeholder="field" />
+              <Input placeholder="Field" />
             )}
           </FormItem>
           <FormItem label={getIntlContent("SOUL.PLUGIN.DESCRIBE")} {...formItemLayout}>
@@ -62,7 +62,7 @@ class AddPluginHandle extends Component {
               rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.DESCRIBE")}],
               initialValue: label,
             })(
-              <Input placeholder="label" />
+              <Input placeholder="Label" />
             )}
           </FormItem>
           <FormItem label={getIntlContent("SOUL.PLUGIN.DATATYPE")} {...formItemLayout}>
@@ -93,7 +93,7 @@ class AddPluginHandle extends Component {
               rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.INPUTSORT")}],
               initialValue: sort,
             })(
-              <Input placeholder="sort" type="number" />
+              <Input placeholder="Sort" type="number" />
             )}
           </FormItem>
           <FormItem label={getIntlContent("SOUL.PLUGIN.REQUIRED")} {...formItemLayout}>
@@ -101,7 +101,7 @@ class AddPluginHandle extends Component {
               rules: [{required: false}],
               initialValue: required,
             })(
-              <Select placeholder="required">
+              <Select placeholder="Required">
                 <Option key="1" value="1">{getIntlContent("SOUL.COMMON.YES")}</Option>
                 <Option key="0" value="0">{getIntlContent("SOUL.COMMON.NO")}</Option>
               </Select>
@@ -112,7 +112,7 @@ class AddPluginHandle extends Component {
               rules: [{required: false}],
               initialValue: defaultValue,
             })(
-              <Input placeholder="defaultValue" />
+              <Input placeholder="DefaultValue" />
             )}
           </FormItem>
         </Form>
