@@ -5,7 +5,6 @@ import dayjs from "dayjs";
 import AddModal from "./AddModal";
 import RelateMetadata from "./RelateMetadata"
 import AddTable from "./AddTable"
-
 import SearchContent from "./SearchContent"
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import {emit} from '../../../utils/emit'
@@ -325,7 +324,7 @@ export default class Auth extends Component {
     const authColumns = [
       {
         align: "center",
-        title: "appKey",
+        title: "AppKey",
         dataIndex: "appKey",
         key: "appKey",
         ellipsis:true,
@@ -339,7 +338,7 @@ export default class Auth extends Component {
       },
       {
         align: "center",
-        title: `${getIntlContent("SOUL.SYSTEM.USER")} Id`,
+        title: `${getIntlContent("SOUL.SYSTEM.USER")}Id`,
         dataIndex: "userId",
         key: "userId",
         ellipsis:true,

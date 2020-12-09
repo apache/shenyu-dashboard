@@ -367,19 +367,19 @@ export default class SoulDict extends Component {
         <div style={{ display: "flex" }}>
           <Input
             value={type}
-            placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} ${getIntlContent("SOUL.COMMON.TYPE")}`}
+            placeholder={getIntlContent("SOUL.DIC.INPUTTYPE")}
             onChange={this.searchTypeOnchange}
             style={{ width: 240 }}
           />&nbsp;&nbsp;
           <Input
             value={dictCode}
-            placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} ${getIntlContent("SOUL.DIC.CODE")}`}
+            placeholder={getIntlContent("SOUL.DIC.INPUTCODE")}
             onChange={this.searchDictCodeOnchange}
             style={{ width: 240 }}
           />&nbsp;&nbsp;
           <Input
             value={dictName}
-            placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} ${getIntlContent("SOUL.DIC.NAME")}`}
+            placeholder={getIntlContent("SOUL.DIC.INPUTNAME")}
             onChange={this.searchDictNameOnchange}
             style={{ width: 240 }}
           />

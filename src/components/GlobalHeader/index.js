@@ -23,7 +23,6 @@ export default class GlobalHeader extends PureComponent {
     }
   }
 
-
   handleLocalesValueChange = value => {
     if (value.key === '0') {
       emit.emit('change_language', 'en-US');
@@ -40,7 +39,6 @@ export default class GlobalHeader extends PureComponent {
     }
     getCurrentLocale(this.state.localeName);
   }
-
 
   render() {
    const { onLogout } = this.props;

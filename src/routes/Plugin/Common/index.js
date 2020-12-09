@@ -4,6 +4,7 @@ import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
 import { getIntlContent, getCurrentLocale } from '../../../utils/IntlUtils'
+
 import { emit } from "../../../utils/emit";
 
 @connect(({ common, global, loading }) => ({
@@ -474,6 +475,7 @@ export default class Common extends Component {
                   }}
                 >
                   {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+
                 </span>
               </Popconfirm>
             </div>
