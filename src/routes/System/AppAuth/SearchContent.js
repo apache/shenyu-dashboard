@@ -21,7 +21,7 @@ class InlineSearch extends React.Component {
               initialValue:null
           })(
             <Input
-              placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} AppKey`}
+              placeholder={getIntlContent("SOUL.AUTH.INPUTAPPKEY")}
             />,
           )}
         </Form.Item>

@@ -275,21 +275,21 @@ export default class Metadata extends Component {
       },
       {
         align: "center",
-        title: `${getIntlContent("SOUL.AUTH.PARAMS")} ${getIntlContent("SOUL.COMMON.TYPE")}`,
+        title: `${getIntlContent("SOUL.AUTH.PARAMS")}${getIntlContent("SOUL.COMMON.TYPE")}`,
         dataIndex: "parameterTypes",
         key: "parameterTypes",
         ellipsis:true,
       },
       {
         align: "center",
-        title: `Rpc ${getIntlContent("SOUL.COMMON.TYPE")}`,
+        title: `Rpc${getIntlContent("SOUL.COMMON.TYPE")}`,
         dataIndex: "rpcType",
         key: "rpcType",
         ellipsis:true,
       },
       {
         align: "center",
-        title: `Rpc ${getIntlContent("SOUL.META.EXPAND.PARAMS")}`,
+        title: `Rpc${getIntlContent("SOUL.META.EXPAND.PARAMS")}`,
         dataIndex: "rpcExt",
         key: "rpcExt",
         ellipsis:true,
@@ -347,7 +347,7 @@ export default class Metadata extends Component {
           <Input
             value={appName}
             onChange={this.searchOnchange}
-            placeholder={`${getIntlContent("SOUL.AUTH.INPUT")} AppName`}
+            placeholder={getIntlContent("SOUL.META.INPUTAPPNAME")}
             style={{ width: 240 }}
           />
           <Button

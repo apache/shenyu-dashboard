@@ -324,7 +324,7 @@ export default class Auth extends Component {
     const authColumns = [
       {
         align: "center",
-        title: "appKey",
+        title: "AppKey",
         dataIndex: "appKey",
         key: "appKey",
         ellipsis:true,
@@ -338,7 +338,7 @@ export default class Auth extends Component {
       },
       {
         align: "center",
-        title: `${getIntlContent("SOUL.SYSTEM.USER")} Id`,
+        title: `${getIntlContent("SOUL.SYSTEM.USER")}Id`,
         dataIndex: "userId",
         key: "userId",
         ellipsis:true,

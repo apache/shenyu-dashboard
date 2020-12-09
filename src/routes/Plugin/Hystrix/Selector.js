@@ -196,7 +196,7 @@ class AddModal extends Component {
     };
     return (
       <Modal
-        width={700}
+        width={900}
         centered
         title={getIntlContent("SOUL.SELECTOR.NAME")}
         visible
@@ -260,7 +260,7 @@ class AddModal extends Component {
                               this.conditionChange(index, "paramType", value);
                             }}
                             value={item.paramType}
-                            style={{ width: 100 }}
+                            style={{ width: 80 }}
                           >
                             {paramTypeEnums.map(typeItem => {
                               return (
@@ -299,7 +299,7 @@ class AddModal extends Component {
                               this.conditionChange(index, "operator", value);
                             }}
                             value={item.operator}
-                            style={{ width: 100 }}
+                            style={{ width: 80 }}
                           >
                             {operatorEnums.map(opearte => {
                               return (
@@ -321,7 +321,7 @@ class AddModal extends Component {
                               );
                             }}
                             value={item.paramValue}
-                            style={{ width: 100 }}
+                            style={{ width: 300 }}
                           />
                         </li>
                         <li>

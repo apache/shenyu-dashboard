@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import { Modal, Form, Select, Input, Switch, Button, message, Tooltip  } from "antd";
+import { Modal, Form, Select, Input, Switch, Button, message } from "antd";
 import { connect } from "dva";
-import classnames from "classnames";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils"
 
@@ -175,7 +174,7 @@ class AddModal extends Component {
       enabled = true,
       sort = ""
     } = this.props;
-    const { ruleConditions,pluginHandleList } = this.state;
+    const { ruleConditions } = this.state;
     let { matchModeEnums, operatorEnums, paramTypeEnums } = platform;
     if (operatorEnums) {
       operatorEnums = operatorEnums.filter(item => {
@@ -208,7 +207,7 @@ class AddModal extends Component {
     };
     return (
       <Modal
-        width={800}
+        width={900}
         centered
         title={getIntlContent("SOUL.RULE.NAME")}
         visible
@@ -241,7 +240,7 @@ class AddModal extends Component {
             )}
           </FormItem>
           <div className={styles.ruleConditions}>
-            <h3 className={styles.header}>
+            <h3 className={styles.header} style={{width:105}}>
               <strong>*</strong>{getIntlContent("SOUL.COMMON.CONDITION")}:
             </h3>
             <div className={styles.content}>
@@ -254,7 +253,7 @@ class AddModal extends Component {
                           this.conditionChange(index, "paramType", value);
                         }}
                         value={item.paramType}
-                        style={{ width: 110 }}
+                        style={{ width: 80 }}
                       >
                         {paramTypeEnums.map(type => {
                           return (
@@ -290,7 +289,7 @@ class AddModal extends Component {
                           this.conditionChange(index, "operator", value);
                         }}
                         value={item.operator}
-                        style={{ width: 110 }}
+                        style={{ width: 80 }}
                       >
                         {operatorEnums.map(opearte => {
                           return (
@@ -312,7 +311,7 @@ class AddModal extends Component {
                           );
                         }}
                         value={item.paramValue}
-                        style={{ width: 110 }}
+                        style={{ width: 280 }}
                       />
                     </li>
                     <li>
@@ -335,7 +334,7 @@ class AddModal extends Component {
               </Button>
             </div>
           </div>
-          <div className={styles.handleWrap}>
+          {/* <div className={styles.handleWrap}>
             <div className={styles.header}>
               <h3>{getIntlContent("SOUL.COMMON.DEAL")}: </h3>
             </div>
@@ -363,7 +362,7 @@ class AddModal extends Component {
                           }
                       />
                     </li>
-)
+                    )
                   } else if (item.dataType === 3 && item.dictOptions) {
                     return (
                       <li key={item.field}>
@@ -407,7 +406,7 @@ class AddModal extends Component {
                 })
               }
             </ul>
-          </div>
+          </div> */}
           <div className={styles.layout}>
             <FormItem
               style={{ margin: "0 30px" }}

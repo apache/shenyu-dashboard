@@ -324,7 +324,7 @@ class AddModal extends Component {
             )}
           </FormItem>
           <div className={styles.ruleConditions}>
-            <h3 className={styles.header}>
+            <h3 className={styles.header} style={{width: 105}}>
               <strong>*</strong>{getIntlContent("SOUL.COMMON.CONDITION")}:
             </h3>
             <div className={styles.content}>
@@ -337,7 +337,7 @@ class AddModal extends Component {
                           this.conditionChange(index, "paramType", value);
                         }}
                         value={item.paramType}
-                        style={{ width: 110 }}
+                        style={{ width: 80 }}
                       >
                         {paramTypeEnums.map(type => {
                           return (
@@ -373,7 +373,7 @@ class AddModal extends Component {
                           this.conditionChange(index, "operator", value);
                         }}
                         value={item.operator}
-                        style={{ width: 110 }}
+                        style={{ width: 80 }}
                       >
                         {operatorEnums.map(opearte => {
                           return (
@@ -395,7 +395,7 @@ class AddModal extends Component {
                           );
                         }}
                         value={item.paramValue}
-                        style={{ width: 110 }}
+                        style={{ width: 280 }}
                       />
                     </li>
                     <li>
@@ -523,8 +523,8 @@ class AddModal extends Component {
           </div> */}
 
           <div className={styles.handleWrap}>
-            <div className={styles.header}>
-              <h3>http {getIntlContent("SOUL.COMMON.LOAD")}: </h3>
+            <div className={styles.header} style={{width:100}}>
+              <h3>{getIntlContent("SOUL.COMMON.LOAD")}: </h3>
             </div>
             <ul
               className={classnames({
@@ -539,7 +539,7 @@ class AddModal extends Component {
                     this.onHandleChange("loadBalance", value);
                   }}
                   value={loadBalance}
-                  style={{ width: 160 }}
+                  style={{ width: 280 }}
                   placeholder="loadBalance"
                 >
                   {loadBalanceEnums.map(item => {
@@ -559,7 +559,7 @@ class AddModal extends Component {
                   }}
                   placeholder="retry"
                   value={retry}
-                  style={{ width: 160 }}
+                  style={{ width: 330 }}
                 />
               </li>
             </ul>
