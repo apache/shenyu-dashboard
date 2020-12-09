@@ -183,6 +183,7 @@ class AddModal extends Component {
       enabled = true,
       sort
     } = this.props;
+    const labelWidth = 175
     const { selectorConditions, selectValue, pluginHandleList } = this.state;
 
     type = `${type}`;
@@ -288,7 +289,7 @@ class AddModal extends Component {
                               this.conditionChange(index, "paramType", value);
                             }}
                             value={item.paramType}
-                            style={{ width: 80 }}
+                            style={{ width: 90 }}
                           >
                             {paramTypeEnums.map(typeItem => {
                               return (
@@ -318,7 +319,7 @@ class AddModal extends Component {
                               );
                             }}
                             value={item.paramName}
-                            style={{ width: 110 }}
+                            style={{ width: 100 }}
                           />
                         </li>
                         <li>
@@ -404,7 +405,7 @@ class AddModal extends Component {
           {(pluginHandleList && pluginHandleList.length > 0) && (
             <div className={styles.handleWrap}>
               <div className={styles.header}>
-                <h3>处理: </h3>
+                <h3 style={{width:100}}>{getIntlContent("SOUL.COMMON.DEAL")}: </h3>
               </div>
               <ul
                 className={classnames({
@@ -418,8 +419,7 @@ class AddModal extends Component {
                       return   (
                         <li key={item.field}>
                           <Input
-                            addonBefore={<div>{item.label}</div>}
-                            style={{width: 250}}
+                            addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
                             defaultValue={item.value}
                             placeholder={item.label}
                             key={item.field}
@@ -442,7 +442,7 @@ class AddModal extends Component {
                                 this.setState({pluginHandleList})
                               }}
                               value={item.value || undefined}
-                              style={{ width: 250 }}
+                              style={{ width: 260 }}
                             >
                               {item.dictOptions.map(option => {
                                 return (
@@ -458,8 +458,7 @@ class AddModal extends Component {
                     } else {
                       return (
                         <li key={item.field}><Input
-                          addonBefore={<div>{item.label}</div>}
-                          style={{width: 250}}
+                          addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
                           defaultValue={item.value}
                           placeholder={item.label}
                           key={item.field}

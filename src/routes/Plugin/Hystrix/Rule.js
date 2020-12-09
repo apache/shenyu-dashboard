@@ -346,7 +346,7 @@ class AddModal extends Component {
                           this.conditionChange(index, "paramType", value);
                         }}
                         value={item.paramType}
-                        style={{ width: 80 }}
+                        style={{ width: 90 }}
                       >
                         {paramTypeEnums.map(type => {
                           return (
@@ -367,7 +367,7 @@ class AddModal extends Component {
                           );
                         }}
                         value={item.paramName}
-                        style={{ width: 110 }}
+                        style={{ width: 100 }}
                       />
                     </li>
                     <li>
