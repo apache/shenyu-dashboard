@@ -1,9 +1,11 @@
 import React, {Component} from "react";
-import {Table, Button, Popconfirm, message} from "antd";
+import {Table, Button, Popconfirm, message, Select} from "antd";
 import {connect} from "dva";
-import AddPluginHandle from "./AddPluginHandle";
+import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
-import { emit } from "../../../utils/emit";
+import { emit } from '../../../utils/emit';
+
+const { Option } = Select;
 
 @connect(({pluginHandle, loading}) => ({
   pluginHandle,
@@ -15,22 +17,31 @@ export default class PluginHandle extends Component {
     this.state = {
       currentPage: 1,
       selectedRowKeys: [],
-      pluginId: this.props.match.params.pluginId,
       popup: "",
-      localeName:''
+      localeName:'',
+      pluginId:'',
     };
   }
 
   componentWillMount() {
-    let {currentPage} = this.state;
-    this.getPluginHandlesByPluginId(currentPage);
+    const {currentPage} = this.state;
+    this.getAllPluginHandles(currentPage);
+    this.getPluginDropDownList();
+
   }
 
   componentDidMount(){
     emit.on('change_language', lang => this.changeLocale(lang))
   }
 
-  getPluginHandlesByPluginId = page => {
+
+  componentWillUnmount() {
+    this.setState = () => {
+      return {};
+    };
+  }
+
+  getAllPluginHandles = page => {
     const {dispatch} = this.props;
     const {pluginId} = this.state;
     dispatch({
@@ -43,16 +54,37 @@ export default class PluginHandle extends Component {
     });
   };
 
+  getPluginDropDownList = () => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: "pluginHandle/fetchPluginList",
+    });
+  };
+
+  pageOnchange = page => {
+    this.setState({ currentPage: page });
+    this.getAllPluginHandles(page);
+  };
 
   closeModal = () => {
     this.setState({ popup: "" });
   };
 
+  searchOnchange = e => {
+    const pluginId = e;
+    this.setState({ pluginId });
+  };
+
+  searchClick = () => {
+    this.getAllPluginHandles(1);
+    this.setState({ currentPage: 1 });
+  };
 
   editClick = record => {
     const { dispatch } = this.props;
     const { currentPage } = this.state;
-    const localPluginId = this.state.pluginId;
+    const searchPluginId = this.state.pluginId;
+    const pluginDropDownList = this.props.pluginHandle.pluginDropDownList
     dispatch({
       type: "pluginHandle/fetchItem",
       payload: {
@@ -66,7 +98,8 @@ export default class PluginHandle extends Component {
         )
         this.setState({
           popup: (
-            <AddPluginHandle
+            <AddModal
+              pluginDropDownList={pluginDropDownList}
               disabled={true}
               {...pluginHandle}
               handleOk={values => {
@@ -91,7 +124,6 @@ export default class PluginHandle extends Component {
                     extObj
                   },
                   fetchValue: {
-                    name: localPluginId,
                     currentPage,
                     pageSize: 12
                   },
@@ -100,11 +132,12 @@ export default class PluginHandle extends Component {
                     dispatch({
                       type: "pluginHandle/fetch",
                       payload: {
-                        pluginId,
+                        pluginId: searchPluginId,
                         currentPage: {currentPage},
                         pageSize: 12
                       }
                     });
+                    this.getPluginDropDownList()
                   }
                 });
               }}
@@ -118,14 +151,14 @@ export default class PluginHandle extends Component {
     });
   };
 
-
   addClick = () => {
     const {currentPage} = this.state;
-    const localPluginId = this.state.pluginId;
+    const searchPluginId = this.state.pluginId;
+    const pluginDropDownList = this.props.pluginHandle.pluginDropDownList
     this.setState({
       popup: (
-        <AddPluginHandle
-          pluginId={localPluginId}
+        <AddModal
+          pluginDropDownList={pluginDropDownList}
           handleOk={values => {
             const {dispatch} = this.props;
             const {pluginId, label, field, dataType,type,sort,required,defaultValue} = values;
@@ -148,7 +181,6 @@ export default class PluginHandle extends Component {
                 extObj
               },
               fetchValue: {
-                pluginId: localPluginId,
                 currentPage,
                 pageSize: 12
               },
@@ -157,11 +189,12 @@ export default class PluginHandle extends Component {
                 dispatch({
                   type: "pluginHandle/fetch",
                   payload: {
-                    pluginId,
+                    pluginId: searchPluginId,
                     currentPage: {currentPage},
                     pageSize: 12
                   }
                 });
+                this.getPluginDropDownList()
               }
             });
           }}
@@ -174,13 +207,13 @@ export default class PluginHandle extends Component {
   };
 
   onSelectChange = selectedRowKeys => {
-
     this.setState({ selectedRowKeys });
   };
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { pluginId, currentPage, selectedRowKeys } = this.state;
+    const { currentPage, selectedRowKeys } = this.state;
+    const searchPluginId = this.state.pluginId;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "pluginHandle/delete",
@@ -188,7 +221,6 @@ export default class PluginHandle extends Component {
           list: selectedRowKeys
         },
         fetchValue: {
-          pluginId,
           currentPage,
           pageSize: 12
         },
@@ -204,11 +236,12 @@ export default class PluginHandle extends Component {
           dispatch({
             type: "pluginHandle/fetch",
             payload: {
-              pluginId,
+              pluginId: searchPluginId,
               currentPage: {currentPage},
               pageSize: 12
             }
           });
+          this.getPluginDropDownList()
         }
       });
     } else {
@@ -226,8 +259,8 @@ export default class PluginHandle extends Component {
 
   render() {
     const {pluginHandle, loading} = this.props;
-    const {pluginHandleList, total} = pluginHandle;
-    const {currentPage, selectedRowKeys, popup} = this.state;
+    const {pluginHandleList, total, pluginDropDownList} = pluginHandle;
+    const {currentPage, selectedRowKeys, pluginId, popup} = this.state;
     if(pluginHandleList){
       pluginHandleList.forEach(item=>{
         if(item.extObj){
@@ -241,8 +274,24 @@ export default class PluginHandle extends Component {
         }
       })
     }
-
     const pluginColumns = [
+      {
+        align: "center",
+        title: getIntlContent("SOUL.PLUGIN.PLUGIN.NAME"),
+        dataIndex: "pluginId",
+        key: "pluginId",
+        ellipsis:true,
+        render: text => {
+          if(pluginDropDownList){
+            let arr = pluginDropDownList.filter(item => item.id === text)
+            if(arr && arr.length >0){
+              return <div>{arr[0].name}</div>
+            }else {
+              return <div>111</div>
+            }
+          }
+        }
+      },
       {
         align: "center",
         title: getIntlContent("SOUL.PLUGIN.FIELDNAME"),
@@ -363,6 +412,28 @@ export default class PluginHandle extends Component {
     return (
       <div className="plug-content-wrap">
         <div style={{display: "flex"}}>
+          <Select
+            value={pluginId || undefined}
+            onChange={this.searchOnchange}
+            placeholder={getIntlContent("SOUL.PLUGIN.SELECTNAME")}
+            style={{ width: 240 }}
+            allowClear
+          >
+            {
+              pluginDropDownList && pluginDropDownList.map((item,i)=>{
+              return(
+                <Option key={i} value={item.id}>{item.name}</Option>
+              )
+              })
+            }
+          </Select>
+          <Button
+            type="primary"
+            style={{ marginLeft: 20 }}
+            onClick={this.searchClick}
+          >
+            {getIntlContent("SOUL.SYSTEM.SEARCH")}
+          </Button>
           <Popconfirm
             title={getIntlContent("SOUL.COMMON.DELETE")}
             placement='bottom'
