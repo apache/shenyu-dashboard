@@ -2,16 +2,18 @@ import {message} from "antd";
 import {
   addPluginHandle,
   batchDeletePluginHandle,
-  fetchPluginHandles,
+  getAllPluginHandles,
   findPluginHandle,
   updatePluginHandle,
-  fetchPluginHandleByPluginId
+  fetchPluginHandleByPluginId,
+  getPluginDropDownList,
 } from "../services/api";
 
 export default {
   namespace: "pluginHandle",
 
   state: {
+    pluginDropDownList: [],
     pluginHandleList: [],
     total: 0
   },
@@ -19,7 +21,7 @@ export default {
   effects: {
     * fetch(params, {call, put}) {
       const {payload} = params;
-      const json = yield call(fetchPluginHandles, payload);
+      const json = yield call(getAllPluginHandles, payload);
       if (json.code === 200) {
         let {page, dataList} = json.data;
         dataList = dataList.map(item => {
@@ -100,6 +102,20 @@ export default {
         callback(dataList);
       }
     },
+
+    *fetchPluginList(_, { call, put  }) {
+      const json = yield call(getPluginDropDownList);
+      if (json.code === 200) {
+        let data = json.data;
+        yield put({
+          type: "savePluginDropDownList",
+          payload: {
+            data
+          }
+        });
+      }
+    },
+
   },
   reducers: {
     savePluginHandles(state, { payload }) {
@@ -115,6 +131,12 @@ export default {
       const { pluginId, currentPage, pageSize } = fetchValue;
       const payload = { pluginId, currentPage, pageSize };
       yield put({ type: "fetch", payload });
+    },
+    savePluginDropDownList(state, { payload }) {
+      return {
+        ...state,
+        pluginDropDownList: payload.data,
+      };
     },
   }
 };

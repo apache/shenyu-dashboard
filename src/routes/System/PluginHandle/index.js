@@ -18,8 +18,8 @@ export default class PluginHandle extends Component {
       currentPage: 1,
       selectedRowKeys: [],
       popup: "",
-      localeName:'',
       pluginId:'',
+      localeName:'',
     };
   }
 
@@ -34,12 +34,6 @@ export default class PluginHandle extends Component {
     emit.on('change_language', lang => this.changeLocale(lang))
   }
 
-
-  componentWillUnmount() {
-    this.setState = () => {
-      return {};
-    };
-  }
 
   getAllPluginHandles = page => {
     const {dispatch} = this.props;
@@ -298,6 +292,7 @@ export default class PluginHandle extends Component {
         dataIndex: "field",
         key: "field",
         ellipsis:true,
+        width: 180,
       },
       {
         align: "center",
@@ -305,6 +300,7 @@ export default class PluginHandle extends Component {
         dataIndex: "label",
         key: "label",
         ellipsis:true,
+        width: 180,
       },
       {
         align: "center",

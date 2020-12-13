@@ -247,6 +247,8 @@ export default class SiderMenu extends PureComponent {
                 this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.USER");
               } else if(childrenPath === '/system/plugin') {
                 this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.PLUGIN");
+              } else if(childrenPath === '/system/pluginhandle') {
+                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.PLUGINHANDLE");
               } else if(childrenPath === '/system/auth') {
                 this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.AUTHEN");
               } else if(childrenPath === '/system/metadata') {
