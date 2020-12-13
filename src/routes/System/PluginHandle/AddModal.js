@@ -11,12 +11,12 @@ const FormItem = Form.Item;
 }))
 class AddPluginHandle extends Component {
   handleSubmit = e => {
-    const { form, handleOk, id = "", pluginId} = this.props;
+    const { form, handleOk, id = "",} = this.props;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
 
-        let { field, label,dataType,type,sort,required,defaultValue} = values;
+        let { pluginId, field, label,dataType,type,sort,required,defaultValue} = values;
         handleOk({ field, label, id, pluginId,dataType,type,sort,required,defaultValue});
       }
     });
@@ -24,8 +24,7 @@ class AddPluginHandle extends Component {
 
 
   render() {
-    let {handleCancel,  form, label="", field="", dataType ="1",type="2",sort=0,required=undefined,defaultValue=undefined } = this.props;
-
+    let {handleCancel,  form, pluginId, label="", field="", dataType ="1",type="2",sort=0,required=undefined,defaultValue=undefined,pluginDropDownList } = this.props;
     const {getFieldDecorator} = form;
 
     const formItemLayout = {
@@ -41,7 +40,7 @@ class AddPluginHandle extends Component {
       <Modal
         width={550}
         centered
-        title={getIntlContent("SOUL.PLUGIN")}
+        title={getIntlContent("SOUL.PLUGIN.PLUGINHANDLE")}
         visible
         okText={getIntlContent("SOUL.COMMON.SURE")}
         cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
@@ -49,6 +48,24 @@ class AddPluginHandle extends Component {
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
+          <FormItem label={getIntlContent("SOUL.PLUGIN.PLUGIN.NAME")} {...formItemLayout}>
+            {getFieldDecorator("pluginId", {
+              rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.PLUGIN.NAME")}],
+              initialValue: pluginId,
+            })(
+              <Select
+                placeholder="Plugin"
+              >
+                {
+                  pluginDropDownList.map((item,i)=>{
+                    return(
+                      <Option key={i} value={item.id}>{item.name}</Option>
+                    )
+                  })
+                }
+              </Select>
+            )}
+          </FormItem>
           <FormItem label={getIntlContent("SOUL.PLUGIN.FIELD")} {...formItemLayout}>
             {getFieldDecorator("field", {
               rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.FIELD")}],

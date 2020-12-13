@@ -33,6 +33,10 @@ export const menuData = [
         path: 'plugin',
       },
       {
+        name: getIntlContent("SOUL.PLUGIN.PLUGINHANDLE"),
+        path: 'pluginhandle',
+      },
+      {
         name: getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.AUTHEN"),
         path: 'auth'
       },

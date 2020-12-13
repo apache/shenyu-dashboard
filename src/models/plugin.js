@@ -60,7 +60,7 @@ export default {
       if (json.code === 200) {
         message.success("修改成功");
         yield put({
-          type: "updataPlugins",
+          type: "updatePlugins",
           payload,
         });
       } else {
@@ -125,7 +125,7 @@ export default {
         total: payload.total
       };
     },
-    updataPlugins(state, { payload }) {
+    updatePlugins(state, { payload }) {
       let pluginList = state.pluginList;
       pluginList = pluginList.map((item) => {
         if (item.id === payload.id) {

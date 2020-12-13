@@ -95,6 +95,9 @@ export const getRouterData = app => {
     '/system/plugin': { // 插件管理
       component: dynamicWrapper(app, ['plugin'], () => import('../routes/System/Plugin')),
     },
+    '/system/pluginhandle': { // 插件处理管理
+      component: dynamicWrapper(app, ['pluginHandle'], () => import('../routes/System/PluginHandle')),
+    },
     '/system/auth': { // 认证管理
       component: dynamicWrapper(app, ['auth'], () => import('../routes/System/AppAuth')),
     },
@@ -120,9 +123,6 @@ export const getRouterData = app => {
     },
     '/user/login': {
       component: dynamicWrapper(app, ['login'], () => import('../routes/User/Login')),
-    },
-    '/plugin/handle/:pluginId': {
-      component: dynamicWrapper(app, ['pluginHandle'], () => import('../routes/System/Plugin/PluginHandle')),
     },
   };
   // Get name from ./menu.js or just set it in the router data.

@@ -436,9 +436,24 @@ export async function asyncOnePlugin(params) {
     method: `PUT`
   });
 }
-// 根据插件id 获取插件处理字段列表
-export async function fetchPluginHandles(params) {
-  return request(`${baseUrl}/plugin-handle?${stringify(params)}`,{
+
+// 获取插件下拉列表
+export async function getPluginDropDownList() {
+  return request(`${baseUrl}/plugin/all`, {
+    method: `GET`
+  });
+}
+
+// 获取插件处理字段列表
+export async function getAllPluginHandles(params) {
+  const { pluginId, currentPage, pageSize } = params;
+  let myParams = params;
+  if (pluginId) {
+    myParams = params;
+  } else {
+    myParams = { currentPage, pageSize };
+  }
+  return request(`${baseUrl}/plugin-handle?${stringify(myParams)}`, {
     method: `GET`
   });
 }
