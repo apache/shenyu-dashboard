@@ -234,29 +234,21 @@ export default class SiderMenu extends PureComponent {
 
   /** 根据当前语言 修改 菜单 */
   updateMenuData() {
-    if (this.props.menuData.length > 0) {
-      for ( let i = 0 ; i < this.props.menuData.length; i+=1) {
-        if(this.props.menuData[i].path === '/plug') {
-          this.props.menuData[i].name = getIntlContent("SOUL.MENU.PLUGIN.LIST");
-        } else if(this.props.menuData[i].path === '/system'){
-          this.props.menuData[i].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT");
-          if(this.props.menuData[i].children.length > 0) {
-            for(let j = 0; j < this.props.menuData[i].children.length; j+=1) {
-              const childrenPath = this.props.menuData[i].children[j].path;
-              if(childrenPath === '/system/manage') {
-                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.USER");
-              } else if(childrenPath === '/system/plugin') {
-                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.PLUGIN");
-              } else if(childrenPath === '/system/pluginhandle') {
-                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.PLUGINHANDLE");
-              } else if(childrenPath === '/system/auth') {
-                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.AUTHEN");
-              } else if(childrenPath === '/system/metadata') {
-                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.METADATA");
-              } else if(childrenPath === '/system/dict') {
-                this.props.menuData[i].children[j].name = getIntlContent("SOUL.MENU.SYSTEM.MANAGMENT.DICTIONARY");
-              }
-            }
+    if (this.props.menuData.length === 0) {
+      return;
+    }
+
+    // eslint-disable-next-line no-plusplus
+    for ( let i = 0 ; i < this.props.menuData.length; i++) {
+      if (this.props.menuData[i].locale) {
+        this.props.menuData[i].name = getIntlContent(this.props.menuData[i].locale);
+      }
+
+      if (this.props.menuData[i].children.length > 0) {
+        // eslint-disable-next-line no-plusplus
+        for (let j = 0; j < this.props.menuData[i].children.length; j++) {
+          if (this.props.menuData[i].children[j].locale) {
+            this.props.menuData[i].children[j].name = getIntlContent(this.props.menuData[i].children[j].locale);
           }
         }
       }
