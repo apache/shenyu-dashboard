@@ -18,7 +18,6 @@ class AddModal extends Component {
  }
 
   handleSubmit = e => {
-    console.log("push")
     const { form, handleOk, id = "" } = this.props;
     const {selectorConditions} = this.state;
     e.preventDefault();
