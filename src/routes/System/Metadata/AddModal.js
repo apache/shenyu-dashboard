@@ -116,7 +116,6 @@ class AddModal extends Component {
               initialValue: rpcExt,
             })(
               <TextArea placeholder={`Rpc${getIntlContent( "SOUL.META.EXPAND.PARAMS")}`} rows={3} />
-              // <Input placeholder="rpc扩展参数" />
             )}
           </FormItem>
           <FormItem
@@ -130,7 +129,7 @@ class AddModal extends Component {
               <Input placeholder={getIntlContent("SOUL.META.SERVER.INTER")} />
             )}
           </FormItem>
-          {/* 下拉 */}
+          {/* select */}
           <FormItem
             label={`Rpc${getIntlContent("SOUL.COMMON.TYPE")}`}
             {...formItemLayout}
@@ -150,7 +149,7 @@ class AddModal extends Component {
               </Select>
             )}
           </FormItem>
-          {/* 状态 */}
+          {/* status */}
           {this.props.isShow?
           (
             <FormItem

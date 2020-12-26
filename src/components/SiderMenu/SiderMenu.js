@@ -102,9 +102,9 @@ export default class SiderMenu extends PureComponent {
   }
 
   /**
-   * 判断是否是http链接.返回 Link 或 a
    * Judge whether it is http link.return a or Link
-   * @memberof SiderMenu
+   *
+   * member of SiderMenu
    */
   getMenuItemPath = item => {
     const itemPath = this.conversionPath(item.path);
@@ -145,7 +145,7 @@ export default class SiderMenu extends PureComponent {
   getSubMenuOrItem = item => {
     if (item.children && item.children.some(child => child.name)) {
       const childrenItems = this.getNavMenuItems(item.children);
-      // 当无子菜单时就不展示菜单
+      // The menu is not displayed when there are no submenus
       if (childrenItems && childrenItems.length > 0) {
         return (
           <SubMenu
@@ -172,8 +172,7 @@ export default class SiderMenu extends PureComponent {
   };
 
   /**
-   * 获得菜单子节点
-   * @memberof SiderMenu
+   * Get the menu items
    */
   getNavMenuItems = menusData => {
     if (!menusData) {
@@ -200,7 +199,6 @@ export default class SiderMenu extends PureComponent {
   };
 
   // conversion Path
-  // 转化路径
   conversionPath = path => {
     if (path && path.indexOf('http') === 0) {
       return path;
@@ -232,7 +230,7 @@ export default class SiderMenu extends PureComponent {
     });
   };
 
-  /** 根据当前语言 修改 菜单 */
+  /** Modify the menu based on the current language */
   updateMenuData() {
     if (this.props.menuData.length === 0) {
       return;
@@ -241,14 +239,14 @@ export default class SiderMenu extends PureComponent {
     // eslint-disable-next-line no-plusplus
     for ( let i = 0 ; i < this.props.menuData.length; i++) {
       if (this.props.menuData[i].locale) {
-        this.props.menuData[i].name = getIntlContent(this.props.menuData[i].locale);
+        this.props.menuData[i].name = getIntlContent(this.props.menuData[i].locale, this.props.menuData[i].name);
       }
 
       if (this.props.menuData[i].children.length > 0) {
         // eslint-disable-next-line no-plusplus
         for (let j = 0; j < this.props.menuData[i].children.length; j++) {
           if (this.props.menuData[i].children[j].locale) {
-            this.props.menuData[i].children[j].name = getIntlContent(this.props.menuData[i].children[j].locale);
+            this.props.menuData[i].children[j].name = getIntlContent(this.props.menuData[i].children[j].locale, this.props.menuData[i].children[j].name);
           }
         }
       }

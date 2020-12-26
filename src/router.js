@@ -1,6 +1,6 @@
 import React from 'react';
 import { routerRedux, Route, Switch } from 'dva/router';
-import { LocaleProvider } from 'antd';
+import { ConfigProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
 import { getRouterData } from './common/router';
 import Authorized from './utils/Authorized';
@@ -16,7 +16,7 @@ function RouterConfig({ history, app }) {
   const BasicLayout = routerData['/'].component;
 
   return (
-    <LocaleProvider locale={enUS}>
+    <ConfigProvider locale={enUS}>
       <ConnectedRouter history={history}>
         <Switch>
           <Route path="/user" component={UserLayout} />
@@ -30,7 +30,7 @@ function RouterConfig({ history, app }) {
           />
         </Switch>
       </ConnectedRouter>
-    </LocaleProvider>
+    </ConfigProvider>
   );
 }
 

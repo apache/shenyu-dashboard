@@ -1,6 +1,6 @@
 import { isUrl } from '../utils/utils';
 import { getIntlContent } from '../utils/IntlUtils'
-/** 菜单 移到 统一地方 处理 */
+
 export const menuData = [
   {
     name: getIntlContent('SOUL.MENU.PLUGIN.LIST'),

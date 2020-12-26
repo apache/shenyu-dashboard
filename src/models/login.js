@@ -48,7 +48,7 @@ export default {
         yield put(routerRedux.push("/home"));
       } else {
         message.destroy();
-        message.error("用户名或密码不正确");
+        message.error("Incorrect user name or password");
       }
     },
     *logout(_, { put }) {

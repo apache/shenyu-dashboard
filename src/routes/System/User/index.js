@@ -131,7 +131,7 @@ export default class Manage extends Component {
       });
     } else {
       message.destroy();
-      message.warn("请选择数据");
+      message.warn("Please select data");
     }
   };
 

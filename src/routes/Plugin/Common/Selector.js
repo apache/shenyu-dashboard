@@ -72,7 +72,7 @@ class AddModal extends Component {
         const { paramType, operator, paramName, paramValue } = item;
         if (!paramType || !operator || !paramValue) {
           message.destroy();
-          message.error(`第${index + 1}行条件不完整`);
+          message.error(`Line ${index + 1} condition is incomplete`);
           result = false;
         }
         if (paramType === "uri" || paramType === "host" || paramType === "ip") {
@@ -81,14 +81,14 @@ class AddModal extends Component {
           // eslint-disable-next-line no-lonely-if
           if (!paramName) {
             message.destroy();
-            message.error(`第${index + 1}行条件不完整`);
+            message.error(`Line ${index + 1} condition is incomplete`);
             result = false;
           }
         }
       });
     } else {
       message.destroy();
-      message.error(`条件不完整`);
+      message.error(`Incomplete condition`);
       result = false;
     }
     return result;
@@ -142,7 +142,7 @@ class AddModal extends Component {
       selectorConditions.splice(index, 1);
     } else {
       message.destroy();
-      message.error("至少有一个条件");
+      message.error("At least one condition");
     }
     this.setState({ selectorConditions });
   };

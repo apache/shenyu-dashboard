@@ -4,13 +4,14 @@ import 'antd/dist/antd.css';
 
 import { Transfer, Table } from 'antd';
 import difference from 'lodash/difference';
+import {getIntlContent} from "../../../utils/IntlUtils";
 // import uniqBy from 'lodash/uniqBy';
 // import reqwest from 'reqwest';
 
 const columns = [
   {
     dataIndex: 'path',
-    title: '资源路径',
+    title: getIntlContent('SOUL.AUTH.RESOUCE.PATH'),
     width: 200,
     textWrap: 'word-break',
     align: 'center',
@@ -18,7 +19,7 @@ const columns = [
   },
   {
     dataIndex: 'appName',
-    title: '应用名称',
+    title: getIntlContent('SOUL.AUTH.APPNAME'),
     width: 100,
     textWrap: 'word-break',
     align: 'center',
@@ -45,7 +46,7 @@ class TableTransfer extends React.Component {
     const { authName } = this.props;
     const { dataSource, pagination } = this.state;
     return (
-      <Transfer titles={['全部',authName]} {...this.props} dataSource={dataSource} rowKey={record => record.path}>
+      <Transfer titles={['ALL',authName]} {...this.props} dataSource={dataSource} rowKey={record => record.path}>
         {({
           direction, // 渲染列表的方向
           filteredItems,
