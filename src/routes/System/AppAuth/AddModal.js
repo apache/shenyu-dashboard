@@ -40,7 +40,7 @@ class AddModal extends Component {
       selectorConditions.splice(index, 1);
     } else {
       message.destroy();
-      message.error("至少有一个条件");
+      message.error("At least one condition");
     }
     this.setState({ selectorConditions });
   };

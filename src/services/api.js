@@ -2,7 +2,7 @@ import { stringify } from "qs";
 import request from "../utils/request";
 
 const baseUrl = document.getElementById("httpPath").innerHTML;
-/* 添加用户 */
+/* add user */
 export async function addUser(params) {
   return request(`${baseUrl}/dashboardUser`, {
     method: `POST`,
@@ -11,14 +11,14 @@ export async function addUser(params) {
     }
   });
 }
-/* 删除用户 */
+/* delete user */
 export async function deleteUser(params) {
   return request(`${baseUrl}/dashboardUser/batch`, {
     method: `DELETE`,
     body: [...params.list]
   });
 }
-/* 修改用户 */
+/* update user */
 export async function updateUser(params) {
   return request(`${baseUrl}/dashboardUser/${params.id}`, {
     method: `PUT`,
@@ -30,7 +30,7 @@ export async function updateUser(params) {
     }
   });
 }
-/* 查询所有元数据 */
+/* get all metadata */
 export async function getAllMetadata(params) {
   const { appName, currentPage, pageSize } = params;
   let myParams = params;
@@ -44,12 +44,7 @@ export async function getAllMetadata(params) {
     method: `GET`
   });
 }
-/* 查询单个元数据 */
-// export async function findMetadata(params) {
-//   return request(`${baseUrl}/meta-data/queryList/${params.id}`, {
-//     method: `GET`
-//   });
-// }
+
 export async function findMetadata(params) {
   // const { appName, currentPage, pageSize } = params;
   // let myParams = params;
@@ -62,7 +57,7 @@ export async function findMetadata(params) {
     method: `GET`
   });
 }
-/* 添加元数据 */
+/* addMetadata */
 export async function addMetadata(params) {
   return request(`${baseUrl}/meta-data/createOrUpdate`, {
     method: `POST`,
@@ -71,7 +66,7 @@ export async function addMetadata(params) {
     }
   });
 }
-/* 修改元数据 */
+/* updateMetadata */
 export async function updateMetadata(params) {
   return request(`${baseUrl}/meta-data/createOrUpdate`, {
     method: `POST`,
@@ -89,7 +84,7 @@ export async function updateMetadata(params) {
     }
   });
 }
-/* 同步元数据 */
+/* syncData */
 export async function syncData() {
   return request(`${baseUrl}/meta-data/syncData`, {
     method: `POST`,
@@ -99,21 +94,21 @@ export async function syncData() {
   });
 }
 
-/* 获取所有(按照应用名称分组) */
+/* getfetchMetaGroup */
 export async function getfetchMetaGroup() {
   return request(`${baseUrl}/meta-data/findAllGroup`,{
     method: `GET`
   })
 }
 
-/* 删除元数据 */
+/* deleteMetadata */
 export async function deleteMetadata(params) {
   return request(`${baseUrl}/meta-data/batchDeleted`, {
     method: `POST`,
     body: [...params.list]
   });
 }
-/* 元数据中的批量启用或禁用 */
+/* updateEnabled */
 export async function updateEnabled(params) {
 
   return request(`${baseUrl}/meta-data/batchEnabled`, {
@@ -124,7 +119,7 @@ export async function updateEnabled(params) {
     }
   });
 }
-/* 查询所有用户 */
+/* getAllUsers */
 export async function getAllUsers(params) {
   const { userName, currentPage, pageSize } = params;
   let myParams = params;
@@ -137,15 +132,14 @@ export async function getAllUsers(params) {
     method: `GET`
   });
 }
-/* 查询单个用户 */
+/* findUser */
 export async function findUser(params) {
   return request(`${baseUrl}/dashboardUser/${params.id}`, {
     method: `GET`
   });
 }
 
-// 插件管理
-/* 增加插件 */
+/* addPlugin */
 export async function addPlugin(params) {
   return request(`${baseUrl}/plugin`, {
     method: `POST`,
@@ -154,14 +148,14 @@ export async function addPlugin(params) {
     }
   });
 }
-/* 删除插件 */
+/* deletePlugin */
 export async function deletePlugin(params) {
   return request(`${baseUrl}/plugin/batch`, {
     method: `DELETE`,
     body: [...params.list]
   });
 }
-/* 修改插件 */
+/* updatePlugin */
 export async function updatePlugin(params) {
   return request(`${baseUrl}/plugin/${params.id}`, {
     method: `PUT`,
@@ -175,7 +169,7 @@ export async function updatePlugin(params) {
   });
 }
 
-/* 查询所有插件 */
+/* getAllPlugins */
 export async function getAllPlugins(params) {
   const { name, currentPage, pageSize } = params;
   let myParams = params;
@@ -188,13 +182,13 @@ export async function getAllPlugins(params) {
     method: `GET`
   });
 }
-/* 查询单个插件 */
+/* findPlugin */
 export async function findPlugin(params) {
   return request(`${baseUrl}/plugin/${params.id}`, {
     method: `GET`
   });
 }
-/* 批量更改装态 */
+/* updatepluginEnabled */
 export async function updatepluginEnabled(params) {
   return request(`${baseUrl}/plugin/enabled`, {
     method: `POST`,
@@ -204,8 +198,8 @@ export async function updatepluginEnabled(params) {
     }
   })
 }
-// 认证管理
-/* 增加认证 */
+
+/* addAuth */
 export async function addAuth(params) {
   return request(`${baseUrl}/appAuth`, {
     method: `POST`,
@@ -214,14 +208,14 @@ export async function addAuth(params) {
     }
   });
 }
-/* 删除认证 */
+/* deleteAuth */
 export async function deleteAuth(params) {
   return request(`${baseUrl}/appAuth/batch`, {
     method: `DELETE`,
     body: [...params.list]
   });
 }
-/* 修改认证 */
+/* updateAuth */
 export async function updateAuth(params) {
   return request(`${baseUrl}/appAuth/${params.id}`, {
     method: `PUT`,
@@ -232,7 +226,7 @@ export async function updateAuth(params) {
     }
   });
 }
-/* 查询所有认证 */
+/* getAllAuth */
 export async function getAllAuth(params) {
   const { appKey, currentPage, pageSize } = params;
   let myParams = params;
@@ -245,14 +239,14 @@ export async function getAllAuth(params) {
     method: `GET`
   });
 }
-/* 同步Auth */
+/* syncAuthsData */
 export async function syncAuthsData() {
   return request(`${baseUrl}/appAuth/syncData`, {
     method: `POST`,
     body: {}
   })
 }
-/* 查询所有Auth */
+/* getAllAuths */
 export async function getAllAuths(params) {
   const { appKey,phone, currentPage, pageSize } = params;
   let myParams = params;
@@ -266,25 +260,25 @@ export async function getAllAuths(params) {
   });
 }
 
-/* 查询单个Auth */
+/* findAuthData */
 export async function findAuthData(params) {
   return request(`${baseUrl}/appAuth/detail?id=${params.id}`, {
     method: `GET`
   });
 }
-/* 查询单个Auth详情 */
+/* findAuthDataDel */
 export async function findAuthDataDel(params) {
   return request(`${baseUrl}/appAuth/detailPath?id=${params.id}`, {
     method: `GET`
   });
 }
-/* 查询所有需用到的元数据 */
+/* get all metadatas */
 export async function getAllMetadatas() {
   return request(`${baseUrl}/meta-data/findAll`,{
     method: `GET`
   })
 }
-/* 修改Auth */
+/* update auth */
 export async function updateAuthData(params) {
 
   return request(`${baseUrl}/appAuth/updateDetail`, {
@@ -294,14 +288,14 @@ export async function updateAuthData(params) {
     }
   })
 }
-/* 修改AuthDel */
+/* update authDel */
 export async function updateAuthDel(params) {
   return request(`${baseUrl}/appAuth/updateDetailPath`, {
     method: `POST`,
     body: params
   })
 }
-/* 添加Auth */
+/* add auth */
 export async function addAuthData(params) {
     return request(`${baseUrl}/appAuth/apply`, {
       method: `POST`,
@@ -310,7 +304,7 @@ export async function addAuthData(params) {
       }
     })
 }
-/* Auth中的批量启用或禁用 */
+/* batch enable auth */
 export async function updateAuthEnabled(params) {
   return request(`${baseUrl}/appAuth/batchEnabled`, {
     method: `POST`,
@@ -320,23 +314,21 @@ export async function updateAuthEnabled(params) {
     }
   })
 }
-/* 批量删除Auth */
+/* batch delete auth */
 export async function deleteAuths(params) {
   return request(`${baseUrl}/appAuth/batchDelete`,{
     method: `POST`,
     body: [...params.list]
   })
 }
-/* 查询单个认证 */
+/* find auth */
 export async function findAuth(params) {
   return request(`${baseUrl}/appAuth/${params.id}`, {
     method: `GET`
   });
 }
 
-// 选择器管理
-
-/* 增加选择器 */
+/* add selector */
 export async function addSelector(params) {
   return request(`${baseUrl}/selector`, {
     method: `POST`,
@@ -345,14 +337,14 @@ export async function addSelector(params) {
     }
   });
 }
-/* 删除选择器 */
+/* delete selector */
 export async function deleteSelector(params) {
   return request(`${baseUrl}/selector/batch`, {
     method: `DELETE`,
     body: [...params.list]
   });
 }
-/* 修改选择器 */
+/* update selector */
 export async function updateSelector(params) {
   return request(`${baseUrl}/selector/${params.id}`, {
     method: `PUT`,
@@ -361,13 +353,13 @@ export async function updateSelector(params) {
     }
   });
 }
-/* 查询所有选择器 */
+/* get all selectors */
 export async function getAllSelectors(params) {
   return request(`${baseUrl}/selector?${stringify(params)}`, {
     method: `GET`
   });
 }
-/* 查询单个选择器 */
+/* get single selector */
 export async function findSelector(params) {
   return request(`${baseUrl}/selector/${params.id}`, {
     method: `GET`
@@ -410,21 +402,21 @@ export async function updateRule(params) {
   });
 }
 
-/* 查询所有常量 */
+/* query constants */
 export async function queryPlatform() {
   return request(`${baseUrl}/platform/enum`, {
     method: `GET`
   });
 }
 
-/* 登录 */
+/* login */
 export async function queryLogin(params) {
   return request(`${baseUrl}/platform/login?${stringify(params)}`, {
     method: `GET`
   });
 }
 
-// 同步所有插件
+// sync all plugin
 export async function asyncPlugin() {
   return request(`${baseUrl}/plugin/syncPluginAll`, {
     method: `POST`
@@ -437,14 +429,14 @@ export async function asyncOnePlugin(params) {
   });
 }
 
-// 获取插件下拉列表
+// get plugin dropdown list
 export async function getPluginDropDownList() {
   return request(`${baseUrl}/plugin/all`, {
     method: `GET`
   });
 }
 
-// 获取插件处理字段列表
+// get plugin handle list
 export async function getAllPluginHandles(params) {
   const { pluginId, currentPage, pageSize } = params;
   let myParams = params;
@@ -457,7 +449,7 @@ export async function getAllPluginHandles(params) {
     method: `GET`
   });
 }
-// 添加插件处理字段
+// add plugin handle
 export async function addPluginHandle(params) {
   return request(`${baseUrl}/plugin-handle`,{
     method: `POST`,
@@ -466,14 +458,14 @@ export async function addPluginHandle(params) {
     }
   });
 }
-// 获取插件处理字段详情
+// get detail of plugin handle
 export async function findPluginHandle(params) {
   return request(`${baseUrl}/plugin-handle/${params.id}`,{
     method: 'GET'
   })
 }
 
-// 更新插件处理字段
+// update PluginHandle
 export async function updatePluginHandle(params) {
   return request(`${baseUrl}/plugin-handle/${params.id}`,{
     method: `PUT`,
@@ -483,8 +475,7 @@ export async function updatePluginHandle(params) {
   })
 }
 
-// 批量删除插件处理字段
-
+// batchDeletePluginHandle
 export async function batchDeletePluginHandle(params) {
   return request(`${baseUrl}/plugin-handle/batch`,{
     method: `DELETE`,
@@ -498,14 +489,14 @@ export function fetchPluginHandleByPluginId(params) {
   });
 }
 
-// 获取字典列表
+// fetch dict list
 export async function fetchSoulDicts(params) {
   return request(`${baseUrl}/soul-dict?${stringify(params)}`,{
     method: `GET`
   });
 }
 
-// 添加字典
+// add dict
 export async function addSoulDict(params) {
   return request(`${baseUrl}/soul-dict`,{
     method: `POST`,
@@ -515,14 +506,14 @@ export async function addSoulDict(params) {
   });
 }
 
-// 获取字典详情
+// get dict detail
 export async function findSoulDict(params) {
   return request(`${baseUrl}/soul-dict/${params.id}`,{
     method: 'GET'
   })
 }
 
-// 更新字典
+// update dict
 export async function updateSoulDict(params) {
   return request(`${baseUrl}/soul-dict/${params.id}`,{
     method: `PUT`,
@@ -532,7 +523,7 @@ export async function updateSoulDict(params) {
   })
 }
 
-// 批量删除字典
+// batch delete dicts
 export async function batchDeleteSoulDict(params) {
   return request(`${baseUrl}/soul-dict/batch`,{
     method: `DELETE`,

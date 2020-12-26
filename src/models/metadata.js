@@ -8,6 +8,7 @@ import {
   updateEnabled,
   syncData
 } from "../services/api";
+import {getIntlContent} from "../utils/IntlUtils";
 
 export default {
   namespace: "metadata",
@@ -23,7 +24,7 @@ export default {
       const json = yield call(getAllMetadata, payload);
       if (json.code === 200) {
         let { page, dataList } = json.data;
-        
+
         dataList = dataList.map(item => {
           item.key = item.id;
           return item;
@@ -39,7 +40,7 @@ export default {
     },
     *fetchItem(params, { call }) {
       const { payload, callback } = params;
-      
+
       const json = yield call(findMetadata, payload);
       if (json.code === 200) {
         const user = json.data;
@@ -48,10 +49,10 @@ export default {
     },
     *add(params, { call, put }) {
       const { payload, callback, fetchValue } = params;
-      
+
       const json = yield call(addMetadata, payload);
       if (json.code === 200) {
-        message.success("添加成功");
+        message.success(getIntlContent('SOUL.COMMON.RESPONSE.ADD.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -63,7 +64,7 @@ export default {
       const { list } = payload;
       const json = yield call(deleteMetadata, { list });
       if (json.code === 200) {
-        message.success("删除成功");
+        message.success(getIntlContent('SOUL.COMMON.RESPONSE.DELETE.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -74,7 +75,7 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(updateMetadata, payload);
       if (json.code === 200) {
-        message.success("修改成功");
+        message.success(getIntlContent('SOUL.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -83,10 +84,10 @@ export default {
     },
     *updateEn(params, {call, put}) {
       const { payload, fetchValue, callback } = params;
-      
+
       const json = yield call(updateEnabled, payload);
       if (json.code === 200) {
-        message.success("修改成功");
+        message.success(getIntlContent('SOUL.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -96,7 +97,7 @@ export default {
     *syncDa( params, {call}) {
       const { payload } = params;
       yield call(syncData,payload);
-      
+
     },
     *reload(params, { put }) {
       const { fetchValue } = params;
@@ -105,7 +106,7 @@ export default {
       yield put({ type: "fetch", payload });
     },
 
-    
+
   },
 
   reducers: {

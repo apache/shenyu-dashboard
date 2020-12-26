@@ -128,7 +128,7 @@ export default class Divide extends Component {
       });
     } else {
       message.destroy();
-      message.warn("请先添加选择器");
+      message.warn(getIntlContent('SOUL.COMMON.WARN.INPUT_SELECTOR'));
     }
   };
 
@@ -203,7 +203,6 @@ export default class Divide extends Component {
     this.getAllRules(page);
   };
 
-  // 点击选择器
   rowClick = record => {
     const { id } = record;
     const { dispatch } = this.props;

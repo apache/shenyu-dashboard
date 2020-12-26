@@ -4,12 +4,14 @@ import locales from './locales'
 export function initIntl(lang) {
   intl.init({
     currentLocale: lang,
-    locales
+    locales,
+    // eslint-disable-next-line no-unused-vars
+    warningHandler: message => {}
   })
 }
 
-export function getIntlContent(key) {
-  return intl.get(key);
+export function getIntlContent(key, defaultValue) {
+  return intl.get(key).defaultMessage(defaultValue);
 }
 
 export function getCurrentLocale(locale) {

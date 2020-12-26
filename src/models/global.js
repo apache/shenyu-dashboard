@@ -1,5 +1,6 @@
 import { message } from "antd";
 import { queryPlatform, getAllPlugins, asyncOnePlugin } from "../services/api";
+import {getIntlContent} from "../utils/IntlUtils";
 
 export default {
   namespace: "global",
@@ -44,7 +45,7 @@ export default {
       const { payload } = params;
       const json = yield call(asyncOnePlugin, payload);
       if (json.code === 200) {
-        message.success("同步成功");
+        message.success(getIntlContent('SOUL.COMMON.RESPONSE.SYNC.SUCCESS'));
       } else {
         message.warn(json.message);
       }

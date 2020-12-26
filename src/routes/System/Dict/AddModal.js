@@ -117,7 +117,7 @@ class AddModal extends Component {
               <Input placeholder={getIntlContent("SOUL.PLUGIN.SORT")} type="number" />
             )}
           </FormItem>
-          {/* 状态 */}
+          {/* status */}
           {this.props.isShow?
           (
             <FormItem
