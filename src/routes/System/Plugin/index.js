@@ -68,39 +68,49 @@ export default class Plugin extends Component {
         id: record.id
       },
       callback: plugin => {
-        this.setState({
-          popup: (
-            <AddModal
-              disabled={true}
-              {...plugin}
-              handleOk={values => {
-                const { name, enabled, id, role, config } = values;
-                dispatch({
-                  type: "plugin/update",
-                  payload: {
-                    config,
-                    role,
-                    name,
-                    enabled,
-                    id
-                  },
-                  fetchValue: {
-                    name: pluginName,
-                    currentPage,
-                    pageSize: 12
-                  },
-                  callback: () => {
-                    this.setState({ selectedRowKeys: [] });
+        dispatch({
+          type: "plugin/fetchByPluginId",
+          payload: {
+            pluginId: record.id,
+            type: '3'
+          },
+          callback: pluginConfigList => {
+            this.setState({
+              popup: (
+                <AddModal
+                  disabled={true}
+                  {...plugin}
+                  {...pluginConfigList}
+                  handleOk={values => {
+                    const { name, enabled, id, role, config } = values;
+                    dispatch({
+                      type: "plugin/update",
+                      payload: {
+                        config,
+                        role,
+                        name,
+                        enabled,
+                        id
+                      },
+                      fetchValue: {
+                        name: pluginName,
+                        currentPage,
+                        pageSize: 12
+                      },
+                      callback: () => {
+                        this.setState({ selectedRowKeys: [] });
+                        this.closeModal();
+                      }
+                    });
+                  }}
+                  handleCancel={() => {
                     this.closeModal();
-                  }
-                });
-              }}
-              handleCancel={() => {
-                this.closeModal();
-              }}
-            />
-          )
-        });
+                  }}
+                />
+              )
+            });
+          }
+        })
       }
     });
   };

@@ -6,7 +6,8 @@ import {
   deletePlugin,
   addPlugin,
   asyncPlugin,
-  updatepluginEnabled
+  updatepluginEnabled,
+  fetchPluginHandleByPluginId
 } from "../services/api";
 import {getIntlContent} from "../utils/IntlUtils";
 
@@ -115,7 +116,15 @@ export default {
       } else {
         message.warn(json.message);
       }
-    }
+    },
+    * fetchByPluginId(params, {call}) {
+      const {payload,callback} = params;
+      const json = yield call(fetchPluginHandleByPluginId, payload);
+      if (json.code === 200) {
+        callback(json);
+      }
+    },
+
   },
 
   reducers: {

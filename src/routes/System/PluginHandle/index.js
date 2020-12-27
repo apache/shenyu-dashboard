@@ -336,44 +336,45 @@ export default class PluginHandle extends Component {
             }
             return <div>{getIntlContent("SOUL.PLUGIN.UNDEFINETYPE")}</div>;
           }
-        },
-        {
-          align: "center",
-          title: getIntlContent("SOUL.PLUGIN.FIELDTYPE"),
-          dataIndex: "type",
-          key: "type",
-          ellipsis: true,
-          render: text => {
-            if (text === 1) {
-              return <div>{getIntlContent("SOUL.SELECTOR.NAME")}</div>;
-            } else if (text === 2) {
-              return <div>{getIntlContent("SOUL.PLUGIN.RULES")}</div>;
-            }
-            return <div>{getIntlContent("SOUL.PLUGIN.UNDEFINETYPE")}</div>;
-          }
-        },
-        {
-          align: "center",
-          title: getIntlContent("SOUL.PLUGIN.SORT"),
-          dataIndex: "sort",
-          key: "sort",
-          ellipsis: true,
-        },
-        {
-          align: "center",
-          title: getIntlContent("SOUL.PLUGIN.REQUIRED"),
-          dataIndex: "required",
-          key: "required",
-          ellipsis: true,
-          render: text => {
-            if (text === "1") {
-              return <div>{getIntlContent("SOUL.COMMON.YES")}</div>;
-            } else if (text === "0") {
-              return <div>{getIntlContent("SOUL.COMMON.NO")}</div>;
-            }
-          }
-        },
-        {
+      },
+      {
+        align: "center",
+        title: getIntlContent("SOUL.PLUGIN.FIELDTYPE"),
+        dataIndex: "type",
+        key: "type",
+        ellipsis:true,
+        render: text => {
+          if (text === 1) {
+            return <div>{getIntlContent("SOUL.SELECTOR.NAME")}</div>;
+          } else if (text === 2) {
+            return <div>{getIntlContent("SOUL.PLUGIN.RULES")}</div>;
+          } else if (text === 3) {
+            return <div>{getIntlContent("SOUL.PLUGIN")}</div>;
+          }return <div>{getIntlContent("SOUL.PLUGIN.UNDEFINETYPE")}</div>;
+        }
+      },
+      {
+        align: "center",
+        title: getIntlContent("SOUL.PLUGIN.SORT"),
+        dataIndex: "sort",
+        key: "sort",
+        ellipsis:true,
+      },
+      {
+        align: "center",
+        title: getIntlContent("SOUL.PLUGIN.REQUIRED"),
+        dataIndex: "required",
+        key: "required",
+        ellipsis:true,
+        render: text => {
+          if (text === "1") {
+            return <div>{getIntlContent("SOUL.COMMON.YES")}</div>;
+          } else if (text === "0") {
+            return <div>{getIntlContent("SOUL.COMMON.NO")}</div>;
+          }return <div>{getIntlContent("SOUL.PLUGIN.UNDEFINETYPE")}</div>;
+        }
+       },
+       {
           align: "center",
           title: getIntlContent("SOUL.PLUGIN.DEFAULTVALUE"),
           dataIndex: "defaultValue",
