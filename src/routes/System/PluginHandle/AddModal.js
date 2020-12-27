@@ -102,6 +102,7 @@ class AddPluginHandle extends Component {
               <Select>
                 <Option key="1" value="1">{getIntlContent("SOUL.SELECTOR.NAME")}</Option>
                 <Option key="2" value="2">{getIntlContent("SOUL.PLUGIN.RULES")}</Option>
+                <Option key="3" value="3">{getIntlContent("SOUL.PLUGIN")}</Option>
               </Select>
             )}
           </FormItem>

@@ -4,7 +4,6 @@ import { connect } from "dva";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Option } = Select;
-const { TextArea } = Input;
 const FormItem = Form.Item;
 
 @connect(({ global }) => ({
@@ -12,14 +11,22 @@ const FormItem = Form.Item;
 }))
 class AddModal extends Component {
   handleSubmit = e => {
-    const { form, handleOk, id = "" } = this.props;
+    const { form, handleOk, id = "" ,data} = this.props;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-
-        let { name, role, enabled, master, mode, url, password, config } = values;
-        if (name === 'rate_limiter') {
-          config = JSON.stringify({ master, mode, url, password })
+        let { name, role, enabled, config } = values;
+        if(data && data.length > 0){
+          config = {}
+          data.forEach((item) =>{
+            if(values[item.field]){
+              config[item.field] = values[item.field]
+            }
+          })
+          config = JSON.stringify(config)
+          if(config==='{}'){
+            config = ''
+          }
         }
         handleOk({ name, role, enabled, config, id });
       }
@@ -27,17 +34,14 @@ class AddModal extends Component {
   };
 
   render() {
-    let { handleCancel, platform, form, config, name, enabled = true, role = "1", id } = this.props;
-
+    let { handleCancel, form, config, name, enabled = true, role = "1", id,data } = this.props;
     let disable = false;
     if (id) {
       disable = true;
     } else {
       role = "1";
     }
-
     const { getFieldDecorator } = form;
-
     const formItemLayout = {
       labelCol: {
         sm: { span: 5 }
@@ -46,83 +50,9 @@ class AddModal extends Component {
         sm: { span: 19 }
       }
     };
-    let {
-      redisModeEnums,
-    } = platform;
-
-
-    let configWrap = ''
-
-
-    if (name === 'rate_limiter') {
-      try {
-        config = JSON.parse(config)
-      } catch (error) {
-        config = {}
-      }
-
-      const ruleMaster = this.props.form.getFieldValue('mode')
-      const reMaster = !!((ruleMaster === 'cluster' || ruleMaster === 'sentinel'))
-      configWrap = (
-        <Fragment>
-          <Divider>redis {getIntlContent("SOUL.COMMON.SETTING")}</Divider>
-          <FormItem label={getIntlContent("SOUL.PLUGIN.WAY")} {...formItemLayout}>
-            {getFieldDecorator("mode", {
-              rules: [{ required: true, message: getIntlContent("SOUL.PLUGIN.SELECT.WAY") }],
-              initialValue: config.mode
-            })(
-              <Select>
-                {redisModeEnums.map(item => {
-                  return (
-                    <Option key={item.name} value={item.name}>
-                      {item.name}
-                    </Option>
-                  );
-                })}
-              </Select>
-            )}
-          </FormItem>
-          <FormItem label="master" {...formItemLayout}>
-            {getFieldDecorator("master", {
-              rules: reMaster ? [{ required: true, message: getIntlContent("SOUL.PLUGIN.INPUT.MASTER") }] : [],
-              initialValue: config.master,
-            })(
-              <Input placeholder={getIntlContent("SOUL.PLUGIN.INPUT.MASTER")} />
-            )}
-          </FormItem>
-
-          <FormItem label="URL" {...formItemLayout}>
-            {getFieldDecorator("url", {
-              rules: [{ required: true, message: getIntlContent("SOUL.PLUGIN.INPUT.URL") }],
-              initialValue: config.url,
-            })(
-              <TextArea placeholder={getIntlContent("SOUL.PLUGIN.INPUT")} rows={3} />
-            )}
-          </FormItem>
-          <FormItem label={getIntlContent("SOUL.SYSTEM.PASSWORD")} {...formItemLayout}>
-            {getFieldDecorator("password", {
-              rules: [],
-              initialValue: config.password,
-            })(
-              <Input placeholder={getIntlContent("SOUL.SYSTEM.USER.PASSWORD")} />
-            )}
-          </FormItem>
-
-          <Divider />
-        </Fragment>
-      )
-    } else {
-      configWrap = (
-        <FormItem label={getIntlContent("SOUL.COMMON.SETTING")} {...formItemLayout}>
-          {getFieldDecorator("config", {
-            initialValue: config
-          })(
-            <TextArea placeholder={getIntlContent("SOUL.PLUGIN.INPUTSETTING")} rows={4} />
-          )}
-        </FormItem>
-      )
+    if(config){
+      config = JSON.parse(config)
     }
-
     return (
       <Modal
         width={520}
@@ -143,7 +73,69 @@ class AddModal extends Component {
               <Input placeholder={getIntlContent("SOUL.PLUGIN.PLUGIN.NAME")} disabled={disable} />
             )}
           </FormItem>
-          {configWrap}
+          {(data && data.length > 0) && (
+            <Fragment>
+              <Divider>{name} {getIntlContent("SOUL.COMMON.SETTING")}</Divider>
+              {data.map((eachField,index)=> {
+                let fieldInitialValue = config?config[eachField.field]:undefined
+                let fieldName = eachField.field
+                let dataType = eachField.dataType
+                let required = ''
+                if(eachField.extObj){
+                  let extObj = JSON.parse(eachField.extObj)
+                  required = extObj.required==='0'?'':extObj.required
+                  if(!fieldInitialValue){
+                    fieldInitialValue = extObj.defaultValue
+                  }
+                }
+                if(dataType === 1){
+                  return   (
+                    <FormItem label={eachField.label} {...formItemLayout} key={index}>
+                      {getFieldDecorator(fieldName, {
+                        rules:  required?[{ required: {required}, message: getIntlContent("SOUL.COMMON.PLEASEINPUT") }]:[] ,
+                        initialValue: fieldInitialValue,
+                      })(
+                        <Input placeholder={eachField.label} type="number" />
+                      )}
+                    </FormItem>
+                  )
+                } else if(dataType === 3 && eachField.dictOptions){
+                  return   (
+                    <FormItem label={eachField.label} {...formItemLayout} key={index}>
+                      {getFieldDecorator(fieldName, {
+                        rules:  required?[{ required: {required}, message: getIntlContent("SOUL.COMMON.PLEASEINPUT") }]:[] ,
+                        initialValue: fieldInitialValue,
+                      })(
+                        <Select
+                          placeholder={eachField.label}
+                        >
+                          {eachField.dictOptions.map(option => {
+                            return (
+                              <Option key={option.dictValue} value={option.dictValue}>
+                                {option.dictName} ({eachField.label})
+                              </Option>
+                            );
+                          })}
+                        </Select>
+                      )}
+                    </FormItem>
+                  )
+                }else{
+                  return   (
+                    <FormItem label={eachField.label} {...formItemLayout} key={index}>
+                      {getFieldDecorator(fieldName, {
+                        rules:  required?[{ required: {required}, message: getIntlContent("SOUL.COMMON.PLEASEINPUT") }]:[] ,
+                        initialValue: fieldInitialValue,
+                      })(
+                        <Input placeholder={eachField.label} />
+                      )}
+                    </FormItem>
+                  )
+                }
+              })}
+              <Divider />
+            </Fragment>
+          )}
           <FormItem
             label={getIntlContent("SOUL.SYSTEM.ROLE")}
             {...formItemLayout}
@@ -158,7 +150,6 @@ class AddModal extends Component {
               </Select>
             )}
           </FormItem>
-
           <FormItem {...formItemLayout} label={getIntlContent("SOUL.SYSTEM.STATUS")}>
             {getFieldDecorator("enabled", {
               initialValue: enabled,

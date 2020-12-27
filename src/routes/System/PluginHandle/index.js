@@ -330,6 +330,8 @@ export default class PluginHandle extends Component {
             return <div>{getIntlContent("SOUL.SELECTOR.NAME")}</div>;
           } else if (text === 2) {
             return <div>{getIntlContent("SOUL.PLUGIN.RULES")}</div>;
+          } else if (text === 3) {
+            return <div>{getIntlContent("SOUL.PLUGIN")}</div>;
           }return <div>{getIntlContent("SOUL.PLUGIN.UNDEFINETYPE")}</div>;
         }
       },
