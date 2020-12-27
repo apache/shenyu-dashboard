@@ -336,7 +336,6 @@ export default class PluginHandle extends Component {
             }
             return <div>{getIntlContent("SOUL.PLUGIN.UNDEFINETYPE")}</div>;
           }
-        }
       },
       {
         align: "center",
@@ -373,9 +372,9 @@ export default class PluginHandle extends Component {
           } else if (text === "0") {
             return <div>{getIntlContent("SOUL.COMMON.NO")}</div>;
           }return <div>{getIntlContent("SOUL.PLUGIN.UNDEFINETYPE")}</div>;
-         }
-        },
-        {
+        }
+       },
+       {
           align: "center",
           title: getIntlContent("SOUL.PLUGIN.DEFAULTVALUE"),
           dataIndex: "defaultValue",
