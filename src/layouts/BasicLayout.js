@@ -25,7 +25,7 @@ const { Content, Header } = Layout;
 const { AuthorizedRoute, check } = Authorized;
 
 /**
- * 根据菜单取得重定向地址.
+ * Get the redirect address from the menu.
  */
 const redirectData = [];
 const getRedirect = item => {
@@ -44,9 +44,10 @@ const getRedirect = item => {
 getMenuData().forEach(getRedirect);
 
 /**
- * 获取面包屑映射
- * @param {Object} menuData 菜单配置
- * @param {Object} routerData 路由配置
+ * Gets the breadcrumb map
+ *
+ * @param {Object} menuData
+ * @param {Object} routerData
  */
 const getBreadcrumbNameMap = (menuData, routerData) => {
   const result = {};
@@ -110,7 +111,7 @@ class BasicLayout extends React.PureComponent {
   getPageTitle() {
     const { routerData, location } = this.props;
     const { pathname } = location;
-    let title = "网关管理";
+    let title = "Gateway Management";
     let currRouterData = null;
     // match params path
     Object.keys(routerData).forEach(key => {
@@ -119,14 +120,13 @@ class BasicLayout extends React.PureComponent {
       }
     });
     if (currRouterData && currRouterData.name) {
-      title = `soul - 网关管理`;
+      title = `Soul - Gateway Management`;
     }
     return title;
   }
 
   getBaseRedirect = () => {
     // According to the url parameter to redirect
-    // 这里是重定向的,重定向到 url 的 redirect 参数所示地址
     const urlParams = new URL(window.location.href);
 
     const redirect = urlParams.searchParams.get("redirect");
@@ -166,7 +166,6 @@ class BasicLayout extends React.PureComponent {
       <Layout>
         <SiderMenu
           logo={logo}
-          // 不带Authorized参数的情况下如果没有权限,会强制跳到403界面
           // If you do not have the Authorized parameter
           // you will be forced to jump to the 403 interface without permission
           Authorized={Authorized}

@@ -129,7 +129,7 @@ export default class Hystrix extends Component {
       });
     } else {
       message.destroy();
-      message.warn("请先添加选择器");
+      message.warn(getIntlContent('SOUL.COMMON.WARN.INPUT_SELECTOR'));
     }
   };
 
@@ -202,7 +202,6 @@ export default class Hystrix extends Component {
     this.getAllRules(page);
   };
 
-  // 点击选择器
   rowClick = record => {
     const { id } = record;
     const { dispatch } = this.props;

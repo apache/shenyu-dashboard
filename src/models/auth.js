@@ -1,4 +1,5 @@
 import { message } from 'antd';
+import { getIntlContent } from '../utils/IntlUtils'
 import { getAllAuths, findAuthData,findAuthDataDel, updateAuthData,updateAuthDel,updateAuthEnabled, deleteAuths, addAuthData, syncAuthsData,getAllMetadata, getAllMetadatas, getfetchMetaGroup } from '../services/api';
 
 export default {
@@ -77,7 +78,7 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(addAuthData, payload);
       if (json.code === 200) {
-        message.success("添加成功");
+        message.success(getIntlContent('SOUL.COMMON.RESPONSE.ADD.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -89,7 +90,7 @@ export default {
 
       const json = yield call(deleteAuths, payload );
       if (json.code === 200) {
-        message.success("删除成功");
+        message.success(getIntlContent('SOUL.COMMON.RESPONSE.DELETE.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -101,7 +102,7 @@ export default {
 
       const json = yield call(updateAuthData, payload);
       if (json.code === 200) {
-        message.success("修改成功");
+        message.success(getIntlContent('SOUL.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -112,7 +113,7 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(updateAuthDel, payload);
       if (json.code === 200) {
-        message.success("修改成功");
+        message.success(getIntlContent('SOUL.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -129,7 +130,7 @@ export default {
       const {payload,fetchValue,callback} = params;
       const json = yield call (updateAuthEnabled,payload);
       if(json.code===200){
-        message.success("修改成功");
+        message.success(getIntlContent('SOUL.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
         yield put({type: "reload", fetchValue});
       } else {

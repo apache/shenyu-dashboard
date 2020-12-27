@@ -11,6 +11,7 @@ import {
   findRule,
   updateRule,
 } from "../services/api";
+import {getIntlContent} from "../utils/IntlUtils";
 
 export default {
   namespace: "divide",
@@ -80,7 +81,7 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(addSelector, payload);
       if (json.code === 200) {
-        message.success("添加成功");
+        message.success(getIntlContent('SOUL.COMMON.RESPONSE.ADD.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -92,7 +93,7 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(addRule, payload);
       if (json.code === 200) {
-        message.success("添加成功");
+        message.success(getIntlContent('SOUL.COMMON.RESPONSE.ADD.SUCCESS'));
         callback();
         yield put({ type: "reloadRule", fetchValue });
       } else {
@@ -113,7 +114,7 @@ export default {
       const { list } = payload;
       const json = yield call(deleteSelector, { list });
       if (json.code === 200) {
-        message.success("删除成功");
+        message.success(getIntlContent('SOUL.COMMON.RESPONSE.DELETE.SUCCESS'));
         yield put({
           type: "saveRule",
           payload: {
@@ -130,7 +131,7 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(updateSelector, payload);
       if (json.code === 200) {
-        message.success("修改成功");
+        message.success(getIntlContent('SOUL.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -142,7 +143,7 @@ export default {
       const { list } = payload;
       const json = yield call(deleteRule, { list });
       if (json.code === 200) {
-        message.success("删除成功");
+        message.success(getIntlContent('SOUL.COMMON.RESPONSE.DELETE.SUCCESS'));
         yield put({ type: "reloadRule", fetchValue });
       } else {
         message.warn(json.message);
@@ -160,7 +161,7 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(updateRule, payload);
       if (json.code === 200) {
-        message.success("修改成功");
+        message.success(getIntlContent('SOUL.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
         yield put({ type: "reloadRule", fetchValue });
       } else {

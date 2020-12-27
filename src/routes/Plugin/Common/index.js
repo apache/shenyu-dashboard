@@ -164,7 +164,7 @@ export default class Common extends Component {
       });
     } else {
       message.destroy();
-      message.warn("请先添加选择器");
+      message.warn(getIntlContent('SOUL.COMMON.WARN.INPUT_SELECTOR'));
     }
   };
 
@@ -239,7 +239,7 @@ export default class Common extends Component {
     this.getAllRules(page);
   };
 
-  // 点击选择器
+  // select
   rowClick = record => {
     const { id } = record;
     const { dispatch } = this.props;
@@ -425,9 +425,9 @@ export default class Common extends Component {
         key: "enabled",
         render: text => {
           if (text) {
-            return <div className="open">开启</div>;
+            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
           } else {
-            return <div className="close">关闭</div>;
+            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
           }
         }
       },
