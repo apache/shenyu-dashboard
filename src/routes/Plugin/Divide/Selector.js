@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { Modal, Form, Select, Input, Switch, Button, message } from "antd";
+import { Modal, Form, Select, Input, Switch, Button, message, Tooltip } from "antd";
 import { connect } from "dva";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
@@ -28,7 +28,10 @@ class AddModal extends Component {
         upstreamHost: "",
         protocol: "",
         upstreamUrl: "",
-        weight: "50"
+        weight: "50",
+        status: true,
+        timestamp: "0",
+        warmup: "0"
       }
     ];
 
@@ -64,7 +67,7 @@ class AddModal extends Component {
         const { paramType, operator, paramName, paramValue } = item;
         if (!paramType || !operator || !paramValue) {
           message.destroy();
-          message.error(`第${index + 1}行条件不完整`);
+          message.error(`Line ${index + 1} condition is incomplete`);
           result = false;
         }
         if (paramType === "uri" || paramType === "host" || paramType === "ip") {
@@ -73,14 +76,14 @@ class AddModal extends Component {
           // eslint-disable-next-line no-lonely-if
           if (!paramName) {
             message.destroy();
-            message.error(`第${index + 1}行条件不完整`);
+            message.error(`Line ${index + 1} condition is incomplete`);
             result = false;
           }
         }
       });
     } else {
       message.destroy();
-      message.error(`条件不完整`);
+      message.error(`Incomplete condition`);
       result = false;
     }
     return result;
@@ -91,19 +94,28 @@ class AddModal extends Component {
 
     if (upstreamList) {
       upstreamList.forEach((item, index) => {
-        const { upstreamHost, upstreamUrl, weight } = item;
+        const { upstreamHost, upstreamUrl, weight, status, timestamp, warmup } = item;
         if (!upstreamHost || !upstreamUrl || !weight) {
           message.destroy();
           message.error(
-            `第${index +
-              1}行http负载, upstreamHost和upstreamUrl, weight不能为空`
+            `Line ${index +
+            1} upstreamHost, upstreamUrl and weight can not be null`
           );
           result = false;
+        }
+        if (!timestamp) {
+          item.timestamp = "0";
+        }
+        if (!warmup) {
+          item.warmup = "0";
+        }
+        if (status === undefined) {
+          item.status = true;
         }
       });
     } else {
       message.destroy();
-      message.error(`http负载不完整`);
+      message.error(`The upstreamList is incomplete`);
       result = false;
     }
     return result;
@@ -155,7 +167,7 @@ class AddModal extends Component {
       selectorConditions.splice(index, 1);
     } else {
       message.destroy();
-      message.error("至少有一个条件");
+      message.error("At least one condition");
     }
     this.setState({ selectorConditions });
   };
@@ -183,7 +195,10 @@ class AddModal extends Component {
         upstreamHost: "",
         protocol: "",
         upstreamUrl: "",
-        weight: "50"
+        weight: "50",
+        status: true,
+        timestamp: "0",
+        warmup: "0"
       });
     } else {
       upstreamList = [];
@@ -204,7 +219,7 @@ class AddModal extends Component {
       upstreamList.splice(index, 1);
     } else {
       message.destroy();
-      message.error("至少有一个http负载");
+      message.error("At least one upstream");
     }
     this.setState({ upstreamList });
   };
@@ -271,7 +286,7 @@ class AddModal extends Component {
     };
     return (
       <Modal
-        width={900}
+        width={1100}
         centered
         title={getIntlContent("SOUL.SELECTOR.NAME")}
         visible
@@ -458,75 +473,150 @@ class AddModal extends Component {
             <div className={styles.content}>
               {upstreamList.map((item, index) => {
                 return (
-                  <ul key={index}>
-                    <li>
-                      <Input
-                        onChange={e => {
-                          this.divideHandleChange(
-                            index,
-                            "upstreamHost",
-                            e.target.value
-                          );
-                        }}
-                        placeholder="HostName"
-                        value={item.upstreamHost}
-                        style={{ width: 110 }}
-                      />
-                    </li>
-                    <li>
-                      <Input
-                        onChange={e => {
-                          this.divideHandleChange(
-                            index,
-                            "protocol",
-                            e.target.value
-                          );
-                        }}
-                        placeholder="http://"
-                        value={item.protocol}
-                        style={{ width: 100 }}
-                      />
-                    </li>
-                    <li>
-                      <Input
-                        onChange={e => {
-                          this.divideHandleChange(
-                            index,
-                            "upstreamUrl",
-                            e.target.value
-                          );
-                        }}
-                        placeholder="ip:port"
-                        value={item.upstreamUrl}
-                        style={{ width: 280 }}
-                      />
-                    </li>
+                  <table key={index}>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <Tooltip title="HostName">
+                            <Input
+                              addonBefore={<div style={{width:70}}>host</div>}
+                              onChange={e => {
+                              this.divideHandleChange(
+                                index,
+                                "upstreamHost",
+                                e.target.value
+                              );
+                            }}
+                              placeholder="HostName"
+                              value={item.upstreamHost}
+                              style={{ width: 200 }}
+                            />
+                          </Tooltip>
+                        </td>
+                        <td>
+                          <Tooltip title="protocol">
+                            <Input
+                              addonBefore={<div style={{width:70}}>protocol</div>}
+                              onChange={e => {
+                              this.divideHandleChange(
+                                index,
+                                "protocol",
+                                e.target.value
+                              );
+                            }}
+                              placeholder="http://"
+                              value={item.protocol}
+                              style={{ width: 200 }}
+                            />
+                          </Tooltip>
+                        </td>
+                        <td>
+                          <Tooltip title="ip:port">
+                            <Input
+                              addonBefore={<div style={{width:70}}>ip:port</div>}
+                              onChange={e => {
+                              this.divideHandleChange(
+                                index,
+                                "upstreamUrl",
+                                e.target.value
+                              );
+                            }}
+                              placeholder="ip:port"
+                              value={item.upstreamUrl}
+                              style={{ width: 200 }}
+                            />
+                          </Tooltip>
+                        </td>
 
-                    <li>
-                      <Input
-                        onChange={e => {
-                          this.divideHandleChange(
-                            index,
-                            "weight",
-                            e.target.value
-                          );
-                        }}
-                        placeholder="weight"
-                        value={item.weight}
-                        style={{ width: 80 }}
-                      />
-                    </li>
-                    <li>
-                      <Button
-                        type="danger"
-                        onClick={() => {
-                          this.divideHandleDelete(index);
-                        }}
-                      >
-                        {getIntlContent("SOUL.COMMON.DELETE.NAME")}
-                      </Button>
-                    </li>
-                  </ul>
+                        <td>
+                          <Tooltip title="weight">
+                            <Input
+                              addonBefore={<div style={{width:70}}>weight</div>}
+                              onChange={e => {
+                              this.divideHandleChange(
+                                index,
+                                "weight",
+                                e.target.value
+                              );
+                            }}
+                              placeholder="weight"
+                              value={item.weight}
+                              style={{ width: 200 }}
+                            />
+                          </Tooltip>
+                        </td>
+                        <td>
+                          <Button
+                            type="danger"
+                            onClick={() => {
+                            this.divideHandleDelete(index);
+                          }}
+                          >
+                            {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                          </Button>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                          <Tooltip title="startup timestamp">
+                            <Input
+                              addonBefore={<div style={{width:70}}>startupTime</div>}
+                              style={{ width: 200 }}
+                              onChange={e => {
+                              this.divideHandleChange(
+                                index,
+                                "timestamp",
+                                e.target.value
+                              );
+                            }}
+                              placeholder="timestamp"
+                              type="number"
+                              value={`${item.timestamp? item.timestamp : "0"}`}
+                            />
+                          </Tooltip>
+                        </td>
+
+                        <td>
+                          <Tooltip title="warmup time(ms)">
+                            <Input
+                              addonBefore={<div style={{width:70}}>warmupTime</div>}
+                              style={{ width: 200 }}
+                              onChange={e => {
+                              this.divideHandleChange(
+                                index,
+                                "warmup",
+                                e.target.value
+                              );
+                            }}
+                              placeholder="warmup time(ms)"
+                              type="number"
+                              value={`${item.warmup? item.warmup : "0"}`}
+                            />
+                          </Tooltip>
+                        </td>
+
+                        <td>
+                          <Tooltip title="status">
+                            <Select
+                              onChange={value => {
+                              this.divideHandleChange(
+                                index,
+                                "status",
+                                value
+                              );
+                            }}
+                              value={`${item.status? item.status : true}`}
+                              style={{ width: 200 }}
+                            >
+                              <Option key="open" value="true">open</Option>
+                              <Option key="close" value="false">close</Option>
+                            </Select>
+                          </Tooltip>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 );
               })}
             </div>
