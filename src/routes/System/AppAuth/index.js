@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { Table, Button, message,Popconfirm } from "antd";
 import { connect } from "dva";
-import { resizableComponents } from '../../../utils/resizable';
 import dayjs from "dayjs";
+import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
 import RelateMetadata from "./RelateMetadata"
 import AddTable from "./AddTable"
