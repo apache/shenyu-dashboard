@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Table, Button, message,Popconfirm } from "antd";
 import { connect } from "dva";
 import dayjs from "dayjs";
+import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
 import RelateMetadata from "./RelateMetadata"
 import AddTable from "./AddTable"
@@ -14,6 +15,8 @@ import {emit} from '../../../utils/emit'
   loading: loading.effects["auth/fetch"]
 }))
 export default class Auth extends Component {
+  components = resizableComponents;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -22,18 +25,31 @@ export default class Auth extends Component {
       appKey: "",
       phone: "",
       popup: "",
-      localeName:''
+      localeName:'',
+      initColumns: false
     };
   }
 
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllAuths(currentPage);
+    this.initPluginColumns();
   }
 
   componentDidMount(){
     emit.on('change_language', lang => this.changeLocale(lang))
   }
+
+  handleResize = index => (e, { size }) => {
+    this.setState(({ columns }) => {
+      const nextColumns = [...columns];
+      nextColumns[index] = {
+        ...nextColumns[index],
+        width: size.width,
+      };
+      return { columns: nextColumns };
+    });
+  };
 
   onSelectChange = selectedRowKeys => {
     this.setState({ selectedRowKeys });
@@ -317,110 +333,121 @@ export default class Auth extends Component {
     getCurrentLocale(this.state.localeName);
   }
 
+  initPluginColumns() {
+    if (this.state.initColumns) {
+      return;
+    }
+    this.setState({
+      columns: [
+        {
+          align: "center",
+          title: "AppKey",
+          dataIndex: "appKey",
+          key: "appKey",
+          ellipsis:true,
+          width: 180,
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.AUTH.ENCRYPTKEY"),
+          dataIndex: "appSecret",
+          key: "appSecret",
+          ellipsis:true,
+          width: 180,
+        },
+        {
+          align: "center",
+          title: `${getIntlContent("SOUL.SYSTEM.USER")}Id`,
+          dataIndex: "userId",
+          key: "userId",
+          ellipsis:true,
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.AUTH.TEL"),
+          dataIndex: "phone",
+          key: "phone",
+          ellipsis:true,
+        },
+
+        {
+          align: "center",
+          title: getIntlContent("SOUL.SYSTEM.STATUS"),
+          dataIndex: "enabled",
+          key: "enabled",
+          ellipsis:true,
+          render: text => {
+            if (text) {
+              return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
+            } else {
+              return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
+            }
+          }
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
+          dataIndex: "dateUpdated",
+          render: dateUpdated => dayjs(dateUpdated).format('YYYY-MM-DD HH:mm:ss' ),
+          key: "dateUpdated",
+          ellipsis:true,
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.COMMON.OPERAT"),
+          dataIndex: "operate",
+          key: "operate",
+          ellipsis:true,
+          render: (text, record) => {
+            return (
+              // 弹窗中的编辑事件
+              <div
+                className="edit"
+                onClick={() => {
+                  this.editClick(record);
+                }}
+              >
+                {getIntlContent("SOUL.SYSTEM.EDITOR")}
+              </div>
+            );
+          }
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.AUTH.OPERATPATH"),
+          dataIndex: "operates",
+          key: "operates",
+          ellipsis:true,
+          render: (text, record) => {
+            return (
+              // 弹窗中的编辑事件
+              <div
+                className="edit"
+                onClick={() => {
+                  this.editClickMeta(record);
+                }}
+              >
+                {getIntlContent("SOUL.AUTH.EDITOR.RESOURCE")}
+              </div>
+            );
+          }
+        }
+      ]
+    })
+    this.setState({"initColumns":true})
+  }
+
   render() {
     const { auth, loading } = this.props;
     const { authList, total } = auth;
     const { currentPage, selectedRowKeys, popup } = this.state;
-    const authColumns = [
-      {
-        align: "center",
-        title: "AppKey",
-        dataIndex: "appKey",
-        key: "appKey",
-        ellipsis:true,
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.AUTH.ENCRYPTKEY"),
-        dataIndex: "appSecret",
-        key: "appSecret",
-        ellipsis:true,
-      },
-      {
-        align: "center",
-        title: `${getIntlContent("SOUL.SYSTEM.USER")}Id`,
-        dataIndex: "userId",
-        key: "userId",
-        ellipsis:true,
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.AUTH.TEL"),
-        dataIndex: "phone",
-        key: "phone",
-        ellipsis:true,
-      },
-
-      {
-        align: "center",
-        title: getIntlContent("SOUL.SYSTEM.STATUS"),
-        dataIndex: "enabled",
-        key: "enabled",
-        ellipsis:true,
-        render: text => {
-          if (text) {
-            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
-          } else {
-            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
-          }
-        }
-      },
-      // {
-      //   align: "center",
-      //   title: "创建时间",
-      //   dataIndex: "dateCreated",
-      //   key: "dateCreated"
-      // },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
-        dataIndex: "dateUpdated",
-        render: dateUpdated => dayjs(dateUpdated).format('YYYY-MM-DD HH:mm:ss' ),
-        key: "dateUpdated",
-        ellipsis:true,
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.COMMON.OPERAT"),
-        dataIndex: "operate",
-        key: "operate",
-        ellipsis:true,
-        render: (text, record) => {
-          return (
-            // 弹窗中的编辑事件
-            <div
-              className="edit"
-              onClick={() => {
-                this.editClick(record);
-              }}
-            >
-              {getIntlContent("SOUL.SYSTEM.EDITOR")}
-            </div>
-          );
-        }
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.AUTH.OPERATPATH"),
-        dataIndex: "operates",
-        key: "operates",
-        ellipsis:true,
-        render: (text, record) => {
-          return (
-            // 弹窗中的编辑事件
-            <div
-              className="edit"
-              onClick={() => {
-                this.editClickMeta(record);
-              }}
-            >
-              {getIntlContent("SOUL.AUTH.EDITOR.RESOURCE")}
-            </div>
-          );
-        }
-      }
-    ];
-
+    const columns = this.state.columns.map((col, index) => ({
+      ...col,
+      onHeaderCell: column => ({
+        width: column.width,
+        onResize: this.handleResize(index),
+      }),
+    }));
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange
@@ -480,11 +507,12 @@ export default class Auth extends Component {
         {/* 表格 */}
         <Table
           size="small"
+          components={this.components}
           style={{ marginTop: 30 }}
           bordered
           rowKey={record => record.id}
           loading={loading}
-          columns={authColumns}
+          columns={columns}
           dataSource={authList}
           rowSelection={rowSelection}
           pagination={{
