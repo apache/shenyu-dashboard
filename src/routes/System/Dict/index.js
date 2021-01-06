@@ -22,8 +22,7 @@ export default class SoulDict extends Component {
       dictName: "",
       dictCode: "",
       popup: "",
-      localeName:'',
-      initColumns: false
+      localeName:''
     };
   }
 
@@ -291,9 +290,6 @@ export default class SoulDict extends Component {
   };
 
   initPluginColumns() {
-    if (this.state.initColumns) {
-      return;
-    }
     this.setState({
       columns: [
         {
@@ -378,7 +374,6 @@ export default class SoulDict extends Component {
         }
       ]
     })
-    this.setState({"initColumns":true})
   }
 
   render() {

@@ -22,8 +22,7 @@ export default class PluginHandle extends Component {
       selectedRowKeys: [],
       popup: "",
       pluginId:'',
-      localeName:'',
-      initColumns: false
+      localeName:''
     };
   }
 
@@ -267,9 +266,6 @@ export default class PluginHandle extends Component {
   }
 
   initPluginColumns() {
-    if (this.state.initColumns) {
-      return;
-    }
     this.setState({
       columns: [
         {
@@ -420,7 +416,6 @@ export default class PluginHandle extends Component {
         }
       ]
     })
-    this.setState({"initColumns":true})
   }
 
   render() {

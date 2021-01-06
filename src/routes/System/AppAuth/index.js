@@ -25,8 +25,7 @@ export default class Auth extends Component {
       appKey: "",
       phone: "",
       popup: "",
-      localeName:'',
-      initColumns: false
+      localeName:''
     };
   }
 
@@ -334,9 +333,6 @@ export default class Auth extends Component {
   }
 
   initPluginColumns() {
-    if (this.state.initColumns) {
-      return;
-    }
     this.setState({
       columns: [
         {
@@ -434,7 +430,6 @@ export default class Auth extends Component {
         }
       ]
     })
-    this.setState({"initColumns":true})
   }
 
   render() {

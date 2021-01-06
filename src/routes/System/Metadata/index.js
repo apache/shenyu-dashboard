@@ -20,8 +20,7 @@ export default class Metadata extends Component {
       selectedRowKeys: [],
       appName: "",
       popup: "",
-      localeName:'',
-      initColumns: false
+      localeName:''
     };
   }
 
@@ -256,9 +255,6 @@ export default class Metadata extends Component {
   }
 
   initPluginColumns() {
-    if (this.state.initColumns) {
-      return;
-    }
     this.setState({
       columns: [
         {
@@ -359,7 +355,6 @@ export default class Metadata extends Component {
         }
       ]
     })
-    this.setState({"initColumns":true})
   }
 
   render() {
