@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {Table, Input, Button, message, Popconfirm} from "antd";
 import { connect } from "dva";
+import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import { emit } from '../../../utils/emit'
@@ -10,6 +11,8 @@ import { emit } from '../../../utils/emit'
   loading: loading.effects["soulDict/fetch"]
 }))
 export default class SoulDict extends Component {
+  components = resizableComponents;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -19,18 +22,31 @@ export default class SoulDict extends Component {
       dictName: "",
       dictCode: "",
       popup: "",
-      localeName:''
+      localeName:'',
+      initColumns: false
     };
   }
 
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllDict(currentPage);
+    this.initPluginColumns();
   }
 
   componentDidMount(){
     emit.on('change_language', lang => this.changeLocale(lang))
   }
+
+  handleResize = index => (e, { size }) => {
+    this.setState(({ columns }) => {
+      const nextColumns = [...columns];
+      nextColumns[index] = {
+        ...nextColumns[index],
+        width: size.width,
+      };
+      return { columns: nextColumns };
+    });
+  };
 
   onSelectChange = selectedRowKeys => {
     this.setState({ selectedRowKeys });
@@ -274,89 +290,109 @@ export default class SoulDict extends Component {
     getCurrentLocale(this.state.localeName);
   };
 
+  initPluginColumns() {
+    if (this.state.initColumns) {
+      return;
+    }
+    this.setState({
+      columns: [
+        {
+          align: "center",
+          title: getIntlContent("SOUL.DIC.TYPE"),
+          dataIndex: "type",
+          key: "type",
+          ellipsis:true,
+          width: 150,
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.DIC.CODE"),
+          dataIndex: "dictCode",
+          key: "dictCode",
+          ellipsis:true,
+          width: 180,
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.DIC.NAME"),
+          dataIndex: "dictName",
+          key: "dictName",
+          ellipsis:true,
+          width: 180,
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.DIC.VALUE"),
+          dataIndex: "dictValue",
+          key: "dictValue",
+          ellipsis:true,
+          width: 70,
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.DIC.DESCRIBE"),
+          dataIndex: "desc",
+          key: "desc",
+          ellipsis:true,
+          width: 180,
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.PLUGIN.SORT"),
+          dataIndex: "sort",
+          key: "sort",
+          ellipsis:true,
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.SYSTEM.STATUS"),
+          dataIndex: "enabled",
+          ellipsis:true,
+          key: "enabled",
+          render: text => {
+            if (text) {
+              return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
+            } else {
+              return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
+            }
+          }
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.COMMON.OPERAT"),
+          ellipsis:true,
+          dataIndex: "operate",
+          key: "operate",
+          render: (text, record) => {
+            return (
+              <div
+                className="edit"
+                onClick={() => {
+                  this.editClick(record);
+                }}
+              >
+                {getIntlContent("SOUL.SYSTEM.EDITOR")}
+              </div>
+            );
+          }
+        }
+      ]
+    })
+    this.setState({"initColumns":true})
+  }
+
   render() {
     const { soulDict, loading } = this.props;
     const { soulDictList, total } = soulDict;
 
     const { currentPage, selectedRowKeys, type, dictCode, dictName, popup } = this.state;
-    const userColumns = [
-      {
-        align: "center",
-        title: getIntlContent("SOUL.DIC.TYPE"),
-        dataIndex: "type",
-        key: "type",
-        ellipsis:true,
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.DIC.CODE"),
-        dataIndex: "dictCode",
-        key: "dictCode",
-        ellipsis:true,
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.DIC.NAME"),
-        dataIndex: "dictName",
-        key: "dictName",
-        ellipsis:true,
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.DIC.VALUE"),
-        dataIndex: "dictValue",
-        key: "dictValue",
-        ellipsis:true,
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.DIC.DESCRIBE"),
-        dataIndex: "desc",
-        key: "desc",
-        ellipsis:true,
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.PLUGIN.SORT"),
-        dataIndex: "sort",
-        key: "sort",
-        ellipsis:true,
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.SYSTEM.STATUS"),
-        dataIndex: "enabled",
-        ellipsis:true,
-        key: "enabled",
-        render: text => {
-          if (text) {
-            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
-          } else {
-            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
-          }
-        }
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.COMMON.OPERAT"),
-        ellipsis:true,
-        dataIndex: "operate",
-        key: "operate",
-        render: (text, record) => {
-          return (
-            <div
-              className="edit"
-              onClick={() => {
-                this.editClick(record);
-              }}
-            >
-              {getIntlContent("SOUL.SYSTEM.EDITOR")}
-            </div>
-          );
-        }
-      }
-    ];
-
+    const columns = this.state.columns.map((col, index) => ({
+      ...col,
+      onHeaderCell: column => ({
+        width: column.width,
+        onResize: this.handleResize(index),
+      }),
+    }));
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange
@@ -425,11 +461,12 @@ export default class SoulDict extends Component {
 
         <Table
           size="small"
+          components={this.components}
           style={{ marginTop: 30 }}
           bordered
           rowKey={record => record.id}
           loading={loading}
-          columns={userColumns}
+          columns={columns}
           dataSource={soulDictList}
           rowSelection={rowSelection}
           pagination={{
