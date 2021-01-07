@@ -18,15 +18,6 @@ const middlewares = [];
 
 //   middlewares.push(logger);
 // }
-/** get session storage */
-if (window.sessionStorage.getItem('locale') === undefined || window.sessionStorage.getItem('locale') === null) {
-  initIntl('en-US');
-  window.sessionStorage.setItem('locale', 'en-US');
-} else {
-  initIntl(window.sessionStorage.getItem('locale'));
-}
-
-emit.on('change_language', lang => initIntl(lang));
 
 /** get session storage */
 if (window.sessionStorage.getItem('locale') === undefined || window.sessionStorage.getItem('locale') === null) {

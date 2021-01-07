@@ -5,8 +5,6 @@ import Selector from "./Selector";
 import Rule from "./Rule";
 import { getIntlContent, getCurrentLocale } from '../../../utils/IntlUtils'
 
-import { emit } from "../../../utils/emit";
-
 @connect(({ common, global, loading }) => ({
   ...global,
   ...common,
@@ -24,7 +22,6 @@ export default class Common extends Component {
   }
 
   componentDidMount() {
-    emit.on('change_language', lang => this.changeLocales(lang))
     const { dispatch } = this.props;
     dispatch({
       type: "global/fetchPlugins",

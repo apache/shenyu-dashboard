@@ -8,7 +8,6 @@ import RelateMetadata from "./RelateMetadata"
 import AddTable from "./AddTable"
 import SearchContent from "./SearchContent"
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
-import {emit} from '../../../utils/emit'
 
 @connect(({ auth, loading }) => ({
   auth,
@@ -33,10 +32,6 @@ export default class Auth extends Component {
     const { currentPage } = this.state;
     this.getAllAuths(currentPage);
     this.initPluginColumns();
-  }
-
-  componentDidMount(){
-    emit.on('change_language', lang => this.changeLocale(lang))
   }
 
   handleResize = index => (e, { size }) => {

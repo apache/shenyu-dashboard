@@ -4,7 +4,6 @@ import { connect } from "dva";
 import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
-import { emit } from '../../../utils/emit'
 
 @connect(({ soulDict, loading }) => ({
   soulDict,
@@ -30,10 +29,6 @@ export default class SoulDict extends Component {
     const { currentPage } = this.state;
     this.getAllDict(currentPage);
     this.initPluginColumns();
-  }
-
-  componentDidMount(){
-    emit.on('change_language', lang => this.changeLocale(lang))
   }
 
   handleResize = index => (e, { size }) => {

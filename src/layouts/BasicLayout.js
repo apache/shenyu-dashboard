@@ -15,6 +15,8 @@ import Authorized from "../utils/Authorized";
 import { getMenuData } from "../common/menu";
 import logo from "../assets/logo.svg";
 
+const MyContext = React.createContext();
+
 message.config({
   top: 200,
   duration: 2,
@@ -87,6 +89,13 @@ class BasicLayout extends React.PureComponent {
     breadcrumbNameMap: PropTypes.object
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US'
+    }
+  }
+
   getChildContext() {
     const { location, routerData } = this.props;
     return {
@@ -151,9 +160,16 @@ class BasicLayout extends React.PureComponent {
       type: "login/logout"
     });
   };
+  
+  changeLocalName = (value) => {
+    this.setState({
+      localeName: value
+    });
+  }
 
   render() {
     const { collapsed, routerData, match, location, plugins, dispatch, } = this.props;
+    const { localeName } = this.state;
     const bashRedirect = this.getBaseRedirect();
     const systemRoute = ["divide", "hystrix"];
     let menus = getMenuData();
@@ -182,6 +198,7 @@ class BasicLayout extends React.PureComponent {
               collapsed={collapsed}
               onCollapse={this.handleMenuCollapse}
               onLogout={this.handleLogout}
+              changeLocalName={this.changeLocalName}
             />
           </Header>
           <Content
@@ -214,19 +231,21 @@ class BasicLayout extends React.PureComponent {
     );
 
     return (
-      <DocumentTitle title={this.getPageTitle()}>
-        <ContainerQuery query={query}>
-          {params => (
-            <div style={{ minWidth: 1200 }} className={classNames(params)}>
-              {layout}
-            </div>
+      <MyContext.Provider value={localeName}>
+        <DocumentTitle title={this.getPageTitle()}>
+          <ContainerQuery query={query}>
+            {params => (
+              <div style={{ minWidth: 1200 }} className={classNames(params)}>
+                {layout}
+              </div>
           )}
-        </ContainerQuery>
-      </DocumentTitle>
+          </ContainerQuery>
+        </DocumentTitle>
+      </MyContext.Provider>
     );
   }
 }
 
 export default connect(({ global = {} }) => ({
-  collapsed: global.collapsed
+  collapsed: global.collapsed,
 }))(BasicLayout);

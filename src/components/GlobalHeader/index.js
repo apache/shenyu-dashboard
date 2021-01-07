@@ -24,18 +24,21 @@ export default class GlobalHeader extends PureComponent {
   }
 
   handleLocalesValueChange = value => {
+    const { changeLocalName } = this.props;
     if (value.key === '0') {
       emit.emit('change_language', 'en-US');
       window.sessionStorage.setItem('locale', 'en-US');
       this.setState({
         localeName: 'en-Us'
-      })
+      });
+      changeLocalName('en-Us');
     } else {
       emit.emit('change_language', 'zh-CN');
       window.sessionStorage.setItem('locale', 'zh-CN');
       this.setState({
         localeName: 'zh-CN'
-      })
+      });
+      changeLocalName('zh-CN');
     }
     getCurrentLocale(this.state.localeName);
   }
