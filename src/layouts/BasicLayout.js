@@ -83,7 +83,7 @@ const query = {
   plugins: global.plugins,
   loading: loading.effects["global/fetchPlugins"]
 }))
-class BasicLayout extends React.Component {
+class BasicLayout extends React.PureComponent {
   static childContextTypes = {
     location: PropTypes.object,
     breadcrumbNameMap: PropTypes.object
