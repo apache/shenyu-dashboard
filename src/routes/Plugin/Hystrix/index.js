@@ -4,7 +4,6 @@ import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
-import { emit } from "../../../utils/emit";
 
 @connect(({ hystrix, global, loading }) => ({
   ...global,
@@ -23,7 +22,6 @@ export default class Hystrix extends Component {
   }
 
   componentDidMount() {
-    emit.on('change_language', lang => this.changeLocales(lang))
     const { dispatch } = this.props;
 
     dispatch({

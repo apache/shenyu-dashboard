@@ -5,7 +5,7 @@ import { Link } from 'dva/router';
 import styles from './index.less';
 import { urlToList } from '../_utils/pathTools';
 import { getCurrentLocale, getIntlContent } from '../../utils/IntlUtils'
-import { emit } from '../../utils/emit'
+// import { emit } from '../../utils/emit'
 
 const { Sider } = Layout;
 const { SubMenu } = Menu;
@@ -62,10 +62,6 @@ export default class SiderMenu extends PureComponent {
       openKeys: this.getDefaultCollapsedSubMenus(props),
       localeName: ''
     };
-  }
-
-  componentDidMount(){
-    emit.on('change_language', lang => this.changeLocale(lang))
   }
 
   componentWillReceiveProps(nextProps) {

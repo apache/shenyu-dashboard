@@ -4,7 +4,6 @@ import {connect} from "dva";
 import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
-import { emit } from '../../../utils/emit';
 
 const { Option } = Select;
 
@@ -32,11 +31,6 @@ export default class PluginHandle extends Component {
     this.getPluginDropDownList();
     this.initPluginColumns();
   }
-
-  componentDidMount(){
-    emit.on('change_language', lang => this.changeLocale(lang))
-  }
-
 
   getAllPluginHandles = page => {
     const {dispatch} = this.props;

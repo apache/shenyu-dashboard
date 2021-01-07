@@ -3,7 +3,6 @@ import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
-import { emit } from '../../../utils/emit';
 
 @connect(({ manage, loading }) => ({
   manage,
@@ -24,10 +23,6 @@ export default class Manage extends Component {
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllUsers(currentPage);
-  }
-
-  componentDidMount() {
-    emit.on('change_language', lang => this.changeLocale(lang))
   }
 
   onSelectChange = selectedRowKeys => {

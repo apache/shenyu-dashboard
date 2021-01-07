@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "dva";
 import styles from "./home.less";
-import { emit } from "../../utils/emit";
 import { getCurrentLocale, getIntlContent } from '../../utils/IntlUtils'
 
 @connect(({ global }) => ({
@@ -21,7 +20,6 @@ export default class Home extends Component {
     dispatch({
       type: "global/fetchPlatform"
     });
-    emit.on('change_language', lang => this.changeLocales(lang))
   }
 
   changeLocales(locale) {
