@@ -12,7 +12,7 @@ soul-admin is a standard spring boot project,click [here](https://github.com/dro
 ## Prerequisite
 - node v8.0+
 
-## How Build
+## How to Build
 
 ### Configuration
 
