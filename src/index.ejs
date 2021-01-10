@@ -10,7 +10,7 @@
 </head>
 
 <body>
-  <div id="httpPath" style="display: none" th:text="<%='$'%>{domain}">${process.env.NODE_ENV === 'production' ? '' : 'http://10.1.200.84:9095'}</div>
+  <div id="httpPath" style="display: none" th:text="<%='$'%>{domain}">${process.env.NODE_ENV === 'production' ? '' : 'http://127.0.0.1:9095'}</div>
   <div id="root"></div>
 </body>
 
