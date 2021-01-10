@@ -162,9 +162,14 @@ class BasicLayout extends React.PureComponent {
   };
   
   changeLocalName = (value) => {
+    const { dispatch } = this.props;
     this.setState({
       localeName: value
     });
+    dispatch({
+      type: 'global/changeLanguage',
+      payload: value,
+    })
   }
 
   render() {
