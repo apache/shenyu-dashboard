@@ -5,8 +5,9 @@ import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 
-@connect(({ metadata, loading }) => ({
+@connect(({ metadata, loading, global }) => ({
   metadata,
+  language: global.language,
   loading: loading.effects["metadata/fetch"]
 }))
 export default class Metadata extends Component {
@@ -19,7 +20,7 @@ export default class Metadata extends Component {
       selectedRowKeys: [],
       appName: "",
       popup: "",
-      localeName:''
+      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
     };
   }
 
@@ -27,6 +28,15 @@ export default class Metadata extends Component {
     const { currentPage } = this.state;
     this.getAllMetadata(currentPage);
     this.initPluginColumns();
+  }
+
+  componentDidUpdate() {
+    const { language } = this.props;
+    const { localeName } = this.state;
+    if (language !== localeName) {
+      this.initPluginColumns();
+      this.changeLocale(language);
+    }
   }
 
   handleResize = index => (e, { size }) => {

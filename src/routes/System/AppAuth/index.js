@@ -9,8 +9,9 @@ import AddTable from "./AddTable"
 import SearchContent from "./SearchContent"
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 
-@connect(({ auth, loading }) => ({
+@connect(({ auth, loading, global }) => ({
   auth,
+  language: global.language,
   loading: loading.effects["auth/fetch"]
 }))
 export default class Auth extends Component {
@@ -24,7 +25,7 @@ export default class Auth extends Component {
       appKey: "",
       phone: "",
       popup: "",
-      localeName:''
+      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
     };
   }
 
@@ -32,6 +33,15 @@ export default class Auth extends Component {
     const { currentPage } = this.state;
     this.getAllAuths(currentPage);
     this.initPluginColumns();
+  }
+
+  componentDidUpdate() {
+    const { language } = this.props;
+    const { localeName } = this.state;
+    if (language !== localeName) {
+      this.initPluginColumns();
+      this.changeLocale(language);
+    }
   }
 
   handleResize = index => (e, { size }) => {

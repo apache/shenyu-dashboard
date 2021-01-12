@@ -5,8 +5,9 @@ import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 
-@connect(({ soulDict, loading }) => ({
+@connect(({ soulDict, loading, global }) => ({
   soulDict,
+  language: global.language,
   loading: loading.effects["soulDict/fetch"]
 }))
 export default class SoulDict extends Component {
@@ -21,7 +22,7 @@ export default class SoulDict extends Component {
       dictName: "",
       dictCode: "",
       popup: "",
-      localeName:''
+      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
     };
   }
 
@@ -29,6 +30,15 @@ export default class SoulDict extends Component {
     const { currentPage } = this.state;
     this.getAllDict(currentPage);
     this.initPluginColumns();
+  }
+
+  componentDidUpdate() {
+    const { language } = this.props;
+    const { localeName } = this.state;
+    if (language !== localeName) {
+      this.initPluginColumns();
+      this.changeLocale(language);
+    }
   }
 
   handleResize = index => (e, { size }) => {
