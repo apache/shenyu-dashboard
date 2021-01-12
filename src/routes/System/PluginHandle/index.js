@@ -7,8 +7,9 @@ import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 
 const { Option } = Select;
 
-@connect(({pluginHandle, loading}) => ({
+@connect(({pluginHandle, loading, global}) => ({
   pluginHandle,
+  language: global.language,
   loading: loading.effects["pluginHandle/fetch"]
 }))
 export default class PluginHandle extends Component {
@@ -21,15 +22,26 @@ export default class PluginHandle extends Component {
       selectedRowKeys: [],
       popup: "",
       pluginId:'',
-      localeName:''
+      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
     };
   }
 
-  componentWillMount() {
+  componentWillMount = async () => {
+    await this.getPluginDropDownList();
+
+    this.initPluginColumns();
+
     const {currentPage} = this.state;
     this.getAllPluginHandles(currentPage);
-    this.getPluginDropDownList();
-    this.initPluginColumns();
+  }
+
+  componentDidUpdate() {
+    const { language } = this.props;
+    const { localeName } = this.state;
+    if (language !== localeName) {
+      this.initPluginColumns();
+      this.changeLocale(language);
+    }
   }
 
   getAllPluginHandles = page => {
@@ -45,9 +57,9 @@ export default class PluginHandle extends Component {
     });
   };
 
-  getPluginDropDownList = () => {
+  getPluginDropDownList = async () => {
     const {dispatch} = this.props;
-    dispatch({
+    await dispatch({
       type: "pluginHandle/fetchPluginList",
     });
   };
@@ -415,10 +427,10 @@ export default class PluginHandle extends Component {
   render() {
     const {pluginHandle, loading} = this.props;
     const {pluginHandleList, total, pluginDropDownList} = pluginHandle;
-    const {currentPage, selectedRowKeys, pluginId, popup} = this.state;
+    const {currentPage, selectedRowKeys, pluginId, popup, columns = []} = this.state;
 
 
-    const columns = this.state.columns.map((col, index) => ({
+    const tableColumns = columns.map((col, index) => ({
       ...col,
       onHeaderCell: column => ({
         width: column.width,
@@ -486,7 +498,7 @@ export default class PluginHandle extends Component {
           style={{marginTop: 30}}
           bordered
           loading={loading}
-          columns={columns}
+          columns={tableColumns}
           dataSource={pluginHandleList}
           rowSelection={rowSelection}
           pagination={{
