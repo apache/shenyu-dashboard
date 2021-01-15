@@ -57,7 +57,7 @@
   "SOUL.SELECTOR.NAME": "Selector",
   "SOUL.SELECTOR.CONTINUE":"Continued",
   "SOUL.SELECTOR.PRINTLOG":"PrintLogs",
-  "SOUL.SELECTOR.WHETHEROPEN":"Disabled",
+  "SOUL.SELECTOR.WHETHEROPEN":"Enable",
   "SOUL.SELECTOR.EXEORDER": "Order",
   "SOUL.SELECTOR.INPUTNUMBER": "Please Enter The Number 1-100",
   "SOUL.SELECTOR.INPUTORDER": "You can fill in the numeric flag execution order between 1 and 100",
