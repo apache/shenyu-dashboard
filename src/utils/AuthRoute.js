@@ -11,7 +11,7 @@ const notCheckRouteUrl = ["/", "/home", "/plug/:id"];
 // menuItem cache  
 let menuCache = [];
 // menus cache  
-let authMenusCache = [];
+let authMenusCache = {};
 
 /**
  *  reset authorized menu cache
@@ -19,7 +19,7 @@ let authMenusCache = [];
  */
 export function resetAuthMenuCache() {
   menuCache = [];
-  authMenusCache = [];
+  authMenusCache = {};
 }
 
 /**
@@ -52,6 +52,8 @@ export function checkMenuAuth(routeUrl, permissions) {
 
 /**
  *  get all authorized menus
+ *  if authMenusCache is not empty,return from cahe;
+ *  Else return from building
  * 
  * @param {Array} menus
  * @param {Array} permissions
@@ -59,9 +61,14 @@ export function checkMenuAuth(routeUrl, permissions) {
  */
 export function getAuthMenus(menus, permissions, beginCache) {
   let authMenus = [];
-  if(beginCache && authMenusCache && authMenusCache.length > 0){
-    return authMenusCache;
-  }
+  if(beginCache && authMenusCache && Object.keys(authMenusCache).length > 0){
+    let locale = window.sessionStorage.getItem("locale");
+    let authCacheMenus =  authMenusCache[locale];
+    if(authCacheMenus && authCacheMenus.length > 0){
+      // console.log("cache")
+      return authCacheMenus;
+    }
+  }  
   if (menus && menus.length > 0) {
     sortMenus(menus, permissions);
     authMenus = JSON.parse(JSON.stringify(menus))
@@ -85,9 +92,9 @@ export function getAuthMenus(menus, permissions, beginCache) {
     authMenus = authMenus.filter(e=>!e.deleted);
   }
   if(beginCache){
-    authMenusCache = authMenus;
+    let locale = window.sessionStorage.getItem("locale");
+    authMenusCache[locale] = authMenus;
   }
-
   return authMenus;
 }
 

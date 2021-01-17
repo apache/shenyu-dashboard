@@ -25,7 +25,8 @@ export default {
             currentAuthority: "admin"
           }
         });
-        window.sessionStorage.setItem("token",response.data.token)
+        window.sessionStorage.setItem("token",response.data.token);
+        window.sessionStorage.setItem("userName",response.data.userName);
         /* const urlParams = new URL(window.location.href);
          const params = getPageQuery();
          let { redirect } = params;
@@ -56,7 +57,8 @@ export default {
           currentAuthority: ""
         }
       });
-      window.sessionStorage.removeItem("token")
+      window.sessionStorage.removeItem("token");
+      window.sessionStorage.removeItem("userName");
        yield put(
         routerRedux.push({
           pathname: "/user/login",

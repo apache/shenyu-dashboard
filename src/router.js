@@ -5,14 +5,15 @@ import enUS from 'antd/lib/locale-provider/en_US';
 import { getRouterData } from './common/router';
 import AuthRoute from './utils/AuthRoute';
 
-const { ConnectedRouter } = routerRedux; 
+const { ConnectedRouter } = routerRedux;
 
 function RouterConfig({ history, app }) {
+
   const routerData = getRouterData(app);
   const UserLayout = routerData['/user'].component;
   const BasicLayout = routerData['/'].component;
+
   return (
-    
     <ConfigProvider locale={enUS}>
       <ConnectedRouter history={history}>
         <Switch>

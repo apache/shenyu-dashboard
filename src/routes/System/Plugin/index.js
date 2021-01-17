@@ -1,16 +1,19 @@
 import React, { Component } from "react";
 import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
+import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
-import { emit } from '../../../utils/emit';
 import AuthButton from '../../../utils/AuthButton';
 
-@connect(({ plugin, loading }) => ({
+@connect(({ plugin, loading, global }) => ({
   plugin,
+  language: global.language,
   loading: loading.effects["plugin/fetch"]
 }))
 export default class Plugin extends Component {
+  components = resizableComponents;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -18,19 +21,35 @@ export default class Plugin extends Component {
       selectedRowKeys: [],
       name: "",
       popup: "",
-      localeName:''
+      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
     };
   }
 
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllPlugins(currentPage);
+    this.initPluginColumns();
   }
 
-  componentDidMount() {
-    emit.on('change_language', lang => this.changeLocale(lang))
+  componentDidUpdate() {
+    const { language } = this.props;
+    const { localeName } = this.state;
+    if (language !== localeName) {
+      this.initPluginColumns();
+      this.changeLocale(language);
+    }
   }
 
+  handleResize = index => (e, { size }) => {
+    this.setState(({ columns }) => {
+      const nextColumns = [...columns];
+      nextColumns[index] = {
+        ...nextColumns[index],
+        width: size.width,
+      };
+      return { columns: nextColumns };
+    });
+  };
 
   onSelectChange = selectedRowKeys => {
 
@@ -253,90 +272,103 @@ export default class Plugin extends Component {
     getCurrentLocale(this.state.localeName);
   }
 
+  initPluginColumns() {
+    this.setState({
+      columns: [
+        {
+          align: "center",
+          title: getIntlContent("SOUL.PLUGIN.PLUGIN.NAME"),
+          dataIndex: "name",
+          key: "name",
+          ellipsis:true,
+          width: 180,
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.SYSTEM.ROLE"),
+          dataIndex: "role",
+          ellipsis:true,
+          key: "role",
+          render: (text) => {
+            const map = {
+              0: getIntlContent("SOUL.SYSTEM.SYSTEM"),
+              1: getIntlContent("SOUL.SYSTEM.CUSTOM")
+            }
+            return <div>{map[text] || '----'}</div>
+          }
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.COMMON.SETTING"),
+          dataIndex: "config",
+          key: "config",
+          ellipsis:true,
+          width: 180,
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.SYSTEM.CREATETIME"),
+          dataIndex: "dateCreated",
+          key: "dateCreated",
+          ellipsis:true,
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
+          dataIndex: "dateUpdated",
+          key: "dateUpdated",
+          ellipsis:true,
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.SYSTEM.STATUS"),
+          dataIndex: "enabled",
+          key: "enabled",
+          ellipsis:true,
+          render: text => {
+            if (text) {
+              return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
+            } else {
+              return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
+            }
+          }
+        },
+        {
+          align: "center",
+          title: getIntlContent("SOUL.COMMON.OPERAT"),
+          dataIndex: "time",
+          key: "time",
+          ellipsis:true,
+          render: (text, record) => {
+            return (
+              <AuthButton perms="system:plugin:edit">
+                <div
+                  className="edit"
+                  onClick={() => {
+                    this.editClick(record);
+                  }}
+                >
+                  {getIntlContent("SOUL.SYSTEM.EDITOR")}
+                </div>
+              </AuthButton>
+            );
+          }
+        }
+      ]
+    })
+  }
+
   render() {
     const { plugin, loading } = this.props;
     const { pluginList, total } = plugin;
     const { currentPage, selectedRowKeys, name, popup } = this.state;
-    const pluginColumns = [
-      {
-        align: "center",
-        title: getIntlContent("SOUL.PLUGIN.PLUGIN.NAME"),
-        dataIndex: "name",
-        key: "name",
-        ellipsis:true,
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.SYSTEM.ROLE"),
-        dataIndex: "role",
-        ellipsis:true,
-        key: "role",
-        render: (text) => {
-          const map = {
-            0: getIntlContent("SOUL.SYSTEM.SYSTEM"),
-            1: getIntlContent("SOUL.SYSTEM.CUSTOM")
-          }
-          return <div>{map[text] || '----'}</div>
-        }
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.COMMON.SETTING"),
-        dataIndex: "config",
-        key: "config",
-        ellipsis:true,
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.SYSTEM.CREATETIME"),
-        dataIndex: "dateCreated",
-        key: "dateCreated",
-        ellipsis:true,
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
-        dataIndex: "dateUpdated",
-        key: "dateUpdated",
-        ellipsis:true,
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.SYSTEM.STATUS"),
-        dataIndex: "enabled",
-        key: "enabled",
-        ellipsis:true,
-        render: text => {
-          if (text) {
-            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
-          } else {
-            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
-          }
-        }
-      },
-      {
-        align: "center",
-        title: getIntlContent("SOUL.COMMON.OPERAT"),
-        dataIndex: "time",
-        key: "time",
-        ellipsis:true,
-        render: (text, record) => {
-          return (
-            <AuthButton perms="system:plugin:edit">
-              <div
-                className="edit"
-                onClick={() => {
-                  this.editClick(record);
-                }}
-              >
-                {getIntlContent("SOUL.SYSTEM.EDITOR")}
-              </div>
-            </AuthButton>
-          );
-        }
-      }
-    ];
-
+    const columns = this.state.columns.map((col, index) => ({
+      ...col,
+      onHeaderCell: column => ({
+        width: column.width,
+        onResize: this.handleResize(index),
+      }),
+    }));
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange
@@ -410,10 +442,11 @@ export default class Plugin extends Component {
 
         <Table
           size="small"
+          components={this.components}
           style={{ marginTop: 30 }}
           bordered
           loading={loading}
-          columns={pluginColumns}
+          columns={columns}
           dataSource={pluginList}
           rowSelection={rowSelection}
           pagination={{

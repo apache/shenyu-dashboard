@@ -3,9 +3,8 @@ import { Table, Row, Col, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
-import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
-import { emit } from "../../../utils/emit"
-import AuthButton from '../../../utils/AuthButton';
+import { getIntlContent } from "../../../utils/IntlUtils";
+import AuthButton from "../../../utils/AuthButton";
 
 @connect(({ divide, global, loading }) => ({
   ...global,
@@ -19,12 +18,10 @@ export default class Divide extends Component {
       selectorPage: 1,
       rulePage: 1,
       popup: "",
-      localeName:''
     };
   }
 
   componentDidMount() {
-    emit.on('change_language', lang => this.changeLocales(lang))
     const { dispatch, plugins } = this.props;
     if(plugins && plugins.length > 0){
       this.getAllSelectors(1, plugins);
@@ -294,13 +291,6 @@ export default class Divide extends Component {
       }
     });
   };
-
-  changeLocales(locale) {
-    this.setState({
-      localeName: locale
-    });
-    getCurrentLocale(this.state.localeName);
-  }
 
   render() {
     const { popup, selectorPage, rulePage } = this.state;

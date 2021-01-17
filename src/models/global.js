@@ -11,7 +11,8 @@ export default {
     platform: {},
     plugins: [],
     currentRouter: {},
-    permissions: {}
+    permissions: {},
+    language: '',
   },
 
   effects: {
@@ -89,6 +90,12 @@ export default {
   },
 
   reducers: {
+    changeLanguage(state, { payload} ) {
+      return {
+        ...state,
+      language: payload,
+      }
+    },
     changeLayoutCollapsed(state, { payload }) {
       return {
         ...state,

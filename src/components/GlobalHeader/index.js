@@ -19,36 +19,52 @@ export default class GlobalHeader extends PureComponent {
           </Menu.Item>
         </Menu>
       ),
-      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US'
+      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
+      userName: window.sessionStorage.getItem('userName')
     }
   }
 
   handleLocalesValueChange = value => {
+    const { changeLocalName } = this.props;
     if (value.key === '0') {
       emit.emit('change_language', 'en-US');
       window.sessionStorage.setItem('locale', 'en-US');
       this.setState({
         localeName: 'en-Us'
-      })
+      });
+      changeLocalName('en-Us');
     } else {
       emit.emit('change_language', 'zh-CN');
       window.sessionStorage.setItem('locale', 'zh-CN');
       this.setState({
         localeName: 'zh-CN'
-      })
+      });
+      changeLocalName('zh-CN');
     }
     getCurrentLocale(this.state.localeName);
   }
 
   render() {
-   const { onLogout } = this.props;
+    const { onLogout } = this.props;
+    const { userName } = this.state;
+    const menu = (
+      <Menu>
+        <Menu.Item key="0" onClick={onLogout}>
+          <Icon type="logout" /> {getIntlContent("SOUL.GLOBALHEADER.LOGOUT")}
+        </Menu.Item>
+      </Menu>
+    );
     return (
       <div className={styles.header}>
         <Dropdown placement="bottomCenter" overlay={this.state.menu} trigger={['click']}>
           <TranslationOutlined />
         </Dropdown>
-        <div className={styles.right} onClick={onLogout}>
-          <Icon type="logout" /> {getIntlContent("SOUL.GLOBALHEADER.LOGOUT")}
+        <div className={styles.right}>
+          <Dropdown overlay={menu}>
+            <span>
+              <Icon type="user" />{userName}<Icon type="down" />
+            </span>
+          </Dropdown> 
         </div>
       </div>
     );

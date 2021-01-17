@@ -3,7 +3,6 @@ import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
-import { emit } from '../../../utils/emit';
 import AuthButton from '../../../utils/AuthButton';
 
 @connect(({ manage, role, loading }) => ({
@@ -27,10 +26,6 @@ export default class Manage extends Component {
     const { currentPage } = this.state;
     this.getAllUsers(currentPage);
     this.getAllRoles();
-  }
-
-  componentDidMount() {
-    emit.on('change_language', lang => this.changeLocale(lang))
   }
 
   onSelectChange = selectedRowKeys => {
@@ -203,14 +198,14 @@ export default class Manage extends Component {
         title: getIntlContent("SOUL.SYSTEM.USERNAME"),
         dataIndex: "userName",
         key: "userName",
-        ellipsis: true,
+        ellipsis:true,
       },
       {
         align: "center",
         title: getIntlContent("SOUL.SYSTEM.STATUS"),
         dataIndex: "enabled",
         key: "enabled",
-        ellipsis: true,
+        ellipsis:true,
         render: text => {
           if (text) {
             return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
@@ -224,21 +219,21 @@ export default class Manage extends Component {
         title: getIntlContent("SOUL.SYSTEM.CREATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated",
-        ellipsis: true,
+        ellipsis:true,
       },
       {
         align: "center",
         title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
         dataIndex: "dateUpdated",
         key: "dateUpdated",
-        ellipsis: true,
+        ellipsis:true,
       },
       {
         align: "center",
         title: getIntlContent("SOUL.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
-        ellipsis: true,
+        ellipsis:true,
         render: (text, record) => {
           return (
             <AuthButton perms="system:manager:edit">

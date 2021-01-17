@@ -4,8 +4,7 @@ import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
 import { getIntlContent, getCurrentLocale } from '../../../utils/IntlUtils'
-import { emit } from "../../../utils/emit";
-import AuthButton from '../../../utils/AuthButton';
+import AuthButton from "../../../utils/AuthButton";
 
 @connect(({ common, global, loading }) => ({
   ...global,
@@ -24,7 +23,6 @@ export default class Common extends Component {
   }
 
   componentDidMount() {
-    emit.on('change_language', lang => this.changeLocales(lang))
     const { dispatch, plugins } = this.props;
     if(plugins && plugins.length > 0){
       this.getAllSelectors(1, plugins);

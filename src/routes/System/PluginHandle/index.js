@@ -4,13 +4,13 @@ import {connect} from "dva";
 import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
-import { emit } from '../../../utils/emit';
 import AuthButton from '../../../utils/AuthButton';
 
 const { Option } = Select;
 
-@connect(({pluginHandle, loading}) => ({
+@connect(({pluginHandle, loading, global}) => ({
   pluginHandle,
+  language: global.language,
   loading: loading.effects["pluginHandle/fetch"]
 }))
 export default class PluginHandle extends Component {
@@ -23,22 +23,27 @@ export default class PluginHandle extends Component {
       selectedRowKeys: [],
       popup: "",
       pluginId:'',
-      localeName:'',
-      initColumns: false
+      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
     };
   }
 
-  componentWillMount() {
+  componentWillMount = async () => {
+    await this.getPluginDropDownList();
+
+    this.initPluginColumns();
+
     const {currentPage} = this.state;
     this.getAllPluginHandles(currentPage);
-    this.getPluginDropDownList();
-    this.initPluginColumns();
   }
 
-  componentDidMount(){
-    emit.on('change_language', lang => this.changeLocale(lang))
+  componentDidUpdate() {
+    const { language } = this.props;
+    const { localeName } = this.state;
+    if (language !== localeName) {
+      this.initPluginColumns();
+      this.changeLocale(language);
+    }
   }
-
 
   getAllPluginHandles = page => {
     const {dispatch} = this.props;
@@ -53,9 +58,9 @@ export default class PluginHandle extends Component {
     });
   };
 
-  getPluginDropDownList = () => {
+  getPluginDropDownList = async () => {
     const {dispatch} = this.props;
-    dispatch({
+    await dispatch({
       type: "pluginHandle/fetchPluginList",
     });
   };
@@ -268,9 +273,6 @@ export default class PluginHandle extends Component {
   }
 
   initPluginColumns() {
-    if (this.state.initColumns) {
-      return;
-    }
     this.setState({
       columns: [
         {
@@ -420,16 +422,15 @@ export default class PluginHandle extends Component {
         }
       ]
     })
-    this.setState({"initColumns":true})
   }
 
   render() {
     const {pluginHandle, loading} = this.props;
     const {pluginHandleList, total, pluginDropDownList} = pluginHandle;
-    const {currentPage, selectedRowKeys, pluginId, popup} = this.state;
+    const {currentPage, selectedRowKeys, pluginId, popup, columns = []} = this.state;
 
 
-    const columns = this.state.columns.map((col, index) => ({
+    const tableColumns = columns.map((col, index) => ({
       ...col,
       onHeaderCell: column => ({
         width: column.width,
@@ -503,7 +504,7 @@ export default class PluginHandle extends Component {
           style={{marginTop: 30}}
           bordered
           loading={loading}
-          columns={columns}
+          columns={tableColumns}
           dataSource={pluginHandleList}
           rowSelection={rowSelection}
           pagination={{

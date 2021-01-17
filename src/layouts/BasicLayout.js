@@ -15,6 +15,8 @@ import AuthRoute, {checkMenuAuth, getAuthMenus } from "../utils/AuthRoute";
 import { getMenuData } from "../common/menu";
 import logo from "../assets/logo.svg";
 
+const MyContext = React.createContext();
+
 message.config({
   top: 200,
   duration: 2,
@@ -87,8 +89,12 @@ class BasicLayout extends React.PureComponent {
     breadcrumbNameMap: PropTypes.object
   };
 
-  state = {
-    pluginsLoaded: false
+  constructor(props) {
+    super(props);
+    this.state = {
+      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
+      pluginsLoaded: false
+    }
   }
 
   getChildContext() {
@@ -104,7 +110,7 @@ class BasicLayout extends React.PureComponent {
     dispatch({
       type: "global/fetchPlugins",
       payload: {
-        callback: () => { 
+        callback: () => {
           this.setState({
             pluginsLoaded: true
           })
@@ -118,7 +124,7 @@ class BasicLayout extends React.PureComponent {
     if(!token){
       this.props.history.push({
         pathname: '/user/login'
-      }) 
+      })
     }
   }
 
@@ -171,8 +177,20 @@ class BasicLayout extends React.PureComponent {
 
   };
 
+  changeLocalName = (value) => {
+    const { dispatch } = this.props;
+    this.setState({
+      localeName: value
+    });
+    dispatch({
+      type: 'global/changeLanguage',
+      payload: value,
+    })
+  }
+
   render() {
     const { collapsed, routerData, match, location, plugins, permissions, dispatch, } = this.props;
+    const { localeName, pluginsLoaded } = this.state;
     const bashRedirect = this.getBaseRedirect();
     const systemRoute = ["divide", "hystrix"];
     let menus = getMenuData();
@@ -181,7 +199,6 @@ class BasicLayout extends React.PureComponent {
         menus[0].children.push({ name: item.name, path: `/plug/${item.name}`, authority: undefined, id: item.id, locale: (`SOUL.MENU.PLUGIN.${ item.name.toUpperCase()}`) })
       }
     })
-    const { pluginsLoaded } = this.state;
     menus = getAuthMenus(menus, permissions, pluginsLoaded);
 
     const layout = (
@@ -201,6 +218,7 @@ class BasicLayout extends React.PureComponent {
               collapsed={collapsed}
               onCollapse={this.handleMenuCollapse}
               onLogout={this.handleLogout}
+              changeLocalName={this.changeLocalName}
             />
           </Header>
           <Content
@@ -233,19 +251,21 @@ class BasicLayout extends React.PureComponent {
     );
 
     return (
-      <DocumentTitle title={this.getPageTitle()}>
-        <ContainerQuery query={query}>
-          {params => (
-            <div style={{ minWidth: 1200 }} className={classNames(params)}>
-              {layout}
-            </div>
+      <MyContext.Provider value={localeName}>
+        <DocumentTitle title={this.getPageTitle()}>
+          <ContainerQuery query={query}>
+            {params => (
+              <div style={{ minWidth: 1200 }} className={classNames(params)}>
+                {layout}
+              </div>
           )}
-        </ContainerQuery>
-      </DocumentTitle>
+          </ContainerQuery>
+        </DocumentTitle>
+      </MyContext.Provider>
     );
   }
 }
 
 export default connect(({ global = {} }) => ({
-  collapsed: global.collapsed
+  collapsed: global.collapsed,
 }))(BasicLayout);

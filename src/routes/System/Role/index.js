@@ -2,8 +2,7 @@ import React, { Component } from "react";
 import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
-import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
-import { emit } from '../../../utils/emit';
+import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from '../../../utils/AuthButton';
 
 @connect(({ role, resource, loading }) => ({
@@ -18,18 +17,13 @@ export default class Role extends Component {
       currentPage: 1,
       selectedRowKeys: [],
       roleName: "",
-      popup: "",
-      localeName: ''
+      popup: ""
     };
   }
 
   componentWillMount() {
     const { currentPage } = this.state;
     this.getAllRoles(currentPage);
-  }
-
-  componentDidMount() {
-    emit.on('change_language', lang => this.changeLocale(lang))
   }
 
   onSelectChange = selectedRowKeys => {
@@ -171,13 +165,6 @@ export default class Role extends Component {
         />
       )
     });
-  };
-
-  changeLocale(locale) {
-    this.setState({
-      localeName: locale
-    });
-    getCurrentLocale(this.state.localeName);
   };
 
   render() {
