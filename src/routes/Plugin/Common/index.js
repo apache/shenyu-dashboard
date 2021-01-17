@@ -4,8 +4,8 @@ import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
 import { getIntlContent, getCurrentLocale } from '../../../utils/IntlUtils'
-
 import { emit } from "../../../utils/emit";
+import AuthButton from '../../../utils/AuthButton';
 
 @connect(({ common, global, loading }) => ({
   ...global,
@@ -25,15 +25,19 @@ export default class Common extends Component {
 
   componentDidMount() {
     emit.on('change_language', lang => this.changeLocales(lang))
-    const { dispatch } = this.props;
-    dispatch({
-      type: "global/fetchPlugins",
-      payload: {
-        callback: (plugins) => {
-          this.getAllSelectors(1, plugins);
+    const { dispatch, plugins } = this.props;
+    if(plugins && plugins.length > 0){
+      this.getAllSelectors(1, plugins);
+    }else{
+      dispatch({
+        type: "global/fetchPlugins",
+        payload: {
+          callback: (pluginList) => {
+            this.getAllSelectors(1, pluginList);
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -48,14 +52,18 @@ export default class Common extends Component {
         type: "common/resetData",
       });
 
-      dispatch({
-        type: "global/fetchPlugins",
-        payload: {
-          callback: (plugins) => {
-            this.getAllSelectors(1, plugins);
+      if(prevProps.plugins && prevProps.plugins.length > 0){
+        this.getAllSelectors(1, prevProps.plugins);
+      }else{
+        dispatch({
+          type: "global/fetchPlugins",
+          payload: {
+            callback: (pluginList) => {
+              this.getAllSelectors(1, pluginList);
+            }
           }
-        }
-      })
+        })
+      }
     }
   }
 
@@ -345,6 +353,7 @@ export default class Common extends Component {
       ruleTotal,
       currentSelector
     } = this.props;
+    const name = this.props.match.params ? this.props.match.params.id : '';
     const selectColumns = [
       {
         align: "center",
@@ -373,38 +382,42 @@ export default class Common extends Component {
         render: (text, record) => {
           return (
             <div>
-              <span
-                style={{ marginRight: 8 }}
-                className="edit"
-                onClick={e => {
-                  e.stopPropagation();
-                  this.editSelector(record);
-                }}
-              >
-                {getIntlContent("SOUL.COMMON.CHANGE")}
-              </span>
-              <Popconfirm
-                title={getIntlContent("SOUL.COMMON.DELETE")}
-                placement='bottom'
-                onCancel={(e) => {
-                  e.stopPropagation()
-                }}
-                onConfirm={(e) => {
-                  e.stopPropagation()
-                  this.deleteSelector(record);
-                }}
-                okText={getIntlContent("SOUL.COMMON.SURE")}
-                cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
-              >
+              <AuthButton perms={`plugin:${name}Selector:edit`}>
                 <span
+                  style={{ marginRight: 8 }}
                   className="edit"
-                  onClick={(e) => {
-                    e.stopPropagation()
+                  onClick={e => {
+                    e.stopPropagation();
+                    this.editSelector(record);
                   }}
                 >
-                  {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                  {getIntlContent("SOUL.COMMON.CHANGE")}
                 </span>
-              </Popconfirm>
+              </AuthButton>
+              <AuthButton perms={`plugin:${name}Selector:delete`}>
+                <Popconfirm
+                  title={getIntlContent("SOUL.COMMON.DELETE")}
+                  placement='bottom'
+                  onCancel={(e) => {
+                    e.stopPropagation()
+                  }}
+                  onConfirm={(e) => {
+                    e.stopPropagation()
+                    this.deleteSelector(record);
+                  }}
+                  okText={getIntlContent("SOUL.COMMON.SURE")}
+                  cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+                >
+                  <span
+                    className="edit"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                    }}
+                  >
+                    {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                  </span>
+                </Popconfirm>
+              </AuthButton>
             </div>
           );
         }
@@ -445,39 +458,42 @@ export default class Common extends Component {
         render: (text, record) => {
           return (
             <div>
-              <span
-                className="edit"
-                style={{ marginRight: 8 }}
-                onClick={e => {
-                  e.stopPropagation();
-                  this.editRule(record);
-                }}
-              >
-                {getIntlContent("SOUL.COMMON.CHANGE")}
-              </span>
-              <Popconfirm
-                title={getIntlContent("SOUL.COMMON.DELETE")}
-                placement='bottom'
-                onCancel={(e) => {
-                  e.stopPropagation()
-                }}
-                onConfirm={(e) => {
-                  e.stopPropagation()
-                  this.deleteRule(record);
-                }}
-                okText={getIntlContent("SOUL.COMMON.SURE")}
-                cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
-              >
+              <AuthButton perms={`plugin:${name}Rule:edit`}>
                 <span
                   className="edit"
-                  onClick={(e) => {
-                    e.stopPropagation()
+                  style={{ marginRight: 8 }}
+                  onClick={e => {
+                    e.stopPropagation();
+                    this.editRule(record);
                   }}
                 >
-                  {getIntlContent("SOUL.COMMON.DELETE.NAME")}
-
+                  {getIntlContent("SOUL.COMMON.CHANGE")}
                 </span>
-              </Popconfirm>
+              </AuthButton>
+              <AuthButton perms={`plugin:${name}Rule:delete`}>
+                <Popconfirm
+                  title={getIntlContent("SOUL.COMMON.DELETE")}
+                  placement='bottom'
+                  onCancel={(e) => {
+                    e.stopPropagation()
+                  }}
+                  onConfirm={(e) => {
+                    e.stopPropagation()
+                    this.deleteRule(record);
+                  }}
+                  okText={getIntlContent("SOUL.COMMON.SURE")}
+                  cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+                >
+                  <span
+                    className="edit"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                    }}
+                  >
+                    {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                  </span>
+                </Popconfirm>
+              </AuthButton>
             </div>
           );
         }
@@ -490,9 +506,11 @@ export default class Common extends Component {
           <Col span={8}>
             <div className="table-header">
               <h3>{getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
-              <Button type="primary" onClick={this.addSelector}>
-                {getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.ADD")}
-              </Button>
+              <AuthButton perms={`plugin:${name}Selector:add`}>
+                <Button type="primary" onClick={this.addSelector}>
+                  {getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.ADD")}
+                </Button>
+              </AuthButton>
             </div>
             <Table
               size="small"
@@ -526,13 +544,17 @@ export default class Common extends Component {
             <div className="table-header">
               <div style={{ display: "flex" }}>
                 <h3 style={{ marginRight: 30 }}>{getIntlContent("SOUL.PLUGIN.SELECTOR.RULE.LIST")}</h3>
-                <Button icon="reload" onClick={this.asyncClick} type="primary">
-                  {getIntlContent("SOUL.COMMON.SYN")} {this.props.match.params ? this.props.match.params.id : ''}
-                </Button>
+                <AuthButton perms={`plugin:${name }:modify`}>
+                  <Button icon="reload" onClick={this.asyncClick} type="primary">
+                    {getIntlContent("SOUL.COMMON.SYN")} {name}
+                  </Button>
+                </AuthButton>
               </div>
-              <Button type="primary" onClick={this.addRule}>
-                {getIntlContent("SOUL.COMMON.ADD.RULE")}
-              </Button>
+              <AuthButton perms={`plugin:${name}Rule:add`}>
+                <Button type="primary" onClick={this.addRule}>
+                  {getIntlContent("SOUL.COMMON.ADD.RULE")}
+                </Button>
+              </AuthButton>
             </div>
             <Table
               size="small"

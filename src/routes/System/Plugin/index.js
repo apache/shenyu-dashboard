@@ -4,6 +4,7 @@ import { connect } from "dva";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import { emit } from '../../../utils/emit';
+import AuthButton from '../../../utils/AuthButton';
 
 @connect(({ plugin, loading }) => ({
   plugin,
@@ -321,7 +322,7 @@ export default class Plugin extends Component {
         ellipsis:true,
         render: (text, record) => {
           return (
-            <div>
+            <AuthButton perms="system:plugin:edit">
               <div
                 className="edit"
                 onClick={() => {
@@ -330,8 +331,7 @@ export default class Plugin extends Component {
               >
                 {getIntlContent("SOUL.SYSTEM.EDITOR")}
               </div>
-            </div>
-
+            </AuthButton>
           );
         }
       }
@@ -351,52 +351,61 @@ export default class Plugin extends Component {
             placeholder={getIntlContent("SOUL.PLUGIN.INPUTNAME")}
             style={{ width: 240 }}
           />
-          <Button
-            type="primary"
-            style={{ marginLeft: 20 }}
-            onClick={this.searchClick}
-          >
-            {getIntlContent("SOUL.SYSTEM.SEARCH")}
-          </Button>
-
-          <Popconfirm
-            title={getIntlContent("SOUL.COMMON.DELETE")}
-            placement='bottom'
-            onConfirm={() => {
-              this.deleteClick()
-            }}
-            okText={getIntlContent("SOUL.COMMON.SURE")}
-            cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
-          >
+          <AuthButton perms="system:plugin:list">
+            <Button
+              type="primary"
+              style={{ marginLeft: 20 }}
+              onClick={this.searchClick}
+            >
+              {getIntlContent("SOUL.SYSTEM.SEARCH")}
+            </Button>
+          </AuthButton>
+          <AuthButton perms="system:plugin:delete">
+            <Popconfirm
+              title={getIntlContent("SOUL.COMMON.DELETE")}
+              placement='bottom'
+              onConfirm={() => {
+                this.deleteClick()
+              }}
+              okText={getIntlContent("SOUL.COMMON.SURE")}
+              cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+            >
+              <Button
+                style={{ marginLeft: 20 }}
+                type="danger"
+              >
+                {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
+              </Button>
+            </Popconfirm>
+          </AuthButton>
+          <AuthButton perms="system:plugin:add">
             <Button
               style={{ marginLeft: 20 }}
-              type="danger"
+              type="primary"
+              onClick={this.addClick}
             >
-              {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
+              {getIntlContent("SOUL.SYSTEM.ADDDATA")}
             </Button>
-          </Popconfirm>
-          <Button
-            style={{ marginLeft: 20 }}
-            type="primary"
-            onClick={this.addClick}
-          >
-            {getIntlContent("SOUL.SYSTEM.ADDDATA")}
-          </Button>
-          <Button
-            style={{ marginLeft: 20 }}
-            icon="reload"
-            type="primary"
-            onClick={this.syncAllClick}
-          >
-            {getIntlContent("SOUL.PLUGIN.SYNCALLDATA")}
-          </Button>
-          <Button
-            style={{ marginLeft: 20 }}
-            type="primary"
-            onClick={this.enableClick}
-          >
-            {getIntlContent("SOUL.PLUGIN.BATCH")}
-          </Button>
+          </AuthButton>
+          <AuthButton perms="system:plugin:modify">
+            <Button
+              style={{ marginLeft: 20 }}
+              icon="reload"
+              type="primary"
+              onClick={this.syncAllClick}
+            >
+              {getIntlContent("SOUL.PLUGIN.SYNCALLDATA")}
+            </Button>
+          </AuthButton>
+          <AuthButton perms="system:plugin:disable">
+            <Button
+              style={{ marginLeft: 20 }}
+              type="primary"
+              onClick={this.enableClick}
+            >
+              {getIntlContent("SOUL.PLUGIN.BATCH")}
+            </Button>
+          </AuthButton>
         </div>
 
         <Table

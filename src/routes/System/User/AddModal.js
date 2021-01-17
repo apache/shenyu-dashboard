@@ -18,7 +18,7 @@ class AddModal extends Component {
   }
 
   render() {
-    let { handleCancel, form, userName = '', password = '', role = '', enabled = true } = this.props;
+    let { handleCancel, form, userName = '', password = '', roles = [], enabled = true, allRoles = [] } = this.props;
 
     const { getFieldDecorator } = form;
     const formItemLayout = {
@@ -49,7 +49,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: getIntlContent("SOUL.SYSTEM.USER.NAME") }],
               initialValue: userName,
             })(
-              <Input placeholder={getIntlContent("SOUL.SYSTEM.USERNAME")} />
+              <Input readOnly={userName === "admin"} placeholder={getIntlContent("SOUL.SYSTEM.USERNAME")} />
             )}
           </FormItem>
           <FormItem
@@ -67,13 +67,12 @@ class AddModal extends Component {
             label={getIntlContent("SOUL.SYSTEM.ROLE")}
             {...formItemLayout}
           >
-            {getFieldDecorator('role', {
+            {getFieldDecorator('roles', {
               rules: [{ required: true, message: getIntlContent("SOUL.SYSTEM.SELECTROLE")}],
-              initialValue: role.toString(),
+              initialValue: roles.map(e=>e.id),
             })(
-              <Select>
-                <Option value="0">{getIntlContent("SOUL.SYSTEM.ADMIN")}</Option>
-                <Option value="1">{getIntlContent("SOUL.SYSTEM.USER")}</Option>
+              <Select mode="multiple" placeholder={getIntlContent("SOUL.SYSTEM.SELECTROLE")} style={{width: '100%'}}>
+                {allRoles.map((roleItem)=><Option value={roleItem.id} key={roleItem.id}>{roleItem.roleName}</Option>)}
               </Select>
             )}
           </FormItem>

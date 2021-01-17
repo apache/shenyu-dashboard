@@ -1,6 +1,7 @@
 import React from "react";
 import { Form, Input, Button } from 'antd';
 import { getIntlContent } from "../../../utils/IntlUtils";
+import AuthButton from '../../../utils/AuthButton';
 
 class InlineSearch extends React.Component {
 
@@ -36,9 +37,11 @@ class InlineSearch extends React.Component {
           )}
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit">
-            {getIntlContent("SOUL.SYSTEM.SEARCH")}
-          </Button>
+          <AuthButton perms="system:authen:list">
+            <Button type="primary" htmlType="submit">
+              {getIntlContent("SOUL.SYSTEM.SEARCH")}
+            </Button>
+          </AuthButton>
         </Form.Item>
       </Form>
     );

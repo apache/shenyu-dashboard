@@ -5,6 +5,7 @@ import Selector from "./Selector";
 import Rule from "./Rule";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import { emit } from "../../../utils/emit";
+import AuthButton from '../../../utils/AuthButton';
 
 @connect(({ hystrix, global, loading }) => ({
   ...global,
@@ -24,16 +25,20 @@ export default class Hystrix extends Component {
 
   componentDidMount() {
     emit.on('change_language', lang => this.changeLocales(lang))
-    const { dispatch } = this.props;
+    const { dispatch , plugins } = this.props;
 
-    dispatch({
-      type: "global/fetchPlugins",
-      payload: {
-        callback: (plugins) => {
-          this.getAllSelectors(1, plugins);
+    if(plugins && plugins.length > 0){
+      this.getAllSelectors(1, plugins);
+    }else{
+      dispatch({
+        type: "global/fetchPlugins",
+        payload: {
+          callback: (pluginList) => {
+            this.getAllSelectors(1, pluginList);
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   getAllSelectors = (page, plugins) => {
@@ -343,28 +348,30 @@ export default class Hystrix extends Component {
               >
                 {getIntlContent("SOUL.COMMON.CHANGE")}
               </span>
-              <Popconfirm
-                title={getIntlContent("SOUL.COMMON.DELETE")}
-                placement='bottom'
-                onCancel={(e) => {
-                  e.stopPropagation()
-                }}
-                onConfirm={(e) => {
-                  e.stopPropagation()
-                  this.deleteSelector(record);
-                }}
-                okText={getIntlContent("SOUL.COMMON.SURE")}
-                cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
-              >
-                <span
-                  className="edit"
-                  onClick={(e) => {
+              <AuthButton perms="plugin:hystrixSelector:delete">
+                <Popconfirm
+                  title={getIntlContent("SOUL.COMMON.DELETE")}
+                  placement='bottom'
+                  onCancel={(e) => {
                     e.stopPropagation()
                   }}
+                  onConfirm={(e) => {
+                    e.stopPropagation()
+                    this.deleteSelector(record);
+                  }}
+                  okText={getIntlContent("SOUL.COMMON.SURE")}
+                  cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
                 >
-                  {getIntlContent("SOUL.COMMON.DELETE.NAME")}
-                </span>
-              </Popconfirm>
+                  <span
+                    className="edit"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                    }}
+                  >
+                    {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                  </span>
+                </Popconfirm>
+              </AuthButton>
             </div>
           );
         }
@@ -415,30 +422,30 @@ export default class Hystrix extends Component {
               >
                 {getIntlContent("SOUL.COMMON.CHANGE")}
               </span>
-
-              <Popconfirm
-                title={getIntlContent("SOUL.COMMON.DELETE")}
-                placement='bottom'
-                onCancel={(e) => {
-                  e.stopPropagation()
-                }}
-                onConfirm={(e) => {
-                  e.stopPropagation()
-                  this.deleteRule(record);
-                }}
-                okText={getIntlContent("SOUL.COMMON.SURE")}
-                cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
-              >
-                <span
-                  className="edit"
-                  onClick={(e) => {
+              <AuthButton perms="plugin:hystrixRule:delete">
+                <Popconfirm
+                  title={getIntlContent("SOUL.COMMON.DELETE")}
+                  placement='bottom'
+                  onCancel={(e) => {
                     e.stopPropagation()
                   }}
+                  onConfirm={(e) => {
+                    e.stopPropagation()
+                    this.deleteRule(record);
+                  }}
+                  okText={getIntlContent("SOUL.COMMON.SURE")}
+                  cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
                 >
-                  {getIntlContent("SOUL.COMMON.DELETE.NAME")}
-                </span>
-              </Popconfirm>
-
+                  <span
+                    className="edit"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                    }}
+                  >
+                    {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                  </span> 
+                </Popconfirm>
+              </AuthButton>
             </div>
           );
         }
@@ -451,9 +458,11 @@ export default class Hystrix extends Component {
           <Col span={8}>
             <div className="table-header">
               <h3>{getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
-              <Button type="primary" onClick={this.addSelector}>
-                {getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.ADD")}
-              </Button>
+              <AuthButton perms="plugin:hystrixSelector:add">
+                <Button type="primary" onClick={this.addSelector}>
+                  {getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.ADD")}
+                </Button>
+              </AuthButton>
             </div>
             <Table
               size="small"
@@ -487,13 +496,17 @@ export default class Hystrix extends Component {
             <div className="table-header">
               <div style={{ display: "flex" }}>
                 <h3 style={{ marginRight: 30 }}>{getIntlContent("SOUL.PLUGIN.SELECTOR.RULE.LIST")}</h3>
-                <Button icon="reload" onClick={this.asyncClick} type="primary">
-                  {getIntlContent("SOUL.COMMON.SYN")} hystrix
-                </Button>
+                <AuthButton perms="plugin:hystrix:modify">
+                  <Button icon="reload" onClick={this.asyncClick} type="primary">
+                    {getIntlContent("SOUL.COMMON.SYN")} hystrix
+                  </Button>
+                </AuthButton>
               </div>
-              <Button type="primary" onClick={this.addRule}>
-                {getIntlContent("SOUL.COMMON.ADD.RULE")}
-              </Button>
+              <AuthButton perms="plugin:hystrixRule:add">
+                <Button type="primary" onClick={this.addRule}>
+                  {getIntlContent("SOUL.COMMON.ADD.RULE")}
+                </Button>
+              </AuthButton>
             </div>
             <Table
               size="small"

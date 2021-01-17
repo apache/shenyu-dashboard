@@ -5,6 +5,7 @@ import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import { emit } from '../../../utils/emit';
+import AuthButton from '../../../utils/AuthButton';
 
 const { Option } = Select;
 
@@ -404,7 +405,7 @@ export default class PluginHandle extends Component {
           ellipsis: true,
           render: (text, record) => {
             return (
-              <div>
+              <AuthButton perms="system:pluginHandler:edit">
                 <div
                   className="edit"
                   onClick={() => {
@@ -413,8 +414,7 @@ export default class PluginHandle extends Component {
                 >
                   {getIntlContent("SOUL.SYSTEM.EDITOR")}
                 </div>
-              </div>
-
+              </AuthButton>
             );
           }
         }
@@ -460,36 +460,42 @@ export default class PluginHandle extends Component {
               })
             }
           </Select>
-          <Button
-            type="primary"
-            style={{ marginLeft: 20 }}
-            onClick={this.searchClick}
-          >
-            {getIntlContent("SOUL.SYSTEM.SEARCH")}
-          </Button>
-          <Popconfirm
-            title={getIntlContent("SOUL.COMMON.DELETE")}
-            placement='bottom'
-            onConfirm={() => {
-              this.deleteClick()
-            }}
-            okText={getIntlContent("SOUL.COMMON.SURE")}
-            cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
-          >
+          <AuthButton perms="system:pluginHandler:list">
+            <Button
+              type="primary"
+              style={{ marginLeft: 20 }}
+              onClick={this.searchClick}
+            >
+              {getIntlContent("SOUL.SYSTEM.SEARCH")}
+            </Button>
+          </AuthButton>
+          <AuthButton perms="system:pluginHandler:delete">
+            <Popconfirm
+              title={getIntlContent("SOUL.COMMON.DELETE")}
+              placement='bottom'
+              onConfirm={() => {
+                this.deleteClick()
+              }}
+              okText={getIntlContent("SOUL.COMMON.SURE")}
+              cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+            >
+              <Button
+                style={{marginLeft: 20}}
+                type="danger"
+              >
+                {getIntlContent("SOUL.COMMON.DELETE")}
+              </Button>
+            </Popconfirm>
+          </AuthButton>
+          <AuthButton perms="system:pluginHandler:add">
             <Button
               style={{marginLeft: 20}}
-              type="danger"
+              type="primary"
+              onClick={this.addClick}
             >
-              {getIntlContent("SOUL.COMMON.DELETE")}
+              {getIntlContent("SOUL.SYSTEM.ADDDATA")}
             </Button>
-          </Popconfirm>
-          <Button
-            style={{marginLeft: 20}}
-            type="primary"
-            onClick={this.addClick}
-          >
-            {getIntlContent("SOUL.SYSTEM.ADDDATA")}
-          </Button>
+          </AuthButton>
         </div>
         <Table
           size="small"

@@ -68,6 +68,15 @@ export default function request(url, options) {
     }
   }
 
+  // add token
+  let token = window.sessionStorage.getItem("token");
+  if(token){
+    if(!newOptions.headers){
+      newOptions.headers = {};
+    }
+    newOptions.headers = {...newOptions.headers,"X-Access-Token":token};
+  }
+
   return fetch(url, newOptions)
     .then(checkStatus)
     .then(response => {

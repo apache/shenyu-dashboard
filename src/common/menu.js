@@ -29,6 +29,11 @@ export const menuData = [
     locale: 'SOUL.MENU.SYSTEM.MANAGMENT',
     children: [
       {
+        name: getIntlContent('SOUL.MENU.SYSTEM.MANAGMENT.ROLE'),
+        path: 'role',
+        locale: 'SOUL.MENU.SYSTEM.MANAGMENT.ROLE'
+      },
+      {
         name: getIntlContent('SOUL.MENU.SYSTEM.MANAGMENT.USER'),
         path: 'manage',
         locale: 'SOUL.MENU.SYSTEM.MANAGMENT.USER'

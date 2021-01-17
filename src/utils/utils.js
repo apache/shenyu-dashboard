@@ -133,3 +133,19 @@ const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(
 export function isUrl(path) {
   return reg.test(path);
 }
+
+/**
+ * traverse tree and exec func by every tree node
+ * 
+ * @param {object} treeNode
+ * @param {function} func
+ * @param {function} tree children attribute
+ */
+export function filterTree(treeNode, func = () => {}, treeChildrenAtrr = "children") {
+  func(treeNode);
+  if (treeNode[treeChildrenAtrr] && treeNode[treeChildrenAtrr].length > 0) {
+      treeNode[treeChildrenAtrr].forEach((e) => {
+        filterTree(e, func);
+    })
+  }
+}

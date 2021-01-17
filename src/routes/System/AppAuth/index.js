@@ -8,6 +8,7 @@ import AddTable from "./AddTable"
 import SearchContent from "./SearchContent"
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import {emit} from '../../../utils/emit'
+import AuthButton from '../../../utils/AuthButton';
 
 @connect(({ auth, loading }) => ({
   auth,
@@ -388,14 +389,16 @@ export default class Auth extends Component {
         render: (text, record) => {
           return (
             // 弹窗中的编辑事件
-            <div
-              className="edit"
-              onClick={() => {
-                this.editClick(record);
-              }}
-            >
-              {getIntlContent("SOUL.SYSTEM.EDITOR")}
-            </div>
+            <AuthButton perms="system:authen:edit">
+              <div
+                className="edit"
+                onClick={() => {
+                  this.editClick(record);
+                }}
+              >
+                {getIntlContent("SOUL.SYSTEM.EDITOR")}
+              </div>
+            </AuthButton>
           );
         }
       },
@@ -436,46 +439,54 @@ export default class Auth extends Component {
           <SearchContent onClick={res=>this.searchClick(res)} />
 
           {/* 删除勾选按钮 */}
-          <Popconfirm
-            title={getIntlContent("SOUL.COMMON.DELETE")}
-            placement='bottom'
-            onConfirm={() => {
-              this.deleteClick()
-            }}
-            okText={getIntlContent("SOUL.COMMON.SURE")}
-            cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
-          >
+          <AuthButton perms="system:authen:delete">
+            <Popconfirm
+              title={getIntlContent("SOUL.COMMON.DELETE")}
+              placement='bottom'
+              onConfirm={() => {
+                this.deleteClick()
+              }}
+              okText={getIntlContent("SOUL.COMMON.SURE")}
+              cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+            >
+              <Button
+                style={{ marginLeft: 20 }}
+                type="danger"
+              >
+                {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
+              </Button>
+            </Popconfirm>
+          </AuthButton>
+          {/* 添加数据按钮 */}
+          <AuthButton perms="system:authen:add">
             <Button
               style={{ marginLeft: 20 }}
-              type="danger"
+              type="primary"
+              onClick={this.addClick}
             >
-              {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
+              {getIntlContent("SOUL.SYSTEM.ADDDATA")}
             </Button>
-          </Popconfirm>
-          {/* 添加数据按钮 */}
-          <Button
-            style={{ marginLeft: 20 }}
-            type="primary"
-            onClick={this.addClick}
-          >
-            {getIntlContent("SOUL.SYSTEM.ADDDATA")}
-          </Button>
+          </AuthButton>
           {/* 批量启用或禁用按钮 */}
-          <Button
-            style={{ marginLeft: 20 }}
-            type="primary"
-            onClick={this.enableClick}
-          >
-            {getIntlContent("SOUL.PLUGIN.BATCH")}
-          </Button>
+          <AuthButton perms="system:authen:disable">
+            <Button
+              style={{ marginLeft: 20 }}
+              type="primary"
+              onClick={this.enableClick}
+            >
+              {getIntlContent("SOUL.PLUGIN.BATCH")}
+            </Button>
+          </AuthButton>
           {/* 同步数据按钮 */}
-          <Button
-            style={{ marginLeft: 20 }}
-            type="primary"
-            onClick={this.syncData}
-          >
-            {getIntlContent("SOUL.AUTH.SYNCDATA")}
-          </Button>
+          <AuthButton perms="system:authen:modify">
+            <Button
+              style={{ marginLeft: 20 }}
+              type="primary"
+              onClick={this.syncData}
+            >
+              {getIntlContent("SOUL.AUTH.SYNCDATA")}
+            </Button>
+          </AuthButton>
         </div>
         {/* 表格 */}
         <Table
