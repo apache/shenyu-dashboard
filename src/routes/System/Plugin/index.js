@@ -221,7 +221,7 @@ export default class Plugin extends Component {
 
   enableClick = () => {
     const {dispatch} = this.props;
-    const {selectedRowKeys} = this.state;
+    const {selectedRowKeys, currentPage, name} = this.state;
     if(selectedRowKeys && selectedRowKeys.length>0) {
       dispatch({
         type: "plugin/fetchItem",
@@ -235,7 +235,11 @@ export default class Plugin extends Component {
               list: selectedRowKeys,
               enabled: !user.enabled
             },
-            fetchValue: {},
+            fetchValue: {
+              name,
+              currentPage,
+              pageSize: 12
+            },
             callback: () => {
               this.setState({selectedRowKeys: []});
             }

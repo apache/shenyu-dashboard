@@ -2,6 +2,7 @@ import { Component } from 'react';
 import PropTypes from 'prop-types'
 import { connect } from 'dva';
 
+// button cache
 let buttonCache = {};
 
 /**
@@ -48,8 +49,6 @@ export default class AuthButton extends Component {
       resetAuthButtonCache();
     }
   }
-
-   
 
   render() {
     const {perms, children, global: {permissions} } = this.props;

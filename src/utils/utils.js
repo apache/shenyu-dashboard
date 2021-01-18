@@ -136,10 +136,10 @@ export function isUrl(path) {
 
 /**
  * traverse tree and exec func by every tree node
- * 
+ *
  * @param {object} treeNode
  * @param {function} func
- * @param {function} tree children attribute
+ * @param {string} tree children attribute
  */
 export function filterTree(treeNode, func = () => {}, treeChildrenAtrr = "children") {
   func(treeNode);

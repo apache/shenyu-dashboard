@@ -52,8 +52,8 @@ export function checkMenuAuth(routeUrl, permissions) {
 
 /**
  *  get all authorized menus
- *  if authMenusCache is not empty,return from cahe;
- *  Else return from building
+ *  if authMenusCache is not empty,return from cache,
+ *  else return from building
  * 
  * @param {Array} menus
  * @param {Array} permissions
