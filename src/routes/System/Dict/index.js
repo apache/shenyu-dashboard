@@ -428,7 +428,7 @@ export default class SoulDict extends Component {
               type="primary"
               onClick={this.searchClick}
             >
-              {getIntlContent("SOUL.META.PAGE.QUERY")}
+              {getIntlContent("SOUL.SYSTEM.SEARCH")}
             </Button>
           </AuthButton>
           <AuthButton perms="system:dict:delete">

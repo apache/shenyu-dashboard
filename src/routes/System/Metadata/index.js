@@ -397,7 +397,7 @@ export default class Metadata extends Component {
               type="primary"
               onClick={this.searchClick}
             >
-              {getIntlContent("SOUL.META.PAGE.QUERY")}
+              {getIntlContent("SOUL.SYSTEM.SEARCH")}
             </Button>
           </AuthButton>
           <AuthButton perms="system:meta:delete">
