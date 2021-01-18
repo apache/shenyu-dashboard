@@ -484,7 +484,7 @@ export default class PluginHandle extends Component {
                 style={{marginLeft: 20}}
                 type="danger"
               >
-                {getIntlContent("SOUL.COMMON.DELETE")}
+                {getIntlContent("SOUL.COMMON.DELETE.NAME")}
               </Button>
             </Popconfirm>
           </AuthButton>
