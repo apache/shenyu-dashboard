@@ -4,6 +4,7 @@ import { connect } from "dva";
 import Selector from "./Selector";
 import Rule from "./Rule";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import AuthButton from "../../../utils/AuthButton";
 
 @connect(({ divide, global, loading }) => ({
   ...global,
@@ -21,15 +22,19 @@ export default class Divide extends Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "global/fetchPlugins",
-      payload: {
-        callback: (plugins) => {
-          this.getAllSelectors(1, plugins);
+    const { dispatch, plugins } = this.props;
+    if(plugins && plugins.length > 0){
+      this.getAllSelectors(1, plugins);
+    }else{
+      dispatch({
+        type: "global/fetchPlugins",
+        payload: {
+          callback: (pluginList) => {
+            this.getAllSelectors(1, pluginList);
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   getAllSelectors = (page,plugins) => {
@@ -324,38 +329,42 @@ export default class Divide extends Component {
         render: (text, record) => {
           return (
             <div>
-              <span
-                style={{ marginRight: 8 }}
-                className="edit"
-                onClick={e => {
-                  e.stopPropagation();
-                  this.editSelector(record);
-                }}
-              >
-                {getIntlContent("SOUL.COMMON.CHANGE")}
-              </span>
-              <Popconfirm
-                title={getIntlContent("SOUL.COMMON.DELETE")}
-                placement='bottom'
-                onCancel={(e) => {
-                  e.stopPropagation()
-                }}
-                onConfirm={(e) => {
-                  e.stopPropagation()
-                  this.deleteSelector(record);
-                }}
-                okText={getIntlContent("SOUL.COMMON.SURE")}
-                cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
-              >
+              <AuthButton perms="plugin:divideSelector:edit">
                 <span
+                  style={{ marginRight: 8 }}
                   className="edit"
-                  onClick={(e) => {
-                    e.stopPropagation()
+                  onClick={e => {
+                    e.stopPropagation();
+                    this.editSelector(record);
                   }}
                 >
-                  {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                  {getIntlContent("SOUL.COMMON.CHANGE")}
                 </span>
-              </Popconfirm>
+              </AuthButton>
+              <AuthButton perms="plugin:divideSelector:delete">
+                <Popconfirm
+                  title={getIntlContent("SOUL.COMMON.DELETE")}
+                  placement='bottom'
+                  onCancel={(e) => {
+                    e.stopPropagation()
+                  }}
+                  onConfirm={(e) => {
+                    e.stopPropagation()
+                    this.deleteSelector(record);
+                  }}
+                  okText={getIntlContent("SOUL.COMMON.SURE")}
+                  cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+                >
+                  <span
+                    className="edit"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                    }}
+                  >
+                    {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                  </span>
+                </Popconfirm>
+              </AuthButton>
             </div>
           );
         }
@@ -396,38 +405,42 @@ export default class Divide extends Component {
         render: (text, record) => {
           return (
             <div>
-              <span
-                className="edit"
-                style={{ marginRight: 8 }}
-                onClick={e => {
-                  e.stopPropagation();
-                  this.editRule(record);
-                }}
-              >
-                {getIntlContent("SOUL.COMMON.CHANGE")}
-              </span>
-              <Popconfirm
-                title={getIntlContent("SOUL.COMMON.DELETE")}
-                placement='bottom'
-                onCancel={(e) => {
-                  e.stopPropagation()
-                }}
-                onConfirm={(e) => {
-                  e.stopPropagation()
-                  this.deleteRule(record);
-                }}
-                okText={getIntlContent("SOUL.COMMON.SURE")}
-                cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
-              >
+              <AuthButton perms="plugin:divideRule:edit">
                 <span
                   className="edit"
-                  onClick={(e) => {
-                    e.stopPropagation()
+                  style={{ marginRight: 8 }}
+                  onClick={e => {
+                    e.stopPropagation();
+                    this.editRule(record);
                   }}
                 >
-                  {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                  {getIntlContent("SOUL.COMMON.CHANGE")}
                 </span>
-              </Popconfirm>
+              </AuthButton>
+              <AuthButton perms="plugin:divideRule:delete">
+                <Popconfirm
+                  title={getIntlContent("SOUL.COMMON.DELETE")}
+                  placement='bottom'
+                  onCancel={(e) => {
+                    e.stopPropagation()
+                  }}
+                  onConfirm={(e) => {
+                    e.stopPropagation()
+                    this.deleteRule(record);
+                  }}
+                  okText={getIntlContent("SOUL.COMMON.SURE")}
+                  cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+                >
+                  <span
+                    className="edit"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                    }}
+                  >
+                    {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                  </span>
+                </Popconfirm>
+              </AuthButton>
             </div>
           );
         }
@@ -440,9 +453,11 @@ export default class Divide extends Component {
           <Col span={8}>
             <div className="table-header">
               <h3>{getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
-              <Button type="primary" onClick={this.addSelector}>
-                {getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.ADD")}
-              </Button>
+              <AuthButton perms="plugin:divideSelector:add">
+                <Button type="primary" onClick={this.addSelector}>
+                  {getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.ADD")}
+                </Button>
+              </AuthButton>
             </div>
             <Table
               size="small"
@@ -476,13 +491,17 @@ export default class Divide extends Component {
             <div className="table-header">
               <div style={{ display: "flex" }}>
                 <h3 style={{ marginRight: 30 }}>{getIntlContent("SOUL.PLUGIN.SELECTOR.RULE.LIST")}</h3>
-                <Button icon="reload" onClick={this.asyncClick} type="primary">
-                  {getIntlContent("SOUL.COMMON.SYN")} divide
-                </Button>
+                <AuthButton perms="plugin:divide:modify">
+                  <Button icon="reload" onClick={this.asyncClick} type="primary">
+                    {getIntlContent("SOUL.COMMON.SYN")} divide
+                  </Button>
+                </AuthButton>
               </div>
-              <Button type="primary" onClick={this.addRule}>
-                {getIntlContent("SOUL.COMMON.ADD.RULE")}
-              </Button>
+              <AuthButton perms="plugin:divideRule:add">
+                <Button type="primary" onClick={this.addRule}>
+                  {getIntlContent("SOUL.COMMON.ADD.RULE")}
+                </Button>
+              </AuthButton>
             </div>
             <Table
               size="small"

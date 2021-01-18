@@ -4,6 +4,7 @@ import { connect } from "dva";
 import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
+import AuthButton from '../../../utils/AuthButton';
 
 @connect(({ metadata, loading, global }) => ({
   metadata,
@@ -347,14 +348,16 @@ export default class Metadata extends Component {
           width: 60,
           render: (text, record) => {
             return (
-              <div
-                className="edit"
-                onClick={() => {
-                  this.editClick(record);
-                }}
-              >
-                {getIntlContent("SOUL.SYSTEM.EDITOR")}
-              </div>
+              <AuthButton perms="system:meta:edit">
+                <div
+                  className="edit"
+                  onClick={() => {
+                    this.editClick(record);
+                  }}
+                >
+                  {getIntlContent("SOUL.SYSTEM.EDITOR")}
+                </div>
+              </AuthButton>
             );
           }
         }
@@ -388,50 +391,60 @@ export default class Metadata extends Component {
             placeholder={getIntlContent("SOUL.META.INPUTAPPNAME")}
             style={{ width: 240 }}
           />
-          <Button
-            style={{ marginLeft: 20 }}
-            type="primary"
-            onClick={this.searchClick}
-          >
-            {getIntlContent("SOUL.META.PAGE.QUERY")}
-          </Button>
-          <Popconfirm
-            title={getIntlContent("SOUL.COMMON.DELETE")}
-            placement='bottom'
-            onConfirm={() => {
-              this.deleteClick()
-            }}
-            okText={getIntlContent("SOUL.COMMON.SURE")}
-            cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
-          >
+          <AuthButton perms="system:meta:list">
             <Button
               style={{ marginLeft: 20 }}
-              type="danger"
+              type="primary"
+              onClick={this.searchClick}
             >
-              {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
+              {getIntlContent("SOUL.META.PAGE.QUERY")}
             </Button>
-          </Popconfirm>
-          <Button
-            style={{ marginLeft: 20 }}
-            type="primary"
-            onClick={this.addClick}
-          >
-            {getIntlContent("SOUL.COMMON.ADD")}
-          </Button>
-          <Button
-            style={{ marginLeft: 20 }}
-            type="primary"
-            onClick={this.enableClick}
-          >
-            {getIntlContent("SOUL.PLUGIN.BATCH")}
-          </Button>
-          <Button
-            style={{ marginLeft: 20 }}
-            type="primary"
-            onClick={this.syncData}
-          >
-            {getIntlContent("SOUL.AUTH.SYNCDATA")}
-          </Button>
+          </AuthButton>
+          <AuthButton perms="system:meta:delete">
+            <Popconfirm
+              title={getIntlContent("SOUL.COMMON.DELETE")}
+              placement='bottom'
+              onConfirm={() => {
+                this.deleteClick()
+              }}
+              okText={getIntlContent("SOUL.COMMON.SURE")}
+              cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+            >
+              <Button
+                style={{ marginLeft: 20 }}
+                type="danger"
+              >
+                {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
+              </Button>
+            </Popconfirm>
+          </AuthButton>
+          <AuthButton perms="system:meta:add">
+            <Button
+              style={{ marginLeft: 20 }}
+              type="primary"
+              onClick={this.addClick}
+            >
+              {getIntlContent("SOUL.COMMON.ADD")}
+            </Button>
+          </AuthButton>
+          <AuthButton perms="system:meta:disable">
+            <Button
+              style={{ marginLeft: 20 }}
+              type="primary"
+              onClick={this.enableClick}
+            >
+              {getIntlContent("SOUL.PLUGIN.BATCH")}
+            </Button>
+          </AuthButton>
+          <AuthButton perms="system:meta:modify">
+            <Button
+              style={{ marginLeft: 20 }}
+              type="primary"
+              onClick={this.syncData}
+            >
+              {getIntlContent("SOUL.AUTH.SYNCDATA")}
+            </Button>
+          </AuthButton>
         </div>
 
         <Table

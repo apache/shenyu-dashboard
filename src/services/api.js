@@ -7,7 +7,8 @@ export async function addUser(params) {
   return request(`${baseUrl}/dashboardUser`, {
     method: `POST`,
     body: {
-      ...params
+      ...params,
+      role: 1
     }
   });
 }
@@ -25,8 +26,9 @@ export async function updateUser(params) {
     body: {
       userName: params.userName,
       password: params.password,
-      role: params.role,
-      enabled: params.enabled
+      roles: params.roles,
+      enabled: params.enabled,
+      role: 1
     }
   });
 }
@@ -545,4 +547,114 @@ export async function updateSoulDictEnabled(params) {
       enabled: params.enabled
     }
   })
+}
+
+/* get all roles */
+export async function getAllRoles() {
+  return request(`${baseUrl}/role/getAllRoles`, {
+    method: `GET`
+  });
+}
+
+/* get roles by page */
+export async function getRoleList(params) {
+  const { roleName, currentPage, pageSize } = params;
+  let myParams = { ...params };
+  if (!roleName) {
+    myParams = { currentPage, pageSize };
+  }
+  return request(`${baseUrl}/role?${stringify(myParams)}`, {
+    method: `GET`
+  });
+}
+
+/* find role */
+export async function findRole(params) {
+  return request(`${baseUrl}/role/${params.id}`, {
+    method: `GET`
+  });
+}
+
+/* add role */
+export async function addRole(params) {
+  return request(`${baseUrl}/role`, {
+    method: `POST`,
+    body: {
+      ...params
+    }
+  });
+}
+
+/* delete role */
+export async function deleteRole(params) {
+  return request(`${baseUrl}/role/batch`, {
+    method: `DELETE`,
+    body: [...params.list]
+  });
+}
+
+/* update role */
+export async function updateRole(params) {
+  return request(`${baseUrl}/role/${params.id}`, {
+    method: `PUT`,
+    body: {
+      roleName: params.roleName,
+      description: params.description,
+      currentPermissionIds: params.currentPermissionIds
+    }
+  });
+}
+
+/* get resources by page */
+export async function getAllResources(params) {
+  const { title, currentPage, pageSize } = params;
+  let myParams = { ...params };
+  if (!title) {
+    myParams = { currentPage, pageSize };
+  }
+  return request(`${baseUrl}/resource?${stringify(myParams)}`, {
+    method: `GET`
+  });
+}
+
+/* find resource */
+export async function findResource(params) {
+  return request(`${baseUrl}/resource/${params.id}`, {
+    method: `GET`
+  });
+}
+
+/* add resource */
+export async function addResource(params) {
+  return request(`${baseUrl}/resource`, {
+    method: `POST`,
+    body: {
+      ...params
+    }
+  });
+}
+
+/* delete resource */
+export async function deleteResource(params) {
+  return request(`${baseUrl}/resource/batch`, {
+    method: `DELETE`,
+    body: [...params.list]
+  });
+}
+
+/* update resource */
+export async function updateResource(params) {
+  return request(`${baseUrl}/resource/${params.id}`, {
+    method: `PUT`,
+    body: {
+      title: params.title
+    }
+  });
+}
+
+// get userPermission by token
+export async function getUserPermissionByToken(params) {
+  return request(`${baseUrl}/permission/getUserPermissionByToken?token=${params.token}`, {
+    method: `GET`
+  });
 }

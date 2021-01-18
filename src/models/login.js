@@ -1,9 +1,7 @@
 import { routerRedux } from "dva/router";
-import { stringify } from "qs";
+// import { stringify } from "qs";
 import { message } from "antd";
 import { queryLogin } from "../services/api";
-import { setAuthority } from "../utils/authority";
-import { reloadAuthorized } from "../utils/Authorized";
 // import { getPageQuery } from "../utils/utils";
 
 export default {
@@ -23,12 +21,12 @@ export default {
         yield put({
           type: "changeLoginStatus",
           payload: {
-            state: true,
+            status: true,
             currentAuthority: "admin"
           }
         });
-
-        reloadAuthorized();
+        window.sessionStorage.setItem("token",response.data.token);
+        window.sessionStorage.setItem("userName",response.data.userName);
         /* const urlParams = new URL(window.location.href);
          const params = getPageQuery();
          let { redirect } = params;
@@ -59,22 +57,21 @@ export default {
           currentAuthority: ""
         }
       });
-      setAuthority("");
-      reloadAuthorized();
-      yield put(
+      window.sessionStorage.removeItem("token");
+      window.sessionStorage.removeItem("userName");
+       yield put(
         routerRedux.push({
           pathname: "/user/login",
-          search: stringify({
+         /* search: stringify({
             redirect: window.location.href
-          })
-        })
-      );
+          }) */
+        }) 
+      );  
     }
   },
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority("admin");
       return {
         ...state,
         status: payload.status

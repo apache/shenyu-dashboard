@@ -3,11 +3,9 @@ import { routerRedux, Route, Switch } from 'dva/router';
 import { ConfigProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
 import { getRouterData } from './common/router';
-import Authorized from './utils/Authorized';
-import { getQueryPath } from './utils/utils';
+import AuthRoute from './utils/AuthRoute';
 
 const { ConnectedRouter } = routerRedux;
-const { AuthorizedRoute } = Authorized;
 
 function RouterConfig({ history, app }) {
 
@@ -20,14 +18,7 @@ function RouterConfig({ history, app }) {
       <ConnectedRouter history={history}>
         <Switch>
           <Route path="/user" component={UserLayout} />
-          <AuthorizedRoute
-            path="/"
-            render={props => <BasicLayout {...props} />}
-            authority={['admin', 'user']}
-            redirectPath={getQueryPath('/user/login', {
-              redirect: window.location.href,
-            })}
-          />
+          <AuthRoute path="/" component={BasicLayout} redirectPath='/user/login' />
         </Switch>
       </ConnectedRouter>
     </ConfigProvider>

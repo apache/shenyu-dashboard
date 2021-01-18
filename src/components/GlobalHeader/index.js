@@ -19,7 +19,8 @@ export default class GlobalHeader extends PureComponent {
           </Menu.Item>
         </Menu>
       ),
-      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US'
+      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
+      userName: window.sessionStorage.getItem('userName')
     }
   }
 
@@ -44,14 +45,26 @@ export default class GlobalHeader extends PureComponent {
   }
 
   render() {
-   const { onLogout } = this.props;
+    const { onLogout } = this.props;
+    const { userName } = this.state;
+    const menu = (
+      <Menu>
+        <Menu.Item key="0" onClick={onLogout}>
+          <Icon type="logout" /> {getIntlContent("SOUL.GLOBALHEADER.LOGOUT")}
+        </Menu.Item>
+      </Menu>
+    );
     return (
       <div className={styles.header}>
         <Dropdown placement="bottomCenter" overlay={this.state.menu} trigger={['click']}>
           <TranslationOutlined />
         </Dropdown>
-        <div className={styles.right} onClick={onLogout}>
-          <Icon type="logout" /> {getIntlContent("SOUL.GLOBALHEADER.LOGOUT")}
+        <div className={styles.right}>
+          <Dropdown overlay={menu}>
+            <span>
+              <Icon type="user" />{userName}<Icon type="down" />
+            </span>
+          </Dropdown> 
         </div>
       </div>
     );

@@ -2,61 +2,50 @@ import React, { Component } from "react";
 import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
-import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
+import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from '../../../utils/AuthButton';
 
-@connect(({ manage, role, loading }) => ({
-  manage,
+@connect(({ role, resource, loading }) => ({
   role,
-  loading: loading.effects["manage/fetch"]
+  resource,
+  loading: loading.effects["role/fetch"]
 }))
-export default class Manage extends Component {
+export default class Role extends Component {
   constructor(props) {
     super(props);
     this.state = {
       currentPage: 1,
       selectedRowKeys: [],
-      userName: "",
-      popup: "",
-      localeName: ''
+      roleName: "",
+      popup: ""
     };
   }
 
   componentWillMount() {
     const { currentPage } = this.state;
-    this.getAllUsers(currentPage);
-    this.getAllRoles();
+    this.getAllRoles(currentPage);
   }
 
   onSelectChange = selectedRowKeys => {
     this.setState({ selectedRowKeys });
   };
 
-  getAllUsers = page => {
+  getAllRoles = page => {
     const { dispatch } = this.props;
-    const { userName } = this.state;
+    const { roleName } = this.state;
     dispatch({
-      type: "manage/fetch",
+      type: "role/fetch",
       payload: {
-        userName,
+        roleName,
         currentPage: page,
         pageSize: 12
       }
     });
   };
 
-  getAllRoles = () => {
-    const { dispatch, role: { allRoles } } = this.props;
-    if (!allRoles || allRoles.length === 0) {
-      dispatch({
-        type: "role/fetchAll"
-      });
-    }
-  }
-
   pageOnchange = page => {
     this.setState({ currentPage: page });
-    this.getAllUsers(page);
+    this.getAllRoles(page);
   };
 
   closeModal = () => {
@@ -64,33 +53,31 @@ export default class Manage extends Component {
   };
 
   editClick = record => {
-    const { dispatch, role: { allRoles } } = this.props;
+    const { dispatch } = this.props;
     const { currentPage } = this.state;
-    const name = this.state.userName;
+    const name = this.state.roleName;
     dispatch({
-      type: "manage/fetchItem",
+      type: "role/fetchItem",
       payload: {
         id: record.id
       },
-      callback: user => {
+      callback: role => {
         this.setState({
           popup: (
             <AddModal
-              {...user}
-              allRoles={allRoles}
+              {...role}
               handleOk={values => {
-                const { userName, password, roles, enabled, id } = values;
+                const { roleName, description, id, currentPermissionIds } = values;
                 dispatch({
-                  type: "manage/update",
+                  type: "role/update",
                   payload: {
-                    userName,
-                    password,
-                    roles,
-                    enabled,
+                    roleName,
+                    description,
+                    currentPermissionIds,
                     id
                   },
                   fetchValue: {
-                    userName: name,
+                    roleName: name,
                     currentPage,
                     pageSize: 12
                   },
@@ -110,26 +97,26 @@ export default class Manage extends Component {
   };
 
   searchOnchange = e => {
-    const userName = e.target.value;
-    this.setState({ userName });
+    const roleName = e.target.value;
+    this.setState({ roleName });
   };
 
   searchClick = () => {
-    this.getAllUsers(1);
+    this.getAllRoles(1);
     this.setState({ currentPage: 1 });
   };
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { userName, currentPage, selectedRowKeys } = this.state;
+    const { roleName, currentPage, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
-        type: "manage/delete",
+        type: "role/delete",
         payload: {
           list: selectedRowKeys
         },
         fetchValue: {
-          userName,
+          roleName,
           currentPage,
           pageSize: 12
         },
@@ -144,26 +131,25 @@ export default class Manage extends Component {
   };
 
   addClick = () => {
-    const { role: { allRoles } } = this.props;
     const { currentPage } = this.state;
-    const name = this.state.userName;
+    const name = this.state.roleName;
     this.setState({
       popup: (
         <AddModal
-          allRoles={allRoles}
+          sysRole={{}}
+          allPermissionInfo={{}}
+          rolePermissionList={{}}
           handleOk={values => {
             const { dispatch } = this.props;
-            const { userName, password, roles, enabled } = values;
+            const { roleName, description } = values;
             dispatch({
-              type: "manage/add",
+              type: "role/add",
               payload: {
-                userName,
-                password,
-                roles,
-                enabled
+                roleName,
+                description
               },
               fetchValue: {
-                userName: name,
+                roleName: name,
                 currentPage,
                 pageSize: 12
               },
@@ -181,38 +167,24 @@ export default class Manage extends Component {
     });
   };
 
-  changeLocale(locale) {
-    this.setState({
-      localeName: locale
-    });
-    getCurrentLocale(this.state.localeName);
-  };
-
   render() {
-    const { manage, loading } = this.props;
-    const { userList, total } = manage;
-    const { currentPage, selectedRowKeys, userName, popup } = this.state;
-    const userColumns = [
+    const { role, loading } = this.props;
+    const { roleList, total } = role;
+    const { currentPage, selectedRowKeys, roleName, popup } = this.state;
+    const roleColumns = [
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.USERNAME"),
-        dataIndex: "userName",
-        key: "userName",
+        title: getIntlContent("SOUL.SYSTEM.ROLENAME"),
+        dataIndex: "roleName",
+        key: "roleName",
         ellipsis:true,
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.STATUS"),
-        dataIndex: "enabled",
-        key: "enabled",
+        title: getIntlContent("SOUL.SYSTEM.ROLE.DESCRIPTION"),
+        dataIndex: "description",
+        key: "description",
         ellipsis:true,
-        render: text => {
-          if (text) {
-            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
-          } else {
-            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
-          }
-        }
       },
       {
         align: "center",
@@ -236,7 +208,7 @@ export default class Manage extends Component {
         ellipsis:true,
         render: (text, record) => {
           return (
-            <AuthButton perms="system:manager:edit">
+            <AuthButton perms="system:role:edit">
               <div
                 className="edit"
                 onClick={() => {
@@ -260,12 +232,12 @@ export default class Manage extends Component {
       <div className="plug-content-wrap">
         <div style={{ display: "flex" }}>
           <Input
-            value={userName}
+            value={roleName}
             onChange={this.searchOnchange}
-            placeholder={getIntlContent("SOUL.SYSTEM.USER.NAME")}
+            placeholder={getIntlContent("SOUL.SYSTEM.ROLE.INPUT.NAME")}
             style={{ width: 240 }}
           />
-          <AuthButton perms="system:manager:list">
+          <AuthButton perms="system:role:list">
             <Button
               style={{ marginLeft: 20 }}
               type="primary"
@@ -274,7 +246,7 @@ export default class Manage extends Component {
               {getIntlContent("SOUL.SYSTEM.SEARCH")}
             </Button>
           </AuthButton>
-          <AuthButton perms="system:manager:delete">
+          <AuthButton perms="system:role:delete">
             <Popconfirm
               title={getIntlContent("SOUL.COMMON.DELETE")}
               placement='bottom'
@@ -292,7 +264,7 @@ export default class Manage extends Component {
               </Button>
             </Popconfirm>
           </AuthButton>
-          <AuthButton perms="system:manager:add">
+          <AuthButton perms="system:role:add">
             <Button
               style={{ marginLeft: 20 }}
               type="primary"
@@ -308,8 +280,8 @@ export default class Manage extends Component {
           style={{ marginTop: 30 }}
           bordered
           loading={loading}
-          columns={userColumns}
-          dataSource={userList}
+          columns={roleColumns}
+          dataSource={roleList}
           rowSelection={rowSelection}
           pagination={{
             total,
