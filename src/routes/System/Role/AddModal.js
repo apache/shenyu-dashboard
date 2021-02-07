@@ -62,8 +62,9 @@ class AddModal extends Component {
     this.setState({ checkedKeys });
   };
 
-  renderTreeNodes = (parentItem,data) =>
-    data.map(item => {
+  renderTreeNodes = (parentItem,data) => {
+    data = data.sort((a,b)=>(a.sort||0)-(b.sort||0));
+    return data.map(item => {
       if(!item.ids){
         if(parentItem){
           item.ids = parentItem.ids.concat(item.id);
@@ -84,6 +85,7 @@ class AddModal extends Component {
       }
       return <TreeNode title={item.displayName} key={item.id} dataRef={item} />;
     });
+  }
 
   renderResourceTree = (treeList) => {
     return (

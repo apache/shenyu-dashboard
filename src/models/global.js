@@ -79,6 +79,25 @@ export default {
       });
       callback(permissions);
     },
+    *refreshPermission({ payload }, { call, put }) {
+      const { callback } = payload;
+      let permissions = { menu: [], button: [] };
+      const token = window.sessionStorage.getItem("token");
+      if(token){
+        const params = { token };
+        const json = yield call(getUserPermissionByToken, params);
+        if (json.code === 200) {
+          let { menu, currentAuth } = json.data;
+          permissions = { menu, button: currentAuth };
+        }
+      } 
+
+      yield put({
+        type: "savePermissions",
+        payload: { permissions }
+      });
+      callback(permissions);
+    },
 
     *resetPermission(_, { put }) {
       let permissions = { menu: [], button: [] }; 

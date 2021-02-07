@@ -1,4 +1,5 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
+import { Button, Popconfirm } from 'antd';
 import PropTypes from 'prop-types'
 import { connect } from 'dva';
 
@@ -52,7 +53,24 @@ export default class AuthButton extends Component {
 
   render() {
     const {perms, children, global: {permissions} } = this.props;
-    return  (checkButtonAuth(perms, permissions) && children) || null;
+    const authButton = checkButtonAuth(perms, permissions);
+    if(authButton){
+      if(authButton.icon){
+        const type = children.type;
+        if(type === Button){
+          return React.cloneElement(children, {icon: authButton.icon});
+        } else if(type === Popconfirm && children.props.children && children.props.children.type === Button){
+          let newChildren =  React.cloneElement(children.props.children , {icon: authButton.icon});
+          return React.cloneElement(children, {children: newChildren});
+        } else{
+          return children;
+        }
+      } else {
+        return children;
+      }
+    } else {
+      return null;
+    }
   }
 }
 
