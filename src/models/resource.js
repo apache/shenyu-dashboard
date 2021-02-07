@@ -4,7 +4,9 @@ import {
   findResource,
   updateResource,
   deleteResource,
-  addResource
+  addResource,
+  getButtons,
+  getMenuTree,
 } from "../services/api";
 import {getIntlContent} from "../utils/IntlUtils";
 
@@ -13,6 +15,7 @@ export default {
 
   state: {
     resourceList: [],
+    menuTree: [],
     total: 0
   },
 
@@ -44,47 +47,55 @@ export default {
         callback(resource);
       }
     },
-    *add(params, { call, put }) {
-      const { payload, callback, fetchValue } = params;
+    *add(params, { call }) {
+      const { payload, callback } = params;
       const json = yield call(addResource, payload);
       if (json.code === 200) {
         message.success(getIntlContent('SOUL.COMMON.RESPONSE.ADD.SUCCESS'));
         callback();
-        yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
       }
     },
-    *delete(params, { call, put }) {
-      const { payload, fetchValue, callback } = params;
+    *delete(params, { call }) {
+      const { payload, callback } = params;
       const { list } = payload;
       const json = yield call(deleteResource, { list });
       if (json.code === 200) {
         message.success(getIntlContent('SOUL.COMMON.RESPONSE.DELETE.SUCCESS'));
         callback();
-        yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
       }
     },
-    *update(params, { call, put }) {
-      const { payload, callback, fetchValue } = params;
+    *update(params, { call }) {
+      const { payload, callback } = params;
       const json = yield call(updateResource, payload);
       if (json.code === 200) {
         message.success(getIntlContent('SOUL.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
-        yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
       }
     },
-
-    *reload(params, { put }) {
-      const { fetchValue } = params;
-      const { resourceName, currentPage, pageSize } = fetchValue;
-      const payload = { resourceName, currentPage, pageSize };
-      yield put({ type: "fetch", payload });
-    }
+    *fetchButtons(params, { call }) {
+      const { payload, callback } = params;
+      const json = yield call(getButtons, payload);
+      const resource = json.data;
+      callback(resource);
+    },
+    *fetchMenuTree(_, { call, put }) {
+      const json = yield call(getMenuTree);
+      if (json.code === 200) {
+        const menuTree = json.data;
+        yield put({
+          type: "saveMenuTree",
+          payload: {
+            menuTree
+          }
+        });
+      }
+    },
   },
 
   reducers: {
@@ -93,6 +104,12 @@ export default {
         ...state,
         resourceList: payload.dataList,
         total: payload.total
+      };
+    },
+    saveMenuTree(state, { payload }) {
+      return {
+        ...state,
+        menuTree: payload.menuTree
       };
     }
   }

@@ -5,6 +5,7 @@ import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from '../../../utils/AuthButton';
+import {resetAuthMenuCache} from '../../../utils/AuthRoute';
 
 @connect(({ plugin, loading, global }) => ({
   plugin,
@@ -167,6 +168,7 @@ export default class Plugin extends Component {
               callback: () => { }
             }
           });
+          this.fetchPermissions();
         }
       });
     } else {
@@ -206,6 +208,7 @@ export default class Plugin extends Component {
                     callback: () => { }
                   }
                 });
+                this.fetchPermissions();
               }
             });
           }}
@@ -217,8 +220,19 @@ export default class Plugin extends Component {
     });
   };
 
-  // 批量启用或禁用
+  fetchPermissions = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'global/refreshPermission',
+      payload: {
+        callback: () => {
+          resetAuthMenuCache();
+        }
+      }
+    });
+  }
 
+  // 批量启用或禁用
   enableClick = () => {
     const {dispatch} = this.props;
     const {selectedRowKeys, currentPage, name} = this.state;

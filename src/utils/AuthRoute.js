@@ -65,12 +65,11 @@ export function getAuthMenus(menus, permissions, beginCache) {
     let locale = window.sessionStorage.getItem("locale");
     let authCacheMenus =  authMenusCache[locale];
     if(authCacheMenus && authCacheMenus.length > 0){
-      // console.log("cache")
       return authCacheMenus;
     }
   }  
   if (menus && menus.length > 0) {
-    sortMenus(menus, permissions);
+    setMenuIconAndSort(menus, permissions);
     authMenus = JSON.parse(JSON.stringify(menus))
     authMenus.forEach((m) => {
       if (checkMenuAuth(m.path, permissions)) {
@@ -98,16 +97,28 @@ export function getAuthMenus(menus, permissions, beginCache) {
   return authMenus;
 }
 
-const sortMenus = (menus, permissions) => {
+const setMenuIconAndSort = (menus, permissions) => {
   if (permissions && permissions.menu && permissions.menu.length > 0) {
     menus.forEach(menuTree =>{
       if(menuTree.children && menuTree.children.length > 0){
         menuTree.children.forEach(menu => {
           permissions.menu.forEach(m => {
+            if(m.url === menuTree.path){
+              if(m.meta.icon){
+                menuTree.icon = m.meta.icon;
+              }
+              menuTree.sort = m.sort;
+            }
+
             if(m.children && m.children.length > 0){
               m.children.forEach(mChild => {
-                if(menu.path === mChild.url && !isNaN(mChild.sort)){
-                  menu.sort = mChild.sort;
+                if(menu.path === mChild.url){
+                  if(mChild.meta.icon){
+                    menu.icon = mChild.meta.icon;
+                  }
+                  if(!isNaN(mChild.sort)){
+                    menu.sort = mChild.sort;
+                  }
                 }
               })
             }
@@ -119,6 +130,7 @@ const sortMenus = (menus, permissions) => {
         menuTree.children.sort((a,b) => a.sort - b.sort);
       }
     })
+    menus.sort((a,b) => a.sort - b.sort);
   }
 }
 

@@ -92,19 +92,22 @@ export const getRouterData = app => {
     '/system/manage': { // 用户管理
       component: dynamicWrapper(app, ['manage'], () => import('../routes/System/User')),
     },
-    '/system/metadata': { // 元数据管理
+    '/system/resource': { // 资源管理
+      component: dynamicWrapper(app, ['resource'], () => import('../routes/System/Resource')),
+    },
+    '/config/metadata': { // 元数据管理
       component: dynamicWrapper(app, ['metadata'], () => import('../routes/System/Metadata')),
     },
-    '/system/plugin': { // 插件管理
+    '/config/plugin': { // 插件管理
       component: dynamicWrapper(app, ['plugin'], () => import('../routes/System/Plugin')),
     },
-    '/system/pluginhandle': { // 插件处理管理
+    '/config/pluginhandle': { // 插件处理管理
       component: dynamicWrapper(app, ['pluginHandle'], () => import('../routes/System/PluginHandle')),
     },
-    '/system/auth': { // 认证管理
+    '/config/auth': { // 认证管理
       component: dynamicWrapper(app, ['auth'], () => import('../routes/System/AppAuth')),
     },
-    '/system/dict': { // 字典管理
+    '/config/dict': { // 字典管理
     component: dynamicWrapper(app, ['soulDict'], () => import('../routes/System/Dict')),
     },
     '/exception/403': {

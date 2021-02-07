@@ -647,8 +647,22 @@ export async function updateResource(params) {
   return request(`${baseUrl}/resource/${params.id}`, {
     method: `PUT`,
     body: {
-      title: params.title
+      ...params
     }
+  });
+}
+
+/* get buttons by menuId */
+export async function getButtons(params) {
+  return request(`${baseUrl}/resource/button?id=${params.id}`, {
+    method: `GET`
+  });
+}
+
+/* get menu tree */
+export async function getMenuTree() {
+  return request(`${baseUrl}/resource/menu`, {
+    method: `GET`
   });
 }
 

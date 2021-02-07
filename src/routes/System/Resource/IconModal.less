@@ -1,0 +1,26 @@
+.iconCard {
+    height: 700px;
+    overflow-y: scroll;
+    .iconList {
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        .iconContent {
+            display:flex;
+            justify-content: center;
+            height: 70px;
+            width: 100px;
+            align-items: center;
+            flex-direction: column;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+            -webkit-transition: color .3s ease-in-out,background-color .3s ease-in-out;
+            transition: color .3s ease-in-out,background-color .3s ease-in-out;
+        }
+        .iconContent:hover{
+            color: white;
+            background-color: #1890ff;
+        }
+    }
+}
