@@ -239,7 +239,10 @@ class AddTable extends Component {
             )}
           </FormItem>
           <FormItem label={`App${getIntlContent("SOUL.AUTH.PARAMS")}`} {...formItemLayout}>
-            <Input placeholder="AppParams" />
+            {getFieldDecorator("appParam", {
+            })(
+              <Input placeholder="AppParams" />
+            )}
           </FormItem>
           <FormItem label={`${getIntlContent("SOUL.SYSTEM.USER")}Id`} {...formItemLayout}>
             {getFieldDecorator("userId", {
@@ -250,7 +253,10 @@ class AddTable extends Component {
             })(<Input placeholder="UserId" />)}
           </FormItem>
           <FormItem label={getIntlContent("SOUL.AUTH.EXPANDINFO")} {...formItemLayout}>
-            <Input placeholder="ExpandInfo" />
+            {getFieldDecorator("extInfo", {
+            })(
+              <Input placeholder="ExpandInfo" />
+            )}
           </FormItem>
           {/* 下拉框关联表格 */}
           <div>
