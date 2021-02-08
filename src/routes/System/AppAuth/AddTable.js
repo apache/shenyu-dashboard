@@ -229,7 +229,7 @@ class AddTable extends Component {
             label={getIntlContent("SOUL.AUTH.PHONE")}
             {...formItemLayout}
           >
-              {getFieldDecorator("phone", {
+            {getFieldDecorator("phone", {
               rules: [{
                 required: true,
                 message: `${getIntlContent("SOUL.AUTH.INPUT")}Phone`
