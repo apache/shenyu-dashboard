@@ -229,7 +229,7 @@ class AddTable extends Component {
             label={getIntlContent("SOUL.AUTH.PHONE")}
             {...formItemLayout}
           >
-            {getFieldDecorator("phone", {
+              {getFieldDecorator("phone", {
               rules: [{
                 required: true,
                 message: `${getIntlContent("SOUL.AUTH.INPUT")}Phone`
@@ -239,14 +239,7 @@ class AddTable extends Component {
             )}
           </FormItem>
           <FormItem label={`App${getIntlContent("SOUL.AUTH.PARAMS")}`} {...formItemLayout}>
-            {getFieldDecorator("appParam", {
-              rules: [{
-                required: true,
-                message: `${getIntlContent("SOUL.SYSTEM.USER")}AppParam`
-              }],
-            })(
-              <Input placeholder="AppParams" />
-            )}
+            <Input placeholder="AppParams" />
           </FormItem>
           <FormItem label={`${getIntlContent("SOUL.SYSTEM.USER")}Id`} {...formItemLayout}>
             {getFieldDecorator("userId", {
@@ -257,12 +250,7 @@ class AddTable extends Component {
             })(<Input placeholder="UserId" />)}
           </FormItem>
           <FormItem label={getIntlContent("SOUL.AUTH.EXPANDINFO")} {...formItemLayout}>
-            {getFieldDecorator("extInfo", {
-              rules: [{
-                required: true,
-                message: `${getIntlContent("SOUL.AUTH.INPUT")}ExpandInfo`
-              }],
-            })(<Input placeholder="ExpandInfo" />)}
+            <Input placeholder="ExpandInfo" />
           </FormItem>
           {/* 下拉框关联表格 */}
           <div>
