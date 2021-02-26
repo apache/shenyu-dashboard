@@ -98,15 +98,15 @@ class AddModal extends Component {
     const { ruleConditions,pluginHandleList } = this.state;
     let handle ={};
 
-    pluginHandleList.forEach(item => {
-      handle[item.field] = item.value;
-    });
-
     form.validateFieldsAndScroll((err, values) => {
       const { name, matchMode, loged, enabled } = values;
       if (!err) {
         const submit = this.checkConditions();
         if (submit) {
+          pluginHandleList.forEach(item => {
+            handle[item.field] = values[item.field]
+          });
+
           handleOk({
             name,
             matchMode,
@@ -209,7 +209,7 @@ class AddModal extends Component {
     };
     return (
       <Modal
-        width={900}
+        width={1200}
         centered
         title={getIntlContent("SOUL.RULE.NAME")}
         visible
@@ -348,58 +348,79 @@ class AddModal extends Component {
               })}
               >
                 {pluginHandleList.map(item=> {
+                  let required = item.required === "1";
+                  let defaultValue = item.value || item.defaultValue;
+                  let checkRule = item.checkRule;
+                  let rules = [];
+                  if(required){
+                    rules.push({ required: {required}, message: getIntlContent("SOUL.COMMON.PLEASEINPUT") });
+                  }
+                  if(checkRule){
+                    rules.push({
+                      // eslint-disable-next-line no-eval
+                      pattern: eval(checkRule),
+                      message: `${getIntlContent("SOUL.PLUGIN.RULE.INVALID")}:(${checkRule})`
+                    })
+                  }
                   if (item.dataType === 1) {
-                  return   (
-                    <li key={item.field}>
-                      <Input
-                        addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
-                        defaultValue={item.value}
-                        placeholder={item.label}
-                        key={item.field}
-                        type="number"
-                        onChange={e => {
-                            item.value = e.target.value;
+                    return (
+                      <li key={item.field}>
+                        <FormItem>
+                          {getFieldDecorator(item.field, {
+                            rules,
+                            initialValue: defaultValue,
+                          })(
+                            <Input
+                              addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
+                              placeholder={item.label}
+                              key={item.field}
+                              type="number"
+                            />)
                             }
-                          }
-                      />
-                    </li>
+                        </FormItem>
+                      </li>
                     )
                   } else if (item.dataType === 3 && item.dictOptions) {
                     return (
                       <li key={item.field}>
                         <Tooltip title={item.label}>
-                          <Select
-                            placeholder={item.label}
-                            onChange={value => {
-                          item.value = value;
-                            this.setState({pluginHandleList})
-                        }}
-                            value={item.value || undefined}
-                            style={{ width: 260}}
-                          >
-                            {item.dictOptions.map(option => {
-                          return (
-                            <Option key={option.dictValue} value={option.dictValue}>
-                              {option.dictName} ({item.label})
-                            </Option>
-                          );
-                        })}
-                          </Select>
+                          <FormItem>
+                            {getFieldDecorator(item.field, {
+                              rules,
+                              initialValue: defaultValue,
+                            })(
+                              <Select
+                                placeholder={item.label}
+                                style={{ width: 260}}
+                              >
+                                {item.dictOptions.map(option => {
+                                  return (
+                                    <Option key={option.dictValue} value={option.dictValue}>
+                                      {option.dictName} ({item.label})
+                                    </Option>
+                                  );
+                                })}
+                              </Select>
+                            )}
+                          </FormItem>
                         </Tooltip>
                       </li>
                     )
                   } else {
                     return (
-                      <li key={item.field}><Input
-                        addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
-                        defaultValue={item.value}
-                        placeholder={item.label}
-                        key={item.field}
-                        onChange={e => {
-                          item.value = e.target.value;
-                        }
-                        }
-                      />
+                      <li key={item.field}>
+                        <FormItem>
+                          {getFieldDecorator(item.field, {
+                            rules,
+                            initialValue: defaultValue,
+                          })(
+                            <Input
+                              addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
+                              placeholder={item.label}
+                              key={item.field}
+                            />
+                           )}
+                        </FormItem>
                       </li>
                     )
                   }

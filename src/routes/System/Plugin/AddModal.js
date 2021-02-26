@@ -81,18 +81,33 @@ class AddModal extends Component {
                 let fieldName = eachField.field
                 let dataType = eachField.dataType
                 let required = ''
+                let checkRule;
                 if(eachField.extObj){
                   let extObj = JSON.parse(eachField.extObj)
                   required = extObj.required==='0'?'':extObj.required
                   if(!fieldInitialValue){
                     fieldInitialValue = extObj.defaultValue
                   }
+                  if(extObj.rule){
+                    checkRule = extObj.rule;
+                  }
+                }
+                let rules = [];
+                if(required){
+                  rules.push({ required: {required}, message: getIntlContent("SOUL.COMMON.PLEASEINPUT") });
+                }
+                if(checkRule){
+                  rules.push({
+                    // eslint-disable-next-line no-eval
+                    pattern: eval(checkRule),
+                    message: `${getIntlContent("SOUL.PLUGIN.RULE.INVALID")}:(${checkRule})`
+                  })
                 }
                 if(dataType === 1){
-                  return   (
+                  return (
                     <FormItem label={eachField.label} {...formItemLayout} key={index}>
                       {getFieldDecorator(fieldName, {
-                        rules:  required?[{ required: {required}, message: getIntlContent("SOUL.COMMON.PLEASEINPUT") }]:[] ,
+                        rules,
                         initialValue: fieldInitialValue,
                       })(
                         <Input placeholder={eachField.label} type="number" />
@@ -100,10 +115,10 @@ class AddModal extends Component {
                     </FormItem>
                   )
                 } else if(dataType === 3 && eachField.dictOptions){
-                  return   (
+                  return (
                     <FormItem label={eachField.label} {...formItemLayout} key={index}>
                       {getFieldDecorator(fieldName, {
-                        rules:  required?[{ required: {required}, message: getIntlContent("SOUL.COMMON.PLEASEINPUT") }]:[] ,
+                        rules,
                         initialValue: fieldInitialValue,
                       })(
                         <Select
@@ -121,10 +136,10 @@ class AddModal extends Component {
                     </FormItem>
                   )
                 }else{
-                  return   (
+                  return (
                     <FormItem label={eachField.label} {...formItemLayout} key={index}>
                       {getFieldDecorator(fieldName, {
-                        rules:  required?[{ required: {required}, message: getIntlContent("SOUL.COMMON.PLEASEINPUT") }]:[] ,
+                        rules,
                         initialValue: fieldInitialValue,
                       })(
                         <Input placeholder={eachField.label} />

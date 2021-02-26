@@ -107,12 +107,13 @@ export default class PluginHandle extends Component {
               disabled={true}
               {...pluginHandle}
               handleOk={values => {
-                const { field, label, id, pluginId,dataType,type,sort,required,defaultValue } = values;
+                const { field, label, id, pluginId,dataType,type,sort,required,defaultValue,rule } = values;
                 let extObj
-                if(required || defaultValue){
+                if(required || defaultValue || rule){
                   extObj=JSON.stringify({
                     'required':required,
-                    'defaultValue':defaultValue
+                    'defaultValue':defaultValue,
+                    'rule':rule || ""
                   })
                 }
                 dispatch({
@@ -125,6 +126,8 @@ export default class PluginHandle extends Component {
                     dataType,
                     type,
                     sort,
+                    defaultValue,
+                    rule,
                     extObj
                   },
                   fetchValue: {
@@ -165,12 +168,13 @@ export default class PluginHandle extends Component {
           pluginDropDownList={pluginDropDownList}
           handleOk={values => {
             const {dispatch} = this.props;
-            const {pluginId, label, field, dataType,type,sort,required,defaultValue} = values;
+            const {pluginId, label, field, dataType,type,sort,required,defaultValue,rule} = values;
             let extObj
-            if(required || defaultValue){
+            if(required || defaultValue || rule){
               extObj=JSON.stringify({
                 'required':required,
-                'defaultValue':defaultValue
+                'defaultValue':defaultValue,
+                'rule': rule || ""
               })
             }
             dispatch({
@@ -182,6 +186,8 @@ export default class PluginHandle extends Component {
                 dataType,
                 type,
                 sort,
+                defaultValue,
+                rule,
                 extObj
               },
               fetchValue: {

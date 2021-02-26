@@ -559,7 +559,7 @@ export default class Common extends Component {
               style={{ marginTop: 30 }}
               bordered
               columns={rulesColumns}
-              expandedRowRender={record => <p>{record.handle}</p>}
+              expandedRowRender={record => <p style={{maxWidth:document.documentElement.clientWidth*0.5-50}}>{record.handle}</p>}
               dataSource={ruleList}
               pagination={{
                 total: ruleTotal,

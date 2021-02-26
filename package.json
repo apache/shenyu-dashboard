@@ -20,7 +20,6 @@
     "prettier": "prettier --write ./src/**/**/**/*"
   },
   "dependencies": {
-    "@ant-design/icons": "^4.3.0",
     "@babel/polyfill": "^7.0.0-beta.36",
     "antd": "^3.8.2",
     "classnames": "^2.2.5",
