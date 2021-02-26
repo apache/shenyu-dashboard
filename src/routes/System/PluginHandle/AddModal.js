@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Modal, Form, Input, Select} from "antd";
+import {Modal, Form, Input, Select, Tooltip, Icon, message} from "antd";
 import {connect} from "dva";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
@@ -15,16 +15,19 @@ class AddPluginHandle extends Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-
-        let { pluginId, field, label,dataType,type,sort,required,defaultValue} = values;
-        handleOk({ field, label, id, pluginId,dataType,type,sort,required,defaultValue});
+        let { pluginId, field, label,dataType,type,sort,required,defaultValue,rule} = values;
+        if(dataType === "1" && defaultValue && isNaN(defaultValue)){
+          message.warn(getIntlContent("SOUL.PLUGIN.DEFAULTVALUE") + getIntlContent("SOUL.COMMON.WARN.INPUT_NUMBER"));
+          return;
+        }
+        handleOk({ field, label, id, pluginId,dataType,type,sort,required,defaultValue,rule});
       }
     });
   };
 
 
   render() {
-    let {handleCancel,  form, pluginId, label="", field="", dataType ="1",type="2",sort=0,required=undefined,defaultValue=undefined,pluginDropDownList } = this.props;
+    let {handleCancel,  form, pluginId, label="", field="", dataType ="1",type="2",sort=0,required=undefined,defaultValue=undefined,rule=undefined,pluginDropDownList } = this.props;
     const {getFieldDecorator} = form;
 
     const formItemLayout = {
@@ -38,7 +41,7 @@ class AddPluginHandle extends Component {
 
     return (
       <Modal
-        width={550}
+        width={650}
         centered
         title={getIntlContent("SOUL.PLUGIN.PLUGINHANDLE")}
         visible
@@ -131,6 +134,24 @@ class AddPluginHandle extends Component {
               initialValue: defaultValue,
             })(
               <Input placeholder="DefaultValue" />
+            )}
+          </FormItem>
+          <FormItem
+            label={
+              <span>
+                {getIntlContent("SOUL.PLUGIN.RULE")}&nbsp;
+                <Tooltip title={getIntlContent("SOUL.PLUGIN.RULE.TIP")}>
+                  <Icon type="question-circle-o" />
+                </Tooltip>
+              </span>
+            }
+            {...formItemLayout}
+          >
+            {getFieldDecorator("rule", {
+              rules: [{required: false}],
+              initialValue: rule,
+            })(
+              <Input placeholder={getIntlContent("SOUL.PLUGIN.RULE")} />
             )}
           </FormItem>
         </Form>

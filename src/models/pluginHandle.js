@@ -98,6 +98,18 @@ export default {
           }else {
             item.value = handleJson[item.field];
           }
+          if(item.extObj != null && item.extObj !== "" && typeof (item.extObj) !== "undefined" && item.extObj.indexOf("{") !== -1){
+            let extObj = JSON.parse(item.extObj)
+            item.required = extObj.required;
+            if(extObj.defaultValue){
+              if(item.dataType === 1){
+                item.defaultValue = Number(extObj.defaultValue);
+              }else{
+                item.defaultValue = extObj.defaultValue;
+              }
+            }
+            item.checkRule = extObj.rule;
+          }
           return item;
         });
         callback(dataList);
