@@ -39,6 +39,7 @@
   "SOUL.MENU.PLUGIN.SIGN": "sign",
   "SOUL.MENU.PLUGIN.WAF": "waf",
   "SOUL.MENU.PLUGIN.REWRITE": "rewrite",
+  "SOUL.MENU.PLUGIN.REDIRECT": "redirect",
   "SOUL.MENU.PLUGIN.RATE_LIMITER": "rate_limiter",
   "SOUL.MENU.PLUGIN.DUBBO": "dubbo",
   "SOUL.MENU.PLUGIN.MONITOR": "monitor",
