@@ -85,33 +85,54 @@ export default {
       const {payload} = params;
       let handle = payload.handle;
       let callback = payload.callBack;
+      let isHandleArray = payload.isHandleArray;
       let handleJson;
       if (handle != null && handle !== "" && typeof (handle) !== "undefined" && handle.indexOf("{") !== -1) {
         handleJson = JSON.parse(handle);
       }
       const json = yield call(fetchPluginHandleByPluginId, payload);
       if (json.code === 200) {
-        let dataList = json.data.map(item => {
-          item.key = item.id;
-          if (typeof (handleJson) === "undefined") {
-            item.value = "";
-          }else {
-            item.value = handleJson[item.field];
-          }
-          if(item.extObj != null && item.extObj !== "" && typeof (item.extObj) !== "undefined" && item.extObj.indexOf("{") !== -1){
-            let extObj = JSON.parse(item.extObj)
-            item.required = extObj.required;
-            if(extObj.defaultValue){
-              if(item.dataType === 1){
-                item.defaultValue = Number(extObj.defaultValue);
-              }else{
-                item.defaultValue = extObj.defaultValue;
+        let length = 1;
+        if(handleJson && Array.isArray(handleJson) && handleJson.length > 0){
+          length = handleJson.length;
+        }
+        let handleData = [];
+        if(isHandleArray && Array.isArray(handleJson)){
+          handleData = handleJson;
+        }else {
+          handleData = [handleJson];
+        }
+
+        let dataList = [];
+        if(json.data&&json.data.length>0){
+          // eslint-disable-next-line no-plusplus
+          for(let i = 0; i < length; i++){
+            let dataItem = json.data.map(data => {
+              let item = {...data};
+              item.key = item.id;
+              if (typeof (handleData[i]) === "undefined") {
+                item.value = "";
+              }else {
+                item.value = handleData[i][item.field];
               }
-            }
-            item.checkRule = extObj.rule;
-          }
-          return item;
-        });
+              if(item.extObj != null && item.extObj !== "" && typeof (item.extObj) !== "undefined" && item.extObj.indexOf("{") !== -1){
+                let extObj = JSON.parse(item.extObj)
+                item.required = extObj.required;
+                if(extObj.defaultValue || extObj.defaultValue === 0){
+                  if(item.dataType === 1){
+                    item.defaultValue = Number(extObj.defaultValue);
+                  }else{
+                    item.defaultValue = extObj.defaultValue;
+                  }
+                }
+                item.checkRule = extObj.rule;
+                item.placeholder = extObj.placeholder;
+              }
+              return item;
+            });
+            dataList.push(dataItem);
+          } 
+        }
         callback(dataList);
       }
     },

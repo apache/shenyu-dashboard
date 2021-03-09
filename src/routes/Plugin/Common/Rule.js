@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal, Form, Select, Input, Switch, Button, message, Tooltip } from "antd";
+import { Modal, Form, Select, Input, Switch, Button, message, Tooltip, Popconfirm } from "antd";
 import { connect } from "dva";
 import classnames from 'classnames';
 import styles from "../index.less";
@@ -40,7 +40,7 @@ class AddModal extends Component {
   }
 
   componentWillMount() {
-    const { dispatch,pluginId, handle } = this.props;
+    const { dispatch,pluginId, handle, multiRuleHandle } = this.props;
     this.setState({pluginHandleList: []})
     let type = 2
     dispatch({
@@ -49,6 +49,7 @@ class AddModal extends Component {
         pluginId,
         type,
         handle,
+        isHandleArray: multiRuleHandle,
         callBack: pluginHandles => {
           this.setPluginHandleList(pluginHandles);
         }
@@ -94,23 +95,26 @@ class AddModal extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, handleOk} = this.props;
+    const { form, handleOk, multiRuleHandle } = this.props;
     const { ruleConditions,pluginHandleList } = this.state;
-    let handle ={};
+    let handle =[];
 
     form.validateFieldsAndScroll((err, values) => {
       const { name, matchMode, loged, enabled } = values;
       if (!err) {
         const submit = this.checkConditions();
         if (submit) {
-          pluginHandleList.forEach(item => {
-            handle[item.field] = values[item.field]
+          pluginHandleList.forEach((handleList, index) => {
+            handle[index] = {};
+            handleList.forEach((item) => {
+              handle[index][item.field] = values[item.field + index]
+            });
           });
 
           handleOk({
             name,
             matchMode,
-            handle: JSON.stringify(handle),
+            handle: multiRuleHandle ? JSON.stringify(handle) : JSON.stringify(handle[0]) ,
             loged,
             enabled,
             sort: Number(values.sort),
@@ -148,6 +152,29 @@ class AddModal extends Component {
     this.setState({ ruleConditions });
   };
 
+  handleAddHandle = () => {
+    let {pluginHandleList} = this.state;
+    let pluginHandle = pluginHandleList[0];
+    let toAddPluginHandle = pluginHandle.map(e=>{
+      return {...e,value:null};
+    })
+    pluginHandleList.push(toAddPluginHandle);
+    this.setState({
+      pluginHandleList
+    })
+  }
+
+  handleDeleteHandle = (index) => {
+    let {pluginHandleList} = this.state;
+    if(pluginHandleList.length === 1) {
+      message.destroy();
+      message.error(getIntlContent("SOUL.PLUGIN.HANDLE.TIP"));
+    } else {
+      pluginHandleList.splice(index,1);
+      this.setState({pluginHandleList})
+    }
+  }
+
   conditionChange = (index, name, value) => {
     let { ruleConditions } = this.state;
     ruleConditions[index][name] = value;
@@ -173,7 +200,8 @@ class AddModal extends Component {
       matchMode = "",
       loged = true,
       enabled = true,
-      sort = ""
+      sort = "",
+      multiRuleHandle
     } = this.props;
     const labelWidth = 160
     const { ruleConditions,pluginHandleList } = this.state;
@@ -209,7 +237,7 @@ class AddModal extends Component {
     };
     return (
       <Modal
-        width={1200}
+        width={1000}
         centered
         title={getIntlContent("SOUL.RULE.NAME")}
         visible
@@ -341,94 +369,136 @@ class AddModal extends Component {
               <div className={styles.header}>
                 <h3 style={{width:100}}>{getIntlContent("SOUL.COMMON.DEAL")}: </h3>
               </div>
-              <ul
-                className={classnames({
-                [styles.handleUl]: true,
-                [styles.springUl]: true
-              })}
-              >
-                {pluginHandleList.map(item=> {
-                  let required = item.required === "1";
-                  let defaultValue = item.value || item.defaultValue;
-                  let checkRule = item.checkRule;
-                  let rules = [];
-                  if(required){
-                    rules.push({ required: {required}, message: getIntlContent("SOUL.COMMON.PLEASEINPUT") });
-                  }
-                  if(checkRule){
-                    rules.push({
-                      // eslint-disable-next-line no-eval
-                      pattern: eval(checkRule),
-                      message: `${getIntlContent("SOUL.PLUGIN.RULE.INVALID")}:(${checkRule})`
-                    })
-                  }
-                  if (item.dataType === 1) {
+              <div>
+                {
+                  pluginHandleList.map((handleList,index) =>{
                     return (
-                      <li key={item.field}>
-                        <FormItem>
-                          {getFieldDecorator(item.field, {
-                            rules,
-                            initialValue: defaultValue,
-                          })(
-                            <Input
-                              addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
-                              placeholder={item.label}
-                              key={item.field}
-                              type="number"
-                            />)
+                      <div key={index} style={{display:"flex",justifyContent:"space-between",flexDirection:"row"}}>
+                        <ul
+                          className={classnames({
+                            [styles.handleUl]: true,
+                            [styles.springUl]: true
+                          })}
+                          style={{width:"100%"}}
+                        >
+                          {handleList.map(item=> {
+                            let required = item.required === "1";
+                            let defaultValue =  (item.value === 0 || item.value === false) ? item.value: 
+                            (item.value || 
+                              (item.defaultValue === "true"?true:(item.defaultValue === "false" ? false : item.defaultValue))
+                            );                            
+                            let placeholder = item.placeholder || item.label;
+                            let checkRule = item.checkRule;
+                            let fieldName = item.field+index;
+                            let rules = [];
+                            if(required){
+                              rules.push({ required: {required}, message: getIntlContent("SOUL.COMMON.PLEASEINPUT") + item.label});
                             }
-                        </FormItem>
-                      </li>
-                    )
-                  } else if (item.dataType === 3 && item.dictOptions) {
-                    return (
-                      <li key={item.field}>
-                        <Tooltip title={item.label}>
-                          <FormItem>
-                            {getFieldDecorator(item.field, {
-                              rules,
-                              initialValue: defaultValue,
-                            })(
-                              <Select
-                                placeholder={item.label}
-                                style={{ width: 260}}
+                            if(checkRule){
+                              rules.push({
+                                // eslint-disable-next-line no-eval
+                                pattern: eval(checkRule),
+                                message: `${getIntlContent("SOUL.PLUGIN.RULE.INVALID")}:(${checkRule})`
+                              })
+                            }
+                            if (item.dataType === 1) {
+                              return (
+                                <li key={fieldName}>
+                                  <Tooltip title={placeholder}>
+                                    <FormItem>
+                                      {getFieldDecorator(fieldName, {
+                                        rules,
+                                        initialValue: defaultValue,
+                                      })(
+                                        <Input
+                                          addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
+                                          placeholder={placeholder}
+                                          key={fieldName}
+                                          type="number"
+                                        />)
+                                        }
+                                    </FormItem>
+                                  </Tooltip>
+                                </li>
+                              )
+                            } else if (item.dataType === 3 && item.dictOptions) {
+                              return (
+                                <li key={fieldName}>
+                                  <Tooltip title={placeholder}>
+                                    <FormItem>
+                                      {getFieldDecorator(fieldName, {
+                                        rules,
+                                        initialValue: defaultValue,
+                                      })(
+                                        <Select
+                                          style={{ width: 260}}
+                                        >
+                                          {item.dictOptions.map(option => {
+                                            return (
+                                              <Option key={option.dictValue} value={option.dictValue==="true"?true:(option.dictValue==="false"?false:option.dictValue)}>
+                                                {option.dictName} ({item.label})
+                                              </Option>
+                                            );
+                                          })}
+                                        </Select>
+                                      )}
+                                    </FormItem>
+                                  </Tooltip>
+                                </li>
+                              )
+                            } else {
+                              return (
+                                <li key={fieldName}>
+                                  <Tooltip title={placeholder}>
+                                    <FormItem>
+                                      {getFieldDecorator(fieldName, {
+                                        rules,
+                                        initialValue: defaultValue,
+                                      })(
+                                        <Input
+                                          addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
+                                          placeholder={placeholder}
+                                          key={fieldName}
+                                        />
+                                      )}
+                                    </FormItem>
+                                  </Tooltip>
+                                </li>
+                              )
+                            }
+                          })}
+                        </ul>
+                        {multiRuleHandle && (
+                          <div style={{width:80}}>
+                            <Popconfirm
+                              title={getIntlContent("SOUL.COMMON.DELETE")}
+                              placement='bottom'
+                              onCancel={(e) => {
+                                e.stopPropagation()
+                              }}
+                              onConfirm={(e) => {
+                                e.stopPropagation()
+                                this.handleDeleteHandle(index);
+                              }}
+                              okText={getIntlContent("SOUL.COMMON.SURE")}
+                              cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+                            >
+                              <Button
+                                type="danger" 
                               >
-                                {item.dictOptions.map(option => {
-                                  return (
-                                    <Option key={option.dictValue} value={option.dictValue}>
-                                      {option.dictName} ({item.label})
-                                    </Option>
-                                  );
-                                })}
-                              </Select>
-                            )}
-                          </FormItem>
-                        </Tooltip>
-                      </li>
+                                {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                              </Button>
+                            </Popconfirm>
+                          </div>
+                        )}
+                      </div>
                     )
-                  } else {
-                    return (
-                      <li key={item.field}>
-                        <FormItem>
-                          {getFieldDecorator(item.field, {
-                            rules,
-                            initialValue: defaultValue,
-                          })(
-                            <Input
-                              addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
-                              placeholder={item.label}
-                              key={item.field}
-                            />
-                           )}
-                        </FormItem>
-                      </li>
-                    )
-                  }
-                })
-              }
-              </ul>
+                  }) 
+                }
+              </div>
+              {multiRuleHandle &&<div style={{width:80}}><Button onClick={this.handleAddHandle} type="primary">{getIntlContent("SOUL.COMMON.ADD")}</Button></div>}
             </div>
-            )}
+          )}
           <div className={styles.layout}>
             <FormItem
               style={{ margin: "0 30px" }}

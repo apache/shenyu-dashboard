@@ -107,12 +107,13 @@ export default class PluginHandle extends Component {
               disabled={true}
               {...pluginHandle}
               handleOk={values => {
-                const { field, label, id, pluginId,dataType,type,sort,required,defaultValue,rule } = values;
+                const { field, label, id, pluginId,dataType,type,sort,required,defaultValue,placeholder,rule } = values;
                 let extObj
-                if(required || defaultValue || rule){
+                if(required || defaultValue || placeholder || rule){
                   extObj=JSON.stringify({
                     'required':required,
                     'defaultValue':defaultValue,
+                    'placeholder':placeholder,
                     'rule':rule || ""
                   })
                 }
@@ -127,6 +128,7 @@ export default class PluginHandle extends Component {
                     type,
                     sort,
                     defaultValue,
+                    placeholder,
                     rule,
                     extObj
                   },
@@ -168,12 +170,13 @@ export default class PluginHandle extends Component {
           pluginDropDownList={pluginDropDownList}
           handleOk={values => {
             const {dispatch} = this.props;
-            const {pluginId, label, field, dataType,type,sort,required,defaultValue,rule} = values;
+            const {pluginId, label, field, dataType,type,sort,required,defaultValue,placeholder,rule} = values;
             let extObj
-            if(required || defaultValue || rule){
+            if(required || defaultValue || placeholder || rule){
               extObj=JSON.stringify({
                 'required':required,
                 'defaultValue':defaultValue,
+                'placeholder':placeholder,
                 'rule': rule || ""
               })
             }
@@ -187,6 +190,7 @@ export default class PluginHandle extends Component {
                 type,
                 sort,
                 defaultValue,
+                placeholder,
                 rule,
                 extObj
               },
@@ -299,6 +303,9 @@ export default class PluginHandle extends Component {
                   }
                   if (obj.defaultValue) {
                     item.defaultValue = obj.defaultValue
+                  }
+                  if (obj.placeholder) {
+                    item.placeholder = obj.placeholder
                   }
                 }
               })

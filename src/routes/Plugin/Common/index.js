@@ -100,16 +100,30 @@ export default class Common extends Component {
     });
   };
 
-  getPluginId = (plugins, name) => {
+  getPlugin = (plugins, name) => {
     const plugin = plugins.filter(item => {
       return item.name === name;
     });
-    if (plugin && plugin.length > 0) {
-      return plugin[0].id;
+    return (plugin && plugin.length > 0) ? plugin[0] : null;
+  };
+
+  getPluginId = (plugins, name) => {
+    let plugin = this.getPlugin(plugins, name);
+    if (plugin) {
+      return plugin.id;
     } else {
       return "";
     }
   };
+
+  getPluginConfigField = (config,fieldName) => {
+    if(config){
+      let configObj = JSON.parse(config);
+      return configObj[fieldName];
+     }else {
+      return "";
+     }
+  }
 
   closeModal = () => {
     this.setState({ popup: "" });
@@ -119,11 +133,14 @@ export default class Common extends Component {
     const { selectorPage } = this.state;
     const { dispatch, plugins } = this.props;
     let name = this.props.match.params ? this.props.match.params.id : ''
-    const pluginId = this.getPluginId(plugins, name);
+    const plugin = this.getPlugin(plugins, name);
+    const {id: pluginId, config } = plugin;
+    const multiSelectorHandle = this.getPluginConfigField(config, "multiSelectorHandle") === "1";
     this.setState({
       popup: (
         <Selector
           pluginId={pluginId}
+          multiSelectorHandle={multiSelectorHandle}
           handleOk={selector => {
             dispatch({
               type: "common/addSelector",
@@ -142,14 +159,18 @@ export default class Common extends Component {
 
   addRule = () => {
     const { rulePage,pluginId } = this.state;
-    const { dispatch, currentSelector } = this.props;
-
+    const { dispatch, currentSelector, plugins} = this.props;
+    let name = this.props.match.params ? this.props.match.params.id : ''
+    const plugin = this.getPlugin(plugins, name);
+    const { config } = plugin;
+    const multiRuleHandle = this.getPluginConfigField(config, "multiRuleHandle") === "1";
     if (currentSelector && currentSelector.id) {
       const selectorId = currentSelector.id;
       this.setState({
         popup: (
           <Rule
             pluginId={pluginId}
+            multiRuleHandle={multiRuleHandle}
             handleOk={rule => {
               dispatch({
                 type: "common/addRule",
@@ -178,7 +199,9 @@ export default class Common extends Component {
     const { dispatch, plugins } = this.props;
     const { selectorPage } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : ''
-    const pluginId = this.getPluginId(plugins, name);
+    const plugin = this.getPlugin(plugins, name);
+    const { id: pluginId, config } = plugin;
+    const multiSelectorHandle = this.getPluginConfigField(config, "multiSelectorHandle") === "1";
     const { id } = record;
     dispatch({
       type: "common/fetchSeItem",
@@ -190,6 +213,7 @@ export default class Common extends Component {
           popup: (
             <Selector
               {...selector}
+              multiSelectorHandle={multiSelectorHandle}
               handleOk={values => {
                 dispatch({
                   type: "common/updateSelector",
@@ -266,8 +290,12 @@ export default class Common extends Component {
   };
 
   editRule = record => {
-    const { dispatch, currentSelector } = this.props;
+    const { dispatch, currentSelector, plugins } = this.props;
     const { rulePage,pluginId } = this.state;
+    let name = this.props.match.params ? this.props.match.params.id : ''
+    const plugin = this.getPlugin(plugins, name)
+    const { config } = plugin;
+    const multiRuleHandle = this.getPluginConfigField(config, "multiRuleHandle") === "1";
     const selectorId = currentSelector ? currentSelector.id : "";
     const { id } = record;
     dispatch({
@@ -281,6 +309,7 @@ export default class Common extends Component {
             <Rule
               {...rule}
               pluginId={pluginId}
+              multiRuleHandle={multiRuleHandle}
               handleOk={values => {
                 dispatch({
                   type: "common/updateRule",

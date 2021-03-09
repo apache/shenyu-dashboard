@@ -15,19 +15,19 @@ class AddPluginHandle extends Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        let { pluginId, field, label,dataType,type,sort,required,defaultValue,rule} = values;
+        let { pluginId, field, label,dataType,type,sort,required,defaultValue,placeholder,rule} = values;
         if(dataType === "1" && defaultValue && isNaN(defaultValue)){
           message.warn(getIntlContent("SOUL.PLUGIN.DEFAULTVALUE") + getIntlContent("SOUL.COMMON.WARN.INPUT_NUMBER"));
           return;
         }
-        handleOk({ field, label, id, pluginId,dataType,type,sort,required,defaultValue,rule});
+        handleOk({ field, label, id, pluginId,dataType,type,sort,required,defaultValue,placeholder,rule});
       }
     });
   };
 
 
   render() {
-    let {handleCancel,  form, pluginId, label="", field="", dataType ="1",type="2",sort=0,required=undefined,defaultValue=undefined,rule=undefined,pluginDropDownList } = this.props;
+    let {handleCancel,  form, pluginId, label="", field="", dataType ="1",type="2",sort=0,required=undefined,defaultValue=undefined,placeholder=undefined,rule=undefined,pluginDropDownList } = this.props;
     const {getFieldDecorator} = form;
 
     const formItemLayout = {
@@ -57,7 +57,7 @@ class AddPluginHandle extends Component {
               initialValue: pluginId,
             })(
               <Select
-                placeholder="Plugin"
+                placeholder={getIntlContent("SOUL.PLUGIN.PLUGIN.NAME")}
               >
                 {
                   pluginDropDownList.map((item,i)=>{
@@ -74,7 +74,7 @@ class AddPluginHandle extends Component {
               rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.FIELD")}],
               initialValue: field,
             })(
-              <Input placeholder="Field" />
+              <Input placeholder={getIntlContent("SOUL.PLUGIN.FIELD")} />
             )}
           </FormItem>
           <FormItem label={getIntlContent("SOUL.PLUGIN.DESCRIBE")} {...formItemLayout}>
@@ -82,7 +82,7 @@ class AddPluginHandle extends Component {
               rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.DESCRIBE")}],
               initialValue: label,
             })(
-              <Input placeholder="Label" />
+              <Input placeholder={getIntlContent("SOUL.PLUGIN.DESCRIBE")} />
             )}
           </FormItem>
           <FormItem label={getIntlContent("SOUL.PLUGIN.DATATYPE")} {...formItemLayout}>
@@ -114,7 +114,7 @@ class AddPluginHandle extends Component {
               rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.INPUTSORT")}],
               initialValue: sort,
             })(
-              <Input placeholder="Sort" type="number" />
+              <Input placeholder={getIntlContent("SOUL.PLUGIN.SORT")} type="number" />
             )}
           </FormItem>
           <FormItem label={getIntlContent("SOUL.PLUGIN.REQUIRED")} {...formItemLayout}>
@@ -122,7 +122,7 @@ class AddPluginHandle extends Component {
               rules: [{required: false}],
               initialValue: required,
             })(
-              <Select placeholder="Required">
+              <Select placeholder={getIntlContent("SOUL.PLUGIN.REQUIRED")}>
                 <Option key="1" value="1">{getIntlContent("SOUL.COMMON.YES")}</Option>
                 <Option key="0" value="0">{getIntlContent("SOUL.COMMON.NO")}</Option>
               </Select>
@@ -133,7 +133,15 @@ class AddPluginHandle extends Component {
               rules: [{required: false}],
               initialValue: defaultValue,
             })(
-              <Input placeholder="DefaultValue" />
+              <Input placeholder={getIntlContent("SOUL.PLUGIN.DEFAULTVALUE")} />
+            )}
+          </FormItem>
+          <FormItem label={getIntlContent("SOUL.PLUGIN.PLACEHOLDER")} {...formItemLayout}>
+            {getFieldDecorator("placeholder", {
+              rules: [{required: false}],
+              initialValue: placeholder,
+            })(
+              <Input placeholder={getIntlContent("SOUL.PLUGIN.PLACEHOLDER")} />
             )}
           </FormItem>
           <FormItem
