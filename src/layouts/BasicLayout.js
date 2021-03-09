@@ -192,7 +192,7 @@ class BasicLayout extends React.PureComponent {
     const { collapsed, routerData, match, location, plugins, permissions, dispatch, } = this.props;
     const { localeName, pluginsLoaded } = this.state;
     const bashRedirect = this.getBaseRedirect();
-    const systemRoute = ["divide", "hystrix"];
+    const systemRoute = ["hystrix"];
     let menus = getMenuData();
     plugins.forEach((item) => {
       if (systemRoute.indexOf(item.name) === -1) {

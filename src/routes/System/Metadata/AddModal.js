@@ -56,7 +56,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('appName', {
-              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.APPNAME")` }],
+              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.APPNAME") }],
               initialValue: appName,
             })(
               <Input placeholder={getIntlContent("SOUL.AUTH.APPNAME")} />
@@ -68,7 +68,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('methodName', {
-              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.META.FUNC.NAME")` }],
+              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.META.FUNC.NAME") }],
               initialValue: methodName,
             })(
               <Input placeholder={getIntlContent("SOUL.META.FUNC.NAME")} />
@@ -79,7 +79,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('path', {
-              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.META.PATH")` }],
+              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.META.PATH") }],
               initialValue: path,
             })(
               <Input placeholder={getIntlContent("SOUL.META.PATH")} />
@@ -90,7 +90,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('pathDesc', {
-              rules: [{ required: true, message: `getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.PATH.DESCRIBE")`}],
+              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.PATH.DESCRIBE")}],
               initialValue: pathDesc,
             })(
               <Input placeholder={getIntlContent("SOUL.AUTH.PATH.DESCRIBE")} />

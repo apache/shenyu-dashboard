@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import {Modal, Form, Select, Input, Switch, Button, message, Tooltip} from "antd";
+import {Modal, Form, Select, Input, Switch, Button, message, Tooltip, Popconfirm} from "antd";
 import { connect } from "dva";
 import classnames from "classnames";
 import styles from "../index.less";
@@ -45,7 +45,7 @@ class AddModal extends Component {
   }
 
   componentWillMount() {
-    const { dispatch, pluginId, handle } = this.props;
+    const { dispatch, pluginId, handle, multiSelectorHandle } = this.props;
     this.setState({pluginHandleList: []})
     let type = 1
     dispatch({
@@ -54,6 +54,7 @@ class AddModal extends Component {
         pluginId,
         type,
         handle,
+        isHandleArray: multiSelectorHandle,
         callBack: pluginHandles => {
           this.setPluginHandleList(pluginHandles);
         }
@@ -96,22 +97,25 @@ class AddModal extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, handleOk } = this.props;
+    const { form, handleOk, multiSelectorHandle } = this.props;
     const { selectorConditions, selectValue, pluginHandleList } = this.state;
-    let handle = {};
+    let handle = [];
 
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         const mySubmit =
           selectValue !== "0" && this.checkConditions(selectorConditions);
         if (mySubmit || selectValue === "0") {
-          pluginHandleList.forEach(item => {
-            handle[item.field] = values[item.field]
+          pluginHandleList.forEach((handleList, index) => {
+            handle[index] = {};
+            handleList.forEach((item) => {
+              handle[index][item.field] = values[item.field + index]
+              delete values[item.field + index];
+            });
           });
-
           handleOk({
             ...values,
-            handle: JSON.stringify(handle),
+            handle: multiSelectorHandle ? JSON.stringify(handle) : JSON.stringify(handle[0]) ,
             sort: Number(values.sort),
             selectorConditions
           });
@@ -147,6 +151,29 @@ class AddModal extends Component {
     this.setState({ selectorConditions });
   };
 
+  handleAddHandle = () => {
+    let {pluginHandleList} = this.state;
+    let pluginHandle = pluginHandleList[0];
+    let toAddPluginHandle = pluginHandle.map(e=>{
+      return {...e,value:null};
+    })
+    pluginHandleList.push(toAddPluginHandle);
+    this.setState({
+      pluginHandleList
+    })
+  }
+
+  handleDeleteHandle = (index) => {
+    let {pluginHandleList} = this.state;
+    if(pluginHandleList.length === 1) {
+      message.destroy();
+      message.error(getIntlContent("SOUL.PLUGIN.HANDLE.TIP"));
+    } else {
+      pluginHandleList.splice(index,1);
+      this.setState({pluginHandleList})
+    }
+  }
+
   conditionChange = (index, name, value) => {
     let { selectorConditions } = this.state;
     selectorConditions[index][name] = value;
@@ -181,9 +208,10 @@ class AddModal extends Component {
       continued = true,
       loged = true,
       enabled = true,
-      sort
+      sort,
+      multiSelectorHandle
     } = this.props;
-    const labelWidth = 175
+    const labelWidth = 75
     const { selectorConditions, selectValue, pluginHandleList } = this.state;
 
     type = `${type}`;
@@ -225,7 +253,7 @@ class AddModal extends Component {
     };
     return (
       <Modal
-        width={900}
+        width={(pluginHandleList && pluginHandleList.length > 0 && pluginHandleList[0].length > 3) ? 1350 : 1000}
         centered
         title={getIntlContent("SOUL.SELECTOR.NAME")}
         visible
@@ -407,92 +435,135 @@ class AddModal extends Component {
               <div className={styles.header}>
                 <h3 style={{width:100}}>{getIntlContent("SOUL.COMMON.DEAL")}: </h3>
               </div>
-              <ul
-                className={classnames({
-                  [styles.handleUl]: true,
-                  [styles.springUl]: true
-                })}
-              >
+              <div>
                 {
-                  pluginHandleList.map(item=> {
-                    let required = item.required === "1";
-                    let defaultValue = item.value || item.defaultValue;
-                    let checkRule = item.checkRule;
-                    let rules = [];
-                    if(required){
-                      rules.push({ required: {required}, message: getIntlContent("SOUL.COMMON.PLEASEINPUT") });
-                    }
-                    if(checkRule){
-                      rules.push({
-                        // eslint-disable-next-line no-eval
-                        pattern: eval(checkRule),
-                        message: `${getIntlContent("SOUL.PLUGIN.RULE.INVALID")}:(${checkRule})`
-                      })
-                    }
-                    if (item.dataType === 1) {
-                      return (
-                        <li key={item.field}>
-                          <FormItem>
-                            {getFieldDecorator(item.field, {
-                              rules,
-                              initialValue: defaultValue,
-                            })(
-                              <Input
-                                addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
-                                placeholder={item.label}
-                                key={item.field}
-                                type="number"
-                              />)
-                              }
-                          </FormItem>
-                        </li>
-                      )
-                    } else if (item.dataType === 3 && item.dictOptions) {
-                      return (
-                        <li key={item.field}>
-                          <Tooltip title={item.label}>
-                            <FormItem>
-                              {getFieldDecorator(item.field, {
-                                rules,
-                                initialValue: defaultValue,
-                              })(
-                                <Select
-                                  style={{ width: 260}}
-                                >
-                                  {item.dictOptions.map(option => {
-                                    return (
-                                      <Option key={option.dictValue} value={option.dictValue}>
-                                        {option.dictName} ({item.label})
-                                      </Option>
-                                    );
-                                  })}
-                                </Select>
-                              )}
-                            </FormItem>
-                          </Tooltip>
-                        </li>
-                      )
-                    } else {
-                      return (
-                        <li key={item.field}>
-                          <FormItem>
-                            {getFieldDecorator(item.field, {
-                              rules,
-                              initialValue: defaultValue,
-                            })(
-                              <Input
-                                addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
-                                placeholder={item.label}
-                                key={item.field}
-                              />
-                            )}
-                          </FormItem>
-                        </li>
-                      )
-                    }
-                  })
+                  pluginHandleList.map((handleList,index) =>{
+                    return (
+                      <div key={index} style={{display:"flex",justifyContent:"space-between",flexDirection:"row"}}>
+                        <ul
+                          className={classnames({
+                            [styles.handleUl]: true,
+                            [styles.handleSelectorUl]: true,
+                            [styles.springUl]: true
+                          })}
+                          style={{width:"100%"}}
+                        >
+                          {handleList.map(item=> {
+                            let required = item.required === "1";
+                            let defaultValue =  (item.value === 0 || item.value === false) ? item.value: 
+                            (item.value || 
+                              (item.defaultValue === "true"?true:(item.defaultValue === "false" ? false : item.defaultValue))
+                            );
+                            let placeholder = item.placeholder || item.label;
+                            let checkRule = item.checkRule;
+                            let fieldName = item.field+index;
+                            let rules = [];
+                            if(required){
+                              rules.push({ required: {required}, message: getIntlContent("SOUL.COMMON.PLEASEINPUT") + item.label});
+                            }
+                            if(checkRule){
+                              rules.push({
+                                // eslint-disable-next-line no-eval
+                                pattern: eval(checkRule),
+                                message: `${getIntlContent("SOUL.PLUGIN.RULE.INVALID")}:(${checkRule})`
+                              })
+                            }
+                            if (item.dataType === 1) {
+                              return (
+                                <li key={fieldName}>
+                                  <Tooltip title={placeholder}>
+                                    <FormItem>
+                                      {getFieldDecorator(fieldName, {
+                                        rules,
+                                        initialValue: defaultValue,
+                                      })(
+                                        <Input
+                                          addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
+                                          placeholder={placeholder}
+                                          key={fieldName}
+                                          type="number"
+                                        />)
+                                        }
+                                    </FormItem>
+                                  </Tooltip>
+                                </li>
+                              )
+                            } else if (item.dataType === 3 && item.dictOptions) {
+                              return (
+                                <li key={fieldName}>
+                                  <Tooltip title={placeholder}>
+                                    <FormItem>
+                                      {getFieldDecorator(fieldName, {
+                                        rules,
+                                        initialValue: defaultValue,
+                                      })(
+                                        <Select
+                                          style={{ width: 160}}
+                                        >
+                                          {item.dictOptions.map(option => {
+                                            return (
+                                              <Option key={option.dictValue} value={option.dictValue==="true"?true:(option.dictValue==="false"?false:option.dictValue)}>
+                                                {option.dictName} ({item.label})
+                                              </Option>
+                                            );
+                                          })}
+                                        </Select>
+                                      )}
+                                    </FormItem>
+                                  </Tooltip>
+                                </li>
+                              )
+                            } else {
+                              return (
+                                <li key={fieldName}>
+                                  <Tooltip title={placeholder}>
+                                    <FormItem>
+                                      {getFieldDecorator(fieldName, {
+                                        rules,
+                                        initialValue: defaultValue,
+                                      })(
+                                        <Input
+                                          addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
+                                          placeholder={placeholder}
+                                          key={fieldName}
+                                        />
+                                      )}
+                                    </FormItem>
+                                  </Tooltip>
+                                </li>
+                              )
+                            }
+                          })}
+                        </ul>
+                        {multiSelectorHandle && (
+                          <div style={{width:80,marginTop:3}}>
+                            <Popconfirm
+                              title={getIntlContent("SOUL.COMMON.DELETE")}
+                              placement='bottom'
+                              onCancel={(e) => {
+                                e.stopPropagation()
+                              }}
+                              onConfirm={(e) => {
+                                e.stopPropagation()
+                                this.handleDeleteHandle(index);
+                              }}
+                              okText={getIntlContent("SOUL.COMMON.SURE")}
+                              cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+                            >
+                              <Button
+                                type="danger" 
+                              >
+                                {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                              </Button>
+                            </Popconfirm>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  }) 
                 }
-              </ul>
+              </div>
+              {multiSelectorHandle &&<div style={{width:80,marginTop:3,marginLeft:5}}><Button onClick={this.handleAddHandle} type="primary">{getIntlContent("SOUL.COMMON.ADD")}</Button></div>}
             </div>
           )}
 

@@ -9,12 +9,6 @@ export const menuData = [
     locale: 'SOUL.MENU.PLUGIN.LIST',
     children: [
       {
-        name: 'divide',
-        path: 'divide',
-        id: 'divide6',
-        locale: 'SOUL.MENU.PLUGIN.DIVIDE'
-      },
-      {
         name: 'hystrix',
         path: 'hystrix',
         id: 'hystrix9',
