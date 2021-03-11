@@ -195,6 +195,7 @@
   "SOUL.AUTH.APPPASSWORD":"AppPassword",
   "SOUL.AUTH.INPUTUSERID":"InputUserId",
   "SOUL.AUTH.INPUTEXPANDINFO":"InputExpandInfo",
+  "SOUL.AUTH.OPENPATH": "PathAuth",
   "SOUL.META.PAGE.QUERY":"Paging Query",
   "SOUL.META.EXPAND.PARAMS":"Expand",
   "SOUL.META.FUNC.NAME":"MethodName",

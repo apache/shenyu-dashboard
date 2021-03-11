@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { Modal, Form, Select, Input, Table, Button, Popconfirm } from 'antd';
+import { Modal, Form, Select, Input, Table, Button, Popconfirm, Switch, message } from 'antd';
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;
@@ -21,7 +21,7 @@ class AddTable extends Component {
           />
         )
       },
-      {
+      /* {
         title: getIntlContent("SOUL.AUTH.PATH.DESCRIBE"),
         dataIndex: 'pathDesc',
         editable: 'true',
@@ -31,7 +31,7 @@ class AddTable extends Component {
             onChange={(e) => this.handleTableInput({ pathDesc: e.target.value }, record)}
           />
         )
-      },
+      }, */
       {
         title: getIntlContent("SOUL.COMMON.OPERAT"),
         dataIndex: 'operation',
@@ -44,10 +44,10 @@ class AddTable extends Component {
       },
     ];
     this.state = {
-      selectedRowKeys: [], // Check here to configure the default column
       tableInput: [],
       allData: [],
-      newSelectInput: []
+      newSelectInput: [],
+      pathTableVisible: true,
     };
   }
 
@@ -65,24 +65,27 @@ class AddTable extends Component {
 
   handleSubmit = e => {
     const { form, handleOk } = this.props;
-    const { selectedRowKeys, allData } = this.state;
-    const pathList = allData.filter(item => {
-      let cur = item.id === undefined ? item.key : item.id
-      return selectedRowKeys.includes(cur)
-    }).map(item => {
+    const { allData } = this.state;
+    const pathList = allData.map(item => {
       return item.path
     });
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
+      if(values.open){
+        if(!pathList || pathList.length < 1){
+          message.destroy();
+          message.error("At least one app path when open path");
+          return;
+        }else if(pathList.some(p=>(!p|| p.trim().length ===0))){
+          message.error("App path can not be empty when open path");
+          return;
+        }
+      }
       if (!err) {
         handleOk({ pathList, ...values });
       }
     });
   };
-
-  onSelectChange = selectedRowKeys => {
-    this.setState({ selectedRowKeys });
-  }
 
   handleTableInput = (value, record) => {
     // eslint-disable-next-line guard-for-in
@@ -135,6 +138,10 @@ class AddTable extends Component {
     }
   }
 
+  handleOpenChange = (checked) => {
+    this.setState({pathTableVisible: checked});
+  }
+
   render() {
     let {
       handleCancel,
@@ -144,36 +151,8 @@ class AddTable extends Component {
     // 下拉框数据
     const appNameGroup = Object.getOwnPropertyNames(metaGroup)
     // 表格数据
-    const { selectedRowKeys } = this.state;
-    const rowSelection = {
-      selectedRowKeys,
-      onChange: this.onSelectChange,
-    };
-    // const columns = [
-    //   {
-    //     title: getIntlContent("SOUL.AUTH.RESOUCE.PATH"),
-    //     dataIndex: 'path',
-    //     render: (text, record) => (
-    //       <Input
-    //         value={text}
-    //         onChange={(e) => this.handleTableInput({path: e.target.value}, record)}
-    //       />
-    //     )
-    //   },
-    //   {
-    //     title: getIntlContent("SOUL.AUTH.PATH.DESCRIBE"),
-    //     dataIndex: 'pathDesc',
-    //     render: (text, record) => (
-    //       <Input
-    //         value={text}
-    //         onChange={(e) => this.handleTableInput({pathDesc: e.target.value}, record)}
-    //       />
-    //     )
-    //   },
-    // ];
+    const { pathTableVisible } = this.state;
     const columns = this.columns
-
-
     //   根据下拉框选项自动更换数据
     const data = this.state.allData;
     const { getFieldDecorator } = form;
@@ -258,43 +237,52 @@ class AddTable extends Component {
               <Input placeholder="ExpandInfo" />
             )}
           </FormItem>
+          <FormItem label={getIntlContent("SOUL.AUTH.OPENPATH")} {...formItemLayout}>
+            {getFieldDecorator('open', {
+              initialValue: true,
+              valuePropName: 'checked',
+            })(
+              <Switch onChange={this.handleOpenChange} />
+            )}
+          </FormItem>
           {/* 下拉框关联表格 */}
-          <div>
-            {
-              data.length < 1 ?
-                (
-                  <Button
-                    disabled
-                    onClick={this.handleAddTd}
-                    type="primary"
-                    style={{
-                      marginBottom: 16,
-                    }}
-                  >
-                    {getIntlContent("SOUL.AUTH.ADD")}
-                  </Button>
-                ) :
-                (
-                  <Button
-                    onClick={this.handleAddTd}
-                    type="primary"
-                    style={{
-                      marginBottom: 16,
-                    }}
-                  >
-                    {getIntlContent("SOUL.AUTH.ADD")}
-                  </Button>
-                )
-            }
-            <Table
-              bordered
-              rowSelection={rowSelection}
-              columns={columns}
-              dataSource={data}
-              rowKey={record => record.id}
-              pagination={{ current: 1, pageSize: 10 }}
-            />
-          </div>
+          {pathTableVisible && (
+            <div>
+              {
+                data.length < 1 ?
+                  (
+                    <Button
+                      disabled
+                      onClick={this.handleAddTd}
+                      type="primary"
+                      style={{
+                        marginBottom: 16,
+                      }}
+                    >
+                      {getIntlContent("SOUL.AUTH.ADD")}
+                    </Button>
+                  ) :
+                  (
+                    <Button
+                      onClick={this.handleAddTd}
+                      type="primary"
+                      style={{
+                        marginBottom: 16,
+                      }}
+                    >
+                      {getIntlContent("SOUL.AUTH.ADD")}
+                    </Button>
+                  )
+              }
+              <Table
+                bordered
+                columns={columns}
+                dataSource={data}
+                rowKey={record => record.id}
+                pagination={{ current: 1, pageSize: 10 }}
+              />
+            </div>
+          )}
         </Form>
       </Modal>
     );
