@@ -165,6 +165,7 @@ export default class Auth extends Component {
             // pageSize: 10
           },
           callback: datas => {
+            datas.dataList = datas.dataList.concat(auth.auth);
             this.setState({
               popup: (
                 <RelateMetadata
@@ -371,7 +372,20 @@ export default class Auth extends Component {
           key: "phone",
           ellipsis:true,
         },
-
+        {
+          align: "center",
+          title: getIntlContent("SOUL.AUTH.OPENPATH"),
+          dataIndex: "open",
+          key: "open",
+          ellipsis:true,
+          render: text => {
+            if (text) {
+              return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
+            } else {
+              return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
+            }
+          }
+        },
         {
           align: "center",
           title: getIntlContent("SOUL.SYSTEM.STATUS"),
@@ -423,19 +437,23 @@ export default class Auth extends Component {
           key: "operates",
           ellipsis:true,
           render: (text, record) => {
-            return (
-              // 弹窗中的编辑事件
-              <AuthButton perms="system:authen:editResourceDetails">
-                <div
-                  className="edit"
-                  onClick={() => {
-                    this.editClickMeta(record);
-                  }}
-                >
-                  {getIntlContent("SOUL.AUTH.EDITOR.RESOURCE")}
-                </div>
-              </AuthButton>
-            );
+            if(record.open){
+              return (
+                // 弹窗中的编辑事件
+                <AuthButton perms="system:authen:editResourceDetails">
+                  <div
+                    className="edit"
+                    onClick={() => {
+                      this.editClickMeta(record);
+                    }}
+                  >
+                    {getIntlContent("SOUL.AUTH.EDITOR.RESOURCE")}
+                  </div>
+                </AuthButton>
+              );
+            } else {
+              return null;
+            }
           }
         }
       ]

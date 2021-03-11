@@ -49,21 +49,11 @@ export default {
         const { payload ,callback} = params;
         const json = yield call(getAllMetadatas, payload);
         if (json.code === 200) {
-          // let { page, dataList } = json.data;
-
-        let  dataList = json.data.map(item => {
-            // item.key = item.id;
+          let dataList = json.data.map(item => {
             item = {id:item.id,path:item.path,appName:item.appName,enabled:item.enabled}
             return item;
           });
           callback({dataList});
-          // yield put({
-          //   type: "saveUsers",
-          //   payload: {
-          //     total: page.totalCount,
-          //     dataList
-          //   }
-          // });
         }
     },
     *fetchMetaGroup(params,{call}) {

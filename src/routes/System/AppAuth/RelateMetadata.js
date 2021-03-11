@@ -31,19 +31,17 @@ class RelateMetadata extends Component {
 
   render(){
     let { authName, handleCancel,auth,dataList }=this.props;
-
     return (
       <Modal
-        width={900}
+        width={1200}
         centered
         visible
-        title="Basic Modal"
+        title={getIntlContent("SOUL.AUTH.EDITOR.RESOURCE")}
         okText={getIntlContent("SOUL.COMMON.SURE")}
         cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
-
         {/* 放置穿梭框组件 */}
         <TableTransferComponent authName={authName} auth={auth} datalist={dataList} handleGetUpdateMetas={(data)=>this.getUpdateMetas(data)} />
       </Modal>

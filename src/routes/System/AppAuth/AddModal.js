@@ -40,7 +40,7 @@ class AddModal extends Component {
       selectorConditions.splice(index, 1);
     } else {
       message.destroy();
-      message.error("At least one condition");
+      message.error("At least one app parameter");
     }
     this.setState({ selectorConditions });
   };
@@ -55,8 +55,6 @@ class AddModal extends Component {
   };
 
   render() {
-    // console.log("**********")
-    // console.log(this.props)
     let {
       handleCancel,
       form,
@@ -65,6 +63,7 @@ class AddModal extends Component {
       userId,
       phone,
       extInfo,
+      open = true,
       enabled = true
     } = this.props;
     const { getFieldDecorator } = form;
@@ -92,13 +91,13 @@ class AddModal extends Component {
             {getFieldDecorator("appKey", {
               rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")}AppKey` }],
               initialValue: appKey
-            })(<Input placeholder={`${getIntlContent("SOUL.AUTH.INPUT")}AppKey`} />)}
+            })(<Input disabled placeholder={`${getIntlContent("SOUL.AUTH.INPUT")}AppKey`} />)}
           </FormItem>
           <FormItem label={getIntlContent("SOUL.AUTH.APPPASSWORD")} {...formItemLayout}>
             {getFieldDecorator("appSecret", {
               rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")}AppSecret` }],
               initialValue: appSecret
-            })(<Input placeholder={`${getIntlContent("SOUL.AUTH.INPUT")}AppSecret`} />)}
+            })(<Input disabled placeholder={`${getIntlContent("SOUL.AUTH.INPUT")}AppSecret`} />)}
           </FormItem>
           <FormItem label={`${getIntlContent("SOUL.SYSTEM.USER")}Id`} {...formItemLayout}>
             {getFieldDecorator("userId", {
@@ -117,6 +116,14 @@ class AddModal extends Component {
               rules: [{  message: getIntlContent("SOUL.AUTH.EXPANDINFO") }],
               initialValue: extInfo
             })(<TextArea placeholder={getIntlContent("SOUL.AUTH.INPUTEXPANDINFO")} rows={3} />)}
+          </FormItem>
+          <FormItem label={getIntlContent("SOUL.AUTH.OPENPATH")} {...formItemLayout}>
+            {getFieldDecorator('open', {
+              initialValue: open,
+              valuePropName: 'checked',
+            })(
+              <Switch />
+            )}
           </FormItem>
 
           {/* 添加删除行 */}
