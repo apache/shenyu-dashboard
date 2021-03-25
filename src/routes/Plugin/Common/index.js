@@ -475,7 +475,8 @@ export default class Common extends Component {
         align: "center",
         title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
         dataIndex: "dateCreated",
-        key: "dateCreated"
+        key: "dateCreated",
+        sorter: (a,b) => a.dateCreated > b.dateCreated ? 1 : -1,
       },
       {
         align: "center",

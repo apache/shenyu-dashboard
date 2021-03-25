@@ -299,7 +299,7 @@ export default class Plugin extends Component {
           dataIndex: "name",
           key: "name",
           ellipsis:true,
-          width: 180,
+          width: 120,
         },
         {
           align: "center",
@@ -307,6 +307,8 @@ export default class Plugin extends Component {
           dataIndex: "role",
           ellipsis:true,
           key: "role",
+          width: 120,
+          sorter: (a,b) => a.role > b.role ? 1 : -1,
           render: (text) => {
             const map = {
               0: getIntlContent("SOUL.SYSTEM.SYSTEM"),
@@ -321,7 +323,6 @@ export default class Plugin extends Component {
           dataIndex: "config",
           key: "config",
           ellipsis:true,
-          width: 180,
         },
         {
           align: "center",
@@ -329,6 +330,8 @@ export default class Plugin extends Component {
           dataIndex: "dateCreated",
           key: "dateCreated",
           ellipsis:true,
+          width: 180,
+          sorter: (a,b) => a.dateCreated > b.dateCreated ? 1 : -1,
         },
         {
           align: "center",
@@ -336,6 +339,8 @@ export default class Plugin extends Component {
           dataIndex: "dateUpdated",
           key: "dateUpdated",
           ellipsis:true,
+          width: 180,
+          sorter: (a,b) => a.dateUpdated > b.dateUpdated ? 1 : -1,
         },
         {
           align: "center",
@@ -343,6 +348,8 @@ export default class Plugin extends Component {
           dataIndex: "enabled",
           key: "enabled",
           ellipsis:true,
+          width: 80,
+          sorter: (a,b) => (a.enabled || "-1") > (b.enabled || "-1") ? 1 : -1,
           render: text => {
             if (text) {
               return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
@@ -357,6 +364,8 @@ export default class Plugin extends Component {
           dataIndex: "time",
           key: "time",
           ellipsis:true,
+          width: 80,
+          fixed: "right",
           render: (text, record) => {
             return (
               <AuthButton perms="system:plugin:edit">
@@ -465,6 +474,7 @@ export default class Plugin extends Component {
           bordered
           loading={loading}
           columns={columns}
+          scroll={{ x: 1350 }}
           dataSource={pluginList}
           rowSelection={rowSelection}
           pagination={{
