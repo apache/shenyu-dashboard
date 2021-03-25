@@ -348,7 +348,7 @@ export default class Auth extends Component {
           dataIndex: "appKey",
           key: "appKey",
           ellipsis:true,
-          width: 180,
+          width: 320,
         },
         {
           align: "center",
@@ -356,7 +356,7 @@ export default class Auth extends Component {
           dataIndex: "appSecret",
           key: "appSecret",
           ellipsis:true,
-          width: 180,
+          width: 320,
         },
         {
           align: "center",
@@ -364,6 +364,7 @@ export default class Auth extends Component {
           dataIndex: "userId",
           key: "userId",
           ellipsis:true,
+          width: 80,
         },
         {
           align: "center",
@@ -371,6 +372,7 @@ export default class Auth extends Component {
           dataIndex: "phone",
           key: "phone",
           ellipsis:true,
+          width: 120,
         },
         {
           align: "center",
@@ -378,6 +380,7 @@ export default class Auth extends Component {
           dataIndex: "open",
           key: "open",
           ellipsis:true,
+          width: 80,
           render: text => {
             if (text) {
               return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
@@ -392,6 +395,7 @@ export default class Auth extends Component {
           dataIndex: "enabled",
           key: "enabled",
           ellipsis:true,
+          width: 80,
           render: text => {
             if (text) {
               return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
@@ -407,6 +411,7 @@ export default class Auth extends Component {
           render: dateUpdated => dayjs(dateUpdated).format('YYYY-MM-DD HH:mm:ss' ),
           key: "dateUpdated",
           ellipsis:true,
+          sorter: (a,b) => a.dateUpdated > b.dateUpdated ? 1 : -1,
         },
         {
           align: "center",
@@ -414,6 +419,8 @@ export default class Auth extends Component {
           dataIndex: "operate",
           key: "operate",
           ellipsis:true,
+          width: 80,
+          fixed: "right",
           render: (text, record) => {
             return (
               // 弹窗中的编辑事件
@@ -436,6 +443,8 @@ export default class Auth extends Component {
           dataIndex: "operates",
           key: "operates",
           ellipsis:true,
+          width: 140,
+          fixed: "right",
           render: (text, record) => {
             if(record.open){
               return (
@@ -544,6 +553,7 @@ export default class Auth extends Component {
           rowKey={record => record.id}
           loading={loading}
           columns={columns}
+          scroll={{ x: 1450 }}
           dataSource={authList}
           rowSelection={rowSelection}
           pagination={{

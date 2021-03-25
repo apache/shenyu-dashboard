@@ -291,6 +291,8 @@ export default class PluginHandle extends Component {
           dataIndex: "pluginId",
           key: "pluginId",
           ellipsis: true,
+          sorter: (a,b)=> a.pluginId - b.pluginId,
+          width: 120,
           render: text => {
             const {pluginHandle} = this.props;
             const {pluginHandleList, pluginDropDownList} = pluginHandle;
@@ -326,7 +328,7 @@ export default class PluginHandle extends Component {
           dataIndex: "field",
           key: "field",
           ellipsis: true,
-          width: 180,
+          width: 200,
         },
         {
           align: "center",
@@ -334,7 +336,8 @@ export default class PluginHandle extends Component {
           dataIndex: "label",
           key: "label",
           ellipsis: true,
-          width: 180,
+          width: 200,
+          sorter: (a,b) => a.label > b.label ? 1 : -1,
         },
         {
           align: "center",
@@ -342,6 +345,7 @@ export default class PluginHandle extends Component {
           dataIndex: "dataType",
           key: "dataType",
           ellipsis: true,
+          width: 100,
           render: text => {
             if (text === 1) {
               return <div>{getIntlContent("SOUL.PLUGIN.DIGITAL")}</div>;
@@ -359,6 +363,8 @@ export default class PluginHandle extends Component {
         dataIndex: "type",
         key: "type",
         ellipsis:true,
+        width: 120,
+        sorter: (a,b)=> a.type - b.type,
         render: text => {
           if (text === 1) {
             return <div>{getIntlContent("SOUL.SELECTOR.NAME")}</div>;
@@ -375,6 +381,8 @@ export default class PluginHandle extends Component {
         dataIndex: "sort",
         key: "sort",
         ellipsis:true,
+        width: 80,
+        sorter: (a,b)=> a.sort - b.sort,
       },
       {
         align: "center",
@@ -382,6 +390,8 @@ export default class PluginHandle extends Component {
         dataIndex: "required",
         key: "required",
         ellipsis:true,
+        width: 120,
+        sorter: (a,b) => (a.required || "-1") > (b.required || "-1") ? 1 : -1,
         render: text => {
           if (text === "1") {
             return <div>{getIntlContent("SOUL.COMMON.YES")}</div>;
@@ -396,6 +406,7 @@ export default class PluginHandle extends Component {
           dataIndex: "defaultValue",
           key: "defaultValue",
           ellipsis: true,
+          width: 120,
         },
         {
           align: "center",
@@ -403,6 +414,8 @@ export default class PluginHandle extends Component {
           dataIndex: "dateCreated",
           key: "dateCreated",
           ellipsis: true,
+          width: 180,
+          sorter: (a,b) => a.dateCreated > b.dateCreated ? 1 : -1,
         },
         {
           align: "center",
@@ -410,14 +423,16 @@ export default class PluginHandle extends Component {
           dataIndex: "dateUpdated",
           key: "dateUpdated",
           ellipsis: true,
+          sorter: (a,b) => a.dateUpdated > b.dateUpdated ? 1 : -1,
         },
-
         {
           align: "center",
           title: getIntlContent("SOUL.COMMON.OPERAT"),
           dataIndex: "time",
           key: "time",
           ellipsis: true,
+          fixed: 'right',
+          width: 100,
           render: (text, record) => {
             return (
               <AuthButton perms="system:pluginHandler:edit">
@@ -518,6 +533,7 @@ export default class PluginHandle extends Component {
           bordered
           loading={loading}
           columns={tableColumns}
+          scroll={{ x: 1550 }}
           dataSource={pluginHandleList}
           rowSelection={rowSelection}
           pagination={{

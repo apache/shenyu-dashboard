@@ -269,6 +269,7 @@ export default class Metadata extends Component {
           dataIndex: "appName",
           key: "appName",
           ellipsis:true,
+          sorter: (a,b) => a.appName > b.appName ? 1 : -1,
         },
         {
           align: "center",
@@ -292,6 +293,7 @@ export default class Metadata extends Component {
           dataIndex: "methodName",
           key: "methodName",
           ellipsis:true,
+          sorter: (a,b) => a.methodName > b.methodName ? 1 : -1,
         },
         {
           align: "center",
@@ -300,6 +302,7 @@ export default class Metadata extends Component {
           key: "parameterTypes",
           ellipsis:true,
           width: 120,
+          sorter: (a,b) => a.parameterTypes > b.parameterTypes ? 1 : -1,
         },
         {
           align: "center",
@@ -307,6 +310,7 @@ export default class Metadata extends Component {
           dataIndex: "rpcType",
           key: "rpcType",
           ellipsis:true,
+          sorter: (a,b) => a.rpcType > b.rpcType ? 1 : -1,
         },
         {
           align: "center",
@@ -345,7 +349,8 @@ export default class Metadata extends Component {
           ellipsis:true,
           dataIndex: "operate",
           key: "operate",
-          width: 60,
+          width: 80,
+          fixed: "right",
           render: (text, record) => {
             return (
               <AuthButton perms="system:meta:edit">
@@ -455,6 +460,7 @@ export default class Metadata extends Component {
           rowKey={record => record.id}
           loading={loading}
           columns={columns}
+          scroll={{ x: 1350 }}
           dataSource={userList}
           rowSelection={rowSelection}
           pagination={{

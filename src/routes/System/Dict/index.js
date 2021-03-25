@@ -304,7 +304,8 @@ export default class SoulDict extends Component {
           dataIndex: "type",
           key: "type",
           ellipsis:true,
-          width: 150,
+          width: 180,
+          sorter: (a,b) => a.type > b.type ? 1 : -1,
         },
         {
           align: "center",
@@ -312,7 +313,7 @@ export default class SoulDict extends Component {
           dataIndex: "dictCode",
           key: "dictCode",
           ellipsis:true,
-          width: 180,
+          width: 350,
         },
         {
           align: "center",
@@ -320,7 +321,7 @@ export default class SoulDict extends Component {
           dataIndex: "dictName",
           key: "dictName",
           ellipsis:true,
-          width: 180,
+          width: 200,
         },
         {
           align: "center",
@@ -328,7 +329,7 @@ export default class SoulDict extends Component {
           dataIndex: "dictValue",
           key: "dictValue",
           ellipsis:true,
-          width: 70,
+          width: 140,
         },
         {
           align: "center",
@@ -336,7 +337,6 @@ export default class SoulDict extends Component {
           dataIndex: "desc",
           key: "desc",
           ellipsis:true,
-          width: 180,
         },
         {
           align: "center",
@@ -344,6 +344,7 @@ export default class SoulDict extends Component {
           dataIndex: "sort",
           key: "sort",
           ellipsis:true,
+          width: 80,
         },
         {
           align: "center",
@@ -351,6 +352,7 @@ export default class SoulDict extends Component {
           dataIndex: "enabled",
           ellipsis:true,
           key: "enabled",
+          width: 80,
           render: text => {
             if (text) {
               return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
@@ -365,6 +367,8 @@ export default class SoulDict extends Component {
           ellipsis:true,
           dataIndex: "operate",
           key: "operate",
+          width: 80,
+          fixed: "right",
           render: (text, record) => {
             return (
               <AuthButton perms="system:dict:edit">
@@ -477,6 +481,7 @@ export default class SoulDict extends Component {
           rowKey={record => record.id}
           loading={loading}
           columns={columns}
+          scroll={{ x: 1350 }}
           dataSource={soulDictList}
           rowSelection={rowSelection}
           pagination={{

@@ -192,6 +192,7 @@ export default class Role extends Component {
         dataIndex: "dateCreated",
         key: "dateCreated",
         ellipsis:true,
+        sorter: (a,b) => a.dateCreated > b.dateCreated ? 1 : -1,
       },
       {
         align: "center",
@@ -199,6 +200,7 @@ export default class Role extends Component {
         dataIndex: "dateUpdated",
         key: "dateUpdated",
         ellipsis:true,
+        sorter: (a,b) => a.dateUpdated > b.dateUpdated ? 1 : -1,
       },
       {
         align: "center",

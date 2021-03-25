@@ -307,6 +307,7 @@ export default class Resource extends Component {
         dataIndex: "title",
         key: "title",
         ellipsis:true,
+        width: 100,
         render: text => {
           return  getIntlContent(text) || text;
         }
@@ -316,6 +317,7 @@ export default class Resource extends Component {
         title: getIntlContent("SOUL.SYSTEM.ICON"),
         dataIndex: "icon",
         key: "icon",
+        width: 60,
         render: text => {
           return  <Icon type={text} /> || text;
         }
@@ -325,7 +327,8 @@ export default class Resource extends Component {
         title: getIntlContent("SOUL.SYSTEM.RESOURCE.PERMS"),
         dataIndex: "perms",
         key: "perms",
-        ellipsis:true
+        ellipsis:true,
+        width: 140,
       },
       {
         align: "center",
@@ -333,6 +336,8 @@ export default class Resource extends Component {
         dataIndex: "dateCreated",
         key: "dateCreated",
         ellipsis:true,
+        width: 140,
+        sorter: (a,b) => a.dateCreated > b.dateCreated ? 1 : -1,
       },
       {
         align: "center",
@@ -340,6 +345,8 @@ export default class Resource extends Component {
         dataIndex: "dateUpdated",
         key: "dateUpdated",
         ellipsis:true,
+        width: 140,
+        sorter: (a,b) => a.dateUpdated > b.dateUpdated ? 1 : -1,
       },
       {
         align: "center",
@@ -347,6 +354,7 @@ export default class Resource extends Component {
         dataIndex: "operate",
         key: "operate",
         ellipsis:true,
+        width: 60,
         render: (text, record) => {
           return (
             <AuthButton perms="system:resource:editButton">
