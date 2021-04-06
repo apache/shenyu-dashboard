@@ -278,7 +278,7 @@ class AddModal extends Component {
                 {selectorTypeEnums.map(item => {
                   return (
                     <Option key={item.code} value={`${item.code}`}>
-                      {item.name}
+                      {getIntlContent(`SOUL.COMMON.SELECTOR.TYPE.${ item.name.toUpperCase()}`, item.name)}
                     </Option>
                   );
                 })}
@@ -450,8 +450,8 @@ class AddModal extends Component {
                         >
                           {handleList.map(item=> {
                             let required = item.required === "1";
-                            let defaultValue =  (item.value === 0 || item.value === false) ? item.value: 
-                            (item.value || 
+                            let defaultValue =  (item.value === 0 || item.value === false) ? item.value:
+                            (item.value ||
                               (item.defaultValue === "true"?true:(item.defaultValue === "false" ? false : item.defaultValue))
                             );
                             let placeholder = item.placeholder || item.label;
@@ -551,7 +551,7 @@ class AddModal extends Component {
                               cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
                             >
                               <Button
-                                type="danger" 
+                                type="danger"
                               >
                                 {getIntlContent("SOUL.COMMON.DELETE.NAME")}
                               </Button>
@@ -560,7 +560,7 @@ class AddModal extends Component {
                         )}
                       </div>
                     )
-                  }) 
+                  })
                 }
               </div>
               {multiSelectorHandle &&<div style={{width:80,marginTop:3,marginLeft:5}}><Button onClick={this.handleAddHandle} type="primary">{getIntlContent("SOUL.COMMON.ADD")}</Button></div>}
