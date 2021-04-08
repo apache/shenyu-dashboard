@@ -1,14 +1,11 @@
-# Soul DashBoard
+# Soul Dashboard
 
 ![build](https://github.com/dromara/soul-dashboard/workflows/build/badge.svg)
 
 
 ## Overview
-Soul DashBoard is frontend of a management background for [soul](https://github.com/dromara/soul).
-
-### Soul Admin Backend
-soul-admin is a standard spring boot project,click [here](https://github.com/dromara/soul/tree/master/soul-admin) for more information.
-
+Soul Dashboard is frontend of a management background for [soul](https://github.com/dromara/soul). The API interface is in the [soul-admin](https://github.com/dromara/soul/tree/master/soul-admin) module.
+                                                                                                   
 ## Prerequisite
 - node v8.0+
 
@@ -16,8 +13,8 @@ soul-admin is a standard spring boot project,click [here](https://github.com/dro
 
 ### Configuration
 
-modify the api url for different environment, eg: `http://192.168.1.100:8000`
-![index.ejs](https://raw.githubusercontent.com/dromara/soul-dashboard/master/doc/img/index.ejs.png)
+Modify the api url for different environment, eg: `http://192.168.1.100:8000`
+![index.ejs](https://dromara.github.io/soul-dashboard/doc/img/index.ejs.png)
 
 
 ### Develop Environment
@@ -38,14 +35,14 @@ npm install
 npm run build
 ```
 
-## Screenshot
+## Screenshots
 
 #### Divide Plugin
-![index](https://raw.githubusercontent.com/dromara/soul-dashboard/master/doc/img/index.jpg)
+![Divide Plugin](https://dromara.github.io/soul-dashboard/doc/img/divide-plugin.png)
 
 #### Add Rules
-![add rules](https://raw.githubusercontent.com/dromara/soul-dashboard/master/doc/img/add-rules.png)
+![Add Rules](https://dromara.github.io/soul-dashboard/doc/img/add-rules.jpg)
 
 #### Plugin Management
-![Plugin Management](https://raw.githubusercontent.com/dromara/soul-dashboard/master/doc/img/plugin-management.jpg)
+![Plugin Management](https://dromara.github.io/soul-dashboard/doc/img/plugin-management.jpg)
 
