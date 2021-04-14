@@ -33,6 +33,9 @@ npm start
 npm install
 # build for production
 npm run build
+
+# copy to soul-admin
+cp -rf dist/* soul-admin/src/main/resources/static/
 ```
 
 ## Screenshots
