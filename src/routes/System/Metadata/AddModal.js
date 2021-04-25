@@ -90,7 +90,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('pathDesc', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.PATH.DESCRIBE")}],
+              rules: [{ required: false, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.PATH.DESCRIBE")}],
               initialValue: pathDesc,
             })(
               <Input placeholder={getIntlContent("SOUL.AUTH.PATH.DESCRIBE")} />
@@ -101,7 +101,7 @@ class AddModal extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator('parameterTypes', {
-              rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")}${getIntlContent("SOUL.AUTH.PARAMS")}${getIntlContent("SOUL.COMMON.TYPE")}` }],
+              rules: [{ required: false, message: `${getIntlContent("SOUL.AUTH.INPUT")}${getIntlContent("SOUL.AUTH.PARAMS")}${getIntlContent("SOUL.COMMON.TYPE")}` }],
               initialValue: parameterTypes,
             })(
               <Input placeholder={`${getIntlContent("SOUL.AUTH.PARAMS")}${getIntlContent("SOUL.COMMON.TYPE")}`} />
