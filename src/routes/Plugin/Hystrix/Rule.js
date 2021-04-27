@@ -376,7 +376,7 @@ class AddModal extends Component {
                           this.conditionChange(index, "operator", value);
                         }}
                         value={item.operator}
-                        style={{ width: 80 }}
+                        style={{ width: 150 }}
                       >
                         {operatorEnums.map(opearte => {
                           return (
