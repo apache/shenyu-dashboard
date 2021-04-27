@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
+import DataPermModal from "./DataPermModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from '../../../utils/AuthButton';
 
@@ -106,6 +107,19 @@ export default class Manage extends Component {
           )
         });
       }
+    });
+  };
+
+  permissionConfig = record => {
+    this.setState({
+      popup: (
+        <DataPermModal
+          userId={record.id}
+          handleCancel={() => {
+            this.closeModal();
+          }}
+        />
+      )
     });
   };
 
@@ -238,16 +252,31 @@ export default class Manage extends Component {
         ellipsis:true,
         render: (text, record) => {
           return (
-            <AuthButton perms="system:manager:edit">
-              <div
-                className="edit"
-                onClick={() => {
-                  this.editClick(record);
-                }}
-              >
-                {getIntlContent("SOUL.SYSTEM.EDITOR")}
-              </div>
-            </AuthButton>
+            <div>
+              <AuthButton perms="system:manager:edit">
+                <span
+                  className="edit"
+                  onClick={() => {
+                    this.editClick(record);
+                  }}
+                >
+                  {getIntlContent("SOUL.SYSTEM.EDITOR")}
+                </span>
+              </AuthButton>
+              {record.userName !== "admin" && (
+                <AuthButton perms="system:manager:configureDataPermission">
+                  &nbsp;&nbsp;&nbsp;
+                  <span
+                    className="edit"
+                    onClick={() => {
+                      this.permissionConfig(record);
+                    }}
+                  >
+                    {getIntlContent("SOUL.BUTTON.DATA.PERMISSION.CONFIG")}
+                  </span>
+                </AuthButton>
+              )}
+            </div>
           );
         }
       }

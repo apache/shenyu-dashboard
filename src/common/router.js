@@ -87,7 +87,7 @@ export const getRouterData = app => {
       component: dynamicWrapper(app, ['role'], () => import('../routes/System/Role')),
     },
     '/system/manage': { // 用户管理
-      component: dynamicWrapper(app, ['manage'], () => import('../routes/System/User')),
+      component: dynamicWrapper(app, ['manage', 'dataPermission'], () => import('../routes/System/User')),
     },
     '/system/resource': { // 资源管理
       component: dynamicWrapper(app, ['resource'], () => import('../routes/System/Resource')),

@@ -672,3 +672,57 @@ export async function getUserPermissionByToken(params) {
     method: `GET`
   });
 }
+
+/* get dataPermision's selectors by page */
+export async function getDataPermisionSelectors(params) {
+  return request(`${baseUrl}/data-permission/selector?${stringify(params)}`, {
+    method: `GET`
+  });
+}
+
+/* get dataPermision's rules by page */
+export async function getDataPermisionRules(params) {
+  return request(`${baseUrl}/data-permission/rules?${stringify(params)}`, {
+    method: `GET`
+  });
+}
+
+/* add dataPermision's selector */
+export async function addDataPermisionSelector(params) {
+  return request(`${baseUrl}/data-permission/selector`, {
+    method: `POST`,
+    body: {
+      ...params
+    }
+  });
+}
+
+/* add dataPermision's rule */
+export async function addDataPermisionRule(params) {
+  return request(`${baseUrl}/data-permission/rule`, {
+    method: `POST`,
+    body: {
+      ...params
+    }
+  });
+}
+
+/* delete dataPermision's selector */
+export async function deleteDataPermisionSelector(params) {
+  return request(`${baseUrl}/data-permission/selector`, {
+    method: `DELETE`,
+    body: {
+      ...params
+    }
+  });
+}
+
+/* delete dataPermision's rule */
+export async function deleteDataPermisionRule(params) {
+  return request(`${baseUrl}/data-permission/rule`, {
+    method: `DELETE`,
+    body: {
+      ...params
+    }
+  });
+}
