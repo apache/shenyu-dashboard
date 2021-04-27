@@ -356,7 +356,7 @@ class AddModal extends Component {
                               this.conditionChange(index, "operator", value);
                             }}
                             value={item.operator}
-                            style={{ wth: 150 }}
+                            style={{ width: 150 }}
                           >
                             {operatorEnums.map(opearte => {
                               return (
@@ -498,7 +498,7 @@ class AddModal extends Component {
                                         initialValue: defaultValue,
                                       })(
                                         <Select
-                                          style={{ width: 160}}
+                                          style={{ width: "100%"}}
                                         >
                                           {item.dictOptions.map(option => {
                                             return (

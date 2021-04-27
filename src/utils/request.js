@@ -2,6 +2,7 @@ import fetch from 'dva/fetch';
 import { notification } from 'antd';
 import { routerRedux } from 'dva/router';
 import store from '../index';
+import { getIntlContent } from './IntlUtils'
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -34,6 +35,25 @@ function checkStatus(response) {
   error.response = response;
   throw error;
 }
+
+/**
+ * check response's code
+ * @param {} response 
+ */
+const checkResponseCode = response => {
+  if (response.code === 401) {
+    notification.error({
+      message: getIntlContent("SOUL.MESSAGE.SESSION.INVALID"),
+      description: getIntlContent("SOUL.MESSAGE.SESSION.RELOGIN"),
+    });
+    const error = new Error(response.message);
+    error.name = response.code;
+    error.response = response;
+    throw error;
+  } else {
+    return true;
+  }
+};
 
 /**
  * Requests a URL, returning a promise.
@@ -84,6 +104,10 @@ export default function request(url, options) {
         return response.json();
       }
       return response.json();
+    }).then(res => {
+      if(checkResponseCode(res)){
+        return res;
+      }
     })
     .catch(e => {
       const { dispatch } = store;
@@ -91,6 +115,9 @@ export default function request(url, options) {
       if (status === 401) {
         dispatch({
           type: 'login/logout',
+        });
+        dispatch({
+          type: "global/resetPermission"
         });
         return;
       }
