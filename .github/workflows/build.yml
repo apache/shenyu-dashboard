@@ -26,3 +26,14 @@ jobs:
       - run: npm install
       - run: npm run lint
       - run: npm run build --if-present
+      - name: push index.js to dromara/soul@gen-static-indexjs
+        uses: asxing/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: 'dist'
+          destination_repo: 'dromara/soul'
+          destination_folder: 'soul-admin/src/main/resources/static'
+          user_email: 'holddie@163.com'
+          user_name: 'Asxing'
+          destination_branch: 'gen-static-indexjs'
