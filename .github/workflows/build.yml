@@ -19,6 +19,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.API_TOKEN_GITHUB }}
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -27,7 +29,7 @@ jobs:
       - run: npm run lint
       - run: npm run build --if-present
       - name: push index.js to dromara/soul@gen-static-indexjs
-        uses: asxing/copy_file_to_another_repo_action@main
+        uses: asxing/copy_file_to_another_repo_action@v2
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
