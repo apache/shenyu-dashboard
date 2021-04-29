@@ -34,6 +34,6 @@ jobs:
           source_file: 'dist'
           destination_repo: 'dromara/soul'
           destination_folder: 'soul-admin/src/main/resources/static'
-          user_email: 'dromara-robot@dromara.org'
-          user_name: 'dromara-robot'
+#           user_email: 'dromara-robot@dromara.org'
+#           user_name: 'dromara-robot'
           destination_branch: 'gen-static-indexjs'
