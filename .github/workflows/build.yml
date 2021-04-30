@@ -16,13 +16,13 @@ jobs:
     strategy:
       matrix:
         node-version: [8.x, 10.x, 12.x]
-
+    env:
+      API_TOKEN_GITHUB: ${{ secrets.TOKEN }}
     steps:
       - uses: actions/checkout@v2
         with:
           ref: master
-          token: ${{ secrets.TOKEN }}
-          persist-credentials: false
+          token: API_TOKEN_GITHUB
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
