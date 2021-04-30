@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: master
-          token: API_TOKEN_GITHUB
+          token: ${{ env.API_TOKEN_GITHUB }}
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -33,7 +33,7 @@ jobs:
       - name: push index.js to dromara/soul@gen-static-indexjs
         uses: asxing/copy_file_to_another_repo_action@v2
         env:
-          API_TOKEN_GITHUB: ${{ secrets.TOKEN }}
+          API_TOKEN_GITHUB: ${{ env.API_TOKEN_GITHUB }}
         with:
           source_file: 'dist'
           destination_repo: 'dromara/soul'
