@@ -1,9 +1,6 @@
 name: build
 
 on:
-  pull_request:
-    paths-ignore:
-      - "**.md"
   push:
     branches:
       - master
@@ -15,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [8.x, 10.x, 12.x]
+        node-version: [8.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -38,4 +35,4 @@ jobs:
           destination_folder: 'soul-admin/src/main/resources/static'
           user_email: 'dromara-robot@dromara.org'
           user_name: 'dromara-robot'
-          destination_branch: 'gen-static-indexjs'
+          destination_branch_create: 'gen-static-indexjs'
