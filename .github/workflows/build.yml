@@ -19,8 +19,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.API_TOKEN_GITHUB }}
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
