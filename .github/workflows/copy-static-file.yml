@@ -8,7 +8,7 @@ on:
       - '**.md'
 
 jobs:
-  build:
+  push_to_soul:
     runs-on: ubuntu-latest
     strategy:
       matrix:
