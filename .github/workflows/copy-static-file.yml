@@ -1,0 +1,37 @@
+name: copy-static-file
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [8.x]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.API_TOKEN_GITHUB }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm run build --if-present
+      - name: push index.js to dromara/soul@gen-static-indexjs
+        uses: dromara/copy_file_to_another_repo_action@v2
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: 'dist'
+          destination_repo: 'dromara/soul'
+          destination_folder: 'soul-admin/src/main/resources/static'
+          user_email: 'dromara-robot@dromara.org'
+          user_name: 'dromara-robot'
+          destination_branch_create: 'gen-static-indexjs'
