@@ -173,14 +173,7 @@ export async function updatePlugin(params) {
 
 /* getAllPlugins */
 export async function getAllPlugins(params) {
-  const { name, currentPage, pageSize } = params;
-  let myParams = params;
-  if (name) {
-    myParams = params;
-  } else {
-    myParams = { currentPage, pageSize };
-  }
-  return request(`${baseUrl}/plugin?${stringify(myParams)}`, {
+  return request(`${baseUrl}/plugin?${stringify(params)}`, {
     method: `GET`
   });
 }

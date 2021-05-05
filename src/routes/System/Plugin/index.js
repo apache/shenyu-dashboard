@@ -1,11 +1,13 @@
 import React, { Component } from "react";
-import { Table, Input, Button, message, Popconfirm } from "antd";
+import {Table, Input, Button, message, Popconfirm, Select} from "antd";
 import { connect } from "dva";
 import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from '../../../utils/AuthButton';
 import {resetAuthMenuCache} from '../../../utils/AuthRoute';
+
+const { Option } = Select;
 
 @connect(({ plugin, loading, global }) => ({
   plugin,
@@ -21,6 +23,7 @@ export default class Plugin extends Component {
       currentPage: 1,
       selectedRowKeys: [],
       name: "",
+      enabled: null,
       popup: "",
       localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
     };
@@ -59,11 +62,12 @@ export default class Plugin extends Component {
 
   getAllPlugins = page => {
     const { dispatch } = this.props;
-    const { name } = this.state;
+    const { name, enabled } = this.state;
     dispatch({
       type: "plugin/fetch",
       payload: {
         name,
+        enabled,
         currentPage: page,
         pageSize: 12
       }
@@ -139,6 +143,11 @@ export default class Plugin extends Component {
   searchOnchange = e => {
     const name = e.target.value;
     this.setState({ name });
+  };
+
+  enabledOnchange = e => {
+    const enabled = e;
+    this.setState({ enabled });
   };
 
   searchClick = () => {
@@ -388,7 +397,7 @@ export default class Plugin extends Component {
   render() {
     const { plugin, loading } = this.props;
     const { pluginList, total } = plugin;
-    const { currentPage, selectedRowKeys, name, popup } = this.state;
+    const { currentPage, selectedRowKeys, name, enabled, popup } = this.state;
     const columns = this.state.columns.map((col, index) => ({
       ...col,
       onHeaderCell: column => ({
@@ -410,6 +419,21 @@ export default class Plugin extends Component {
             placeholder={getIntlContent("SOUL.PLUGIN.INPUTNAME")}
             style={{ width: 240 }}
           />
+          <Select
+            value={enabled != null ? enabled : undefined}
+            onChange={this.enabledOnchange}
+            placeholder={getIntlContent("SOUL.PLUGIN.SELECT.STATUS")}
+            style={{ width: 100, marginLeft: 20 }}
+            allowClear
+          >
+            {
+              ['Open', 'Close'].map((item,i)=>{
+                return(
+                  <Option key={i} value={item === 'Open' ? 1 : 0}>{item}</Option>
+                )
+              })
+            }
+          </Select>
           <AuthButton perms="system:plugin:list">
             <Button
               type="primary"
