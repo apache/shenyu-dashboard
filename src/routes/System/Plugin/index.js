@@ -426,13 +426,8 @@ export default class Plugin extends Component {
             style={{ width: 150, marginLeft: 20 }}
             allowClear
           >
-            {
-              ['Open', 'Close'].map((item,i)=>{
-                return(
-                  <Option key={i} value={item === 'Open' ? 1 : 0}>{item}</Option>
-                )
-              })
-            }
+<Option value="0">{getIntlContent("SOUL.COMMON.CLOSE")}</Option>
+<Option value="1">{getIntlContent("SOUL.COMMON.OPEN")}</Option>
           </Select>
           <AuthButton perms="system:plugin:list">
             <Button
