@@ -433,14 +433,7 @@ export async function getPluginDropDownList() {
 
 // get plugin handle list
 export async function getAllPluginHandles(params) {
-  const { pluginId, currentPage, pageSize } = params;
-  let myParams = params;
-  if (pluginId) {
-    myParams = params;
-  } else {
-    myParams = { currentPage, pageSize };
-  }
-  return request(`${baseUrl}/plugin-handle?${stringify(myParams)}`, {
+  return request(`${baseUrl}/plugin-handle?${stringify(params)}`, {
     method: `GET`
   });
 }

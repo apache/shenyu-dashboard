@@ -423,7 +423,7 @@ export default class Plugin extends Component {
             value={enabled != null ? enabled : undefined}
             onChange={this.enabledOnchange}
             placeholder={getIntlContent("SOUL.PLUGIN.SELECT.STATUS")}
-            style={{ width: 100, marginLeft: 20 }}
+            style={{ width: 150, marginLeft: 20 }}
             allowClear
           >
             {
