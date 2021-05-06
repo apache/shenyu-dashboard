@@ -1,10 +1,13 @@
 import React, { Component } from "react";
-import { Table, Row, Col, Button, message,Popconfirm } from "antd";
+import { Table, Row, Col, Button, Input, message,Popconfirm } from "antd";
 import { connect } from "dva";
+import styles from "../index.less";
 import Selector from "./Selector";
 import Rule from "./Rule";
 import { getIntlContent, getCurrentLocale } from '../../../utils/IntlUtils'
 import AuthButton from "../../../utils/AuthButton";
+
+const { Search } = Input;
 
 @connect(({ common, global, loading }) => ({
   ...global,
@@ -18,7 +21,9 @@ export default class Common extends Component {
       selectorPage: 1,
       rulePage: 1,
       popup: "",
-      localeName:''
+      localeName:'',
+      selectorName: undefined,
+      ruleName: undefined
     };
   }
 
@@ -74,6 +79,7 @@ export default class Common extends Component {
 
   getAllSelectors = (page, plugins) => {
     const { dispatch } = this.props;
+    const { selectorName } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : '';
     const tempPluginId = this.getPluginId(plugins, name);
     this.setState({pluginId : tempPluginId});
@@ -82,20 +88,23 @@ export default class Common extends Component {
       payload: {
         currentPage: page,
         pageSize: 12,
-        pluginId: tempPluginId
+        pluginId: tempPluginId,
+        name: selectorName
       }
     });
   };
 
   getAllRules = page => {
     const { dispatch, currentSelector } = this.props;
+    const { ruleName } = this.state;
     const selectorId = currentSelector ? currentSelector.id : "";
     dispatch({
       type: "common/fetchRule",
       payload: {
         selectorId,
         currentPage: page,
-        pageSize: 12
+        pageSize: 12,
+        name: ruleName
       }
     });
   };
@@ -129,6 +138,17 @@ export default class Common extends Component {
     this.setState({ popup: "" });
   };
 
+  searchSelectorOnchange = e => {
+    const selectorName = e.target.value;
+    this.setState({ selectorName });
+  };
+
+  searchSelector = () => {
+    const { plugins } = this.props;
+    this.setState({ selectorPage: 1 });
+    this.getAllSelectors(1, plugins);
+  }
+
   addSelector = () => {
     const { selectorPage } = this.state;
     const { dispatch, plugins } = this.props;
@@ -156,6 +176,16 @@ export default class Common extends Component {
       )
     });
   };
+
+  searchRuleOnchange = e => {
+    const ruleName = e.target.value;
+    this.setState({ ruleName });
+  };
+
+  searchRule = () => {
+    this.setState({ rulePage: 1 });
+    this.getAllRules(1);
+  }
 
   addRule = () => {
     const { rulePage,pluginId } = this.state;
@@ -534,11 +564,24 @@ export default class Common extends Component {
           <Col span={8}>
             <div className="table-header">
               <h3>{getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
-              <AuthButton perms={`plugin:${name}Selector:add`}>
-                <Button type="primary" onClick={this.addSelector}>
-                  {getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.ADD")}
-                </Button>
-              </AuthButton>
+              <div className={styles.headerSearch}>
+                <AuthButton perms={`plugin:${name}Selector:query`}>
+                  <Search
+                    className={styles.search}
+                    style={{maxWidth:"50%"}}
+                    placeholder={getIntlContent("SOUL.PLUGIN.SEARCH.SELECTOR.NAME")}
+                    enterButton={getIntlContent("SOUL.SYSTEM.SEARCH")}
+                    size="default"
+                    onChange={this.searchSelectorOnchange}
+                    onSearch={this.searchSelector}
+                  />
+                </AuthButton>
+                <AuthButton perms={`plugin:${name}Selector:add`}>
+                  <Button type="primary" onClick={this.addSelector}>
+                    {getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.ADD")}
+                  </Button>
+                </AuthButton>
+              </div>
             </div>
             <Table
               size="small"
@@ -578,11 +621,24 @@ export default class Common extends Component {
                   </Button>
                 </AuthButton>
               </div>
-              <AuthButton perms={`plugin:${name}Rule:add`}>
-                <Button type="primary" onClick={this.addRule}>
-                  {getIntlContent("SOUL.COMMON.ADD.RULE")}
-                </Button>
-              </AuthButton>
+              
+              <div className={styles.headerSearch}>
+                <AuthButton perms={`plugin:${name}Rule:query`}>
+                  <Search
+                    className={styles.search}
+                    placeholder={getIntlContent("SOUL.PLUGIN.SEARCH.RULE.NAME")}
+                    enterButton={getIntlContent("SOUL.SYSTEM.SEARCH")}
+                    size="default"
+                    onChange={this.searchRuleOnchange}
+                    onSearch={this.searchRule}
+                  />
+                </AuthButton>
+                <AuthButton perms={`plugin:${name}Rule:add`}>
+                  <Button type="primary" onClick={this.addRule}>
+                    {getIntlContent("SOUL.COMMON.ADD.RULE")}
+                  </Button>
+                </AuthButton>
+              </div>
             </div>
             <Table
               size="small"

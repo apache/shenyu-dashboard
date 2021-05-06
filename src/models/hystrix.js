@@ -58,6 +58,14 @@ export default {
               selectorId: dataList[0].id
             }
           });
+        } else {
+          yield put({
+            type: "saveRule",
+            payload: {
+              ruleTotal: 0,
+              ruleList: []
+            }
+          });
         }
       }
     },
