@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Table, Button, Popconfirm, message, Select} from "antd";
+import {Table, Button, Popconfirm, message, Select, Input} from "antd";
 import {connect} from "dva";
 import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
@@ -23,6 +23,7 @@ export default class PluginHandle extends Component {
       selectedRowKeys: [],
       popup: "",
       pluginId:'',
+      field: '',
       localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
     };
   }
@@ -47,11 +48,12 @@ export default class PluginHandle extends Component {
 
   getAllPluginHandles = page => {
     const {dispatch} = this.props;
-    const {pluginId} = this.state;
+    const {pluginId, field} = this.state;
     dispatch({
       type: "pluginHandle/fetch",
       payload: {
         pluginId,
+        field,
         currentPage: page,
         pageSize: 12
       }
@@ -77,6 +79,11 @@ export default class PluginHandle extends Component {
   searchOnchange = e => {
     const pluginId = e;
     this.setState({ pluginId });
+  };
+
+  fieldOnchange = e => {
+    const field = e.target.value;
+    this.setState({ field });
   };
 
   searchClick = () => {
@@ -455,7 +462,7 @@ export default class PluginHandle extends Component {
   render() {
     const {pluginHandle, loading} = this.props;
     const {pluginHandleList, total, pluginDropDownList} = pluginHandle;
-    const {currentPage, selectedRowKeys, pluginId, popup, columns = []} = this.state;
+    const {currentPage, selectedRowKeys, pluginId, field, popup, columns = []} = this.state;
 
 
     const tableColumns = columns.map((col, index) => ({
@@ -489,6 +496,12 @@ export default class PluginHandle extends Component {
               })
             }
           </Select>
+          <Input
+            value={field}
+            onChange={this.fieldOnchange}
+            placeholder={getIntlContent("SOUL.PLUGIN.FIELDNAME")}
+            style={{ width: 240, marginLeft: 20 }}
+          />
           <AuthButton perms="system:pluginHandler:list">
             <Button
               type="primary"

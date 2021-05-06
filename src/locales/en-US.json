@@ -238,5 +238,6 @@
   "SOUL.BUTTON.SYSTEM.EDITRESOURCEDETAILS" : "editDetails",
   "SOUL.BUTTON.DATA.PERMISSION.CONFIG":"ConfigureDataPermission",
   "SOUL.MESSAGE.SESSION.INVALID": "Session is invalid",
-  "SOUL.MESSAGE.SESSION.RELOGIN": "Please login in again"
+  "SOUL.MESSAGE.SESSION.RELOGIN": "Please login in again",
+  "SOUL.PLUGIN.SELECT.STATUS": "Select Status"
 }
