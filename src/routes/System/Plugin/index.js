@@ -426,8 +426,8 @@ export default class Plugin extends Component {
             style={{ width: 150, marginLeft: 20 }}
             allowClear
           >
-<Option value="0">{getIntlContent("SOUL.COMMON.CLOSE")}</Option>
-<Option value="1">{getIntlContent("SOUL.COMMON.OPEN")}</Option>
+            <Option value="0">{getIntlContent("SOUL.COMMON.CLOSE")}</Option>
+            <Option value="1">{getIntlContent("SOUL.COMMON.OPEN")}</Option>
           </Select>
           <AuthButton perms="system:plugin:list">
             <Button
