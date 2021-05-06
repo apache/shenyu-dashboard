@@ -1,10 +1,13 @@
 import React, { Component } from "react";
-import { Table, Row, Col, Button, message, Popconfirm } from "antd";
+import { Table, Row, Col, Button, Input, message, Popconfirm } from "antd";
 import { connect } from "dva";
+import styles from "../index.less";
 import Selector from "./Selector";
 import Rule from "./Rule";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
+
+const { Search } = Input;
 
 @connect(({ hystrix, global, loading }) => ({
   ...global,
@@ -18,7 +21,9 @@ export default class Hystrix extends Component {
       selectorPage: 1,
       rulePage: 1,
       popup: "",
-      localeName:''
+      localeName:'',
+      selectorName: undefined,
+      ruleName: undefined
     };
   }
 
@@ -40,26 +45,30 @@ export default class Hystrix extends Component {
 
   getAllSelectors = (page, plugins) => {
     const { dispatch } = this.props;
+    const { selectorName } = this.state;
     const pluginId = this.getPluginId(plugins, "hystrix");
     dispatch({
       type: "hystrix/fetchSelector",
       payload: {
         currentPage: page,
         pageSize: 12,
-        pluginId
+        pluginId,
+        name: selectorName
       }
     });
   };
 
   getAllRules = page => {
     const { dispatch, currentSelector } = this.props;
+    const { ruleName } = this.state;
     const selectorId = currentSelector ? currentSelector.id : "";
     dispatch({
       type: "hystrix/fetchRule",
       payload: {
         selectorId,
         currentPage: page,
-        pageSize: 12
+        pageSize: 12,
+        name: ruleName
       }
     });
   };
@@ -78,6 +87,17 @@ export default class Hystrix extends Component {
   closeModal = () => {
     this.setState({ popup: "" });
   };
+
+  searchSelectorOnchange = e => {
+    const selectorName = e.target.value;
+    this.setState({ selectorName });
+  };
+
+  searchSelector = () => {
+    const { plugins } = this.props;
+    this.setState({ selectorPage: 1 });
+    this.getAllSelectors(1, plugins);
+  }
 
   addSelector = () => {
     const { selectorPage } = this.state;
@@ -102,6 +122,16 @@ export default class Hystrix extends Component {
       )
     });
   };
+
+  searchRuleOnchange = e => {
+    const ruleName = e.target.value;
+    this.setState({ ruleName });
+  };
+
+  searchRule = () => {
+    this.setState({ rulePage: 1 });
+    this.getAllRules(1);
+  }
 
   addRule = () => {
     const { rulePage } = this.state;
@@ -455,11 +485,24 @@ export default class Hystrix extends Component {
           <Col span={8}>
             <div className="table-header">
               <h3>{getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
-              <AuthButton perms="plugin:hystrixSelector:add">
-                <Button type="primary" onClick={this.addSelector}>
-                  {getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.ADD")}
-                </Button>
-              </AuthButton>
+              <div className={styles.headerSearch}>
+                <AuthButton perms="plugin:hystrixSelector:query">
+                  <Search
+                    className={styles.search}
+                    style={{maxWidth:"50%"}}
+                    placeholder={getIntlContent("SOUL.PLUGIN.SEARCH.SELECTOR.NAME")}
+                    enterButton={getIntlContent("SOUL.SYSTEM.SEARCH")}
+                    size="default"
+                    onChange={this.searchSelectorOnchange}
+                    onSearch={this.searchSelector}
+                  />
+                </AuthButton>
+                <AuthButton perms="plugin:hystrixSelector:add">
+                  <Button type="primary" onClick={this.addSelector}>
+                    {getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.ADD")}
+                  </Button>
+                </AuthButton>
+              </div>
             </div>
             <Table
               size="small"
@@ -499,11 +542,23 @@ export default class Hystrix extends Component {
                   </Button>
                 </AuthButton>
               </div>
-              <AuthButton perms="plugin:hystrixRule:add">
-                <Button type="primary" onClick={this.addRule}>
-                  {getIntlContent("SOUL.COMMON.ADD.RULE")}
-                </Button>
-              </AuthButton>
+              <div className={styles.headerSearch}>
+                <AuthButton perms="plugin:hystrixRule:query">
+                  <Search
+                    className={styles.search}
+                    placeholder={getIntlContent("SOUL.PLUGIN.SEARCH.RULE.NAME")}
+                    enterButton={getIntlContent("SOUL.SYSTEM.SEARCH")}
+                    size="default"
+                    onChange={this.searchRuleOnchange}
+                    onSearch={this.searchRule}
+                  />
+                </AuthButton>
+                <AuthButton perms="plugin:hystrixRule:add">
+                  <Button type="primary" onClick={this.addRule}>
+                    {getIntlContent("SOUL.COMMON.ADD.RULE")}
+                  </Button>
+                </AuthButton>
+              </div>
             </div>
             <Table
               size="small"
