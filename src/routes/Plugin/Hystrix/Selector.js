@@ -198,23 +198,23 @@ class AddModal extends Component {
       <Modal
         width={900}
         centered
-        title={getIntlContent("SOUL.SELECTOR.NAME")}
+        title={getIntlContent("SHENYU.SELECTOR.NAME")}
         visible
-        okText={getIntlContent("SOUL.COMMON.SURE")}
-        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={onCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} {...formItemLayout}>
             {getFieldDecorator("name", {
-              rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTNAME") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.COMMON.INPUTNAME") }],
               initialValue: name
-            })(<Input placeholder={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} />)}
+            })(<Input placeholder={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} />)}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.COMMON.TYPE")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.COMMON.TYPE")} {...formItemLayout}>
             {getFieldDecorator("type", {
-              rules: [{ required: true, message: getIntlContent("SOUL.COMMON.SELCTTYPE") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.COMMON.SELCTTYPE") }],
               initialValue: type || "1"
             })(
               <Select onChange={value => this.getSelectValue(value)}>
@@ -230,9 +230,9 @@ class AddModal extends Component {
           </FormItem>
           {selectValue !== "0" && (
             <Fragment>
-              <FormItem label={getIntlContent("SOUL.COMMON.MATCHTYPE")} {...formItemLayout}>
+              <FormItem label={getIntlContent("SHENYU.COMMON.MATCHTYPE")} {...formItemLayout}>
                 {getFieldDecorator("matchMode", {
-                  rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTMATCHTYPE")}],
+                  rules: [{ required: true, message: getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE")}],
                   initialValue: matchMode
                 })(
                   <Select>
@@ -248,7 +248,7 @@ class AddModal extends Component {
               </FormItem>
               <div className={styles.condition}>
                 <h3 className={styles.header}>
-                  <strong>*</strong>{getIntlContent("SOUL.COMMON.CONDITION")}:{" "}
+                  <strong>*</strong>{getIntlContent("SHENYU.COMMON.CONDITION")}:{" "}
                 </h3>
                 <div>
                   {selectorConditions.map((item, index) => {
@@ -331,7 +331,7 @@ class AddModal extends Component {
                               this.handleDelete(index);
                             }}
                           >
-                            {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                            {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
                           </Button>
                         </li>
                       </ul>
@@ -340,13 +340,13 @@ class AddModal extends Component {
                 </div>
 
                 <Button onClick={this.handleAdd} type="primary">
-                  {getIntlContent("SOUL.COMMON.ADD")}
+                  {getIntlContent("SHENYU.COMMON.ADD")}
                 </Button>
               </div>
             </Fragment>
           )}
           <div className={styles.layout}>
-            <FormItem {...formCheckLayout} label={getIntlContent("SOUL.SELECTOR.CONTINUE")}>
+            <FormItem {...formCheckLayout} label={getIntlContent("SHENYU.SELECTOR.CONTINUE")}>
               {getFieldDecorator("continued", {
                 initialValue: continued,
                 valuePropName: "checked",
@@ -356,7 +356,7 @@ class AddModal extends Component {
             <FormItem
               style={{ margin: "0 30px" }}
               {...formCheckLayout}
-              label={getIntlContent("SOUL.SELECTOR.PRINTLOG")}
+              label={getIntlContent("SHENYU.SELECTOR.PRINTLOG")}
             >
               {getFieldDecorator("loged", {
                 initialValue: loged,
@@ -364,7 +364,7 @@ class AddModal extends Component {
                 rules: [{ required: true }]
               })(<Switch />)}
             </FormItem>
-            <FormItem {...formCheckLayout} label={getIntlContent("SOUL.SELECTOR.WHETHEROPEN")}>
+            <FormItem {...formCheckLayout} label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}>
               {getFieldDecorator("enabled", {
                 initialValue: enabled,
                 valuePropName: "checked",
@@ -373,20 +373,20 @@ class AddModal extends Component {
             </FormItem>
           </div>
 
-          <FormItem label={getIntlContent("SOUL.SELECTOR.EXEORDER")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.SELECTOR.EXEORDER")} {...formItemLayout}>
             {getFieldDecorator("sort", {
               initialValue: sort,
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SOUL.SELECTOR.INPUTNUMBER")
+                  message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
                 },
                 {
                   pattern: /^([1-9][0-9]{0,1}|100)$/,
-                  message: getIntlContent("SOUL.SELECTOR.INPUTNUMBER")
+                  message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
                 }
               ]
-            })(<Input placeholder={getIntlContent("SOUL.SELECTOR.INPUTORDER")} />)}
+            })(<Input placeholder={getIntlContent("SHENYU.SELECTOR.INPUTORDER")} />)}
           </FormItem>
         </Form>
       </Modal>

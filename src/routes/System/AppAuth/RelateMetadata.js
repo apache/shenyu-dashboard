@@ -36,9 +36,9 @@ class RelateMetadata extends Component {
         width={1200}
         centered
         visible
-        title={getIntlContent("SOUL.AUTH.EDITOR.RESOURCE")}
-        okText={getIntlContent("SOUL.COMMON.SURE")}
-        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+        title={getIntlContent("SHENYU.AUTH.EDITOR.RESOURCE")}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >

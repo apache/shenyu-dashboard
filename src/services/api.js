@@ -478,15 +478,15 @@ export function fetchPluginHandleByPluginId(params) {
 }
 
 // fetch dict list
-export async function fetchSoulDicts(params) {
-  return request(`${baseUrl}/soul-dict?${stringify(params)}`,{
+export async function fetchShenYuDicts(params) {
+  return request(`${baseUrl}/shenyu-dict?${stringify(params)}`,{
     method: `GET`
   });
 }
 
 // add dict
-export async function addSoulDict(params) {
-  return request(`${baseUrl}/soul-dict`,{
+export async function addShenYuDict(params) {
+  return request(`${baseUrl}/shenyu-dict`,{
     method: `POST`,
     body: {
       ...params
@@ -495,15 +495,15 @@ export async function addSoulDict(params) {
 }
 
 // get dict detail
-export async function findSoulDict(params) {
-  return request(`${baseUrl}/soul-dict/${params.id}`,{
+export async function findShenYuDict(params) {
+  return request(`${baseUrl}/shenyu-dict/${params.id}`,{
     method: 'GET'
   })
 }
 
 // update dict
-export async function updateSoulDict(params) {
-  return request(`${baseUrl}/soul-dict/${params.id}`,{
+export async function updateShenYuDict(params) {
+  return request(`${baseUrl}/shenyu-dict/${params.id}`,{
     method: `PUT`,
     body: {
       ...params
@@ -512,21 +512,21 @@ export async function updateSoulDict(params) {
 }
 
 // batch delete dicts
-export async function batchDeleteSoulDict(params) {
-  return request(`${baseUrl}/soul-dict/batch`,{
+export async function batchDeleteShenYuDict(params) {
+  return request(`${baseUrl}/shenyu-dict/batch`,{
     method: `DELETE`,
     body: [...params.list]
   });
 }
 
-export function fetchSoulDictByType(params) {
-  return request(`${baseUrl}/soul-dict/all/${params.type}`,{
+export function fetchShenYuDictByType(params) {
+  return request(`${baseUrl}/shenyu-dict/all/${params.type}`,{
     method: `GET`
   });
 }
 
-export async function updateSoulDictEnabled(params) {
-  return request(`${baseUrl}/soul-dict/batchEnabled`, {
+export async function updateShenYuDictEnabled(params) {
+  return request(`${baseUrl}/shenyu-dict/batchEnabled`, {
     method: `POST`,
     body: {
       ids: params.list,

@@ -52,7 +52,7 @@ export default class GlobalHeader extends PureComponent {
     const menu = (
       <Menu>
         <Menu.Item key="0" onClick={onLogout}>
-          <Icon type="logout" /> {getIntlContent("SOUL.GLOBALHEADER.LOGOUT")}
+          <Icon type="logout" /> {getIntlContent("SHENYU.GLOBALHEADER.LOGOUT")}
         </Menu.Item>
       </Menu>
     );
@@ -66,7 +66,7 @@ export default class GlobalHeader extends PureComponent {
             <span>
               <Icon type="user" />{userName}<Icon type="down" />
             </span>
-          </Dropdown> 
+          </Dropdown>
         </div>
       </div>
     );

@@ -265,7 +265,7 @@ export default class Metadata extends Component {
       columns: [
         {
           align: "center",
-          title: getIntlContent("SOUL.AUTH.APPNAME"),
+          title: getIntlContent("SHENYU.AUTH.APPNAME"),
           dataIndex: "appName",
           key: "appName",
           ellipsis:true,
@@ -273,7 +273,7 @@ export default class Metadata extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.META.PATH"),
+          title: getIntlContent("SHENYU.META.PATH"),
           dataIndex: "path",
           key: "path",
           ellipsis:true,
@@ -281,7 +281,7 @@ export default class Metadata extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.META.SERVER.INTER"),
+          title: getIntlContent("SHENYU.META.SERVER.INTER"),
           dataIndex: "serviceName",
           key: "serviceName",
           ellipsis:true,
@@ -289,7 +289,7 @@ export default class Metadata extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.META.FUNC.NAME"),
+          title: getIntlContent("SHENYU.META.FUNC.NAME"),
           dataIndex: "methodName",
           key: "methodName",
           ellipsis:true,
@@ -297,7 +297,7 @@ export default class Metadata extends Component {
         },
         {
           align: "center",
-          title: `${getIntlContent("SOUL.AUTH.PARAMS")}${getIntlContent("SOUL.COMMON.TYPE")}`,
+          title: `${getIntlContent("SHENYU.AUTH.PARAMS")}${getIntlContent("SHENYU.COMMON.TYPE")}`,
           dataIndex: "parameterTypes",
           key: "parameterTypes",
           ellipsis:true,
@@ -306,7 +306,7 @@ export default class Metadata extends Component {
         },
         {
           align: "center",
-          title: `Rpc${getIntlContent("SOUL.COMMON.TYPE")}`,
+          title: `Rpc${getIntlContent("SHENYU.COMMON.TYPE")}`,
           dataIndex: "rpcType",
           key: "rpcType",
           ellipsis:true,
@@ -314,7 +314,7 @@ export default class Metadata extends Component {
         },
         {
           align: "center",
-          title: `Rpc${getIntlContent("SOUL.META.EXPAND.PARAMS")}`,
+          title: `Rpc${getIntlContent("SHENYU.META.EXPAND.PARAMS")}`,
           dataIndex: "rpcExt",
           key: "rpcExt",
           ellipsis:true,
@@ -322,7 +322,7 @@ export default class Metadata extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.AUTH.PATH.DESCRIBE"),
+          title: getIntlContent("SHENYU.AUTH.PATH.DESCRIBE"),
           dataIndex: "pathDesc",
           key: "pathDesc",
           ellipsis:true,
@@ -330,22 +330,22 @@ export default class Metadata extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.SYSTEM.STATUS"),
+          title: getIntlContent("SHENYU.SYSTEM.STATUS"),
           dataIndex: "enabled",
           key: "enabled",
           ellipsis:true,
           width: 60,
           render: text => {
             if (text) {
-              return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
+              return <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>;
             } else {
-              return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
+              return <div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>;
             }
           }
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.COMMON.OPERAT"),
+          title: getIntlContent("SHENYU.COMMON.OPERAT"),
           ellipsis:true,
           dataIndex: "operate",
           key: "operate",
@@ -360,7 +360,7 @@ export default class Metadata extends Component {
                     this.editClick(record);
                   }}
                 >
-                  {getIntlContent("SOUL.SYSTEM.EDITOR")}
+                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
                 </div>
               </AuthButton>
             );
@@ -393,7 +393,7 @@ export default class Metadata extends Component {
           <Input
             value={appName}
             onChange={this.searchOnchange}
-            placeholder={getIntlContent("SOUL.META.INPUTAPPNAME")}
+            placeholder={getIntlContent("SHENYU.META.INPUTAPPNAME")}
             style={{ width: 240 }}
           />
           <AuthButton perms="system:meta:list">
@@ -402,24 +402,24 @@ export default class Metadata extends Component {
               type="primary"
               onClick={this.searchClick}
             >
-              {getIntlContent("SOUL.SYSTEM.SEARCH")}
+              {getIntlContent("SHENYU.SYSTEM.SEARCH")}
             </Button>
           </AuthButton>
           <AuthButton perms="system:meta:delete">
             <Popconfirm
-              title={getIntlContent("SOUL.COMMON.DELETE")}
+              title={getIntlContent("SHENYU.COMMON.DELETE")}
               placement='bottom'
               onConfirm={() => {
                 this.deleteClick()
               }}
-              okText={getIntlContent("SOUL.COMMON.SURE")}
-              cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+              okText={getIntlContent("SHENYU.COMMON.SURE")}
+              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
             >
               <Button
                 style={{ marginLeft: 20 }}
                 type="danger"
               >
-                {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
+                {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
               </Button>
             </Popconfirm>
           </AuthButton>
@@ -429,7 +429,7 @@ export default class Metadata extends Component {
               type="primary"
               onClick={this.addClick}
             >
-              {getIntlContent("SOUL.COMMON.ADD")}
+              {getIntlContent("SHENYU.COMMON.ADD")}
             </Button>
           </AuthButton>
           <AuthButton perms="system:meta:disable">
@@ -438,7 +438,7 @@ export default class Metadata extends Component {
               type="primary"
               onClick={this.enableClick}
             >
-              {getIntlContent("SOUL.PLUGIN.BATCH")}
+              {getIntlContent("SHENYU.PLUGIN.BATCH")}
             </Button>
           </AuthButton>
           <AuthButton perms="system:meta:modify">
@@ -447,7 +447,7 @@ export default class Metadata extends Component {
               type="primary"
               onClick={this.syncData}
             >
-              {getIntlContent("SOUL.AUTH.SYNCDATA")}
+              {getIntlContent("SHENYU.AUTH.SYNCDATA")}
             </Button>
           </AuthButton>
         </div>

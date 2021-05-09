@@ -22,7 +22,7 @@ class InlineSearch extends React.Component {
               initialValue:null
           })(
             <Input
-              placeholder={getIntlContent("SOUL.AUTH.INPUTAPPKEY")}
+              placeholder={getIntlContent("SHENYU.AUTH.INPUTAPPKEY")}
             />,
           )}
         </Form.Item>
@@ -32,14 +32,14 @@ class InlineSearch extends React.Component {
           })(
             <Input
               type="phone"
-              placeholder={getIntlContent("SOUL.AUTH.TELPHONE")}
+              placeholder={getIntlContent("SHENYU.AUTH.TELPHONE")}
             />,
           )}
         </Form.Item>
         <Form.Item>
           <AuthButton perms="system:authen:list">
             <Button type="primary" htmlType="submit">
-              {getIntlContent("SOUL.SYSTEM.SEARCH")}
+              {getIntlContent("SHENYU.SYSTEM.SEARCH")}
             </Button>
           </AuthButton>
         </Form.Item>

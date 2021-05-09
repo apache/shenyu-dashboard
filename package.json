@@ -1,7 +1,7 @@
 {
-  "name": "soul-dashboard",
+  "name": "shenyu-dashboard",
   "version": "2.2.1",
-  "description": "Soul Dashboard",
+  "description": "ShenYu Dashboard",
   "private": true,
   "scripts": {
     "start": "cross-env ESLINT=none roadhog dev",

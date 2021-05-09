@@ -48,7 +48,7 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(addUser, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SOUL.COMMON.RESPONSE.ADD.SUCCESS'));
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -60,7 +60,7 @@ export default {
       const { list } = payload;
       const json = yield call(deleteUser, { list });
       if (json.code === 200) {
-        message.success(getIntlContent('SOUL.COMMON.RESPONSE.DELETE.SUCCESS'));
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -71,7 +71,7 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(updateUser, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SOUL.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {

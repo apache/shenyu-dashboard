@@ -3,72 +3,72 @@ import { getIntlContent } from '../utils/IntlUtils'
 
 export const menuData = [
   {
-    name: getIntlContent('SOUL.MENU.PLUGIN.LIST'),
+    name: getIntlContent('SHENYU.MENU.PLUGIN.LIST'),
     icon: 'dashboard',
     path: 'plug',
-    locale: 'SOUL.MENU.PLUGIN.LIST',
+    locale: 'SHENYU.MENU.PLUGIN.LIST',
     children: [
       {
         name: 'hystrix',
         path: 'hystrix',
         id: 'hystrix9',
-        locale: 'SOUL.MENU.PLUGIN.HYSTRIX'
+        locale: 'SHENYU.MENU.PLUGIN.HYSTRIX'
       }
     ],
   },
   {
-    name: getIntlContent('SOUL.MENU.SYSTEM.MANAGMENT'),
+    name: getIntlContent('SHENYU.MENU.SYSTEM.MANAGMENT'),
     icon: 'setting',
     path: 'system',
-    locale: 'SOUL.MENU.SYSTEM.MANAGMENT',
+    locale: 'SHENYU.MENU.SYSTEM.MANAGMENT',
     children: [
       {
-        name: getIntlContent('SOUL.MENU.SYSTEM.MANAGMENT.ROLE'),
+        name: getIntlContent('SHENYU.MENU.SYSTEM.MANAGMENT.ROLE'),
         path: 'role',
-        locale: 'SOUL.MENU.SYSTEM.MANAGMENT.ROLE'
+        locale: 'SHENYU.MENU.SYSTEM.MANAGMENT.ROLE'
       },
       {
-        name: getIntlContent('SOUL.MENU.SYSTEM.MANAGMENT.USER'),
+        name: getIntlContent('SHENYU.MENU.SYSTEM.MANAGMENT.USER'),
         path: 'manage',
-        locale: 'SOUL.MENU.SYSTEM.MANAGMENT.USER'
+        locale: 'SHENYU.MENU.SYSTEM.MANAGMENT.USER'
       },
       {
-        name: getIntlContent('SOUL.MENU.SYSTEM.MANAGMENT.RESOURCE'),
+        name: getIntlContent('SHENYU.MENU.SYSTEM.MANAGMENT.RESOURCE'),
         path: 'resource',
-        locale: 'SOUL.MENU.SYSTEM.MANAGMENT.RESOURCE'
+        locale: 'SHENYU.MENU.SYSTEM.MANAGMENT.RESOURCE'
       }
     ],
   },
   {
-    name: getIntlContent('SOUL.MENU.CONFIG.MANAGMENT'),
+    name: getIntlContent('SHENYU.MENU.CONFIG.MANAGMENT'),
     icon: 'setting',
     path: 'config',
-    locale: 'SOUL.MENU.CONFIG.MANAGMENT',
+    locale: 'SHENYU.MENU.CONFIG.MANAGMENT',
     children: [
       {
-        name: getIntlContent('SOUL.MENU.SYSTEM.MANAGMENT.PLUGIN'),
+        name: getIntlContent('SHENYU.MENU.SYSTEM.MANAGMENT.PLUGIN'),
         path: 'plugin',
-        locale: 'SOUL.MENU.SYSTEM.MANAGMENT.PLUGIN'
+        locale: 'SHENYU.MENU.SYSTEM.MANAGMENT.PLUGIN'
       },
       {
-        name: getIntlContent('SOUL.PLUGIN.PLUGINHANDLE'),
+        name: getIntlContent('SHENYU.PLUGIN.PLUGINHANDLE'),
         path: 'pluginhandle',
-        locale: 'SOUL.PLUGIN.PLUGINHANDLE'
+        locale: 'SHENYU.PLUGIN.PLUGINHANDLE'
       },
       {
-        name: getIntlContent('SOUL.MENU.SYSTEM.MANAGMENT.AUTHEN'),
+        name: getIntlContent('SHENYU.MENU.SYSTEM.MANAGMENT.AUTHEN'),
         path: 'auth',
-        locale: 'SOUL.MENU.SYSTEM.MANAGMENT.AUTHEN'
+        locale: 'SHENYU.MENU.SYSTEM.MANAGMENT.AUTHEN'
       },
       {
-        name: getIntlContent('SOUL.MENU.SYSTEM.MANAGMENT.METADATA'),
+        name: getIntlContent('SHENYU.MENU.SYSTEM.MANAGMENT.METADATA'),
         path: 'metadata',
-        locale: 'SOUL.MENU.SYSTEM.MANAGMENT.METADATA'
+        locale: 'SHENYU.MENU.SYSTEM.MANAGMENT.METADATA'
       },
       {
-        name: getIntlContent('SOUL.MENU.SYSTEM.MANAGMENT.DICTIONARY'),
+        name: getIntlContent('SHENYU.MENU.SYSTEM.MANAGMENT.DICTIONARY'),
         path: 'dict',
-        locale: 'SOUL.MENU.SYSTEM.MANAGMENT.DICTIONARY'
+        locale: 'SHENYU.MENU.SYSTEM.MANAGMENT.DICTIONARY'
       }
     ],
   },

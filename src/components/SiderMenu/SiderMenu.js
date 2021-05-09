@@ -285,7 +285,7 @@ export default class SiderMenu extends PureComponent {
         <div className={styles.logo} key="logo">
           <Link to="/">
             <img src={logo} alt="logo" />
-            <span>{getIntlContent("SOUL.SIDERMENU.LOGO")}</span>
+            <span>{getIntlContent("SHENYU.SIDERMENU.LOGO")}</span>
           </Link>
         </div>
         <Menu

@@ -17,7 +17,7 @@ class AddPluginHandle extends Component {
       if (!err) {
         let { pluginId, field, label,dataType,type,sort,required,defaultValue,placeholder,rule} = values;
         if(dataType === "1" && defaultValue && isNaN(defaultValue)){
-          message.warn(getIntlContent("SOUL.PLUGIN.DEFAULTVALUE") + getIntlContent("SOUL.COMMON.WARN.INPUT_NUMBER"));
+          message.warn(getIntlContent("SHENYU.PLUGIN.DEFAULTVALUE") + getIntlContent("SHENYU.COMMON.WARN.INPUT_NUMBER"));
           return;
         }
         handleOk({ field, label, id, pluginId,dataType,type,sort,required,defaultValue,placeholder,rule});
@@ -43,21 +43,21 @@ class AddPluginHandle extends Component {
       <Modal
         width={650}
         centered
-        title={getIntlContent("SOUL.PLUGIN.PLUGINHANDLE")}
+        title={getIntlContent("SHENYU.PLUGIN.PLUGINHANDLE")}
         visible
-        okText={getIntlContent("SOUL.COMMON.SURE")}
-        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label={getIntlContent("SOUL.PLUGIN.PLUGIN.NAME")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME")} {...formItemLayout}>
             {getFieldDecorator("pluginId", {
-              rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.PLUGIN.NAME")}],
+              rules: [{required: true, message: getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME")}],
               initialValue: pluginId,
             })(
               <Select
-                placeholder={getIntlContent("SOUL.PLUGIN.PLUGIN.NAME")}
+                placeholder={getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME")}
               >
                 {
                   pluginDropDownList.map((item,i)=>{
@@ -69,86 +69,86 @@ class AddPluginHandle extends Component {
               </Select>
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.PLUGIN.FIELD")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.PLUGIN.FIELD")} {...formItemLayout}>
             {getFieldDecorator("field", {
-              rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.FIELD")}],
+              rules: [{required: true, message: getIntlContent("SHENYU.PLUGIN.FIELD")}],
               initialValue: field,
             })(
-              <Input placeholder={getIntlContent("SOUL.PLUGIN.FIELD")} />
+              <Input placeholder={getIntlContent("SHENYU.PLUGIN.FIELD")} />
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.PLUGIN.DESCRIBE")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.PLUGIN.DESCRIBE")} {...formItemLayout}>
             {getFieldDecorator("label", {
-              rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.DESCRIBE")}],
+              rules: [{required: true, message: getIntlContent("SHENYU.PLUGIN.DESCRIBE")}],
               initialValue: label,
             })(
-              <Input placeholder={getIntlContent("SOUL.PLUGIN.DESCRIBE")} />
+              <Input placeholder={getIntlContent("SHENYU.PLUGIN.DESCRIBE")} />
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.PLUGIN.DATATYPE")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.PLUGIN.DATATYPE")} {...formItemLayout}>
             {getFieldDecorator("dataType", {
-              rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.DESCRIBE")}],
+              rules: [{required: true, message: getIntlContent("SHENYU.PLUGIN.DESCRIBE")}],
               initialValue: `${dataType}` || undefined,
             })(
               <Select>
-                <Option key="1" value="1">{getIntlContent("SOUL.PLUGIN.DIGITAL")}</Option>
-                <Option key="2" value="2">{getIntlContent("SOUL.PLUGIN.STRING")}</Option>
-                <Option key="3" value="3">{getIntlContent("SOUL.PLUGIN.DROPDOWN")}</Option>
+                <Option key="1" value="1">{getIntlContent("SHENYU.PLUGIN.DIGITAL")}</Option>
+                <Option key="2" value="2">{getIntlContent("SHENYU.PLUGIN.STRING")}</Option>
+                <Option key="3" value="3">{getIntlContent("SHENYU.PLUGIN.DROPDOWN")}</Option>
               </Select>
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.PLUGIN.FIELDTYPE")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.PLUGIN.FIELDTYPE")} {...formItemLayout}>
             {getFieldDecorator("type", {
-              rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.DESCRIBE")}],
+              rules: [{required: true, message: getIntlContent("SHENYU.PLUGIN.DESCRIBE")}],
               initialValue: `${type}` || undefined,
             })(
               <Select>
-                <Option key="1" value="1">{getIntlContent("SOUL.SELECTOR.NAME")}</Option>
-                <Option key="2" value="2">{getIntlContent("SOUL.PLUGIN.RULES")}</Option>
-                <Option key="3" value="3">{getIntlContent("SOUL.PLUGIN")}</Option>
+                <Option key="1" value="1">{getIntlContent("SHENYU.SELECTOR.NAME")}</Option>
+                <Option key="2" value="2">{getIntlContent("SHENYU.PLUGIN.RULES")}</Option>
+                <Option key="3" value="3">{getIntlContent("SHENYU.PLUGIN")}</Option>
               </Select>
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.PLUGIN.SORT")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.PLUGIN.SORT")} {...formItemLayout}>
             {getFieldDecorator("sort", {
-              rules: [{required: true, message: getIntlContent("SOUL.PLUGIN.INPUTSORT")}],
+              rules: [{required: true, message: getIntlContent("SHENYU.PLUGIN.INPUTSORT")}],
               initialValue: sort,
             })(
-              <Input placeholder={getIntlContent("SOUL.PLUGIN.SORT")} type="number" />
+              <Input placeholder={getIntlContent("SHENYU.PLUGIN.SORT")} type="number" />
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.PLUGIN.REQUIRED")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.PLUGIN.REQUIRED")} {...formItemLayout}>
             {getFieldDecorator("required", {
               rules: [{required: false}],
               initialValue: required,
             })(
-              <Select placeholder={getIntlContent("SOUL.PLUGIN.REQUIRED")}>
-                <Option key="1" value="1">{getIntlContent("SOUL.COMMON.YES")}</Option>
-                <Option key="0" value="0">{getIntlContent("SOUL.COMMON.NO")}</Option>
+              <Select placeholder={getIntlContent("SHENYU.PLUGIN.REQUIRED")}>
+                <Option key="1" value="1">{getIntlContent("SHENYU.COMMON.YES")}</Option>
+                <Option key="0" value="0">{getIntlContent("SHENYU.COMMON.NO")}</Option>
               </Select>
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.PLUGIN.DEFAULTVALUE")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.PLUGIN.DEFAULTVALUE")} {...formItemLayout}>
             {getFieldDecorator("defaultValue", {
               rules: [{required: false}],
               initialValue: defaultValue,
             })(
-              <Input placeholder={getIntlContent("SOUL.PLUGIN.DEFAULTVALUE")} />
+              <Input placeholder={getIntlContent("SHENYU.PLUGIN.DEFAULTVALUE")} />
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.PLUGIN.PLACEHOLDER")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.PLUGIN.PLACEHOLDER")} {...formItemLayout}>
             {getFieldDecorator("placeholder", {
               rules: [{required: false}],
               initialValue: placeholder,
             })(
-              <Input placeholder={getIntlContent("SOUL.PLUGIN.PLACEHOLDER")} />
+              <Input placeholder={getIntlContent("SHENYU.PLUGIN.PLACEHOLDER")} />
             )}
           </FormItem>
           <FormItem
             label={
               <span>
-                {getIntlContent("SOUL.PLUGIN.RULE")}&nbsp;
-                <Tooltip title={getIntlContent("SOUL.PLUGIN.RULE.TIP")}>
+                {getIntlContent("SHENYU.PLUGIN.RULE")}&nbsp;
+                <Tooltip title={getIntlContent("SHENYU.PLUGIN.RULE.TIP")}>
                   <Icon type="question-circle-o" />
                 </Tooltip>
               </span>
@@ -159,7 +159,7 @@ class AddPluginHandle extends Component {
               rules: [{required: false}],
               initialValue: rule,
             })(
-              <Input placeholder={getIntlContent("SOUL.PLUGIN.RULE")} />
+              <Input placeholder={getIntlContent("SHENYU.PLUGIN.RULE")} />
             )}
           </FormItem>
         </Form>

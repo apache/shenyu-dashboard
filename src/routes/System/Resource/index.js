@@ -135,7 +135,7 @@ export default class Resource extends Component {
       message.warn("请先选择左侧菜单");
       return;
     }
-    
+
     this.setState({
       popup: (
         <AddModal
@@ -210,7 +210,7 @@ export default class Resource extends Component {
     return data.map(item => {
       const { currentMenu } = this.state;
       item.title =  item.meta.title;
-      if (item.title.startsWith("SOUL.")) {
+      if (item.title.startsWith("SHENYU.")) {
         item.title = getIntlContent(item.title);
       }
       if (item.children && item.children.length > 0) {
@@ -221,17 +221,17 @@ export default class Resource extends Component {
                 <div style={{width:"200px",display:"flex",justifyContent:"space-between"}}>
                   <span>{item.meta.icon&&<span style={{width:"24px",height:"24px",lineHeight:"24px",margin:"0 5px"}}><Icon type={item.meta.icon} /></span>}{item.title}</span>
                   <span>
-                    <Icon 
+                    <Icon
                       onClick={(e)=>{
                         e.stopPropagation();
                         this.editClick(item);
-                      }} 
-                      type="edit" 
+                      }}
+                      type="edit"
                     />
                   </span>
                 </div>
-              } 
-              key={item.id} 
+              }
+              key={item.id}
               dataRef={item}
             >
               {this.renderTreeNodes(item.children)}
@@ -259,43 +259,43 @@ export default class Resource extends Component {
                       onClick={(e)=>{
                         e.stopPropagation();
                         this.editClick(item);
-                      }} 
-                      type="edit" 
+                      }}
+                      type="edit"
                     />
                   </AuthButton>
                   {!item.url.startsWith("/plug/") && (
                     <AuthButton perms="system:resource:editMenu">
                       <Popconfirm
-                        title={getIntlContent("SOUL.COMMON.DELETE")}
+                        title={getIntlContent("SHENYU.COMMON.DELETE")}
                         placement='bottom'
                         onConfirm={(e) => {
                           e.stopPropagation();
                           this.deleteClick(item.resourceType, item.id);
                         }}
-                        okText={getIntlContent("SOUL.COMMON.SURE")}
-                        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+                        okText={getIntlContent("SHENYU.COMMON.SURE")}
+                        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
                       >
-                        <Icon 
+                        <Icon
                           style={{marginLeft:10}}
                           onClick={(e)=>{
                             e.stopPropagation();
-                          }} 
-                          type="delete" 
+                          }}
+                          type="delete"
                         />
                       </Popconfirm>
                     </AuthButton>
                   )}
                 </span>
               </div>
-            } 
-            key={item.id} 
+            }
+            key={item.id}
             dataRef={item}
           />
         );
       }
     });
   }
-    
+
 
   render() {
     const { resource: { menuTree }, loading } = this.props;
@@ -303,7 +303,7 @@ export default class Resource extends Component {
     const buttonColumns = [
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.BUTTON"),
+        title: getIntlContent("SHENYU.SYSTEM.BUTTON"),
         dataIndex: "title",
         key: "title",
         ellipsis:true,
@@ -314,7 +314,7 @@ export default class Resource extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.ICON"),
+        title: getIntlContent("SHENYU.SYSTEM.ICON"),
         dataIndex: "icon",
         key: "icon",
         width: 60,
@@ -324,7 +324,7 @@ export default class Resource extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.RESOURCE.PERMS"),
+        title: getIntlContent("SHENYU.SYSTEM.RESOURCE.PERMS"),
         dataIndex: "perms",
         key: "perms",
         ellipsis:true,
@@ -332,7 +332,7 @@ export default class Resource extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.CREATETIME"),
+        title: getIntlContent("SHENYU.SYSTEM.CREATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated",
         ellipsis:true,
@@ -341,7 +341,7 @@ export default class Resource extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
+        title: getIntlContent("SHENYU.SYSTEM.UPDATETIME"),
         dataIndex: "dateUpdated",
         key: "dateUpdated",
         ellipsis:true,
@@ -350,7 +350,7 @@ export default class Resource extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.COMMON.OPERAT"),
+        title: getIntlContent("SHENYU.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
         ellipsis:true,
@@ -364,7 +364,7 @@ export default class Resource extends Component {
                   this.editClick(record);
                 }}
               >
-                {getIntlContent("SOUL.SYSTEM.EDITOR")}
+                {getIntlContent("SHENYU.SYSTEM.EDITOR")}
               </div>
             </AuthButton>
           );
@@ -382,10 +382,10 @@ export default class Resource extends Component {
         <Row gutter={20}>
           <Col span={6} style={{minWidth:280}}>
             <div className="table-header">
-              <h3>{getIntlContent("SOUL.SYSTEM.RESOURCE.MENULIST.TITLE")}</h3>
+              <h3>{getIntlContent("SHENYU.SYSTEM.RESOURCE.MENULIST.TITLE")}</h3>
               <AuthButton perms="system:resource:addMenu">
                 <Button type="primary" onClick={() => this.addClick(1)}>
-                  {getIntlContent("SOUL.BUTTON.RESOURCE.MENU.ADD")}
+                  {getIntlContent("SHENYU.BUTTON.RESOURCE.MENU.ADD")}
                 </Button>
               </AuthButton>
             </div>
@@ -403,29 +403,29 @@ export default class Resource extends Component {
           <Col span={18}>
             <div className="table-header">
               <div style={{ display: "flex" }}>
-                <h3 style={{ marginRight: 30 }}>{getIntlContent("SOUL.SYSTEM.RESOURCE.BUTTONLIST.TITLE")}</h3>
+                <h3 style={{ marginRight: 30 }}>{getIntlContent("SHENYU.SYSTEM.RESOURCE.BUTTONLIST.TITLE")}</h3>
                 <AuthButton perms="system:resource:deleteButton">
                   <Popconfirm
-                    title={getIntlContent("SOUL.COMMON.DELETE")}
+                    title={getIntlContent("SHENYU.COMMON.DELETE")}
                     placement='bottom'
                     onConfirm={() => {
                       this.deleteClick(2)
                     }}
-                    okText={getIntlContent("SOUL.COMMON.SURE")}
-                    cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+                    okText={getIntlContent("SHENYU.COMMON.SURE")}
+                    cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
                   >
                     <Button
                       style={{ marginLeft: 20 }}
                       type="danger"
                     >
-                      {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
+                      {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
                     </Button>
                   </Popconfirm>
                 </AuthButton>
               </div>
               <AuthButton perms="system:resource:addButton">
                 <Button onClick={() => this.addClick(2)} type="primary">
-                  {getIntlContent("SOUL.BUTTON.RESOURCE.BUTTON.ADD")}
+                  {getIntlContent("SHENYU.BUTTON.RESOURCE.BUTTON.ADD")}
                 </Button>
               </AuthButton>
             </div>

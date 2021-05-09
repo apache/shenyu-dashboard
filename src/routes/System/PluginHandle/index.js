@@ -294,7 +294,7 @@ export default class PluginHandle extends Component {
       columns: [
         {
           align: "center",
-          title: getIntlContent("SOUL.PLUGIN.PLUGIN.NAME"),
+          title: getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME"),
           dataIndex: "pluginId",
           key: "pluginId",
           ellipsis: true,
@@ -331,7 +331,7 @@ export default class PluginHandle extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.PLUGIN.FIELDNAME"),
+          title: getIntlContent("SHENYU.PLUGIN.FIELDNAME"),
           dataIndex: "field",
           key: "field",
           ellipsis: true,
@@ -339,7 +339,7 @@ export default class PluginHandle extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.PLUGIN.LABEL"),
+          title: getIntlContent("SHENYU.PLUGIN.LABEL"),
           dataIndex: "label",
           key: "label",
           ellipsis: true,
@@ -348,25 +348,25 @@ export default class PluginHandle extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.PLUGIN.DATATYPE"),
+          title: getIntlContent("SHENYU.PLUGIN.DATATYPE"),
           dataIndex: "dataType",
           key: "dataType",
           ellipsis: true,
           width: 100,
           render: text => {
             if (text === 1) {
-              return <div>{getIntlContent("SOUL.PLUGIN.DIGITAL")}</div>;
+              return <div>{getIntlContent("SHENYU.PLUGIN.DIGITAL")}</div>;
             } else if (text === 2) {
-              return <div>{getIntlContent("SOUL.PLUGIN.STRING")}</div>;
+              return <div>{getIntlContent("SHENYU.PLUGIN.STRING")}</div>;
             } else if (text === 3) {
-              return <div>{getIntlContent("SOUL.PLUGIN.DROPDOWN")}</div>;
+              return <div>{getIntlContent("SHENYU.PLUGIN.DROPDOWN")}</div>;
             }
-            return <div>{getIntlContent("SOUL.PLUGIN.UNDEFINETYPE")}</div>;
+            return <div>{getIntlContent("SHENYU.PLUGIN.UNDEFINETYPE")}</div>;
           }
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.PLUGIN.FIELDTYPE"),
+        title: getIntlContent("SHENYU.PLUGIN.FIELDTYPE"),
         dataIndex: "type",
         key: "type",
         ellipsis:true,
@@ -374,17 +374,17 @@ export default class PluginHandle extends Component {
         sorter: (a,b)=> a.type - b.type,
         render: text => {
           if (text === 1) {
-            return <div>{getIntlContent("SOUL.SELECTOR.NAME")}</div>;
+            return <div>{getIntlContent("SHENYU.SELECTOR.NAME")}</div>;
           } else if (text === 2) {
-            return <div>{getIntlContent("SOUL.PLUGIN.RULES")}</div>;
+            return <div>{getIntlContent("SHENYU.PLUGIN.RULES")}</div>;
           } else if (text === 3) {
-            return <div>{getIntlContent("SOUL.PLUGIN")}</div>;
-          }return <div>{getIntlContent("SOUL.PLUGIN.UNDEFINETYPE")}</div>;
+            return <div>{getIntlContent("SHENYU.PLUGIN")}</div>;
+          }return <div>{getIntlContent("SHENYU.PLUGIN.UNDEFINETYPE")}</div>;
         }
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.PLUGIN.SORT"),
+        title: getIntlContent("SHENYU.PLUGIN.SORT"),
         dataIndex: "sort",
         key: "sort",
         ellipsis:true,
@@ -393,7 +393,7 @@ export default class PluginHandle extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.PLUGIN.REQUIRED"),
+        title: getIntlContent("SHENYU.PLUGIN.REQUIRED"),
         dataIndex: "required",
         key: "required",
         ellipsis:true,
@@ -401,15 +401,15 @@ export default class PluginHandle extends Component {
         sorter: (a,b) => (a.required || "-1") > (b.required || "-1") ? 1 : -1,
         render: text => {
           if (text === "1") {
-            return <div>{getIntlContent("SOUL.COMMON.YES")}</div>;
+            return <div>{getIntlContent("SHENYU.COMMON.YES")}</div>;
           } else if (text === "0") {
-            return <div>{getIntlContent("SOUL.COMMON.NO")}</div>;
-          }return <div>{getIntlContent("SOUL.PLUGIN.UNDEFINETYPE")}</div>;
+            return <div>{getIntlContent("SHENYU.COMMON.NO")}</div>;
+          }return <div>{getIntlContent("SHENYU.PLUGIN.UNDEFINETYPE")}</div>;
         }
        },
        {
           align: "center",
-          title: getIntlContent("SOUL.PLUGIN.DEFAULTVALUE"),
+          title: getIntlContent("SHENYU.PLUGIN.DEFAULTVALUE"),
           dataIndex: "defaultValue",
           key: "defaultValue",
           ellipsis: true,
@@ -417,7 +417,7 @@ export default class PluginHandle extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.SYSTEM.CREATETIME"),
+          title: getIntlContent("SHENYU.SYSTEM.CREATETIME"),
           dataIndex: "dateCreated",
           key: "dateCreated",
           ellipsis: true,
@@ -426,7 +426,7 @@ export default class PluginHandle extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
+          title: getIntlContent("SHENYU.SYSTEM.UPDATETIME"),
           dataIndex: "dateUpdated",
           key: "dateUpdated",
           ellipsis: true,
@@ -434,7 +434,7 @@ export default class PluginHandle extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.COMMON.OPERAT"),
+          title: getIntlContent("SHENYU.COMMON.OPERAT"),
           dataIndex: "time",
           key: "time",
           ellipsis: true,
@@ -449,7 +449,7 @@ export default class PluginHandle extends Component {
                     this.editClick(record);
                   }}
                 >
-                  {getIntlContent("SOUL.SYSTEM.EDITOR")}
+                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
                 </div>
               </AuthButton>
             );
@@ -484,7 +484,7 @@ export default class PluginHandle extends Component {
           <Select
             value={pluginId || undefined}
             onChange={this.searchOnchange}
-            placeholder={getIntlContent("SOUL.PLUGIN.SELECTNAME")}
+            placeholder={getIntlContent("SHENYU.PLUGIN.SELECTNAME")}
             style={{ width: 240 }}
             allowClear
           >
@@ -499,7 +499,7 @@ export default class PluginHandle extends Component {
           <Input
             value={field}
             onChange={this.fieldOnchange}
-            placeholder={getIntlContent("SOUL.PLUGIN.FIELDNAME")}
+            placeholder={getIntlContent("SHENYU.PLUGIN.FIELDNAME")}
             style={{ width: 240, marginLeft: 20 }}
           />
           <AuthButton perms="system:pluginHandler:list">
@@ -508,24 +508,24 @@ export default class PluginHandle extends Component {
               style={{ marginLeft: 20 }}
               onClick={this.searchClick}
             >
-              {getIntlContent("SOUL.SYSTEM.SEARCH")}
+              {getIntlContent("SHENYU.SYSTEM.SEARCH")}
             </Button>
           </AuthButton>
           <AuthButton perms="system:pluginHandler:delete">
             <Popconfirm
-              title={getIntlContent("SOUL.COMMON.DELETE")}
+              title={getIntlContent("SHENYU.COMMON.DELETE")}
               placement='bottom'
               onConfirm={() => {
                 this.deleteClick()
               }}
-              okText={getIntlContent("SOUL.COMMON.SURE")}
-              cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+              okText={getIntlContent("SHENYU.COMMON.SURE")}
+              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
             >
               <Button
                 style={{marginLeft: 20}}
                 type="danger"
               >
-                {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
               </Button>
             </Popconfirm>
           </AuthButton>
@@ -535,7 +535,7 @@ export default class PluginHandle extends Component {
               type="primary"
               onClick={this.addClick}
             >
-              {getIntlContent("SOUL.SYSTEM.ADDDATA")}
+              {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
             </Button>
           </AuthButton>
         </div>

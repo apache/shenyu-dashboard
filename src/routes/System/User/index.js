@@ -209,28 +209,28 @@ export default class Manage extends Component {
     const userColumns = [
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.USERNAME"),
+        title: getIntlContent("SHENYU.SYSTEM.USERNAME"),
         dataIndex: "userName",
         key: "userName",
         ellipsis:true,
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.STATUS"),
+        title: getIntlContent("SHENYU.SYSTEM.STATUS"),
         dataIndex: "enabled",
         key: "enabled",
         ellipsis:true,
         render: text => {
           if (text) {
-            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
+            return <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>;
           } else {
-            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
+            return <div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>;
           }
         }
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.CREATETIME"),
+        title: getIntlContent("SHENYU.SYSTEM.CREATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated",
         ellipsis:true,
@@ -238,7 +238,7 @@ export default class Manage extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
+        title: getIntlContent("SHENYU.SYSTEM.UPDATETIME"),
         dataIndex: "dateUpdated",
         key: "dateUpdated",
         ellipsis:true,
@@ -246,7 +246,7 @@ export default class Manage extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.COMMON.OPERAT"),
+        title: getIntlContent("SHENYU.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
         ellipsis:true,
@@ -260,7 +260,7 @@ export default class Manage extends Component {
                     this.editClick(record);
                   }}
                 >
-                  {getIntlContent("SOUL.SYSTEM.EDITOR")}
+                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
                 </span>
               </AuthButton>
               {record.userName !== "admin" && (
@@ -272,7 +272,7 @@ export default class Manage extends Component {
                       this.permissionConfig(record);
                     }}
                   >
-                    {getIntlContent("SOUL.BUTTON.DATA.PERMISSION.CONFIG")}
+                    {getIntlContent("SHENYU.BUTTON.DATA.PERMISSION.CONFIG")}
                   </span>
                 </AuthButton>
               )}
@@ -293,7 +293,7 @@ export default class Manage extends Component {
           <Input
             value={userName}
             onChange={this.searchOnchange}
-            placeholder={getIntlContent("SOUL.SYSTEM.USER.NAME")}
+            placeholder={getIntlContent("SHENYU.SYSTEM.USER.NAME")}
             style={{ width: 240 }}
           />
           <AuthButton perms="system:manager:list">
@@ -302,24 +302,24 @@ export default class Manage extends Component {
               type="primary"
               onClick={this.searchClick}
             >
-              {getIntlContent("SOUL.SYSTEM.SEARCH")}
+              {getIntlContent("SHENYU.SYSTEM.SEARCH")}
             </Button>
           </AuthButton>
           <AuthButton perms="system:manager:delete">
             <Popconfirm
-              title={getIntlContent("SOUL.COMMON.DELETE")}
+              title={getIntlContent("SHENYU.COMMON.DELETE")}
               placement='bottom'
               onConfirm={() => {
                 this.deleteClick()
               }}
-              okText={getIntlContent("SOUL.COMMON.SURE")}
-              cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+              okText={getIntlContent("SHENYU.COMMON.SURE")}
+              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
             >
               <Button
                 style={{ marginLeft: 20 }}
                 type="danger"
               >
-                {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
+                {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
               </Button>
             </Popconfirm>
           </AuthButton>
@@ -329,7 +329,7 @@ export default class Manage extends Component {
               type="primary"
               onClick={this.addClick}
             >
-              {getIntlContent("SOUL.SYSTEM.ADDDATA")}
+              {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
             </Button>
           </AuthButton>
         </div>

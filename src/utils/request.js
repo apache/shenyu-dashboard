@@ -38,13 +38,13 @@ function checkStatus(response) {
 
 /**
  * check response's code
- * @param {} response 
+ * @param {} response
  */
 const checkResponseCode = response => {
   if (response.code === 401) {
     notification.error({
-      message: getIntlContent("SOUL.MESSAGE.SESSION.INVALID"),
-      description: getIntlContent("SOUL.MESSAGE.SESSION.RELOGIN"),
+      message: getIntlContent("SHENYU.MESSAGE.SESSION.INVALID"),
+      description: getIntlContent("SHENYU.MESSAGE.SESSION.RELOGIN"),
     });
     const error = new Error(response.message);
     error.name = response.code;

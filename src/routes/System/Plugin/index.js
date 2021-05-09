@@ -304,7 +304,7 @@ export default class Plugin extends Component {
       columns: [
         {
           align: "center",
-          title: getIntlContent("SOUL.PLUGIN.PLUGIN.NAME"),
+          title: getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME"),
           dataIndex: "name",
           key: "name",
           ellipsis:true,
@@ -312,7 +312,7 @@ export default class Plugin extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.SYSTEM.ROLE"),
+          title: getIntlContent("SHENYU.SYSTEM.ROLE"),
           dataIndex: "role",
           ellipsis:true,
           key: "role",
@@ -320,22 +320,22 @@ export default class Plugin extends Component {
           sorter: (a,b) => a.role > b.role ? 1 : -1,
           render: (text) => {
             const map = {
-              0: getIntlContent("SOUL.SYSTEM.SYSTEM"),
-              1: getIntlContent("SOUL.SYSTEM.CUSTOM")
+              0: getIntlContent("SHENYU.SYSTEM.SYSTEM"),
+              1: getIntlContent("SHENYU.SYSTEM.CUSTOM")
             }
             return <div>{map[text] || '----'}</div>
           }
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.COMMON.SETTING"),
+          title: getIntlContent("SHENYU.COMMON.SETTING"),
           dataIndex: "config",
           key: "config",
           ellipsis:true,
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.SYSTEM.CREATETIME"),
+          title: getIntlContent("SHENYU.SYSTEM.CREATETIME"),
           dataIndex: "dateCreated",
           key: "dateCreated",
           ellipsis:true,
@@ -344,7 +344,7 @@ export default class Plugin extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
+          title: getIntlContent("SHENYU.SYSTEM.UPDATETIME"),
           dataIndex: "dateUpdated",
           key: "dateUpdated",
           ellipsis:true,
@@ -353,7 +353,7 @@ export default class Plugin extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.SYSTEM.STATUS"),
+          title: getIntlContent("SHENYU.SYSTEM.STATUS"),
           dataIndex: "enabled",
           key: "enabled",
           ellipsis:true,
@@ -361,15 +361,15 @@ export default class Plugin extends Component {
           sorter: (a,b) => (a.enabled || "-1") > (b.enabled || "-1") ? 1 : -1,
           render: text => {
             if (text) {
-              return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
+              return <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>;
             } else {
-              return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
+              return <div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>;
             }
           }
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.COMMON.OPERAT"),
+          title: getIntlContent("SHENYU.COMMON.OPERAT"),
           dataIndex: "time",
           key: "time",
           ellipsis:true,
@@ -384,7 +384,7 @@ export default class Plugin extends Component {
                     this.editClick(record);
                   }}
                 >
-                  {getIntlContent("SOUL.SYSTEM.EDITOR")}
+                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
                 </div>
               </AuthButton>
             );
@@ -416,18 +416,18 @@ export default class Plugin extends Component {
           <Input
             value={name}
             onChange={this.searchOnchange}
-            placeholder={getIntlContent("SOUL.PLUGIN.INPUTNAME")}
+            placeholder={getIntlContent("SHENYU.PLUGIN.INPUTNAME")}
             style={{ width: 240 }}
           />
           <Select
             value={enabled != null ? enabled : undefined}
             onChange={this.enabledOnchange}
-            placeholder={getIntlContent("SOUL.PLUGIN.SELECT.STATUS")}
+            placeholder={getIntlContent("SHENYU.PLUGIN.SELECT.STATUS")}
             style={{ width: 150, marginLeft: 20 }}
             allowClear
           >
-            <Option value="0">{getIntlContent("SOUL.COMMON.CLOSE")}</Option>
-            <Option value="1">{getIntlContent("SOUL.COMMON.OPEN")}</Option>
+            <Option value="0">{getIntlContent("SHENYU.COMMON.CLOSE")}</Option>
+            <Option value="1">{getIntlContent("SHENYU.COMMON.OPEN")}</Option>
           </Select>
           <AuthButton perms="system:plugin:list">
             <Button
@@ -435,24 +435,24 @@ export default class Plugin extends Component {
               style={{ marginLeft: 20 }}
               onClick={this.searchClick}
             >
-              {getIntlContent("SOUL.SYSTEM.SEARCH")}
+              {getIntlContent("SHENYU.SYSTEM.SEARCH")}
             </Button>
           </AuthButton>
           <AuthButton perms="system:plugin:delete">
             <Popconfirm
-              title={getIntlContent("SOUL.COMMON.DELETE")}
+              title={getIntlContent("SHENYU.COMMON.DELETE")}
               placement='bottom'
               onConfirm={() => {
                 this.deleteClick()
               }}
-              okText={getIntlContent("SOUL.COMMON.SURE")}
-              cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+              okText={getIntlContent("SHENYU.COMMON.SURE")}
+              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
             >
               <Button
                 style={{ marginLeft: 20 }}
                 type="danger"
               >
-                {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
+                {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
               </Button>
             </Popconfirm>
           </AuthButton>
@@ -462,7 +462,7 @@ export default class Plugin extends Component {
               type="primary"
               onClick={this.addClick}
             >
-              {getIntlContent("SOUL.SYSTEM.ADDDATA")}
+              {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
             </Button>
           </AuthButton>
           <AuthButton perms="system:plugin:modify">
@@ -472,7 +472,7 @@ export default class Plugin extends Component {
               type="primary"
               onClick={this.syncAllClick}
             >
-              {getIntlContent("SOUL.PLUGIN.SYNCALLDATA")}
+              {getIntlContent("SHENYU.PLUGIN.SYNCALLDATA")}
             </Button>
           </AuthButton>
           <AuthButton perms="system:plugin:disable">
@@ -481,7 +481,7 @@ export default class Plugin extends Component {
               type="primary"
               onClick={this.enableClick}
             >
-              {getIntlContent("SOUL.PLUGIN.BATCH")}
+              {getIntlContent("SHENYU.PLUGIN.BATCH")}
             </Button>
           </AuthButton>
         </div>

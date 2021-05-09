@@ -1,28 +1,28 @@
 import { message } from "antd";
 import {
-  addSoulDict,
-  batchDeleteSoulDict,
-  fetchSoulDicts,
-  findSoulDict,
-  updateSoulDict,
-  fetchSoulDictByType,
-  updateSoulDictEnabled,
+  addShenYuDict,
+  batchDeleteShenYuDict,
+  fetchShenYuDicts,
+  findShenYuDict,
+  updateShenYuDict,
+  fetchShenYuDictByType,
+  updateShenYuDictEnabled,
 } from "../services/api";
 import {getIntlContent} from "../utils/IntlUtils";
 
 
 export default {
-  namespace: "soulDict",
+  namespace: "shenyuDict",
 
   state: {
-    soulDictList: [],
+    shenyuDictList: [],
     total: 0
   },
 
   effects: {
     * fetch(params, {call, put}) {
       const {payload} = params;
-      const json = yield call(fetchSoulDicts, payload);
+      const json = yield call(fetchShenYuDicts, payload);
       if (json.code === 200) {
         let {page, dataList} = json.data;
         dataList = dataList.map(item => {
@@ -30,7 +30,7 @@ export default {
           return item;
         });
         yield put({
-          type: "saveSoulDicts",
+          type: "saveShenYuDicts",
           payload: {
             total: page.totalCount,
             dataList
@@ -40,9 +40,9 @@ export default {
     },
     *add(params, { call, put }) {
       const { payload, callback, fetchValue } = params;
-      const json = yield call(addSoulDict, payload);
+      const json = yield call(addShenYuDict, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SOUL.COMMON.RESPONSE.ADD.SUCCESS'));
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -51,17 +51,17 @@ export default {
     },
     *fetchItem(params, { call }) {
       const { payload, callback } = params;
-      const json = yield call(findSoulDict, payload);
+      const json = yield call(findShenYuDict, payload);
       if (json.code === 200) {
-        const soulDict = json.data;
-        callback(soulDict);
+        const shenyuDict = json.data;
+        callback(shenyuDict);
       }
     },
     *update(params, { call, put }) {
       const { payload, callback, fetchValue } = params;
-      const json = yield call(updateSoulDict, payload);
+      const json = yield call(updateShenYuDict, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SOUL.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -71,9 +71,9 @@ export default {
     *delete(params, { call, put }) {
       const { payload, fetchValue, callback } = params;
       const { list } = payload;
-      const json = yield call(batchDeleteSoulDict, { list });
+      const json = yield call(batchDeleteShenYuDict, { list });
       if (json.code === 200) {
-        message.success(getIntlContent('SOUL.COMMON.RESPONSE.DELETE.SUCCESS'));
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -82,9 +82,9 @@ export default {
     },
     *updateEn(params, {call, put}) {
       const {payload,fetchValue,callback} = params;
-      const json = yield call (updateSoulDictEnabled,payload);
+      const json = yield call (updateShenYuDictEnabled,payload);
       if(json.code===200){
-        message.success(getIntlContent('SOUL.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
         yield put({type: "reload", fetchValue});
       } else {
@@ -94,7 +94,7 @@ export default {
     * fetchByType(params, {call}) {
       const {payload} = params;
       let callback = payload.callBack;
-      const json = yield call(fetchSoulDictByType, payload);
+      const json = yield call(fetchShenYuDictByType, payload);
       if (json.code === 200) {
         let dataList = json.data.map(item => {
           item.key = item.id;
@@ -105,10 +105,10 @@ export default {
     },
   },
   reducers: {
-    saveSoulDicts(state, { payload }) {
+    saveShenYuDicts(state, { payload }) {
       return {
         ...state,
-        soulDictList: payload.dataList,
+        shenyuDictList: payload.dataList,
         total: payload.total
       };
     },

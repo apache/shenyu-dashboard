@@ -167,7 +167,7 @@ class AddModal extends Component {
     let {pluginHandleList} = this.state;
     if(pluginHandleList.length === 1) {
       message.destroy();
-      message.error(getIntlContent("SOUL.PLUGIN.HANDLE.TIP"));
+      message.error(getIntlContent("SHENYU.PLUGIN.HANDLE.TIP"));
     } else {
       pluginHandleList.splice(index,1);
       this.setState({pluginHandleList})
@@ -255,30 +255,30 @@ class AddModal extends Component {
       <Modal
         width={(pluginHandleList && pluginHandleList.length > 0 && pluginHandleList[0].length > 3) ? 1350 : 1000}
         centered
-        title={getIntlContent("SOUL.SELECTOR.NAME")}
+        title={getIntlContent("SHENYU.SELECTOR.NAME")}
         visible
-        okText={getIntlContent("SOUL.COMMON.SURE")}
-        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={onCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} {...formItemLayout}>
             {getFieldDecorator("name", {
-              rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTNAME") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.COMMON.INPUTNAME") }],
               initialValue: name
-            })(<Input placeholder={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} />)}
+            })(<Input placeholder={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} />)}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.COMMON.TYPE")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.COMMON.TYPE")} {...formItemLayout}>
             {getFieldDecorator("type", {
-              rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTTYPE") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.COMMON.INPUTTYPE") }],
               initialValue: type || "1"
             })(
               <Select onChange={value => this.getSelectValue(value)}>
                 {selectorTypeEnums.map(item => {
                   return (
                     <Option key={item.code} value={`${item.code}`}>
-                      {getIntlContent(`SOUL.COMMON.SELECTOR.TYPE.${ item.name.toUpperCase()}`, item.name)}
+                      {getIntlContent(`SHENYU.COMMON.SELECTOR.TYPE.${ item.name.toUpperCase()}`, item.name)}
                     </Option>
                   );
                 })}
@@ -287,9 +287,9 @@ class AddModal extends Component {
           </FormItem>
           {selectValue !== "0" && (
             <Fragment>
-              <FormItem label={getIntlContent("SOUL.COMMON.MATCHTYPE")} {...formItemLayout}>
+              <FormItem label={getIntlContent("SHENYU.COMMON.MATCHTYPE")} {...formItemLayout}>
                 {getFieldDecorator("matchMode", {
-                  rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTMATCHTYPE") }],
+                  rules: [{ required: true, message: getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE") }],
                   initialValue: matchMode
                 })(
                   <Select>
@@ -305,7 +305,7 @@ class AddModal extends Component {
               </FormItem>
               <div className={styles.condition}>
                 <h3 className={styles.header}>
-                  <strong>*</strong>{getIntlContent("SOUL.COMMON.CONDITION")}:{" "}
+                  <strong>*</strong>{getIntlContent("SHENYU.COMMON.CONDITION")}:{" "}
                 </h3>
                 <div>
                   {selectorConditions.map((item, index) => {
@@ -388,7 +388,7 @@ class AddModal extends Component {
                               this.handleDelete(index);
                             }}
                           >
-                            {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                            {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
                           </Button>
                         </li>
                       </ul>
@@ -397,13 +397,13 @@ class AddModal extends Component {
                 </div>
 
                 <Button onClick={this.handleAdd} type="primary">
-                  {getIntlContent("SOUL.COMMON.ADD")}
+                  {getIntlContent("SHENYU.COMMON.ADD")}
                 </Button>
               </div>
             </Fragment>
           )}
           <div className={styles.layout}>
-            <FormItem {...formCheckLayout} label={getIntlContent("SOUL.SELECTOR.CONTINUE")}>
+            <FormItem {...formCheckLayout} label={getIntlContent("SHENYU.SELECTOR.CONTINUE")}>
               {getFieldDecorator("continued", {
                 initialValue: continued,
                 valuePropName: "checked",
@@ -413,7 +413,7 @@ class AddModal extends Component {
             <FormItem
               style={{ margin: "0 30px" }}
               {...formCheckLayout}
-              label={getIntlContent("SOUL.SELECTOR.PRINTLOG")}
+              label={getIntlContent("SHENYU.SELECTOR.PRINTLOG")}
             >
               {getFieldDecorator("loged", {
                 initialValue: loged,
@@ -421,7 +421,7 @@ class AddModal extends Component {
                 rules: [{ required: true }]
               })(<Switch />)}
             </FormItem>
-            <FormItem {...formCheckLayout} label={getIntlContent("SOUL.SELECTOR.WHETHEROPEN")}>
+            <FormItem {...formCheckLayout} label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}>
               {getFieldDecorator("enabled", {
                 initialValue: enabled,
                 valuePropName: "checked",
@@ -433,7 +433,7 @@ class AddModal extends Component {
           {(pluginHandleList && pluginHandleList.length > 0) && (
             <div className={styles.handleWrap}>
               <div className={styles.header}>
-                <h3 style={{width:100}}>{getIntlContent("SOUL.COMMON.DEAL")}: </h3>
+                <h3 style={{width:100}}>{getIntlContent("SHENYU.COMMON.DEAL")}: </h3>
               </div>
               <div>
                 {
@@ -459,13 +459,13 @@ class AddModal extends Component {
                             let fieldName = item.field+index;
                             let rules = [];
                             if(required){
-                              rules.push({ required: {required}, message: getIntlContent("SOUL.COMMON.PLEASEINPUT") + item.label});
+                              rules.push({ required: {required}, message: getIntlContent("SHENYU.COMMON.PLEASEINPUT") + item.label});
                             }
                             if(checkRule){
                               rules.push({
                                 // eslint-disable-next-line no-eval
                                 pattern: eval(checkRule),
-                                message: `${getIntlContent("SOUL.PLUGIN.RULE.INVALID")}:(${checkRule})`
+                                message: `${getIntlContent("SHENYU.PLUGIN.RULE.INVALID")}:(${checkRule})`
                               })
                             }
                             if (item.dataType === 1) {
@@ -538,7 +538,7 @@ class AddModal extends Component {
                         {multiSelectorHandle && (
                           <div style={{width:80,marginTop:3}}>
                             <Popconfirm
-                              title={getIntlContent("SOUL.COMMON.DELETE")}
+                              title={getIntlContent("SHENYU.COMMON.DELETE")}
                               placement='bottom'
                               onCancel={(e) => {
                                 e.stopPropagation()
@@ -547,13 +547,13 @@ class AddModal extends Component {
                                 e.stopPropagation()
                                 this.handleDeleteHandle(index);
                               }}
-                              okText={getIntlContent("SOUL.COMMON.SURE")}
-                              cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+                              okText={getIntlContent("SHENYU.COMMON.SURE")}
+                              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
                             >
                               <Button
                                 type="danger"
                               >
-                                {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                                {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
                               </Button>
                             </Popconfirm>
                           </div>
@@ -563,24 +563,24 @@ class AddModal extends Component {
                   })
                 }
               </div>
-              {multiSelectorHandle &&<div style={{width:80,marginTop:3,marginLeft:5}}><Button onClick={this.handleAddHandle} type="primary">{getIntlContent("SOUL.COMMON.ADD")}</Button></div>}
+              {multiSelectorHandle &&<div style={{width:80,marginTop:3,marginLeft:5}}><Button onClick={this.handleAddHandle} type="primary">{getIntlContent("SHENYU.COMMON.ADD")}</Button></div>}
             </div>
           )}
 
-          <FormItem label={getIntlContent("SOUL.SELECTOR.EXEORDER")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.SELECTOR.EXEORDER")} {...formItemLayout}>
             {getFieldDecorator("sort", {
               initialValue: sort,
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SOUL.SELECTOR.INPUTNUMBER")
+                  message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
                 },
                 {
                   pattern: /^([1-9][0-9]{0,1}|100)$/,
-                  message: getIntlContent("SOUL.SELECTOR.INPUTNUMBER")
+                  message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
                 }
               ]
-            })(<Input placeholder={getIntlContent("SOUL.SELECTOR.INPUTORDER")} />)}
+            })(<Input placeholder={getIntlContent("SHENYU.SELECTOR.INPUTORDER")} />)}
           </FormItem>
         </Form>
       </Modal>

@@ -52,7 +52,7 @@ class AddModal extends Component {
           }))
         }
         currentPermissionIds = [...new Set(currentPermissionIds)];
-        
+
         handleOk({ ...values, id, currentPermissionIds });
       }
     });
@@ -73,7 +73,7 @@ class AddModal extends Component {
         }
       }
       item.displayName = item.title;
-      if (item.title.startsWith("SOUL.")) {
+      if (item.title.startsWith("SHENYU.")) {
         item.displayName = getIntlContent(item.title);
       }
       if (item.children) {
@@ -119,40 +119,40 @@ class AddModal extends Component {
       <Modal
         width={900}
         centered
-        title={getIntlContent("SOUL.SYSTEM.ROLE")}
+        title={getIntlContent("SHENYU.SYSTEM.ROLE")}
         visible
-        okText={getIntlContent("SOUL.COMMON.SURE")}
-        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem
-            label={getIntlContent("SOUL.SYSTEM.ROLENAME")}
+            label={getIntlContent("SHENYU.SYSTEM.ROLENAME")}
             {...formItemLayout}
           >
             {getFieldDecorator('roleName', {
-              rules: [{ required: true, message: getIntlContent("SOUL.SYSTEM.ROLE.INPUT.NAME") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.SYSTEM.ROLE.INPUT.NAME") }],
               initialValue: roleName,
             })(
-              <Input placeholder={getIntlContent("SOUL.SYSTEM.ROLE.INPUT.NAME")} />
+              <Input placeholder={getIntlContent("SHENYU.SYSTEM.ROLE.INPUT.NAME")} />
             )}
           </FormItem>
           <FormItem
-            label={getIntlContent("SOUL.SYSTEM.ROLE.DESCRIPTION")}
+            label={getIntlContent("SHENYU.SYSTEM.ROLE.DESCRIPTION")}
             {...formItemLayout}
           >
             {getFieldDecorator('description', {
-              rules: [{message: getIntlContent("SOUL.SYSTEM.ROLE.INPUT.DESCRIPTION") }],
+              rules: [{message: getIntlContent("SHENYU.SYSTEM.ROLE.INPUT.DESCRIPTION") }],
               initialValue: description,
             })(
-              <Input.TextArea autoSize placeholder={getIntlContent("SOUL.SYSTEM.ROLE.INPUT.DESCRIPTION")} />
+              <Input.TextArea autoSize placeholder={getIntlContent("SHENYU.SYSTEM.ROLE.INPUT.DESCRIPTION")} />
             )}
           </FormItem>
         </Form>
         {treeList && treeList.length > 0 && (
         <Fragment>
-          <Divider>{getIntlContent("SOUL.SYSTEM.ROLE.CONFIG")}</Divider>
+          <Divider>{getIntlContent("SHENYU.SYSTEM.ROLE.CONFIG")}</Divider>
           <div style={{ display: "flex", justifyContent: "space-around" }}>
             {this.renderResourceTree(treeList)}
           </div>

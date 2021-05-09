@@ -174,21 +174,21 @@ export default class Role extends Component {
     const roleColumns = [
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.ROLENAME"),
+        title: getIntlContent("SHENYU.SYSTEM.ROLENAME"),
         dataIndex: "roleName",
         key: "roleName",
         ellipsis:true,
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.ROLE.DESCRIPTION"),
+        title: getIntlContent("SHENYU.SYSTEM.ROLE.DESCRIPTION"),
         dataIndex: "description",
         key: "description",
         ellipsis:true,
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.CREATETIME"),
+        title: getIntlContent("SHENYU.SYSTEM.CREATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated",
         ellipsis:true,
@@ -196,7 +196,7 @@ export default class Role extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
+        title: getIntlContent("SHENYU.SYSTEM.UPDATETIME"),
         dataIndex: "dateUpdated",
         key: "dateUpdated",
         ellipsis:true,
@@ -204,7 +204,7 @@ export default class Role extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.COMMON.OPERAT"),
+        title: getIntlContent("SHENYU.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
         ellipsis:true,
@@ -217,7 +217,7 @@ export default class Role extends Component {
                   this.editClick(record);
                 }}
               >
-                {getIntlContent("SOUL.SYSTEM.EDITOR")}
+                {getIntlContent("SHENYU.SYSTEM.EDITOR")}
               </div>
             </AuthButton>
           );
@@ -236,7 +236,7 @@ export default class Role extends Component {
           <Input
             value={roleName}
             onChange={this.searchOnchange}
-            placeholder={getIntlContent("SOUL.SYSTEM.ROLE.INPUT.NAME")}
+            placeholder={getIntlContent("SHENYU.SYSTEM.ROLE.INPUT.NAME")}
             style={{ width: 240 }}
           />
           <AuthButton perms="system:role:list">
@@ -245,24 +245,24 @@ export default class Role extends Component {
               type="primary"
               onClick={this.searchClick}
             >
-              {getIntlContent("SOUL.SYSTEM.SEARCH")}
+              {getIntlContent("SHENYU.SYSTEM.SEARCH")}
             </Button>
           </AuthButton>
           <AuthButton perms="system:role:delete">
             <Popconfirm
-              title={getIntlContent("SOUL.COMMON.DELETE")}
+              title={getIntlContent("SHENYU.COMMON.DELETE")}
               placement='bottom'
               onConfirm={() => {
                 this.deleteClick()
               }}
-              okText={getIntlContent("SOUL.COMMON.SURE")}
-              cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+              okText={getIntlContent("SHENYU.COMMON.SURE")}
+              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
             >
               <Button
                 style={{ marginLeft: 20 }}
                 type="danger"
               >
-                {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
+                {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
               </Button>
             </Popconfirm>
           </AuthButton>
@@ -272,7 +272,7 @@ export default class Role extends Component {
               type="primary"
               onClick={this.addClick}
             >
-              {getIntlContent("SOUL.SYSTEM.ADDDATA")}
+              {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
             </Button>
           </AuthButton>
         </div>

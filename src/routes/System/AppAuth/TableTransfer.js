@@ -11,7 +11,7 @@ import {getIntlContent} from "../../../utils/IntlUtils";
 const columns = [
   {
     dataIndex: 'path',
-    title: getIntlContent('SOUL.AUTH.RESOUCE.PATH'),
+    title: getIntlContent('SHENYU.AUTH.RESOUCE.PATH'),
     width: 200,
     textWrap: 'word-break',
     align: 'center',
@@ -19,7 +19,7 @@ const columns = [
   },
   {
     dataIndex: 'appName',
-    title: getIntlContent('SOUL.AUTH.APPNAME'),
+    title: getIntlContent('SHENYU.AUTH.APPNAME'),
     width: 100,
     textWrap: 'word-break',
     align: 'center',
