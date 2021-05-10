@@ -161,7 +161,7 @@ export default class Hystrix extends Component {
       });
     } else {
       message.destroy();
-      message.warn(getIntlContent('SOUL.COMMON.WARN.INPUT_SELECTOR'));
+      message.warn(getIntlContent('SHENYU.COMMON.WARN.INPUT_SELECTOR'));
     }
   };
 
@@ -340,26 +340,26 @@ export default class Hystrix extends Component {
     const selectColumns = [
       {
         align: "center",
-        title: getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME"),
+        title: getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"),
         dataIndex: "name",
         key: "name"
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.COMMON.OPEN") ,
+        title: getIntlContent("SHENYU.COMMON.OPEN") ,
         dataIndex: "enabled",
         key: "enabled",
         render: text => {
           if (text) {
-            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
+            return <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>;
           } else {
-            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
+            return <div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>;
           }
         }
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.COMMON.OPERAT"),
+        title: getIntlContent("SHENYU.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
         render: (text, record) => {
@@ -373,11 +373,11 @@ export default class Hystrix extends Component {
                   this.editSelector(record);
                 }}
               >
-                {getIntlContent("SOUL.COMMON.CHANGE")}
+                {getIntlContent("SHENYU.COMMON.CHANGE")}
               </span>
               <AuthButton perms="plugin:hystrixSelector:delete">
                 <Popconfirm
-                  title={getIntlContent("SOUL.COMMON.DELETE")}
+                  title={getIntlContent("SHENYU.COMMON.DELETE")}
                   placement='bottom'
                   onCancel={(e) => {
                     e.stopPropagation()
@@ -386,8 +386,8 @@ export default class Hystrix extends Component {
                     e.stopPropagation()
                     this.deleteSelector(record);
                   }}
-                  okText={getIntlContent("SOUL.COMMON.SURE")}
-                  cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+                  okText={getIntlContent("SHENYU.COMMON.SURE")}
+                  cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
                 >
                   <span
                     className="edit"
@@ -395,7 +395,7 @@ export default class Hystrix extends Component {
                       e.stopPropagation()
                     }}
                   >
-                    {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                    {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
                   </span>
                 </Popconfirm>
               </AuthButton>
@@ -408,32 +408,32 @@ export default class Hystrix extends Component {
     const rulesColumns = [
       {
         align: "center",
-        title: getIntlContent("SOUL.COMMON.RULE.NAME"),
+        title: getIntlContent("SHENYU.COMMON.RULE.NAME"),
         dataIndex: "name",
         key: "name"
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.COMMON.OPEN"),
+        title: getIntlContent("SHENYU.COMMON.OPEN"),
         dataIndex: "enabled",
         key: "enabled",
         render: text => {
           if (text) {
-            return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
+            return <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>;
           } else {
-            return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
+            return <div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>;
           }
         }
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
+        title: getIntlContent("SHENYU.SYSTEM.UPDATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated"
       },
       {
         align: "center",
-        title: getIntlContent("SOUL.COMMON.OPERAT"),
+        title: getIntlContent("SHENYU.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
         render: (text, record) => {
@@ -447,11 +447,11 @@ export default class Hystrix extends Component {
                   this.editRule(record);
                 }}
               >
-                {getIntlContent("SOUL.COMMON.CHANGE")}
+                {getIntlContent("SHENYU.COMMON.CHANGE")}
               </span>
               <AuthButton perms="plugin:hystrixRule:delete">
                 <Popconfirm
-                  title={getIntlContent("SOUL.COMMON.DELETE")}
+                  title={getIntlContent("SHENYU.COMMON.DELETE")}
                   placement='bottom'
                   onCancel={(e) => {
                     e.stopPropagation()
@@ -460,8 +460,8 @@ export default class Hystrix extends Component {
                     e.stopPropagation()
                     this.deleteRule(record);
                   }}
-                  okText={getIntlContent("SOUL.COMMON.SURE")}
-                  cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+                  okText={getIntlContent("SHENYU.COMMON.SURE")}
+                  cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
                 >
                   <span
                     className="edit"
@@ -469,7 +469,7 @@ export default class Hystrix extends Component {
                       e.stopPropagation()
                     }}
                   >
-                    {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                    {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
                   </span>
                 </Popconfirm>
               </AuthButton>
@@ -484,14 +484,14 @@ export default class Hystrix extends Component {
         <Row gutter={20}>
           <Col span={8}>
             <div className="table-header">
-              <h3>{getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
+              <h3>{getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
               <div className={styles.headerSearch}>
                 <AuthButton perms="plugin:hystrixSelector:query">
                   <Search
                     className={styles.search}
                     style={{maxWidth:"50%"}}
-                    placeholder={getIntlContent("SOUL.PLUGIN.SEARCH.SELECTOR.NAME")}
-                    enterButton={getIntlContent("SOUL.SYSTEM.SEARCH")}
+                    placeholder={getIntlContent("SHENYU.PLUGIN.SEARCH.SELECTOR.NAME")}
+                    enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
                     size="default"
                     onChange={this.searchSelectorOnchange}
                     onSearch={this.searchSelector}
@@ -499,7 +499,7 @@ export default class Hystrix extends Component {
                 </AuthButton>
                 <AuthButton perms="plugin:hystrixSelector:add">
                   <Button type="primary" onClick={this.addSelector}>
-                    {getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.ADD")}
+                    {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.ADD")}
                   </Button>
                 </AuthButton>
               </div>
@@ -535,10 +535,10 @@ export default class Hystrix extends Component {
           <Col span={16}>
             <div className="table-header">
               <div style={{ display: "flex" }}>
-                <h3 style={{ marginRight: 30 }}>{getIntlContent("SOUL.PLUGIN.SELECTOR.RULE.LIST")}</h3>
+                <h3 style={{ marginRight: 30 }}>{getIntlContent("SHENYU.PLUGIN.SELECTOR.RULE.LIST")}</h3>
                 <AuthButton perms="plugin:hystrix:modify">
                   <Button icon="reload" onClick={this.asyncClick} type="primary">
-                    {getIntlContent("SOUL.COMMON.SYN")} hystrix
+                    {getIntlContent("SHENYU.COMMON.SYN")} hystrix
                   </Button>
                 </AuthButton>
               </div>
@@ -546,8 +546,8 @@ export default class Hystrix extends Component {
                 <AuthButton perms="plugin:hystrixRule:query">
                   <Search
                     className={styles.search}
-                    placeholder={getIntlContent("SOUL.PLUGIN.SEARCH.RULE.NAME")}
-                    enterButton={getIntlContent("SOUL.SYSTEM.SEARCH")}
+                    placeholder={getIntlContent("SHENYU.PLUGIN.SEARCH.RULE.NAME")}
+                    enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
                     size="default"
                     onChange={this.searchRuleOnchange}
                     onSearch={this.searchRule}
@@ -555,7 +555,7 @@ export default class Hystrix extends Component {
                 </AuthButton>
                 <AuthButton perms="plugin:hystrixRule:add">
                   <Button type="primary" onClick={this.addRule}>
-                    {getIntlContent("SOUL.COMMON.ADD.RULE")}
+                    {getIntlContent("SHENYU.COMMON.ADD.RULE")}
                   </Button>
                 </AuthButton>
               </div>

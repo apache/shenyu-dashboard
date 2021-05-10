@@ -6,12 +6,12 @@ import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from '../../../utils/AuthButton';
 
-@connect(({ soulDict, loading, global }) => ({
-  soulDict,
+@connect(({ shenyuDict, loading, global }) => ({
+  shenyuDict,
   language: global.language,
-  loading: loading.effects["soulDict/fetch"]
+  loading: loading.effects["shenyuDict/fetch"]
 }))
-export default class SoulDict extends Component {
+export default class ShenYuDict extends Component {
   components = resizableComponents;
 
   constructor(props) {
@@ -61,7 +61,7 @@ export default class SoulDict extends Component {
     const { dispatch } = this.props;
     const { type, dictName, dictCode } = this.state;
     dispatch({
-      type: "soulDict/fetch",
+      type: "shenyuDict/fetch",
       payload: {
         type,
         dictName,
@@ -88,7 +88,7 @@ export default class SoulDict extends Component {
     const currentDictCode = this.state.dictCode;
     const currentDictName = this.state.dictName;
     dispatch({
-      type: "soulDict/fetchItem",
+      type: "shenyuDict/fetchItem",
       payload: {
         id: record.id
       },
@@ -104,7 +104,7 @@ export default class SoulDict extends Component {
                 const { type, dictCode, id, dictName, dictValue, desc, sort, enabled } = values;
 
                 dispatch({
-                  type: "soulDict/update",
+                  type: "shenyuDict/update",
                   payload: {
                     type,
                     dictCode,
@@ -125,7 +125,7 @@ export default class SoulDict extends Component {
                   callback: () => {
                     this.closeModal();
                     dispatch({
-                      type: "soulDict/fetch",
+                      type: "shenyuDict/fetch",
                       payload: {
                         type: currentType,
                         dictName:currentDictName,
@@ -172,7 +172,7 @@ export default class SoulDict extends Component {
     const { type, dictCode, dictName, currentPage, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
-        type: "soulDict/delete",
+        type: "shenyuDict/delete",
         payload: {
           list: selectedRowKeys
         },
@@ -186,7 +186,7 @@ export default class SoulDict extends Component {
         callback: () => {
           this.setState({ selectedRowKeys: [] });
           dispatch({
-            type: "soulDict/fetch",
+            type: "shenyuDict/fetch",
             payload: {
               type,
               dictName,
@@ -213,7 +213,7 @@ export default class SoulDict extends Component {
             const { dispatch } = this.props;
             const { type, dictCode, dictName, dictValue, desc, sort, enabled } = values;
             dispatch({
-              type: "soulDict/add",
+              type: "shenyuDict/add",
               payload: {
                 type,
                 dictCode,
@@ -231,7 +231,7 @@ export default class SoulDict extends Component {
                 this.setState({ selectedRowKeys: [] });
                 this.closeModal();
                 dispatch({
-                  type: "soulDict/fetch",
+                  type: "shenyuDict/fetch",
                   payload: {
                     callback: () => { }
                   }
@@ -253,14 +253,14 @@ export default class SoulDict extends Component {
     if (selectedRowKeys && selectedRowKeys.length > 0) {
 
       dispatch({
-        type: "soulDict/fetchItem",
+        type: "shenyuDict/fetchItem",
         payload: {
           id: selectedRowKeys[0]
         },
         callback: user => {
 
           dispatch({
-            type: "soulDict/updateEn",
+            type: "shenyuDict/updateEn",
             payload: {
               list: selectedRowKeys ,
               enabled: !user.enabled
@@ -269,7 +269,7 @@ export default class SoulDict extends Component {
             callback: () => {
               this.setState({ selectedRowKeys: [] });
               dispatch({
-                type: "soulDict/fetch",
+                type: "shenyuDict/fetch",
                 payload: {
                   type,
                   dictName,
@@ -300,7 +300,7 @@ export default class SoulDict extends Component {
       columns: [
         {
           align: "center",
-          title: getIntlContent("SOUL.DIC.TYPE"),
+          title: getIntlContent("SHENYU.DIC.TYPE"),
           dataIndex: "type",
           key: "type",
           ellipsis:true,
@@ -309,7 +309,7 @@ export default class SoulDict extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.DIC.CODE"),
+          title: getIntlContent("SHENYU.DIC.CODE"),
           dataIndex: "dictCode",
           key: "dictCode",
           ellipsis:true,
@@ -317,7 +317,7 @@ export default class SoulDict extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.DIC.NAME"),
+          title: getIntlContent("SHENYU.DIC.NAME"),
           dataIndex: "dictName",
           key: "dictName",
           ellipsis:true,
@@ -325,7 +325,7 @@ export default class SoulDict extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.DIC.VALUE"),
+          title: getIntlContent("SHENYU.DIC.VALUE"),
           dataIndex: "dictValue",
           key: "dictValue",
           ellipsis:true,
@@ -333,14 +333,14 @@ export default class SoulDict extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.DIC.DESCRIBE"),
+          title: getIntlContent("SHENYU.DIC.DESCRIBE"),
           dataIndex: "desc",
           key: "desc",
           ellipsis:true,
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.PLUGIN.SORT"),
+          title: getIntlContent("SHENYU.PLUGIN.SORT"),
           dataIndex: "sort",
           key: "sort",
           ellipsis:true,
@@ -348,22 +348,22 @@ export default class SoulDict extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.SYSTEM.STATUS"),
+          title: getIntlContent("SHENYU.SYSTEM.STATUS"),
           dataIndex: "enabled",
           ellipsis:true,
           key: "enabled",
           width: 80,
           render: text => {
             if (text) {
-              return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
+              return <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>;
             } else {
-              return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
+              return <div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>;
             }
           }
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.COMMON.OPERAT"),
+          title: getIntlContent("SHENYU.COMMON.OPERAT"),
           ellipsis:true,
           dataIndex: "operate",
           key: "operate",
@@ -378,7 +378,7 @@ export default class SoulDict extends Component {
                     this.editClick(record);
                   }}
                 >
-                  {getIntlContent("SOUL.SYSTEM.EDITOR")}
+                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
                 </div>
               </AuthButton>
             );
@@ -389,8 +389,8 @@ export default class SoulDict extends Component {
   }
 
   render() {
-    const { soulDict, loading } = this.props;
-    const { soulDictList, total } = soulDict;
+    const { shenyuDict, loading } = this.props;
+    const { shenyuDictList, total } = shenyuDict;
 
     const { currentPage, selectedRowKeys, type, dictCode, dictName, popup } = this.state;
     const columns = this.state.columns.map((col, index) => ({
@@ -410,19 +410,19 @@ export default class SoulDict extends Component {
         <div style={{ display: "flex" }}>
           <Input
             value={type}
-            placeholder={getIntlContent("SOUL.DIC.INPUTTYPE")}
+            placeholder={getIntlContent("SHENYU.DIC.INPUTTYPE")}
             onChange={this.searchTypeOnchange}
             style={{ width: 240 }}
           />&nbsp;&nbsp;
           <Input
             value={dictCode}
-            placeholder={getIntlContent("SOUL.DIC.INPUTCODE")}
+            placeholder={getIntlContent("SHENYU.DIC.INPUTCODE")}
             onChange={this.searchDictCodeOnchange}
             style={{ width: 240 }}
           />&nbsp;&nbsp;
           <Input
             value={dictName}
-            placeholder={getIntlContent("SOUL.DIC.INPUTNAME")}
+            placeholder={getIntlContent("SHENYU.DIC.INPUTNAME")}
             onChange={this.searchDictNameOnchange}
             style={{ width: 240 }}
           />
@@ -432,24 +432,24 @@ export default class SoulDict extends Component {
               type="primary"
               onClick={this.searchClick}
             >
-              {getIntlContent("SOUL.SYSTEM.SEARCH")}
+              {getIntlContent("SHENYU.SYSTEM.SEARCH")}
             </Button>
           </AuthButton>
           <AuthButton perms="system:dict:delete">
             <Popconfirm
-              title={getIntlContent("SOUL.COMMON.DELETE")}
+              title={getIntlContent("SHENYU.COMMON.DELETE")}
               placement='bottom'
               onConfirm={() => {
                 this.deleteClick()
               }}
-              okText={getIntlContent("SOUL.COMMON.SURE")}
-              cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+              okText={getIntlContent("SHENYU.COMMON.SURE")}
+              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
             >
               <Button
                 style={{ marginLeft: 20 }}
                 type="danger"
               >
-                {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
+                {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
               </Button>
             </Popconfirm>
           </AuthButton>
@@ -459,7 +459,7 @@ export default class SoulDict extends Component {
               type="primary"
               onClick={this.addClick}
             >
-              {getIntlContent("SOUL.COMMON.ADD")}
+              {getIntlContent("SHENYU.COMMON.ADD")}
             </Button>
           </AuthButton>
           <AuthButton perms="system:dict:disable">
@@ -468,7 +468,7 @@ export default class SoulDict extends Component {
               type="primary"
               onClick={this.enableClick}
             >
-              {getIntlContent("SOUL.PLUGIN.BATCH")}
+              {getIntlContent("SHENYU.PLUGIN.BATCH")}
             </Button>
           </AuthButton>
         </div>
@@ -482,7 +482,7 @@ export default class SoulDict extends Component {
           loading={loading}
           columns={columns}
           scroll={{ x: 1350 }}
-          dataSource={soulDictList}
+          dataSource={shenyuDictList}
           rowSelection={rowSelection}
           pagination={{
             total,

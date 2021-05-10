@@ -33,7 +33,7 @@ export default class Home extends Component {
   render() {
     return (
       <div className={styles.content}>
-        <span>{getIntlContent("SOUL.HOME.WELCOME")}</span>
+        <span>{getIntlContent("SHENYU.HOME.WELCOME")}</span>
       </div>
     );
   }

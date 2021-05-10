@@ -352,7 +352,7 @@ export default class Auth extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.AUTH.ENCRYPTKEY"),
+          title: getIntlContent("SHENYU.AUTH.ENCRYPTKEY"),
           dataIndex: "appSecret",
           key: "appSecret",
           ellipsis:true,
@@ -360,7 +360,7 @@ export default class Auth extends Component {
         },
         {
           align: "center",
-          title: `${getIntlContent("SOUL.SYSTEM.USER")}Id`,
+          title: `${getIntlContent("SHENYU.SYSTEM.USER")}Id`,
           dataIndex: "userId",
           key: "userId",
           ellipsis:true,
@@ -368,7 +368,7 @@ export default class Auth extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.AUTH.TEL"),
+          title: getIntlContent("SHENYU.AUTH.TEL"),
           dataIndex: "phone",
           key: "phone",
           ellipsis:true,
@@ -376,37 +376,37 @@ export default class Auth extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.AUTH.OPENPATH"),
+          title: getIntlContent("SHENYU.AUTH.OPENPATH"),
           dataIndex: "open",
           key: "open",
           ellipsis:true,
           width: 80,
           render: text => {
             if (text) {
-              return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
+              return <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>;
             } else {
-              return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
+              return <div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>;
             }
           }
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.SYSTEM.STATUS"),
+          title: getIntlContent("SHENYU.SYSTEM.STATUS"),
           dataIndex: "enabled",
           key: "enabled",
           ellipsis:true,
           width: 80,
           render: text => {
             if (text) {
-              return <div className="open">{getIntlContent("SOUL.COMMON.OPEN")}</div>;
+              return <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>;
             } else {
-              return <div className="close">{getIntlContent("SOUL.COMMON.CLOSE")}</div>;
+              return <div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>;
             }
           }
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.SYSTEM.UPDATETIME"),
+          title: getIntlContent("SHENYU.SYSTEM.UPDATETIME"),
           dataIndex: "dateUpdated",
           render: dateUpdated => dayjs(dateUpdated).format('YYYY-MM-DD HH:mm:ss' ),
           key: "dateUpdated",
@@ -415,7 +415,7 @@ export default class Auth extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.COMMON.OPERAT"),
+          title: getIntlContent("SHENYU.COMMON.OPERAT"),
           dataIndex: "operate",
           key: "operate",
           ellipsis:true,
@@ -431,7 +431,7 @@ export default class Auth extends Component {
                     this.editClick(record);
                   }}
                 >
-                  {getIntlContent("SOUL.SYSTEM.EDITOR")}
+                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
                 </div>
               </AuthButton>
             );
@@ -439,7 +439,7 @@ export default class Auth extends Component {
         },
         {
           align: "center",
-          title: getIntlContent("SOUL.AUTH.OPERATPATH"),
+          title: getIntlContent("SHENYU.AUTH.OPERATPATH"),
           dataIndex: "operates",
           key: "operates",
           ellipsis:true,
@@ -456,7 +456,7 @@ export default class Auth extends Component {
                       this.editClickMeta(record);
                     }}
                   >
-                    {getIntlContent("SOUL.AUTH.EDITOR.RESOURCE")}
+                    {getIntlContent("SHENYU.AUTH.EDITOR.RESOURCE")}
                   </div>
                 </AuthButton>
               );
@@ -497,19 +497,19 @@ export default class Auth extends Component {
           {/* 删除勾选按钮 */}
           <AuthButton perms="system:authen:delete">
             <Popconfirm
-              title={getIntlContent("SOUL.COMMON.DELETE")}
+              title={getIntlContent("SHENYU.COMMON.DELETE")}
               placement='bottom'
               onConfirm={() => {
                 this.deleteClick()
               }}
-              okText={getIntlContent("SOUL.COMMON.SURE")}
-              cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+              okText={getIntlContent("SHENYU.COMMON.SURE")}
+              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
             >
               <Button
                 style={{ marginLeft: 20 }}
                 type="danger"
               >
-                {getIntlContent("SOUL.SYSTEM.DELETEDATA")}
+                {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
               </Button>
             </Popconfirm>
           </AuthButton>
@@ -520,7 +520,7 @@ export default class Auth extends Component {
               type="primary"
               onClick={this.addClick}
             >
-              {getIntlContent("SOUL.SYSTEM.ADDDATA")}
+              {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
             </Button>
           </AuthButton>
           {/* 批量启用或禁用按钮 */}
@@ -530,7 +530,7 @@ export default class Auth extends Component {
               type="primary"
               onClick={this.enableClick}
             >
-              {getIntlContent("SOUL.PLUGIN.BATCH")}
+              {getIntlContent("SHENYU.PLUGIN.BATCH")}
             </Button>
           </AuthButton>
           {/* 同步数据按钮 */}
@@ -540,7 +540,7 @@ export default class Auth extends Component {
               type="primary"
               onClick={this.syncData}
             >
-              {getIntlContent("SOUL.AUTH.SYNCDATA")}
+              {getIntlContent("SHENYU.AUTH.SYNCDATA")}
             </Button>
           </AuthButton>
         </div>

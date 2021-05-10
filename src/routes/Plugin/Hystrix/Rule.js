@@ -301,23 +301,23 @@ class AddModal extends Component {
       <Modal
         width={900}
         centered
-        title={getIntlContent("SOUL.RULE.NAME")}
+        title={getIntlContent("SHENYU.RULE.NAME")}
         visible
-        okText={getIntlContent("SOUL.COMMON.SURE")}
-        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={onCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} {...formItemLayout}>
             {getFieldDecorator("name", {
-              rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTNAME") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.COMMON.INPUTNAME") }],
               initialValue: name
-            })(<Input placeholder={getIntlContent("SOUL.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} />)}
+            })(<Input placeholder={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} />)}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.COMMON.MATCHTYPE")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.COMMON.MATCHTYPE")} {...formItemLayout}>
             {getFieldDecorator("matchMode", {
-              rules: [{ required: true, message: getIntlContent("SOUL.COMMON.INPUTMATCHTYPE") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE") }],
               initialValue: matchMode
             })(
               <Select>
@@ -334,7 +334,7 @@ class AddModal extends Component {
           <div className={styles.ruleConditions}>
             <h3 className={styles.header} style={{width:105}}>
               <strong>*</strong>
-              {getIntlContent("SOUL.COMMON.CONDITION")}:
+              {getIntlContent("SHENYU.COMMON.CONDITION")}:
             </h3>
             <div className={styles.content}>
               {ruleConditions.map((item, index) => {
@@ -408,7 +408,7 @@ class AddModal extends Component {
                           this.handleDelete(index);
                         }}
                       >
-                        {getIntlContent("SOUL.COMMON.DELETE.NAME")}
+                        {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
                       </Button>
                     </li>
                   </ul>
@@ -417,7 +417,7 @@ class AddModal extends Component {
             </div>
             <div>
               <Button onClick={this.handleAdd} type="primary">
-                {getIntlContent("SOUL.COMMON.ADD")}
+                {getIntlContent("SHENYU.COMMON.ADD")}
               </Button>
             </div>
           </div>
@@ -437,9 +437,9 @@ class AddModal extends Component {
               </Select>
             )}
           </FormItem> */}
-          <FormItem label={getIntlContent("SOUL.HYSTRIX.LSOLATION.MODE")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.HYSTRIX.LSOLATION.MODE")} {...formItemLayout}>
             {getFieldDecorator("executionIsolationStrategy", {
-              rules: [{ required: true, message: getIntlContent("SOUL.HYSTRIX.LSOLATION.SELECT") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.HYSTRIX.LSOLATION.SELECT") }],
               initialValue: executionIsolationStrategy
             })(
               <Select
@@ -459,7 +459,7 @@ class AddModal extends Component {
           </FormItem>
           <div className={styles.handleWrap}>
             <div className={styles.header}>
-              <h3>{getIntlContent("SOUL.COMMON.DEAL")}: </h3>
+              <h3>{getIntlContent("SHENYU.COMMON.DEAL")}: </h3>
             </div>
             <ul
               className={classnames({
@@ -469,7 +469,7 @@ class AddModal extends Component {
             >
               <li>
                 <Input
-                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.TRIPPING.REQUEST.NUMBER")}</div>}
+                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.TRIPPING.REQUEST.NUMBER")}</div>}
                   value={requestVolumeThreshold}
                   placeholder="requestVolumeThreshold"
                   onChange={e => {
@@ -480,7 +480,7 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.ERROR.PERCENT")}</div>}
+                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.ERROR.PERCENT")}</div>}
                   value={errorThresholdPercentage}
                   placeholder="errorThresholdPercentage"
                   onChange={e => {
@@ -496,7 +496,7 @@ class AddModal extends Component {
                 this.state.executionIsolationStrategy === 1&&(
                 <li>
                   <Input
-                    addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.MAX.CONCURRENCY")}</div>}
+                    addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.MAX.CONCURRENCY")}</div>}
                     value={maxConcurrentRequests}
                     placeholder="maxConcurrentRequests"
                     onChange={e => {
@@ -509,7 +509,7 @@ class AddModal extends Component {
               }
               <li>
                 <Input
-                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.TRIPPING.SLEEPTIME")}</div>}
+                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.TRIPPING.SLEEPTIME")}</div>}
                   value={sleepWindowInMilliseconds}
                   placeholder="sleepWindowInMilliseconds"
                   onChange={e => {
@@ -523,7 +523,7 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.GROUPKEY")}</div>}
+                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.GROUPKEY")}</div>}
                   value={groupKey}
                   placeholder="GroupKey"
                   onChange={e => {
@@ -534,9 +534,9 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.FAILEDDEMOTION")}</div>}
+                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.FAILEDDEMOTION")}</div>}
                   value={callBackUri}
-                  placeholder={getIntlContent("SOUL.HYSTRIX.FAILEDCALLBACK")}
+                  placeholder={getIntlContent("SHENYU.HYSTRIX.FAILEDCALLBACK")}
                   onChange={e => {
                     const value = e.target.value;
                     this.onHandleChange("callBackUri", value);
@@ -545,7 +545,7 @@ class AddModal extends Component {
               </li>
               <li>
                 <Input
-                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.COMMANDKEY")}</div>}
+                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.COMMANDKEY")}</div>}
                   value={commandKey}
                   placeholder="CommandKey"
                   onChange={e => {
@@ -558,9 +558,9 @@ class AddModal extends Component {
                 this.state.executionIsolationStrategy === 0 && (
                 <li>
                   <Input
-                    addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.CORETHREADSIZE")}</div>}
+                    addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.CORETHREADSIZE")}</div>}
                     value={hystrixThreadPoolConfig.coreSize}
-                    placeholder={getIntlContent("SOUL.HYSTRIX.CORENUM")}
+                    placeholder={getIntlContent("SHENYU.HYSTRIX.CORENUM")}
                     onChange={e => {
                         const value = e.target.value;
                         hystrixThreadPoolConfig.coreSize = value;
@@ -574,9 +574,9 @@ class AddModal extends Component {
                 this.state.executionIsolationStrategy === 0 && (
                 <li>
                   <Input
-                    addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.MAXSIZE")}</div>}
+                    addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.MAXSIZE")}</div>}
                     value={hystrixThreadPoolConfig.maximumSize}
-                    placeholder={getIntlContent("SOUL.HYSTRIX.MAXTHREADNUM")}
+                    placeholder={getIntlContent("SHENYU.HYSTRIX.MAXTHREADNUM")}
                     onChange={e => {
                       const value = e.target.value;
                       hystrixThreadPoolConfig.maximumSize = value;
@@ -589,9 +589,9 @@ class AddModal extends Component {
                 this.state.executionIsolationStrategy === 0&& (
                 <li>
                   <Input
-                    addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SOUL.HYSTRIX.MAXTHREADQUEUE")}</div>}
+                    addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.MAXTHREADQUEUE")}</div>}
                     value={hystrixThreadPoolConfig.maxQueueSize}
-                    placeholder={getIntlContent("SOUL.HYSTRIX.MAXTHREAD")}
+                    placeholder={getIntlContent("SHENYU.HYSTRIX.MAXTHREAD")}
                     onChange={e => {
                       const value = e.target.value;
                       hystrixThreadPoolConfig.maxQueueSize = value;
@@ -621,7 +621,7 @@ class AddModal extends Component {
             <FormItem
               style={{ margin: "0 20px" }}
               {...formCheckLayout}
-              label={getIntlContent("SOUL.SELECTOR.PRINTLOG")}
+              label={getIntlContent("SHENYU.SELECTOR.PRINTLOG")}
             >
               {getFieldDecorator("loged", {
                 initialValue: loged,
@@ -629,7 +629,7 @@ class AddModal extends Component {
                 rules: [{ required: true }]
               })(<Switch />)}
             </FormItem>
-            <FormItem {...formCheckLayout} label={getIntlContent("SOUL.SELECTOR.WHETHEROPEN")}>
+            <FormItem {...formCheckLayout} label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}>
               {getFieldDecorator("enabled", {
                 initialValue: enabled,
                 valuePropName: "checked",
@@ -638,20 +638,20 @@ class AddModal extends Component {
             </FormItem>
           </div>
 
-          <FormItem label={getIntlContent("SOUL.SELECTOR.EXEORDER")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.SELECTOR.EXEORDER")} {...formItemLayout}>
             {getFieldDecorator("sort", {
               initialValue: sort,
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SOUL.SELECTOR.INPUTNUMBER")
+                  message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
                 },
                 {
                   pattern: /^([1-9][0-9]{0,1}|100)$/,
-                  message: getIntlContent("SOUL.SELECTOR.INPUTNUMBER")
+                  message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
                 }
               ]
-            })(<Input placeholder={getIntlContent("SOUL.SELECTOR.INPUTORDER")} />)}
+            })(<Input placeholder={getIntlContent("SHENYU.SELECTOR.INPUTORDER")} />)}
           </FormItem>
         </Form>
       </Modal>

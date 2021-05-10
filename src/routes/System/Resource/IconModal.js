@@ -4,7 +4,7 @@ import styles from "./IconModal.less";
 import { getIntlContent } from '../../../utils/IntlUtils';
 
 const iconMap = {
-    "SOUL.SYSTEM.ICON.DIRECTIONAL": [
+    "SHENYU.SYSTEM.ICON.DIRECTIONAL": [
         "step-backward",
         "step-forward",
         "fast-backward",
@@ -69,7 +69,7 @@ const iconMap = {
         "fullscreen",
         "fullscreen-exit",
     ],
-    "SOUL.SYSTEM.ICON.SUGGESTED": [
+    "SHENYU.SYSTEM.ICON.SUGGESTED": [
         "question",
         "question-circle",
         "plus",
@@ -95,7 +95,7 @@ const iconMap = {
         "issues-close",
         "stop",
     ],
-    "SOUL.SYSTEM.ICON.EDITOR": [
+    "SHENYU.SYSTEM.ICON.EDITOR": [
         "edit",
         "form",
         "copy",
@@ -130,7 +130,7 @@ const iconMap = {
         "column-width",
         "column-height",
     ],
-    "SOUL.SYSTEM.ICON.DATA": [
+    "SHENYU.SYSTEM.ICON.DATA": [
         "area-chart",
         "pie-chart",
         "bar-chart",
@@ -145,7 +145,7 @@ const iconMap = {
         "fund",
         "sliders",
     ],
-    "SOUL.SYSTEM.ICON.BRAND": [
+    "SHENYU.SYSTEM.ICON.BRAND": [
         "android",
         "apple",
         "windows",
@@ -196,7 +196,7 @@ const iconMap = {
         "reddit",
         "sketch",
     ],
-    "SOUL.SYSTEM.ICON.APPLICATION": [
+    "SHENYU.SYSTEM.ICON.APPLICATION": [
 
         "account-book",
         "alert",
@@ -400,7 +400,7 @@ export default class IconModal extends Component {
         filterText: null
       })
     }
-    
+
   }
 
   filterSearch = (icon ,filterText) => {
@@ -418,17 +418,17 @@ export default class IconModal extends Component {
       <Modal
         width={1250}
         centered
-        title={getIntlContent("SOUL.SYSTEM.ICON")}
+        title={getIntlContent("SHENYU.SYSTEM.ICON")}
         visible
         onCancel={handleCancel}
         footer={[
           <Button key="back" onClick={handleCancel}>
-            {getIntlContent("SOUL.COMMON.CALCEL")}
+            {getIntlContent("SHENYU.COMMON.CALCEL")}
           </Button>
-        ]} 
+        ]}
       >
         <Input.Search
-          placeholder={getIntlContent("SOUL.SYSTEM.ICON.SEARCH")}
+          placeholder={getIntlContent("SHENYU.SYSTEM.ICON.SEARCH")}
           style={{marginBottom:20}}
           onChange={this.handleSearchTextChange}
         />

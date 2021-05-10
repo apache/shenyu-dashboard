@@ -50,7 +50,7 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(addPlugin, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SOUL.COMMON.RESPONSE.ADD.SUCCESS'));
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -60,7 +60,7 @@ export default {
     *changeStatus({ payload }, { call, put }) {
       const json = yield call(updatePlugin, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SOUL.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
         yield put({
           type: "updatePlugins",
           payload,
@@ -74,7 +74,7 @@ export default {
       const { list } = payload;
       const json = yield call(deletePlugin, { list });
       if (json.code === 200) {
-        message.success(getIntlContent('SOUL.COMMON.RESPONSE.DELETE.SUCCESS'));
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -85,7 +85,7 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(updatePlugin, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SOUL.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -96,7 +96,7 @@ export default {
       const {payload,fetchValue,callback} = params;
       const json = yield call (updatepluginEnabled,payload);
       if(json.code===200){
-        message.success(getIntlContent('SOUL.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
         yield put({type: "reload", fetchValue});
       } else {
@@ -112,7 +112,7 @@ export default {
     *asyncAll(_, { call }) {
       const json = yield call(asyncPlugin);
       if (json.code === 200) {
-        message.success(getIntlContent('SOUL.COMMON.RESPONSE.SYNC.SUCCESS'));
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.SYNC.SUCCESS'));
       } else {
         message.warn(json.message);
       }

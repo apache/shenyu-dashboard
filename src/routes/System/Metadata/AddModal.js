@@ -43,99 +43,99 @@ class AddModal extends Component {
       <Modal
         width={450}
         centered
-        title={getIntlContent("SOUL.META.DATA")}
+        title={getIntlContent("SHENYU.META.DATA")}
         visible
-        okText={getIntlContent("SOUL.COMMON.SURE")}
-        cancelText={getIntlContent( "SOUL.COMMON.CALCEL")}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent( "SHENYU.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem
-            label={getIntlContent("SOUL.AUTH.APPNAME")}
+            label={getIntlContent("SHENYU.AUTH.APPNAME")}
             {...formItemLayout}
           >
             {getFieldDecorator('appName', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.APPNAME") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.AUTH.APPNAME") }],
               initialValue: appName,
             })(
-              <Input placeholder={getIntlContent("SOUL.AUTH.APPNAME")} />
+              <Input placeholder={getIntlContent("SHENYU.AUTH.APPNAME")} />
             )}
           </FormItem>
 
           <FormItem
-            label={getIntlContent("SOUL.META.FUNC.NAME")}
+            label={getIntlContent("SHENYU.META.FUNC.NAME")}
             {...formItemLayout}
           >
             {getFieldDecorator('methodName', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.META.FUNC.NAME") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.META.FUNC.NAME") }],
               initialValue: methodName,
             })(
-              <Input placeholder={getIntlContent("SOUL.META.FUNC.NAME")} />
+              <Input placeholder={getIntlContent("SHENYU.META.FUNC.NAME")} />
             )}
           </FormItem>
           <FormItem
-            label={getIntlContent("SOUL.META.PATH")}
+            label={getIntlContent("SHENYU.META.PATH")}
             {...formItemLayout}
           >
             {getFieldDecorator('path', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.META.PATH") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.META.PATH") }],
               initialValue: path,
             })(
-              <Input placeholder={getIntlContent("SOUL.META.PATH")} />
+              <Input placeholder={getIntlContent("SHENYU.META.PATH")} />
             )}
           </FormItem>
           <FormItem
-            label={getIntlContent("SOUL.AUTH.PATH.DESCRIBE")}
+            label={getIntlContent("SHENYU.AUTH.PATH.DESCRIBE")}
             {...formItemLayout}
           >
             {getFieldDecorator('pathDesc', {
-              rules: [{ required: false, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.AUTH.PATH.DESCRIBE")}],
+              rules: [{ required: false, message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.AUTH.PATH.DESCRIBE")}],
               initialValue: pathDesc,
             })(
-              <Input placeholder={getIntlContent("SOUL.AUTH.PATH.DESCRIBE")} />
+              <Input placeholder={getIntlContent("SHENYU.AUTH.PATH.DESCRIBE")} />
             )}
           </FormItem>
           <FormItem
-            label={`${getIntlContent("SOUL.AUTH.PARAMS")}${getIntlContent("SOUL.COMMON.TYPE")}`}
+            label={`${getIntlContent("SHENYU.AUTH.PARAMS")}${getIntlContent("SHENYU.COMMON.TYPE")}`}
             {...formItemLayout}
           >
             {getFieldDecorator('parameterTypes', {
-              rules: [{ required: false, message: `${getIntlContent("SOUL.AUTH.INPUT")}${getIntlContent("SOUL.AUTH.PARAMS")}${getIntlContent("SOUL.COMMON.TYPE")}` }],
+              rules: [{ required: false, message: `${getIntlContent("SHENYU.AUTH.INPUT")}${getIntlContent("SHENYU.AUTH.PARAMS")}${getIntlContent("SHENYU.COMMON.TYPE")}` }],
               initialValue: parameterTypes,
             })(
-              <Input placeholder={`${getIntlContent("SOUL.AUTH.PARAMS")}${getIntlContent("SOUL.COMMON.TYPE")}`} />
+              <Input placeholder={`${getIntlContent("SHENYU.AUTH.PARAMS")}${getIntlContent("SHENYU.COMMON.TYPE")}`} />
             )}
           </FormItem>
           <FormItem
-            label={`Rpc${getIntlContent("SOUL.META.EXPAND.PARAMS")}`}
+            label={`Rpc${getIntlContent("SHENYU.META.EXPAND.PARAMS")}`}
             {...formItemLayout}
           >
             {getFieldDecorator('rpcExt', {
-              rules: [{ message: `${getIntlContent("SOUL.AUTH.INPUT")}Rpc${getIntlContent("SOUL.META.EXPAND.PARAMS")}` }],
+              rules: [{ message: `${getIntlContent("SHENYU.AUTH.INPUT")}Rpc${getIntlContent("SHENYU.META.EXPAND.PARAMS")}` }],
               initialValue: rpcExt,
             })(
-              <TextArea placeholder={`Rpc${getIntlContent( "SOUL.META.EXPAND.PARAMS")}`} rows={3} />
+              <TextArea placeholder={`Rpc${getIntlContent( "SHENYU.META.EXPAND.PARAMS")}`} rows={3} />
             )}
           </FormItem>
           <FormItem
-            label={getIntlContent("SOUL.META.SERVER.INTER")}
+            label={getIntlContent("SHENYU.META.SERVER.INTER")}
             {...formItemLayout}
           >
             {getFieldDecorator('serviceName', {
-              rules: [{ required: true, message: getIntlContent("SOUL.META.INPUTSERVICEINTERFACE") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.META.INPUTSERVICEINTERFACE") }],
               initialValue: serviceName,
             })(
-              <Input placeholder={getIntlContent("SOUL.META.SERVER.INTER")} />
+              <Input placeholder={getIntlContent("SHENYU.META.SERVER.INTER")} />
             )}
           </FormItem>
           {/* select */}
           <FormItem
-            label={`Rpc${getIntlContent("SOUL.COMMON.TYPE")}`}
+            label={`Rpc${getIntlContent("SHENYU.COMMON.TYPE")}`}
             {...formItemLayout}
           >
             {getFieldDecorator('rpcType', {
-              rules: [{ required: true, message: getIntlContent("SOUL.META.SELECTRPCTYPE") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.META.SELECTRPCTYPE") }],
               initialValue: rpcType,
             })(
               <Select>
@@ -154,7 +154,7 @@ class AddModal extends Component {
           (
             <FormItem
               {...formItemLayout}
-              label={getIntlContent("SOUL.SYSTEM.STATUS")}
+              label={getIntlContent("SHENYU.SYSTEM.STATUS")}
             >
               {getFieldDecorator('enabled', {
               initialValue: enabled,

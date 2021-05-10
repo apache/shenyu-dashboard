@@ -38,83 +38,83 @@ class AddModal extends Component {
       <Modal
         width={450}
         centered
-        title={getIntlContent("SOUL.DIC")}
+        title={getIntlContent("SHENYU.DIC")}
         visible
-        okText={getIntlContent("SOUL.COMMON.SURE")}
-        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem
-            label={getIntlContent("SOUL.DIC.TYPE")}
+            label={getIntlContent("SHENYU.DIC.TYPE")}
             {...formItemLayout}
           >
             {getFieldDecorator('type', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.DIC.TYPE") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.DIC.TYPE") }],
               initialValue: type,
             })(
-              <Input placeholder={getIntlContent("SOUL.DIC.TYPE")} />
+              <Input placeholder={getIntlContent("SHENYU.DIC.TYPE")} />
             )}
           </FormItem>
 
           <FormItem
-            label={getIntlContent("SOUL.DIC.CODE")}
+            label={getIntlContent("SHENYU.DIC.CODE")}
             {...formItemLayout}
           >
             {getFieldDecorator('dictCode', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.DIC.CODE") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.DIC.CODE") }],
               initialValue: dictCode,
             })(
-              <Input placeholder={getIntlContent("SOUL.DIC.CODE")} />
+              <Input placeholder={getIntlContent("SHENYU.DIC.CODE")} />
             )}
           </FormItem>
           <FormItem
-            label={getIntlContent("SOUL.DIC.NAME")}
+            label={getIntlContent("SHENYU.DIC.NAME")}
             {...formItemLayout}
           >
             {getFieldDecorator('dictName', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.DIC.NAME") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.DIC.NAME") }],
               initialValue: dictName,
             })(
-              <Input placeholder={getIntlContent("SOUL.DIC.NAME")} />
+              <Input placeholder={getIntlContent("SHENYU.DIC.NAME")} />
             )}
           </FormItem>
           <FormItem
-            label={getIntlContent("SOUL.DIC.VALUE")}
+            label={getIntlContent("SHENYU.DIC.VALUE")}
             {...formItemLayout}
           >
             {getFieldDecorator('dictValue', {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.DIC.VALUE") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.DIC.VALUE") }],
               initialValue: dictValue,
             })(
-              <Input placeholder={getIntlContent("SOUL.DIC.VALUE")} />
+              <Input placeholder={getIntlContent("SHENYU.DIC.VALUE")} />
             )}
           </FormItem>
           <FormItem
-            label={getIntlContent("SOUL.DIC.DESCRIBE")}
+            label={getIntlContent("SHENYU.DIC.DESCRIBE")}
             {...formItemLayout}
           >
             {getFieldDecorator('desc', {
               initialValue: desc,
             })(
-              <TextArea placeholder={getIntlContent("SOUL.DIC.DESCRIBE")} rows={3} />
+              <TextArea placeholder={getIntlContent("SHENYU.DIC.DESCRIBE")} rows={3} />
             )}
           </FormItem>
           <FormItem
-            label={getIntlContent("SOUL.PLUGIN.SORT")}
+            label={getIntlContent("SHENYU.PLUGIN.SORT")}
             {...formItemLayout}
           >
             {getFieldDecorator('sort', {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SOUL.AUTH.INPUT") + getIntlContent("SOUL.PLUGIN.SORT")
+                  message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.PLUGIN.SORT")
                 }
               ],
               initialValue: sort,
             })(
-              <Input placeholder={getIntlContent("SOUL.PLUGIN.SORT")} type="number" />
+              <Input placeholder={getIntlContent("SHENYU.PLUGIN.SORT")} type="number" />
             )}
           </FormItem>
           {/* status */}
@@ -122,7 +122,7 @@ class AddModal extends Component {
           (
             <FormItem
               {...formItemLayout}
-              label={getIntlContent("SOUL.SYSTEM.STATUS")}
+              label={getIntlContent("SHENYU.SYSTEM.STATUS")}
             >
               {getFieldDecorator('enabled', {
               initialValue: enabled,

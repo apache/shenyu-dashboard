@@ -155,7 +155,7 @@ export default class DataPermModal extends Component {
     },()=>{
       this.getPermissionRuleList(selectorId,page);
     })
-    
+
   }
 
   renderPluginTree = ()=>{
@@ -179,13 +179,13 @@ export default class DataPermModal extends Component {
         </Tree>
       )
     }
-  } 
+  }
 
   renderTreeNodes = (data) => {
     data = data.sort((a,b)=>(a.sort||0)-(b.sort||0));
     return data.map(item => {
       item.title =  item.meta.title;
-      if (item.title.startsWith("SOUL.")) {
+      if (item.title.startsWith("SHENYU.")) {
         item.title = getIntlContent(item.title);
       }
       if (item.children && item.children.length > 0) {
@@ -201,28 +201,28 @@ export default class DataPermModal extends Component {
   }
 
   renderSelectorRuleTable = () => {
-    const { 
+    const {
       currentPermissionSelectorPage,
       pageSize
     } = this.state;
     const { selectorData, ruleListMap } = this.state;
     const ruleColumns = [
-      { 
-        title: getIntlContent("SOUL.SYSTEM.DATA.PERMISSION.CHECKED"),
-        dataIndex: 'isChecked', 
+      {
+        title: getIntlContent("SHENYU.SYSTEM.DATA.PERMISSION.CHECKED"),
+        dataIndex: 'isChecked',
         width:90,
         key: 'isChecked',
         render: (isChecked, record) => {
           return <Checkbox checked={isChecked} onClick={this.handleCheckRule.bind(this,record)}  />
         }
       },
-      { title: getIntlContent("SOUL.SYSTEM.DATA.PERMISSION.RULENAME"), dataIndex: 'dataName', key: 'dataName' },
+      { title: getIntlContent("SHENYU.SYSTEM.DATA.PERMISSION.RULENAME"), dataIndex: 'dataName', key: 'dataName' },
     ];
     const expandedRowRender = (record) => {
       let ruleData = ruleListMap&&ruleListMap[record.dataId];
       let currentRulePage = ruleData&&ruleData.currentRulePage;
       return (
-        <Table 
+        <Table
           size="small"
           bordered
           columns={ruleColumns}
@@ -238,28 +238,28 @@ export default class DataPermModal extends Component {
         />
       );
     };
-  
+
     const columns = [
-      { 
-        title: getIntlContent("SOUL.SYSTEM.DATA.PERMISSION.CHECKED"),
-        dataIndex: 'isChecked', 
+      {
+        title: getIntlContent("SHENYU.SYSTEM.DATA.PERMISSION.CHECKED"),
+        dataIndex: 'isChecked',
         width:90,
         key: 'isChecked',
         render: (isChecked, record) => {
           return <Checkbox checked={isChecked} onClick={this.handleCheckSelector.bind(this,record)} />
         }
       },
-      { 
-        title: getIntlContent("SOUL.SYSTEM.DATA.PERMISSION.SELECTORNAME"),
-        dataIndex: 'dataName', 
+      {
+        title: getIntlContent("SHENYU.SYSTEM.DATA.PERMISSION.SELECTORNAME"),
+        dataIndex: 'dataName',
         key: 'dataName'
       },
     ];
-  
+
     return (
       <Table
-        style={{width:"350px"}} 
-        size="small" 
+        style={{width:"350px"}}
+        size="small"
         bordered
         columns={columns}
         expandedRowRender={expandedRowRender}
@@ -281,15 +281,15 @@ export default class DataPermModal extends Component {
       <Modal
         width={800}
         centered
-        title={getIntlContent("SOUL.SYSTEM.DATA.PERMISSION.CONFIG")}
+        title={getIntlContent("SHENYU.SYSTEM.DATA.PERMISSION.CONFIG")}
         visible
-        cancelText={getIntlContent("SOUL.COMMON.CLOSE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CLOSE")}
         onCancel={handleCancel}
         footer={[
           <Button key="back" onClick={handleCancel}>
-            {getIntlContent("SOUL.COMMON.CLOSE")}
+            {getIntlContent("SHENYU.COMMON.CLOSE")}
           </Button>
-        ]} 
+        ]}
       >
         <Row gutter={20}>
           <Col span={10} style={{minWidth:280}}>

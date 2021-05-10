@@ -57,25 +57,25 @@ class AddModal extends Component {
       <Modal
         width={520}
         centered
-        title={getIntlContent("SOUL.PLUGIN")}
+        title={getIntlContent("SHENYU.PLUGIN")}
         visible
-        okText={getIntlContent("SOUL.COMMON.SURE")}
-        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label={getIntlContent("SOUL.PLUGIN")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.PLUGIN")} {...formItemLayout}>
             {getFieldDecorator("name", {
-              rules: [{ required: true, message: getIntlContent("SOUL.PLUGIN.SELECT") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.PLUGIN.SELECT") }],
               initialValue: name,
             })(
-              <Input placeholder={getIntlContent("SOUL.PLUGIN.PLUGIN.NAME")} disabled={disable} />
+              <Input placeholder={getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME")} disabled={disable} />
             )}
           </FormItem>
           {(data && data.length > 0) && (
             <Fragment>
-              <Divider>{name} {getIntlContent("SOUL.COMMON.SETTING")}</Divider>
+              <Divider>{name} {getIntlContent("SHENYU.COMMON.SETTING")}</Divider>
               {data.map((eachField,index)=> {
                 let fieldInitialValue = config?config[eachField.field]:undefined
                 let fieldName = eachField.field
@@ -94,13 +94,13 @@ class AddModal extends Component {
                 }
                 let rules = [];
                 if(required){
-                  rules.push({ required: {required}, message: getIntlContent("SOUL.COMMON.PLEASEINPUT") });
+                  rules.push({ required: {required}, message: getIntlContent("SHENYU.COMMON.PLEASEINPUT") });
                 }
                 if(checkRule){
                   rules.push({
                     // eslint-disable-next-line no-eval
                     pattern: eval(checkRule),
-                    message: `${getIntlContent("SOUL.PLUGIN.RULE.INVALID")}:(${checkRule})`
+                    message: `${getIntlContent("SHENYU.PLUGIN.RULE.INVALID")}:(${checkRule})`
                   })
                 }
                 if(dataType === 1){
@@ -152,20 +152,20 @@ class AddModal extends Component {
             </Fragment>
           )}
           <FormItem
-            label={getIntlContent("SOUL.SYSTEM.ROLE")}
+            label={getIntlContent("SHENYU.SYSTEM.ROLE")}
             {...formItemLayout}
           >
             {getFieldDecorator('role', {
-              rules: [{ required: true, message: getIntlContent("SOUL.SYSTEM.SELECTROLE") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.SYSTEM.SELECTROLE") }],
               initialValue: `${role}`,
             })(
               <Select disabled>
-                <Option value="0">{getIntlContent("SOUL.SYSTEM.SYSTEM")}</Option>
-                <Option value="1">{getIntlContent("SOUL.SYSTEM.CUSTOM")}</Option>
+                <Option value="0">{getIntlContent("SHENYU.SYSTEM.SYSTEM")}</Option>
+                <Option value="1">{getIntlContent("SHENYU.SYSTEM.CUSTOM")}</Option>
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={getIntlContent("SOUL.SYSTEM.STATUS")}>
+          <FormItem {...formItemLayout} label={getIntlContent("SHENYU.SYSTEM.STATUS")}>
             {getFieldDecorator("enabled", {
               initialValue: enabled,
               valuePropName: "checked"

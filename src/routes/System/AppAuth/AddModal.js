@@ -79,45 +79,45 @@ class AddModal extends Component {
       <Modal
         width={550}
         centered
-        title={getIntlContent("SOUL.AUTH.AUTH")}
+        title={getIntlContent("SHENYU.AUTH.AUTH")}
         visible
-        okText={getIntlContent("SOUL.COMMON.SURE")}
-        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label={getIntlContent("SOUL.AUTH.APPID")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.AUTH.APPID")} {...formItemLayout}>
             {getFieldDecorator("appKey", {
-              rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")}AppKey` }],
+              rules: [{ required: true, message: `${getIntlContent("SHENYU.AUTH.INPUT")}AppKey` }],
               initialValue: appKey
-            })(<Input disabled placeholder={`${getIntlContent("SOUL.AUTH.INPUT")}AppKey`} />)}
+            })(<Input disabled placeholder={`${getIntlContent("SHENYU.AUTH.INPUT")}AppKey`} />)}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.AUTH.APPPASSWORD")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.AUTH.APPPASSWORD")} {...formItemLayout}>
             {getFieldDecorator("appSecret", {
-              rules: [{ required: true, message: `${getIntlContent("SOUL.AUTH.INPUT")}AppSecret` }],
+              rules: [{ required: true, message: `${getIntlContent("SHENYU.AUTH.INPUT")}AppSecret` }],
               initialValue: appSecret
-            })(<Input disabled placeholder={`${getIntlContent("SOUL.AUTH.INPUT")}AppSecret`} />)}
+            })(<Input disabled placeholder={`${getIntlContent("SHENYU.AUTH.INPUT")}AppSecret`} />)}
           </FormItem>
-          <FormItem label={`${getIntlContent("SOUL.SYSTEM.USER")}Id`} {...formItemLayout}>
+          <FormItem label={`${getIntlContent("SHENYU.SYSTEM.USER")}Id`} {...formItemLayout}>
             {getFieldDecorator("userId", {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.INPUTUSERID")}],
+              rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUTUSERID")}],
               initialValue: userId
-            })(<Input placeholder={getIntlContent("SOUL.AUTH.INPUTUSERID")} />)}
+            })(<Input placeholder={getIntlContent("SHENYU.AUTH.INPUTUSERID")} />)}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.AUTH.TEL")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.AUTH.TEL")} {...formItemLayout}>
             {getFieldDecorator("phone", {
-              rules: [{ required: true, message: getIntlContent("SOUL.AUTH.TELPHONE")}],
+              rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.TELPHONE")}],
               initialValue: phone
-            })(<Input placeholder={getIntlContent("SOUL.AUTH.TELPHONE")} />)}
+            })(<Input placeholder={getIntlContent("SHENYU.AUTH.TELPHONE")} />)}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.AUTH.EXPANDINFO")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.AUTH.EXPANDINFO")} {...formItemLayout}>
             {getFieldDecorator("extInfo", {
-              rules: [{  message: getIntlContent("SOUL.AUTH.EXPANDINFO") }],
+              rules: [{  message: getIntlContent("SHENYU.AUTH.EXPANDINFO") }],
               initialValue: extInfo
-            })(<TextArea placeholder={getIntlContent("SOUL.AUTH.INPUTEXPANDINFO")} rows={3} />)}
+            })(<TextArea placeholder={getIntlContent("SHENYU.AUTH.INPUTEXPANDINFO")} rows={3} />)}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.AUTH.OPENPATH")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.AUTH.OPENPATH")} {...formItemLayout}>
             {getFieldDecorator('open', {
               initialValue: open,
               valuePropName: 'checked',
@@ -138,7 +138,7 @@ class AddModal extends Component {
                   return (
                     <ul key={index}>
                       <li>
-                        <div className={styles.title}>{getIntlContent("SOUL.AUTH.APPNAME")}:</div>
+                        <div className={styles.title}>{getIntlContent("SHENYU.AUTH.APPNAME")}:</div>
                       </li>
                       <li>
                         <Input
@@ -148,7 +148,7 @@ class AddModal extends Component {
                         />
                       </li>
                       <li>
-                        <div className={styles.title}>{getIntlContent("SOUL.AUTH.PARAMS")}:</div>
+                        <div className={styles.title}>{getIntlContent("SHENYU.AUTH.PARAMS")}:</div>
                       </li>
                       <li>
                         <TextArea
@@ -166,7 +166,7 @@ class AddModal extends Component {
                             this.handleDelete(index);
                           }}
                         >
-                          {getIntlContent( "SOUL.COMMON.DELETE.NAME")}
+                          {getIntlContent( "SHENYU.COMMON.DELETE.NAME")}
                         </Button>
                       </li>
                     </ul>
@@ -175,13 +175,13 @@ class AddModal extends Component {
               }
             </div>
             <Button onClick={this.handleAdd} className={styles.btn} type="primary">
-              {getIntlContent("SOUL.COMMON.ADD")}
+              {getIntlContent("SHENYU.COMMON.ADD")}
             </Button>
           </div>
 
 
 
-          <FormItem {...formItemLayout} label={getIntlContent("SOUL.SYSTEM.STATUS")}>
+          <FormItem {...formItemLayout} label={getIntlContent("SHENYU.SYSTEM.STATUS")}>
             {getFieldDecorator("enabled", {
               initialValue: enabled,
               valuePropName: "checked"

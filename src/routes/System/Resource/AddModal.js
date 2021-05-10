@@ -63,50 +63,50 @@ class AddModal extends Component {
       <Modal
         width={550}
         centered
-        title={getIntlContent("SOUL.SYSTEM.RESOURCE")}
+        title={getIntlContent("SHENYU.SYSTEM.RESOURCE")}
         visible
-        okText={getIntlContent("SOUL.COMMON.SURE")}
-        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem
-            label={getIntlContent("SOUL.SYSTEM.RESOURCETYPE")}
+            label={getIntlContent("SHENYU.SYSTEM.RESOURCETYPE")}
             {...formItemLayout}
           >
             {getFieldDecorator('resourceType', {
-              rules: [{ required: true, message: getIntlContent("SOUL.SYSTEM.RESOURCETYPE.INPUT") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.SYSTEM.RESOURCETYPE.INPUT") }],
               initialValue: resourceType,
             })(
               <Select disabled>
-                <Option value={0}>{getIntlContent("SOUL.SYSTEM.MAINMENU")}</Option>
-                <Option value={1}>{getIntlContent("SOUL.SYSTEM.SUBMENU")}</Option>
-                <Option value={2}>{getIntlContent("SOUL.SYSTEM.BUTTON")}</Option>
+                <Option value={0}>{getIntlContent("SHENYU.SYSTEM.MAINMENU")}</Option>
+                <Option value={1}>{getIntlContent("SHENYU.SYSTEM.SUBMENU")}</Option>
+                <Option value={2}>{getIntlContent("SHENYU.SYSTEM.BUTTON")}</Option>
               </Select>
             )}
           </FormItem>
           <FormItem
-            label={getIntlContent("SOUL.SYSTEM.RESOURCENAME")}
+            label={getIntlContent("SHENYU.SYSTEM.RESOURCENAME")}
             {...formItemLayout}
           >
             {getFieldDecorator('title', {
-              rules: [{ required: true, message: getIntlContent("SOUL.SYSTEM.RESOURCENAME.INPUT") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.SYSTEM.RESOURCENAME.INPUT") }],
               initialValue: (title && getIntlContent(title)) || title,
             })(
-              <Input disabled={!!id} placeholder={getIntlContent("SOUL.SYSTEM.RESOURCENAME.INPUT")} />
+              <Input disabled={!!id} placeholder={getIntlContent("SHENYU.SYSTEM.RESOURCENAME.INPUT")} />
             )}
           </FormItem>
           {resourceType !== 2 && menuTree && menuTree.length > 0 && (
           <FormItem
-            label={getIntlContent("SOUL.SYSTEM.RESOURCE.PARENT")}
+            label={getIntlContent("SHENYU.SYSTEM.RESOURCE.PARENT")}
             {...formItemLayout}
           >
             {getFieldDecorator('parentId', {
-              rules: [{ message: getIntlContent("SOUL.SYSTEM.RESOURCE.PARENT.INPUT") }],
+              rules: [{ message: getIntlContent("SHENYU.SYSTEM.RESOURCE.PARENT.INPUT") }],
               initialValue: parentId,
             })(
-              <Select disabled={!!id} allowClear placeholder={getIntlContent("SOUL.SYSTEM.RESOURCE.PARENT.INPUT")} style={{width: '100%'}}>
+              <Select disabled={!!id} allowClear placeholder={getIntlContent("SHENYU.SYSTEM.RESOURCE.PARENT.INPUT")} style={{width: '100%'}}>
                 {menuTree.map((menu)=><Option value={menu.id} disabled={menu.url === "/plug"} key={menu.id}>{(menu.title && getIntlContent(menu.title)) || menu.title}</Option>)}
               </Select>
             )}
@@ -114,57 +114,57 @@ class AddModal extends Component {
           )}
           {resourceType !== 2 && (
           <FormItem
-            label={getIntlContent("SOUL.SYSTEM.ROUTER")}
+            label={getIntlContent("SHENYU.SYSTEM.ROUTER")}
             {...formItemLayout}
           >
             {getFieldDecorator('url', {
-              rules: [{ required: true, message: getIntlContent("SOUL.SYSTEM.ROUTER.INPUT") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.SYSTEM.ROUTER.INPUT") }],
               initialValue: url,
             })(
-              <Input disabled={!!id} placeholder={getIntlContent("SOUL.SYSTEM.ROUTER.INPUT")} />
+              <Input disabled={!!id} placeholder={getIntlContent("SHENYU.SYSTEM.ROUTER.INPUT")} />
             )}
           </FormItem>
           )}
           {resourceType !== 2 && (
           <FormItem
-            label={getIntlContent("SOUL.SYSTEM.RESOURCEORDER")}
+            label={getIntlContent("SHENYU.SYSTEM.RESOURCEORDER")}
             {...formItemLayout}
           >
             {getFieldDecorator('sort', {
-              rules: [{ required: true, message: getIntlContent("SOUL.SYSTEM.RESOURCEORDER.INPUT") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.SYSTEM.RESOURCEORDER.INPUT") }],
               initialValue: sort,
             })(
-              <InputNumber style={{width:"100%"}} placeholder={getIntlContent("SOUL.SYSTEM.RESOURCEORDER.INPUT")} />
+              <InputNumber style={{width:"100%"}} placeholder={getIntlContent("SHENYU.SYSTEM.RESOURCEORDER.INPUT")} />
             )}
           </FormItem>
           )}
           {resourceType === 2 && (
           <FormItem
-            label={getIntlContent("SOUL.SYSTEM.RESOURCE.PERMS")}
+            label={getIntlContent("SHENYU.SYSTEM.RESOURCE.PERMS")}
             {...formItemLayout}
           >
             {getFieldDecorator('perms', {
-              rules: [{ message: getIntlContent("SOUL.SYSTEM.RESOURCE.PERMS.INPUT") }],
+              rules: [{ message: getIntlContent("SHENYU.SYSTEM.RESOURCE.PERMS.INPUT") }],
               initialValue: perms
             })(
-              <Input disabled={!!id} placeholder={getIntlContent("SOUL.SYSTEM.RESOURCE.PERMS.INPUT")} />
+              <Input disabled={!!id} placeholder={getIntlContent("SHENYU.SYSTEM.RESOURCE.PERMS.INPUT")} />
             )}
           </FormItem>
           )}
           <FormItem
-            label={getIntlContent("SOUL.SYSTEM.ICON")}
+            label={getIntlContent("SHENYU.SYSTEM.ICON")}
             {...formItemLayout}
           >
             {getFieldDecorator('icon', {
-              rules: [{ required: false, message: getIntlContent("SOUL.SYSTEM.ICON.INPUT") }],
+              rules: [{ required: false, message: getIntlContent("SHENYU.SYSTEM.ICON.INPUT") }],
               initialValue: icon,
             })(
               <Input
                 readOnly
-                placeholder={!icon&&getIntlContent("SOUL.SYSTEM.ICON.INPUT")}
+                placeholder={!icon&&getIntlContent("SHENYU.SYSTEM.ICON.INPUT")}
                 prefix={(this.state.icon||icon)&&<Icon type={this.state.icon||icon} />}
                 suffix={
-                  <Tooltip title={getIntlContent("SOUL.SYSTEM.ICON.INPUT")}>
+                  <Tooltip title={getIntlContent("SHENYU.SYSTEM.ICON.INPUT")}>
                     <Icon type="plus" onClick={this.handleChooseIcon} />
                   </Tooltip>
                 }

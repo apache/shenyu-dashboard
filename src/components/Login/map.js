@@ -14,7 +14,7 @@ const map = {
     rules: [
       {
         required: true,
-        message: getIntlContent("SOUL.SYSTEM.USER.NAME"),
+        message: getIntlContent("SHENYU.SYSTEM.USER.NAME"),
       },
     ],
   },
@@ -29,7 +29,7 @@ const map = {
     rules: [
       {
         required: true,
-        message: getIntlContent("SOUL.SYSTEM.USER.PASSWORD"),
+        message: getIntlContent("SHENYU.SYSTEM.USER.PASSWORD"),
       },
     ],
   },

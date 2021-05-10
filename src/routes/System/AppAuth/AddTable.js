@@ -10,7 +10,7 @@ class AddTable extends Component {
     super(props);
     this.columns = [
       {
-        title: getIntlContent("SOUL.AUTH.RESOUCE.PATH"),
+        title: getIntlContent("SHENYU.AUTH.RESOUCE.PATH"),
         dataIndex: 'path',
         editable: 'true',
         render: (text, record) => (
@@ -22,7 +22,7 @@ class AddTable extends Component {
         )
       },
       /* {
-        title: getIntlContent("SOUL.AUTH.PATH.DESCRIBE"),
+        title: getIntlContent("SHENYU.AUTH.PATH.DESCRIBE"),
         dataIndex: 'pathDesc',
         editable: 'true',
         render: (text, record) => (
@@ -33,12 +33,12 @@ class AddTable extends Component {
         )
       }, */
       {
-        title: getIntlContent("SOUL.COMMON.OPERAT"),
+        title: getIntlContent("SHENYU.COMMON.OPERAT"),
         dataIndex: 'operation',
         render: (text, record) =>
           this.state.allData.length > 1 ? (
-            <Popconfirm title={getIntlContent("SOUL.COMMON.DELETE")} onConfirm={() => this.handleDelete(record.key)}>
-              <a>{getIntlContent("SOUL.COMMON.DELETE.NAME")}</a>
+            <Popconfirm title={getIntlContent("SHENYU.COMMON.DELETE")} onConfirm={() => this.handleDelete(record.key)}>
+              <a>{getIntlContent("SHENYU.COMMON.DELETE.NAME")}</a>
             </Popconfirm>
           ) : null,
       },
@@ -169,28 +169,28 @@ class AddTable extends Component {
       <Modal
         width={550}
         centered
-        title={getIntlContent("SOUL.AUTH.AUTH")}
+        title={getIntlContent("SHENYU.AUTH.AUTH")}
         visible
-        okText={getIntlContent("SOUL.COMMON.SURE")}
-        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem
-            label={getIntlContent("SOUL.AUTH.APPNAME")}
+            label={getIntlContent("SHENYU.AUTH.APPNAME")}
             {...formItemLayout}
           >
             {getFieldDecorator('appName', {
               rules: [{
                 required: true,
-                message: getIntlContent("SOUL.AUTH.SELECT.APP"),
+                message: getIntlContent("SHENYU.AUTH.SELECT.APP"),
               }],
             })
               (
                 <Select
                   showSearch
-                  placeholder={getIntlContent("SOUL.AUTH.SELECT.APP")}
+                  placeholder={getIntlContent("SHENYU.AUTH.SELECT.APP")}
                   onChange={this.handleChange}
                   onSearch={value => this.onSearchSelect(value, '0')}
                   onBlur={() => this.onBlurSelect('0')}
@@ -205,39 +205,39 @@ class AddTable extends Component {
                 </Select>)}
           </FormItem>
           <FormItem
-            label={getIntlContent("SOUL.AUTH.PHONE")}
+            label={getIntlContent("SHENYU.AUTH.PHONE")}
             {...formItemLayout}
           >
             {getFieldDecorator("phone", {
               rules: [{
                 required: true,
-                message: `${getIntlContent("SOUL.AUTH.INPUT")}Phone`
+                message: `${getIntlContent("SHENYU.AUTH.INPUT")}Phone`
               }],
             })(
               <Input placeholder="Phone" />
             )}
           </FormItem>
-          <FormItem label={`App${getIntlContent("SOUL.AUTH.PARAMS")}`} {...formItemLayout}>
+          <FormItem label={`App${getIntlContent("SHENYU.AUTH.PARAMS")}`} {...formItemLayout}>
             {getFieldDecorator("appParam", {
             })(
               <Input placeholder="AppParams" />
             )}
           </FormItem>
-          <FormItem label={`${getIntlContent("SOUL.SYSTEM.USER")}Id`} {...formItemLayout}>
+          <FormItem label={`${getIntlContent("SHENYU.SYSTEM.USER")}Id`} {...formItemLayout}>
             {getFieldDecorator("userId", {
               rules: [{
                 required: true,
-                message: `${getIntlContent("SOUL.AUTH.INPUT")}UserId`
+                message: `${getIntlContent("SHENYU.AUTH.INPUT")}UserId`
               }],
             })(<Input placeholder="UserId" />)}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.AUTH.EXPANDINFO")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.AUTH.EXPANDINFO")} {...formItemLayout}>
             {getFieldDecorator("extInfo", {
             })(
               <Input placeholder="ExpandInfo" />
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SOUL.AUTH.OPENPATH")} {...formItemLayout}>
+          <FormItem label={getIntlContent("SHENYU.AUTH.OPENPATH")} {...formItemLayout}>
             {getFieldDecorator('open', {
               initialValue: true,
               valuePropName: 'checked',
@@ -259,7 +259,7 @@ class AddTable extends Component {
                         marginBottom: 16,
                       }}
                     >
-                      {getIntlContent("SOUL.AUTH.ADD")}
+                      {getIntlContent("SHENYU.AUTH.ADD")}
                     </Button>
                   ) :
                   (
@@ -270,7 +270,7 @@ class AddTable extends Component {
                         marginBottom: 16,
                       }}
                     >
-                      {getIntlContent("SOUL.AUTH.ADD")}
+                      {getIntlContent("SHENYU.AUTH.ADD")}
                     </Button>
                   )
               }

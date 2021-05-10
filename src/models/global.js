@@ -48,7 +48,7 @@ export default {
       const { payload } = params;
       const json = yield call(asyncOnePlugin, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SOUL.COMMON.RESPONSE.SYNC.SUCCESS'));
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.SYNC.SUCCESS'));
       } else {
         message.warn(json.message);
       }
@@ -64,14 +64,14 @@ export default {
           let { menu, currentAuth } = json.data;
           permissions = { menu, button: currentAuth };
         } else{
-          message.warn(getIntlContent('SOUL.PERMISSION.EMPTY'));
+          message.warn(getIntlContent('SHENYU.PERMISSION.EMPTY'));
           yield put(
             routerRedux.push({
               pathname: "/user/login"
-            }) 
-          ); 
+            })
+          );
         }
-      } 
+      }
 
       yield put({
         type: "savePermissions",
@@ -90,7 +90,7 @@ export default {
           let { menu, currentAuth } = json.data;
           permissions = { menu, button: currentAuth };
         }
-      } 
+      }
 
       yield put({
         type: "savePermissions",
@@ -100,12 +100,12 @@ export default {
     },
 
     *resetPermission(_, { put }) {
-      let permissions = { menu: [], button: [] }; 
+      let permissions = { menu: [], button: [] };
       yield put({
         type: "savePermissions",
         payload: { permissions }
       });
-    } 
+    }
   },
 
   reducers: {

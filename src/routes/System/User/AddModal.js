@@ -33,52 +33,52 @@ class AddModal extends Component {
       <Modal
         width={450}
         centered
-        title={getIntlContent("SOUL.SYSTEM.USER")}
+        title={getIntlContent("SHENYU.SYSTEM.USER")}
         visible
-        okText={getIntlContent("SOUL.COMMON.SURE")}
-        cancelText={getIntlContent("SOUL.COMMON.CALCEL")}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onOk={this.handleSubmit}
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem
-            label={getIntlContent("SOUL.SYSTEM.USERNAME")}
+            label={getIntlContent("SHENYU.SYSTEM.USERNAME")}
             {...formItemLayout}
           >
             {getFieldDecorator('userName', {
-              rules: [{ required: true, message: getIntlContent("SOUL.SYSTEM.USER.NAME") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.SYSTEM.USER.NAME") }],
               initialValue: userName,
             })(
-              <Input readOnly={userName === "admin"} placeholder={getIntlContent("SOUL.SYSTEM.USERNAME")} />
+              <Input readOnly={userName === "admin"} placeholder={getIntlContent("SHENYU.SYSTEM.USERNAME")} />
             )}
           </FormItem>
           <FormItem
-            label={getIntlContent("SOUL.SYSTEM.PASSWORD")}
+            label={getIntlContent("SHENYU.SYSTEM.PASSWORD")}
             {...formItemLayout}
           >
             {getFieldDecorator('password', {
-              rules: [{ required: true, message: getIntlContent("SOUL.SYSTEM.USER.PASSWORD") }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.SYSTEM.USER.PASSWORD") }],
               initialValue: password,
             })(
-              <Input placeholder={getIntlContent("SOUL.SYSTEM.PASSWORD")} />
+              <Input placeholder={getIntlContent("SHENYU.SYSTEM.PASSWORD")} />
             )}
           </FormItem>
           <FormItem
-            label={getIntlContent("SOUL.SYSTEM.ROLE")}
+            label={getIntlContent("SHENYU.SYSTEM.ROLE")}
             {...formItemLayout}
           >
             {getFieldDecorator('roles', {
-              rules: [{ required: true, message: getIntlContent("SOUL.SYSTEM.SELECTROLE")}],
+              rules: [{ required: true, message: getIntlContent("SHENYU.SYSTEM.SELECTROLE")}],
               initialValue: roles.map(e=>e.id),
             })(
-              <Select mode="multiple" placeholder={getIntlContent("SOUL.SYSTEM.SELECTROLE")} style={{width: '100%'}}>
+              <Select mode="multiple" placeholder={getIntlContent("SHENYU.SYSTEM.SELECTROLE")} style={{width: '100%'}}>
                 {allRoles.map((roleItem)=><Option value={roleItem.id} key={roleItem.id}>{roleItem.roleName}</Option>)}
               </Select>
             )}
           </FormItem>
           <FormItem
             {...formItemLayout}
-            label={getIntlContent("SOUL.SYSTEM.STATUS")}
+            label={getIntlContent("SHENYU.SYSTEM.STATUS")}
           >
             {getFieldDecorator('enabled', {
               initialValue: enabled,

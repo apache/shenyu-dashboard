@@ -1,10 +1,10 @@
-# Soul Dashboard
+# ShenYu Dashboard
 
-![build](https://github.com/dromara/soul-dashboard/workflows/build/badge.svg)
+![build](https://github.com/dromara/shenyu-dashboard/workflows/build/badge.svg)
 
 
 ## Overview
-Soul Dashboard is frontend of a management background for [soul](https://github.com/dromara/soul). The API interface is in the [soul-admin](https://github.com/dromara/soul/tree/master/soul-admin) module.
+ShenYu Dashboard is frontend of a management background for [shenyu](https://github.com/dromara/shenyu). The API interface is in the [shenyu-admin](https://github.com/dromara/shenyu/tree/master/shenyu-admin) module.
                                                                                                    
 ## Prerequisite
 - node v8.0+
@@ -14,7 +14,7 @@ Soul Dashboard is frontend of a management background for [soul](https://github.
 ### Configuration
 
 Modify the api url for different environment, eg: `http://192.168.1.100:8000`
-![index.ejs](https://dromara.github.io/soul-dashboard/doc/img/index.ejs.png)
+![index.ejs](https://dromara.github.io/shenyu-dashboard/doc/img/index.ejs.png)
 
 
 ### Develop Environment
@@ -34,18 +34,18 @@ npm install
 # build for production
 npm run build
 
-# copy to soul-admin
-cp -rf dist/* soul-admin/src/main/resources/static/
+# copy to shenyu-admin
+cp -rf dist/* shenyu-admin/src/main/resources/static/
 ```
 
 ## Screenshots
 
 #### Divide Plugin
-![Divide Plugin](https://dromara.github.io/soul-dashboard/doc/img/divide-plugin.png)
+![Divide Plugin](https://dromara.github.io/shenyu-dashboard/doc/img/divide-plugin.png)
 
 #### Add Rules
-![Add Rules](https://dromara.github.io/soul-dashboard/doc/img/add-rules.jpg)
+![Add Rules](https://dromara.github.io/shenyu-dashboard/doc/img/add-rules.jpg)
 
 #### Plugin Management
-![Plugin Management](https://dromara.github.io/soul-dashboard/doc/img/plugin-management.jpg)
+![Plugin Management](https://dromara.github.io/shenyu-dashboard/doc/img/plugin-management.jpg)
 
