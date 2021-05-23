@@ -27,7 +27,7 @@ class AddPluginHandle extends Component {
 
 
   render() {
-    let {handleCancel,  form, pluginId, label="", field="", dataType ="1",type="2",sort=0,required=undefined,defaultValue=undefined,placeholder=undefined,rule=undefined,pluginDropDownList } = this.props;
+    let {handleCancel,  form, pluginId, label="", field="", dataType ="1",type="2",sort=0,required="0",defaultValue=undefined,placeholder=undefined,rule=undefined,pluginDropDownList } = this.props;
     const {getFieldDecorator} = form;
 
     const formItemLayout = {
