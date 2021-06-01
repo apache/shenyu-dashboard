@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-import { Modal, Form, Select, Input, Switch, Button, message, Tooltip, Popconfirm } from "antd";
+import { Modal, Form, Select, Input, Switch, Button, message } from "antd";
 import { connect } from "dva";
-import classnames from 'classnames';
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils"
+import CommonRuleHandle from "./CommonRuleHandle";
+import PluginRuleHandle from "../PluginRuleHandle"
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -58,7 +59,6 @@ class AddModal extends Component {
   }
 
   setPluginHandleList = pluginHandles=>{
-
     this.setState({pluginHandleList: pluginHandles})
   }
 
@@ -95,26 +95,32 @@ class AddModal extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, handleOk, multiRuleHandle } = this.props;
+    const { form, handleOk, multiRuleHandle, ruleHandlePageType } = this.props;
     const { ruleConditions,pluginHandleList } = this.state;
-    let handle =[];
 
     form.validateFieldsAndScroll((err, values) => {
       const { name, matchMode, loged, enabled } = values;
       if (!err) {
         const submit = this.checkConditions();
         if (submit) {
-          pluginHandleList.forEach((handleList, index) => {
-            handle[index] = {};
-            handleList.forEach((item) => {
-              handle[index][item.field] = values[item.field + index]
+          let handle;
+          if(ruleHandlePageType !== "custom") {
+            handle = [];
+            pluginHandleList.forEach((handleList, index) => {
+              handle[index] = {};
+              handleList.forEach((item) => {
+                handle[index][item.field] = values[item.field + index]
+              });
             });
-          });
+            handle = multiRuleHandle ? JSON.stringify(handle) : JSON.stringify(handle[0]) ;
+          } else if(this.handleComponentRef){
+            handle = this.handleComponentRef.getData(values);
+          }
 
           handleOk({
             name,
             matchMode,
-            handle: multiRuleHandle ? JSON.stringify(handle) : JSON.stringify(handle[0]) ,
+            handle,
             loged,
             enabled,
             sort: Number(values.sort),
@@ -201,9 +207,11 @@ class AddModal extends Component {
       loged = true,
       enabled = true,
       sort = "",
-      multiRuleHandle
+      multiRuleHandle,
+      ruleHandlePageType,
+      pluginName,
+      handle,
     } = this.props;
-    const labelWidth = 160
     const { ruleConditions,pluginHandleList } = this.state;
     let { matchModeEnums, operatorEnums, paramTypeEnums } = platform;
     if (operatorEnums) {
@@ -216,6 +224,14 @@ class AddModal extends Component {
       paramTypeEnums = paramTypeEnums.filter(item => {
         return item.support === true;
       });
+    }
+
+    let RuleHandleComponent;
+    if(ruleHandlePageType !== "custom" && pluginHandleList && pluginHandleList.length > 0) {
+      RuleHandleComponent = CommonRuleHandle;
+    }
+    if (ruleHandlePageType === "custom") {
+      RuleHandleComponent = PluginRuleHandle[pluginName]
     }
 
     const { getFieldDecorator } = form;
@@ -283,7 +299,7 @@ class AddModal extends Component {
                           this.conditionChange(index, "paramType", value);
                         }}
                         value={item.paramType}
-                        style={{ width: 90 }}
+                        style={{ width: 120 }}
                       >
                         {paramTypeEnums.map(type => {
                           return (
@@ -364,140 +380,16 @@ class AddModal extends Component {
               </Button>
             </div>
           </div>
-          {(pluginHandleList && pluginHandleList.length > 0) && (
-            <div className={styles.handleWrap}>
-              <div className={styles.header}>
-                <h3 style={{width:100}}>{getIntlContent("SHENYU.COMMON.DEAL")}: </h3>
-              </div>
-              <div>
-                {
-                  pluginHandleList.map((handleList,index) =>{
-                    return (
-                      <div key={index} style={{display:"flex",justifyContent:"space-between",flexDirection:"row"}}>
-                        <ul
-                          className={classnames({
-                            [styles.handleUl]: true,
-                            [styles.springUl]: true
-                          })}
-                          style={{width:"100%"}}
-                        >
-                          {handleList.map(item=> {
-                            let required = item.required === "1";
-                            let defaultValue =  (item.value === 0 || item.value === false) ? item.value:
-                            (item.value ||
-                              (item.defaultValue === "true"?true:(item.defaultValue === "false" ? false : item.defaultValue))
-                            );
-                            let placeholder = item.placeholder || item.label;
-                            let checkRule = item.checkRule;
-                            let fieldName = item.field+index;
-                            let rules = [];
-                            if(required){
-                              rules.push({ required: {required}, message: getIntlContent("SHENYU.COMMON.PLEASEINPUT") + item.label});
-                            }
-                            if(checkRule){
-                              rules.push({
-                                // eslint-disable-next-line no-eval
-                                pattern: eval(checkRule),
-                                message: `${getIntlContent("SHENYU.PLUGIN.RULE.INVALID")}:(${checkRule})`
-                              })
-                            }
-                            if (item.dataType === 1) {
-                              return (
-                                <li key={fieldName}>
-                                  <Tooltip title={placeholder}>
-                                    <FormItem>
-                                      {getFieldDecorator(fieldName, {
-                                        rules,
-                                        initialValue: defaultValue,
-                                      })(
-                                        <Input
-                                          addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
-                                          placeholder={placeholder}
-                                          key={fieldName}
-                                          type="number"
-                                        />)
-                                        }
-                                    </FormItem>
-                                  </Tooltip>
-                                </li>
-                              )
-                            } else if (item.dataType === 3 && item.dictOptions) {
-                              return (
-                                <li key={fieldName}>
-                                  <Tooltip title={placeholder}>
-                                    <FormItem>
-                                      {getFieldDecorator(fieldName, {
-                                        rules,
-                                        initialValue: defaultValue,
-                                      })(
-                                        <Select
-                                          style={{ width: 260}}
-                                        >
-                                          {item.dictOptions.map(option => {
-                                            return (
-                                              <Option key={option.dictValue} value={option.dictValue==="true"?true:(option.dictValue==="false"?false:option.dictValue)}>
-                                                {option.dictName} ({item.label})
-                                              </Option>
-                                            );
-                                          })}
-                                        </Select>
-                                      )}
-                                    </FormItem>
-                                  </Tooltip>
-                                </li>
-                              )
-                            } else {
-                              return (
-                                <li key={fieldName}>
-                                  <Tooltip title={placeholder}>
-                                    <FormItem>
-                                      {getFieldDecorator(fieldName, {
-                                        rules,
-                                        initialValue: defaultValue,
-                                      })(
-                                        <Input
-                                          addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
-                                          placeholder={placeholder}
-                                          key={fieldName}
-                                        />
-                                      )}
-                                    </FormItem>
-                                  </Tooltip>
-                                </li>
-                              )
-                            }
-                          })}
-                        </ul>
-                        {multiRuleHandle && (
-                          <div style={{width:80}}>
-                            <Popconfirm
-                              title={getIntlContent("SHENYU.COMMON.DELETE")}
-                              placement='bottom'
-                              onCancel={(e) => {
-                                e.stopPropagation()
-                              }}
-                              onConfirm={(e) => {
-                                e.stopPropagation()
-                                this.handleDeleteHandle(index);
-                              }}
-                              okText={getIntlContent("SHENYU.COMMON.SURE")}
-                              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-                            >
-                              <Button
-                                type="danger"
-                              >
-                                {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
-                              </Button>
-                            </Popconfirm>
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })
-                }
-              </div>
-              {multiRuleHandle &&<div style={{width:80}}><Button onClick={this.handleAddHandle} type="primary">{getIntlContent("SHENYU.COMMON.ADD")}</Button></div>}
-            </div>
+          {RuleHandleComponent&&(
+            <RuleHandleComponent 
+              onRef={handleComponentRef=>{
+                this.handleComponentRef = handleComponentRef
+              }}
+              form={form}
+              pluginHandleList={pluginHandleList}
+              handle={handle}
+              multiRuleHandle={multiRuleHandle}
+            />
           )}
           <div className={styles.layout}>
             <FormItem
