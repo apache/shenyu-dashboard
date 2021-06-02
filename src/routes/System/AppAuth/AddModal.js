@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal,Button, Form, Input, Switch, message} from "antd";
+import {Modal, Button, Form, Input, Switch, message, Table, Popconfirm} from "antd";
 import styles from "./index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
@@ -11,19 +11,49 @@ class AddModal extends Component {
    const selectorConditions = props.authParamVOList || [{
     "appName": "",
     "appParam": ""
-  }];
+    }];
+   const pathDatas = props.authPathVOList || [{
+     "path": "",
+   }];
+   this.columns = [
+     {
+       title: getIntlContent("SHENYU.AUTH.RESOUCE.PATH"),
+       dataIndex: 'path',
+       editable: 'true',
+       render: (text,record,index) => (
+         <Input
+           placeholder="/"
+           value={text}
+           onChange={(e) => this.handleTableInput(e.target.value , index)}
+         />
+       )
+     },
+     {
+       title: getIntlContent("SHENYU.COMMON.OPERAT"),
+       dataIndex: 'operation',
+       render: (text, record,index) =>
+         this.state.pathDatas.length > 1 ? (
+           <Popconfirm title={getIntlContent("SHENYU.COMMON.DELETE")} onConfirm={() => this.handleDeletePath(index)}>
+             <a>{getIntlContent("SHENYU.COMMON.DELETE.NAME")}</a>
+           </Popconfirm>
+         ) : null,
+     },
+   ];
    this.state = {
-    selectorConditions,
+     selectorConditions,
+     pathTableVisible: true,
+     pathDatas,
    }
  }
 
   handleSubmit = e => {
     const { form, handleOk, id = "" } = this.props;
     const {selectorConditions} = this.state;
+    const {pathDatas} = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        handleOk({ authParamDTOList:selectorConditions,id,...values });
+        handleOk({ authParamDTOList:selectorConditions,authPathDTOList:pathDatas,id,...values });
       }
     });
   };
@@ -54,6 +84,37 @@ class AddModal extends Component {
     this.setState({ selectorConditions });
   };
 
+  handleOpenChange = (checked) => {
+    this.setState({pathTableVisible: checked});
+  };
+
+  handleAddPath = () => {
+    const pathDatas = this.state.pathDatas
+    const newData = {
+      path: '',
+    };
+    this.setState({
+      pathDatas: [...pathDatas, newData]
+    })
+  };
+
+  handleDeletePath = (index) => {
+    let { pathDatas } = this.state;
+    if (pathDatas && pathDatas.length > 1) {
+      pathDatas.splice(index, 1);
+    } else {
+      message.destroy();
+      message.error("At least one app path");
+    }
+    this.setState({ pathDatas });
+  };
+
+  handleTableInput = (value, index) => {
+    let { pathDatas } = this.state;
+    pathDatas[index].path = value;
+    this.setState({ pathDatas });
+  }
+
   render() {
     let {
       handleCancel,
@@ -67,6 +128,8 @@ class AddModal extends Component {
       enabled = true
     } = this.props;
     const { getFieldDecorator } = form;
+    const { pathTableVisible } = this.state;
+    const columns = this.columns
     const formItemLayout = {
       labelCol: {
         sm: { span: 6 }
@@ -122,7 +185,7 @@ class AddModal extends Component {
               initialValue: open,
               valuePropName: 'checked',
             })(
-              <Switch />
+              <Switch onChange={this.handleOpenChange} />
             )}
           </FormItem>
 
@@ -187,6 +250,26 @@ class AddModal extends Component {
               valuePropName: "checked"
             })(<Switch />)}
           </FormItem>
+
+          {pathTableVisible && (
+            <div>
+              <Button
+                onClick={this.handleAddPath}
+                type="primary"
+                style={{
+                  marginBottom: 16,
+                }}
+              >{getIntlContent("SHENYU.AUTH.ADD")}
+              </Button>
+              <Table
+                bordered
+                columns={columns}
+                dataSource={this.state.pathDatas}
+                rowKey={(record, index) => index}
+                pagination={{ current: 1, pageSize: 10 }}
+              />
+            </div>
+          )}
         </Form>
       </Modal>
     );
