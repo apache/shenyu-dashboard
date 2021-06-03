@@ -194,13 +194,16 @@ export default class Common extends Component {
     const plugin = this.getPlugin(plugins, name);
     const { config } = plugin;
     const multiRuleHandle = this.getPluginConfigField(config, "multiRuleHandle") === "1";
+    const ruleHandlePageType = this.getPluginConfigField(config, "ruleHandlePageType") || "common";
     if (currentSelector && currentSelector.id) {
       const selectorId = currentSelector.id;
       this.setState({
         popup: (
           <Rule
             pluginId={pluginId}
+            pluginName={name}
             multiRuleHandle={multiRuleHandle}
+            ruleHandlePageType={ruleHandlePageType}
             handleOk={rule => {
               dispatch({
                 type: "common/addRule",
@@ -326,6 +329,7 @@ export default class Common extends Component {
     const plugin = this.getPlugin(plugins, name)
     const { config } = plugin;
     const multiRuleHandle = this.getPluginConfigField(config, "multiRuleHandle") === "1";
+    const ruleHandlePageType = this.getPluginConfigField(config, "ruleHandlePageType") || "common";
     const selectorId = currentSelector ? currentSelector.id : "";
     const { id } = record;
     dispatch({
@@ -339,7 +343,9 @@ export default class Common extends Component {
             <Rule
               {...rule}
               pluginId={pluginId}
+              pluginName={name}
               multiRuleHandle={multiRuleHandle}
+              ruleHandlePageType={ruleHandlePageType}
               handleOk={values => {
                 dispatch({
                   type: "common/updateRule",
