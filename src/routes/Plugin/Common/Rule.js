@@ -9,9 +9,9 @@ import PluginRuleHandle from "../PluginRuleHandle"
 const FormItem = Form.Item;
 const { Option } = Select;
 
-@connect(({pluginHandle, global }) => ({
+@connect(({pluginHandle, shenyuDict }) => ({
   pluginHandle,
-  platform: global.platform
+  shenyuDict
 }))
 class AddModal extends Component {
   constructor(props) {
@@ -38,6 +38,10 @@ class AddModal extends Component {
     });
 
     this.state.ruleConditions = ruleConditions;
+
+    this.initDic("Operator");
+    this.initDic("MatchMode");
+    this.initDic("paramType");
   }
 
   componentWillMount() {
@@ -53,6 +57,21 @@ class AddModal extends Component {
         isHandleArray: multiRuleHandle,
         callBack: pluginHandles => {
           this.setPluginHandleList(pluginHandles);
+        }
+      }
+    });
+  }
+
+  initDic = (type) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "shenyuDict/fetchByType",
+      payload:{
+        type,
+        callBack: dics => {
+          this.setState({
+            [`${type}Dics`]:dics
+          })
         }
       }
     });
@@ -201,7 +220,6 @@ class AddModal extends Component {
     let {
       onCancel,
       form,
-      platform,
       name = "",
       matchMode = "",
       loged = true,
@@ -212,19 +230,7 @@ class AddModal extends Component {
       pluginName,
       handle,
     } = this.props;
-    const { ruleConditions,pluginHandleList } = this.state;
-    let { matchModeEnums, operatorEnums, paramTypeEnums } = platform;
-    if (operatorEnums) {
-      operatorEnums = operatorEnums.filter(item => {
-        return item.support === true;
-      });
-    }
-
-    if (paramTypeEnums) {
-      paramTypeEnums = paramTypeEnums.filter(item => {
-        return item.support === true;
-      });
-    }
+    const { ruleConditions,pluginHandleList, OperatorDics, MatchModeDics, paramTypeDics } = this.state;
 
     let RuleHandleComponent;
     if(ruleHandlePageType !== "custom" && pluginHandleList && pluginHandleList.length > 0) {
@@ -275,10 +281,14 @@ class AddModal extends Component {
               initialValue: matchMode
             })(
               <Select>
-                {matchModeEnums.map(item => {
+                {MatchModeDics&&MatchModeDics.map(item => {
                   return (
-                    <Option key={item.code} value={item.code}>
-                      {item.name}
+                    <Option 
+                      key={item.dictValue} 
+                      // eslint-disable-next-line radix
+                      value={parseInt(item.dictValue)}
+                    >
+                      {item.dictName}
                     </Option>
                   );
                 })}
@@ -301,10 +311,10 @@ class AddModal extends Component {
                         value={item.paramType}
                         style={{ width: 120 }}
                       >
-                        {paramTypeEnums.map(type => {
+                        {paramTypeDics&&paramTypeDics.map(type => {
                           return (
-                            <Option key={type.name} value={type.name}>
-                              {type.name}
+                            <Option key={type.dictValue} value={type.dictValue}>
+                              {type.dictName}
                             </Option>
                           );
                         })}
@@ -337,10 +347,10 @@ class AddModal extends Component {
                         value={item.operator}
                         style={{ width: 150 }}
                       >
-                        {operatorEnums.map(opearte => {
+                        {OperatorDics&&OperatorDics.map(opearte => {
                           return (
-                            <Option key={opearte.name} value={opearte.name}>
-                              {opearte.name}
+                            <Option key={opearte.dictValue} value={opearte.dictValue}>
+                              {opearte.dictName}
                             </Option>
                           );
                         })}
