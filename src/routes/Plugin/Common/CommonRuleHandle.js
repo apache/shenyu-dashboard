@@ -80,6 +80,7 @@ export default class CommonRuleHandle extends Component {
                                           initialValue: defaultValue,
                                         })(
                                           <Select
+                                            placeholder={placeholder}
                                             style={{ width: 260}}
                                           >
                                             {item.dictOptions.map(option => {

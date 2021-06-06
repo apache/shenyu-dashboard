@@ -16,32 +16,10 @@ const { Option } = Select;
 class AddModal extends Component {
   constructor(props) {
     super(props);
-    const ruleConditions = props.ruleConditions || [
-      {
-        paramType: "uri",
-        operator: "=",
-        paramName: "/",
-        paramValue: ""
-      }
-    ];
     this.state = {};
-    ruleConditions.forEach((item, index) => {
-      const { paramType } = item;
 
-      let key = `paramTypeValueEn${index}`;
-      if (paramType === "uri" || paramType === "host" || paramType === "ip") {
-        this.state[key] = true;
-        ruleConditions[index].paramName = "/";
-      } else {
-        this.state[key] = false;
-      }
-    });
-
-    this.state.ruleConditions = ruleConditions;
-
-    this.initDic("Operator");
-    this.initDic("MatchMode");
-    this.initDic("paramType");
+    this.initRuleCondition(props);
+    this.initDics();
   }
 
   componentWillMount() {
@@ -62,6 +40,34 @@ class AddModal extends Component {
     });
   }
 
+  initRuleCondition = (props) => {
+    const ruleConditions = props.ruleConditions || [
+      {
+        paramType: "uri",
+        operator: "=",
+        paramName: "/",
+        paramValue: ""
+      }
+    ];
+    ruleConditions.forEach((item, index) => {
+      const { paramType } = item;
+      let key = `paramTypeValueEn${index}`;
+      if (paramType === "uri" || paramType === "host" || paramType === "ip") {
+        this.state[key] = true;
+        ruleConditions[index].paramName = "/";
+      } else {
+        this.state[key] = false;
+      }
+    });
+    this.state.ruleConditions = ruleConditions;
+  }
+
+  initDics = () => {
+    this.initDic("operator");
+    this.initDic("matchMode");
+    this.initDic("paramType");
+  }
+
   initDic = (type) => {
     const { dispatch } = this.props;
     dispatch({
@@ -69,9 +75,7 @@ class AddModal extends Component {
       payload:{
         type,
         callBack: dics => {
-          this.setState({
-            [`${type}Dics`]:dics
-          })
+          this.state[`${type}Dics`] = dics
         }
       }
     });
@@ -230,7 +234,7 @@ class AddModal extends Component {
       pluginName,
       handle,
     } = this.props;
-    const { ruleConditions,pluginHandleList, OperatorDics, MatchModeDics, paramTypeDics } = this.state;
+    const { ruleConditions,pluginHandleList, operatorDics, matchModeDics, paramTypeDics } = this.state;
 
     let RuleHandleComponent;
     if(ruleHandlePageType !== "custom" && pluginHandleList && pluginHandleList.length > 0) {
@@ -278,15 +282,14 @@ class AddModal extends Component {
           <FormItem label={getIntlContent("SHENYU.COMMON.MATCHTYPE")} {...formItemLayout}>
             {getFieldDecorator("matchMode", {
               rules: [{ required: true, message: getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE") }],
-              initialValue: matchMode
+              initialValue: `${matchMode}`
             })(
               <Select>
-                {MatchModeDics&&MatchModeDics.map(item => {
+                {matchModeDics&&matchModeDics.map(item => {
                   return (
                     <Option 
                       key={item.dictValue} 
-                      // eslint-disable-next-line radix
-                      value={parseInt(item.dictValue)}
+                      value={item.dictValue}
                     >
                       {item.dictName}
                     </Option>
@@ -347,7 +350,7 @@ class AddModal extends Component {
                         value={item.operator}
                         style={{ width: 150 }}
                       >
-                        {OperatorDics&&OperatorDics.map(opearte => {
+                        {operatorDics&&operatorDics.map(opearte => {
                           return (
                             <Option key={opearte.dictValue} value={opearte.dictValue}>
                               {opearte.dictName}

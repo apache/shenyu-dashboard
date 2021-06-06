@@ -16,37 +16,13 @@ const { Option } = Select;
 class AddModal extends Component {
   constructor(props) {
     super(props);
-
-    const selectorConditions = props.selectorConditions || [
-      {
-        paramType: "uri",
-        operator: "=",
-        paramName: "/",
-        paramValue: ""
-      }
-    ];
-    // eslint-disable-next-line prefer-template
-    let selectValue = props.type + "" || null;
+    let selectValue = `${props.type  }` || null;
     this.state = {
       selectValue
     };
-    selectorConditions.forEach((item, index) => {
-      const { paramType } = item;
-
-      let key = `paramTypeValueEn${index}`;
-      if (paramType === "uri" || paramType === "host" || paramType === "ip") {
-        this.state[key] = true;
-        selectorConditions[index].paramName = "/";
-      } else {
-        this.state[key] = false;
-      }
-    });
-
-    this.state.selectorConditions = selectorConditions;
-
-    this.initDic("Operator");
-    this.initDic("MatchMode");
-    this.initDic("paramType");
+    
+    this.initSelectorCondtion(props);
+    this.initDics();
   }
 
   componentWillMount() {
@@ -67,6 +43,34 @@ class AddModal extends Component {
     });
   }
 
+  initSelectorCondtion = (props) => {
+    const selectorConditions = props.selectorConditions || [
+      {
+        paramType: "uri",
+        operator: "=",
+        paramName: "/",
+        paramValue: ""
+      }
+    ];
+    selectorConditions.forEach((item, index) => {
+      const { paramType } = item;
+      let key = `paramTypeValueEn${index}`;
+      if (paramType === "uri" || paramType === "host" || paramType === "ip") {
+        this.state[key] = true;
+        selectorConditions[index].paramName = "/";
+      } else {
+        this.state[key] = false;
+      }
+    });
+    this.state.selectorConditions = selectorConditions;
+  }
+
+  initDics = () => {
+    this.initDic("operator");
+    this.initDic("matchMode");
+    this.initDic("paramType");
+  }
+
   initDic = (type) => {
     const { dispatch } = this.props;
     dispatch({
@@ -74,9 +78,7 @@ class AddModal extends Component {
       payload:{
         type,
         callBack: dics => {
-          this.setState({
-            [`${type}Dics`]:dics
-          })
+          this.state[`${type}Dics`] = dics
         }
       }
     });
@@ -232,7 +234,7 @@ class AddModal extends Component {
       multiSelectorHandle
     } = this.props;
     const labelWidth = 75
-    const { selectorConditions, selectValue, pluginHandleList, OperatorDics, MatchModeDics, paramTypeDics} = this.state;
+    const { selectorConditions, selectValue, pluginHandleList, operatorDics, matchModeDics, paramTypeDics} = this.state;
 
     type = `${type}`;
     let {
@@ -280,7 +282,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.COMMON.INPUTTYPE") }],
               initialValue: type || "1"
             })(
-              <Select onChange={value => this.getSelectValue(value)}>
+              <Select placeholder={getIntlContent("SHENYU.COMMON.TYPE")} onChange={value => this.getSelectValue(value)}>
                 {selectorTypeEnums.map(item => {
                   return (
                     <Option key={item.code} value={`${item.code}`}>
@@ -296,15 +298,14 @@ class AddModal extends Component {
               <FormItem label={getIntlContent("SHENYU.COMMON.MATCHTYPE")} {...formItemLayout}>
                 {getFieldDecorator("matchMode", {
                   rules: [{ required: true, message: getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE") }],
-                  initialValue: matchMode
+                  initialValue: `${matchMode}`
                 })(
-                  <Select>
-                    {MatchModeDics&&MatchModeDics.map(item => {
+                  <Select placeholder={getIntlContent("SHENYU.COMMON.MATCHTYPE")}>
+                    {matchModeDics&&matchModeDics.map(item => {
                       return (
                         <Option 
                           key={item.dictValue} 
-                          // eslint-disable-next-line radix
-                          value={parseInt(item.dictValue)}
+                          value={item.dictValue}
                         >
                           {item.dictName}
                         </Option>
@@ -368,7 +369,7 @@ class AddModal extends Component {
                             value={item.operator}
                             style={{ width: 150 }}
                           >
-                            {OperatorDics&&OperatorDics.map(opearte => {
+                            {operatorDics&&operatorDics.map(opearte => {
                               return (
                                 <Option key={opearte.dictValue} value={opearte.dictValue}>
                                   {opearte.dictName}
@@ -508,6 +509,7 @@ class AddModal extends Component {
                                         initialValue: defaultValue,
                                       })(
                                         <Select
+                                          placeholder={placeholder}
                                           style={{ width: "100%"}}
                                         >
                                           {item.dictOptions.map(option => {

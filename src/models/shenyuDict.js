@@ -16,6 +16,7 @@ export default {
 
   state: {
     shenyuDictList: [],
+    shenyuDictMap: {},
     total: 0
   },
 
@@ -91,16 +92,28 @@ export default {
         message.warn(json.message)
       }
     },
-    * fetchByType(params, {call}) {
+    *fetchByType(params, {call, put, select }) {
       const {payload} = params;
       let callback = payload.callBack;
-      const json = yield call(fetchShenYuDictByType, payload);
-      if (json.code === 200) {
-        let dataList = json.data.map(item => {
-          item.key = item.id;
-          return item;
-        });
-        callback(dataList);
+      let shenyuDictMap = yield select((state)=>state.shenyuDict.shenyuDictMap);
+      if(shenyuDictMap[payload.type]) {
+        callback(shenyuDictMap[payload.type])
+      } else {
+        const json = yield call(fetchShenYuDictByType, payload);
+        if (json.code === 200) {
+          let dataList = json.data.map(item => {
+            item.key = item.id;
+            return item;
+          });
+          shenyuDictMap[payload.type] = dataList;
+          yield put({
+            type: "saveShenYuDictMap",
+            payload: {
+              shenyuDictMap
+            }
+          });
+          callback(dataList);
+        }
       }
     },
   },
@@ -110,6 +123,13 @@ export default {
         ...state,
         shenyuDictList: payload.dataList,
         total: payload.total
+      };
+    },
+
+    saveShenYuDictMap(state, { payload }) {
+      return {
+        ...state,
+        shenyuDictMap: payload.shenyuDictMap
       };
     },
 
