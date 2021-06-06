@@ -8,40 +8,21 @@ import { getIntlContent } from '../../../utils/IntlUtils'
 const FormItem = Form.Item;
 const { Option } = Select;
 
-@connect(({ pluginHandle, global }) => ({
+@connect(({ pluginHandle, global, shenyuDict }) => ({
   pluginHandle,
-  platform: global.platform
+  platform: global.platform,
+  shenyuDict
 }))
 class AddModal extends Component {
   constructor(props) {
     super(props);
-
-    const selectorConditions = props.selectorConditions || [
-      {
-        paramType: "uri",
-        operator: "=",
-        paramName: "/",
-        paramValue: ""
-      }
-    ];
-    // eslint-disable-next-line prefer-template
-    let selectValue = props.type + "" || null;
+    let selectValue = `${props.type  }` || null;
     this.state = {
       selectValue
     };
-    selectorConditions.forEach((item, index) => {
-      const { paramType } = item;
-
-      let key = `paramTypeValueEn${index}`;
-      if (paramType === "uri" || paramType === "host" || paramType === "ip") {
-        this.state[key] = true;
-        selectorConditions[index].paramName = "/";
-      } else {
-        this.state[key] = false;
-      }
-    });
-
-    this.state.selectorConditions = selectorConditions;
+    
+    this.initSelectorCondtion(props);
+    this.initDics();
   }
 
   componentWillMount() {
@@ -57,6 +38,47 @@ class AddModal extends Component {
         isHandleArray: multiSelectorHandle,
         callBack: pluginHandles => {
           this.setPluginHandleList(pluginHandles);
+        }
+      }
+    });
+  }
+
+  initSelectorCondtion = (props) => {
+    const selectorConditions = props.selectorConditions || [
+      {
+        paramType: "uri",
+        operator: "=",
+        paramName: "/",
+        paramValue: ""
+      }
+    ];
+    selectorConditions.forEach((item, index) => {
+      const { paramType } = item;
+      let key = `paramTypeValueEn${index}`;
+      if (paramType === "uri" || paramType === "host" || paramType === "ip") {
+        this.state[key] = true;
+        selectorConditions[index].paramName = "/";
+      } else {
+        this.state[key] = false;
+      }
+    });
+    this.state.selectorConditions = selectorConditions;
+  }
+
+  initDics = () => {
+    this.initDic("operator");
+    this.initDic("matchMode");
+    this.initDic("paramType");
+  }
+
+  initDic = (type) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "shenyuDict/fetchByType",
+      payload:{
+        type,
+        callBack: dics => {
+          this.state[`${type}Dics`] = dics
         }
       }
     });
@@ -212,27 +234,13 @@ class AddModal extends Component {
       multiSelectorHandle
     } = this.props;
     const labelWidth = 75
-    const { selectorConditions, selectValue, pluginHandleList } = this.state;
+    const { selectorConditions, selectValue, pluginHandleList, operatorDics, matchModeDics, paramTypeDics} = this.state;
 
     type = `${type}`;
     let {
       selectorTypeEnums,
-      matchModeEnums,
-      operatorEnums,
-      paramTypeEnums
     } = platform;
 
-    if (operatorEnums) {
-      operatorEnums = operatorEnums.filter(item => {
-        return item.support === true;
-      });
-    }
-
-    if (paramTypeEnums) {
-      paramTypeEnums = paramTypeEnums.filter(item => {
-        return item.support === true;
-      });
-    }
 
     const { getFieldDecorator } = form;
     const formItemLayout = {
@@ -274,7 +282,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.COMMON.INPUTTYPE") }],
               initialValue: type || "1"
             })(
-              <Select onChange={value => this.getSelectValue(value)}>
+              <Select placeholder={getIntlContent("SHENYU.COMMON.TYPE")} onChange={value => this.getSelectValue(value)}>
                 {selectorTypeEnums.map(item => {
                   return (
                     <Option key={item.code} value={`${item.code}`}>
@@ -290,13 +298,16 @@ class AddModal extends Component {
               <FormItem label={getIntlContent("SHENYU.COMMON.MATCHTYPE")} {...formItemLayout}>
                 {getFieldDecorator("matchMode", {
                   rules: [{ required: true, message: getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE") }],
-                  initialValue: matchMode
+                  initialValue: `${matchMode}`
                 })(
-                  <Select>
-                    {matchModeEnums.map(item => {
+                  <Select placeholder={getIntlContent("SHENYU.COMMON.MATCHTYPE")}>
+                    {matchModeDics&&matchModeDics.map(item => {
                       return (
-                        <Option key={item.code} value={item.code}>
-                          {item.name}
+                        <Option 
+                          key={item.dictValue} 
+                          value={item.dictValue}
+                        >
+                          {item.dictName}
                         </Option>
                       );
                     })}
@@ -319,13 +330,13 @@ class AddModal extends Component {
                             value={item.paramType}
                             style={{ width: 120 }}
                           >
-                            {paramTypeEnums.map(typeItem => {
+                            {paramTypeDics&&paramTypeDics.map(typeItem => {
                               return (
                                 <Option
-                                  key={typeItem.name}
-                                  value={typeItem.name}
+                                  key={typeItem.dictValue}
+                                  value={typeItem.dictValue}
                                 >
-                                  {typeItem.name}
+                                  {typeItem.dictName}
                                 </Option>
                               );
                             })}
@@ -358,10 +369,10 @@ class AddModal extends Component {
                             value={item.operator}
                             style={{ width: 150 }}
                           >
-                            {operatorEnums.map(opearte => {
+                            {operatorDics&&operatorDics.map(opearte => {
                               return (
-                                <Option key={opearte.name} value={opearte.name}>
-                                  {opearte.name}
+                                <Option key={opearte.dictValue} value={opearte.dictValue}>
+                                  {opearte.dictName}
                                 </Option>
                               );
                             })}
@@ -448,7 +459,7 @@ class AddModal extends Component {
                           })}
                           style={{width:"100%"}}
                         >
-                          {handleList.map(item=> {
+                          {handleList&&handleList.map(item=> {
                             let required = item.required === "1";
                             let defaultValue =  (item.value === 0 || item.value === false) ? item.value:
                             (item.value ||
@@ -498,6 +509,7 @@ class AddModal extends Component {
                                         initialValue: defaultValue,
                                       })(
                                         <Select
+                                          placeholder={placeholder}
                                           style={{ width: "100%"}}
                                         >
                                           {item.dictOptions.map(option => {

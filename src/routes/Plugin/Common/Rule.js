@@ -9,35 +9,17 @@ import PluginRuleHandle from "../PluginRuleHandle"
 const FormItem = Form.Item;
 const { Option } = Select;
 
-@connect(({pluginHandle, global }) => ({
+@connect(({pluginHandle, shenyuDict }) => ({
   pluginHandle,
-  platform: global.platform
+  shenyuDict
 }))
 class AddModal extends Component {
   constructor(props) {
     super(props);
-    const ruleConditions = props.ruleConditions || [
-      {
-        paramType: "uri",
-        operator: "=",
-        paramName: "/",
-        paramValue: ""
-      }
-    ];
     this.state = {};
-    ruleConditions.forEach((item, index) => {
-      const { paramType } = item;
 
-      let key = `paramTypeValueEn${index}`;
-      if (paramType === "uri" || paramType === "host" || paramType === "ip") {
-        this.state[key] = true;
-        ruleConditions[index].paramName = "/";
-      } else {
-        this.state[key] = false;
-      }
-    });
-
-    this.state.ruleConditions = ruleConditions;
+    this.initRuleCondition(props);
+    this.initDics();
   }
 
   componentWillMount() {
@@ -53,6 +35,47 @@ class AddModal extends Component {
         isHandleArray: multiRuleHandle,
         callBack: pluginHandles => {
           this.setPluginHandleList(pluginHandles);
+        }
+      }
+    });
+  }
+
+  initRuleCondition = (props) => {
+    const ruleConditions = props.ruleConditions || [
+      {
+        paramType: "uri",
+        operator: "=",
+        paramName: "/",
+        paramValue: ""
+      }
+    ];
+    ruleConditions.forEach((item, index) => {
+      const { paramType } = item;
+      let key = `paramTypeValueEn${index}`;
+      if (paramType === "uri" || paramType === "host" || paramType === "ip") {
+        this.state[key] = true;
+        ruleConditions[index].paramName = "/";
+      } else {
+        this.state[key] = false;
+      }
+    });
+    this.state.ruleConditions = ruleConditions;
+  }
+
+  initDics = () => {
+    this.initDic("operator");
+    this.initDic("matchMode");
+    this.initDic("paramType");
+  }
+
+  initDic = (type) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "shenyuDict/fetchByType",
+      payload:{
+        type,
+        callBack: dics => {
+          this.state[`${type}Dics`] = dics
         }
       }
     });
@@ -201,7 +224,6 @@ class AddModal extends Component {
     let {
       onCancel,
       form,
-      platform,
       name = "",
       matchMode = "",
       loged = true,
@@ -212,19 +234,7 @@ class AddModal extends Component {
       pluginName,
       handle,
     } = this.props;
-    const { ruleConditions,pluginHandleList } = this.state;
-    let { matchModeEnums, operatorEnums, paramTypeEnums } = platform;
-    if (operatorEnums) {
-      operatorEnums = operatorEnums.filter(item => {
-        return item.support === true;
-      });
-    }
-
-    if (paramTypeEnums) {
-      paramTypeEnums = paramTypeEnums.filter(item => {
-        return item.support === true;
-      });
-    }
+    const { ruleConditions,pluginHandleList, operatorDics, matchModeDics, paramTypeDics } = this.state;
 
     let RuleHandleComponent;
     if(ruleHandlePageType !== "custom" && pluginHandleList && pluginHandleList.length > 0) {
@@ -272,13 +282,16 @@ class AddModal extends Component {
           <FormItem label={getIntlContent("SHENYU.COMMON.MATCHTYPE")} {...formItemLayout}>
             {getFieldDecorator("matchMode", {
               rules: [{ required: true, message: getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE") }],
-              initialValue: matchMode
+              initialValue: `${matchMode}`
             })(
               <Select>
-                {matchModeEnums.map(item => {
+                {matchModeDics&&matchModeDics.map(item => {
                   return (
-                    <Option key={item.code} value={item.code}>
-                      {item.name}
+                    <Option 
+                      key={item.dictValue} 
+                      value={item.dictValue}
+                    >
+                      {item.dictName}
                     </Option>
                   );
                 })}
@@ -301,10 +314,10 @@ class AddModal extends Component {
                         value={item.paramType}
                         style={{ width: 120 }}
                       >
-                        {paramTypeEnums.map(type => {
+                        {paramTypeDics&&paramTypeDics.map(type => {
                           return (
-                            <Option key={type.name} value={type.name}>
-                              {type.name}
+                            <Option key={type.dictValue} value={type.dictValue}>
+                              {type.dictName}
                             </Option>
                           );
                         })}
@@ -337,10 +350,10 @@ class AddModal extends Component {
                         value={item.operator}
                         style={{ width: 150 }}
                       >
-                        {operatorEnums.map(opearte => {
+                        {operatorDics&&operatorDics.map(opearte => {
                           return (
-                            <Option key={opearte.name} value={opearte.name}>
-                              {opearte.name}
+                            <Option key={opearte.dictValue} value={opearte.dictValue}>
+                              {opearte.dictName}
                             </Option>
                           );
                         })}
