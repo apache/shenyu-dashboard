@@ -77,9 +77,6 @@ export const getRouterData = app => {
     '/home': {
       component: dynamicWrapper(app, [], () => import('../routes/Home')),
     },
-    '/plug/hystrix': {
-      component: dynamicWrapper(app, ['hystrix'], () => import('../routes/Plugin/Hystrix')),
-    },
     '/plug/:id': {
       component: dynamicWrapper(app, ['common'], () => import('../routes/Plugin/Common')),
     },

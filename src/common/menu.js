@@ -8,12 +8,6 @@ export const menuData = [
     path: 'plug',
     locale: 'SHENYU.MENU.PLUGIN.LIST',
     children: [
-      {
-        name: 'hystrix',
-        path: 'hystrix',
-        id: 'hystrix9',
-        locale: 'SHENYU.MENU.PLUGIN.HYSTRIX'
-      }
     ],
   },
   {
