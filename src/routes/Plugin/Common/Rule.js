@@ -16,7 +16,11 @@ const { Option } = Select;
 class AddModal extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    
+    const customPluginNames = Object.keys(PluginRuleHandle);
+    this.state = {
+      customRulePage: customPluginNames.includes(props.pluginName)
+    };
 
     this.initRuleCondition(props);
     this.initDics();
@@ -118,8 +122,8 @@ class AddModal extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, handleOk, multiRuleHandle, ruleHandlePageType } = this.props;
-    const { ruleConditions,pluginHandleList } = this.state;
+    const { form, handleOk, multiRuleHandle } = this.props;
+    const { ruleConditions, pluginHandleList, customRulePage } = this.state;
 
     form.validateFieldsAndScroll((err, values) => {
       const { name, matchMode, loged, enabled } = values;
@@ -127,7 +131,7 @@ class AddModal extends Component {
         const submit = this.checkConditions();
         if (submit) {
           let handle;
-          if(ruleHandlePageType !== "custom") {
+          if(!customRulePage) {
             handle = [];
             pluginHandleList.forEach((handleList, index) => {
               handle[index] = {};
@@ -230,18 +234,16 @@ class AddModal extends Component {
       enabled = true,
       sort = "",
       multiRuleHandle,
-      ruleHandlePageType,
       pluginName,
       handle,
     } = this.props;
-    const { ruleConditions,pluginHandleList, operatorDics, matchModeDics, paramTypeDics } = this.state;
+    const { ruleConditions,pluginHandleList, operatorDics, matchModeDics, paramTypeDics, customRulePage } = this.state;
 
     let RuleHandleComponent;
-    if(ruleHandlePageType !== "custom" && pluginHandleList && pluginHandleList.length > 0) {
-      RuleHandleComponent = CommonRuleHandle;
-    }
-    if (ruleHandlePageType === "custom") {
+    if(customRulePage) {
       RuleHandleComponent = PluginRuleHandle[pluginName]
+    } else if(pluginHandleList && pluginHandleList.length > 0) {
+      RuleHandleComponent = CommonRuleHandle;
     }
 
     const { getFieldDecorator } = form;

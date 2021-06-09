@@ -36,8 +36,6 @@
   "SHENYU.COMMON.WARN.INPUT_NUMBER":"Please enter number",
   "SHENYU.COMMON.PLEASEINPUT":"Please enter ",
   "SHENYU.MENU.PLUGIN.LIST": "PluginList",
-  "SHENYU.MENU.PLUGIN.DIVIDE": "divide",
-  "SHENYU.MENU.PLUGIN.HYSTRIX": "hystrix",
   "SHENYU.MENU.PLUGIN.SOFA": "sofa",
   "SHENYU.MENU.PLUGIN.SIGN": "sign",
   "SHENYU.MENU.PLUGIN.WAF": "waf",
