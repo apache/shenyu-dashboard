@@ -7,4 +7,3 @@ export default {
     hystrix:HystrixRuleHandle,
     param_mapping: ParamPluginRuleHandle
 }
-
