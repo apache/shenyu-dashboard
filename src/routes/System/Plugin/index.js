@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import {Table, Input, Button, message, Popconfirm, Select} from "antd";
+import { Table, Input, Button, message, Popconfirm, Select } from "antd";
 import { connect } from "dva";
-import { resizableComponents } from '../../../utils/resizable';
+import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
-import AuthButton from '../../../utils/AuthButton';
-import {resetAuthMenuCache} from '../../../utils/AuthRoute';
+import AuthButton from "../../../utils/AuthButton";
+import { resetAuthMenuCache } from "../../../utils/AuthRoute";
 
 const { Option } = Select;
 
@@ -25,7 +25,9 @@ export default class Plugin extends Component {
       name: "",
       enabled: null,
       popup: "",
-      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
+      localeName: window.sessionStorage.getItem("locale")
+        ? window.sessionStorage.getItem("locale")
+        : "en-US"
     };
   }
 
@@ -49,14 +51,13 @@ export default class Plugin extends Component {
       const nextColumns = [...columns];
       nextColumns[index] = {
         ...nextColumns[index],
-        width: size.width,
+        width: size.width
       };
       return { columns: nextColumns };
     });
   };
 
   onSelectChange = selectedRowKeys => {
-
     this.setState({ selectedRowKeys });
   };
 
@@ -97,7 +98,7 @@ export default class Plugin extends Component {
           type: "plugin/fetchByPluginId",
           payload: {
             pluginId: record.id,
-            type: '3'
+            type: "3"
           },
           callback: pluginConfigList => {
             this.setState({
@@ -107,7 +108,7 @@ export default class Plugin extends Component {
                   {...plugin}
                   {...pluginConfigList}
                   handleOk={values => {
-                    const { name, enabled, id, role, config } = values;
+                    const { name, enabled, id, role, config, sort } = values;
                     dispatch({
                       type: "plugin/update",
                       payload: {
@@ -115,7 +116,8 @@ export default class Plugin extends Component {
                         role,
                         name,
                         enabled,
-                        id
+                        id,
+                        sort
                       },
                       fetchValue: {
                         name: pluginName,
@@ -135,7 +137,7 @@ export default class Plugin extends Component {
               )
             });
           }
-        })
+        });
       }
     });
   };
@@ -174,7 +176,7 @@ export default class Plugin extends Component {
           dispatch({
             type: "global/fetchPlugins",
             payload: {
-              callback: () => { }
+              callback: () => {}
             }
           });
           this.fetchPermissions();
@@ -195,14 +197,15 @@ export default class Plugin extends Component {
           disabled={false}
           handleOk={values => {
             const { dispatch } = this.props;
-            const { name, enabled, role,config } = values;
+            const { name, enabled, role, config, sort } = values;
             dispatch({
               type: "plugin/add",
               payload: {
                 name,
                 config,
                 role,
-                enabled
+                enabled,
+                sort
               },
               fetchValue: {
                 name: pluginName,
@@ -214,7 +217,7 @@ export default class Plugin extends Component {
                 dispatch({
                   type: "global/fetchPlugins",
                   payload: {
-                    callback: () => { }
+                    callback: () => {}
                   }
                 });
                 this.fetchPermissions();
@@ -232,20 +235,20 @@ export default class Plugin extends Component {
   fetchPermissions = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'global/refreshPermission',
+      type: "global/refreshPermission",
       payload: {
         callback: () => {
           resetAuthMenuCache();
         }
       }
     });
-  }
+  };
 
   // 批量启用或禁用
   enableClick = () => {
-    const {dispatch} = this.props;
-    const {selectedRowKeys, currentPage, name} = this.state;
-    if(selectedRowKeys && selectedRowKeys.length>0) {
+    const { dispatch } = this.props;
+    const { selectedRowKeys, currentPage, name } = this.state;
+    if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "plugin/fetchItem",
         payload: {
@@ -264,16 +267,16 @@ export default class Plugin extends Component {
               pageSize: 12
             },
             callback: () => {
-              this.setState({selectedRowKeys: []});
+              this.setState({ selectedRowKeys: [] });
             }
-          })
+          });
         }
-      })
+      });
     } else {
       message.destroy();
       message.warn("Please select data");
     }
-  }
+  };
 
   // 同步插件数据
   syncAllClick = () => {
@@ -287,10 +290,10 @@ export default class Plugin extends Component {
     const { dispatch } = this.props;
     const { id } = record;
     dispatch({
-      type: 'plugin/changeStatus',
+      type: "plugin/changeStatus",
       payload: { id, enabled: checked }
-    })
-  }
+    });
+  };
 
   changeLocale(locale) {
     this.setState({
@@ -307,63 +310,81 @@ export default class Plugin extends Component {
           title: getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME"),
           dataIndex: "name",
           key: "name",
-          ellipsis:true,
-          width: 120,
+          ellipsis: true,
+          width: 120
         },
         {
           align: "center",
           title: getIntlContent("SHENYU.SYSTEM.ROLE"),
           dataIndex: "role",
-          ellipsis:true,
+          ellipsis: true,
           key: "role",
           width: 120,
-          sorter: (a,b) => a.role > b.role ? 1 : -1,
-          render: (text) => {
-            const map = {
-              0: getIntlContent("SHENYU.SYSTEM.SYSTEM"),
-              1: getIntlContent("SHENYU.SYSTEM.CUSTOM")
-            }
-            return <div>{map[text] || '----'}</div>
+          sorter: (a, b) => (a.role > b.role ? 1 : -1),
+          render: text => {
+            // const map = {
+            //   0: getIntlContent("SHENYU.SYSTEM.SYSTEM"),
+            //   1: getIntlContent("SHENYU.SYSTEM.CUSTOM")
+            // };
+            return <div>{text || "----"}</div>;
           }
+        },
+        {
+          align: "center",
+          title: getIntlContent("SHENYU.PLUGIN.SORT"),
+          dataIndex: "sort",
+          ellipsis: true,
+          key: "sort",
+          width: 120,
+          sorter: (a, b) => (a.role > b.role ? 1 : -1)
         },
         {
           align: "center",
           title: getIntlContent("SHENYU.COMMON.SETTING"),
           dataIndex: "config",
           key: "config",
-          ellipsis:true,
+          ellipsis: true
         },
         {
           align: "center",
           title: getIntlContent("SHENYU.SYSTEM.CREATETIME"),
           dataIndex: "dateCreated",
           key: "dateCreated",
-          ellipsis:true,
+          ellipsis: true,
           width: 180,
-          sorter: (a,b) => a.dateCreated > b.dateCreated ? 1 : -1,
+          sorter: (a, b) => (a.dateCreated > b.dateCreated ? 1 : -1)
         },
         {
           align: "center",
           title: getIntlContent("SHENYU.SYSTEM.UPDATETIME"),
           dataIndex: "dateUpdated",
           key: "dateUpdated",
-          ellipsis:true,
+          ellipsis: true,
           width: 180,
-          sorter: (a,b) => a.dateUpdated > b.dateUpdated ? 1 : -1,
+          sorter: (a, b) => (a.dateUpdated > b.dateUpdated ? 1 : -1)
         },
         {
           align: "center",
           title: getIntlContent("SHENYU.SYSTEM.STATUS"),
           dataIndex: "enabled",
           key: "enabled",
-          ellipsis:true,
+          ellipsis: true,
           width: 80,
-          sorter: (a,b) => (a.enabled || "-1") > (b.enabled || "-1") ? 1 : -1,
+          sorter: (a, b) =>
+            (a.enabled || "-1") > (b.enabled || "-1") ? 1 : -1,
           render: text => {
             if (text) {
-              return <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>;
+              return (
+                <div className="open">
+                  {getIntlContent("SHENYU.COMMON.OPEN")}
+                </div>
+              );
             } else {
-              return <div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>;
+              return (
+                <div className="close">
+                  {getIntlContent("SHENYU.COMMON.CLOSE")}
+                </div>
+              );
             }
           }
         },
@@ -372,7 +393,7 @@ export default class Plugin extends Component {
           title: getIntlContent("SHENYU.COMMON.OPERAT"),
           dataIndex: "time",
           key: "time",
-          ellipsis:true,
+          ellipsis: true,
           width: 80,
           fixed: "right",
           render: (text, record) => {
@@ -391,7 +412,7 @@ export default class Plugin extends Component {
           }
         }
       ]
-    })
+    });
   }
 
   render() {
@@ -402,8 +423,8 @@ export default class Plugin extends Component {
       ...col,
       onHeaderCell: column => ({
         width: column.width,
-        onResize: this.handleResize(index),
-      }),
+        onResize: this.handleResize(index)
+      })
     }));
     const rowSelection = {
       selectedRowKeys,
@@ -441,17 +462,14 @@ export default class Plugin extends Component {
           <AuthButton perms="system:plugin:delete">
             <Popconfirm
               title={getIntlContent("SHENYU.COMMON.DELETE")}
-              placement='bottom'
+              placement="bottom"
               onConfirm={() => {
-                this.deleteClick()
+                this.deleteClick();
               }}
               okText={getIntlContent("SHENYU.COMMON.SURE")}
               cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
             >
-              <Button
-                style={{ marginLeft: 20 }}
-                type="danger"
-              >
+              <Button style={{ marginLeft: 20 }} type="danger">
                 {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
               </Button>
             </Popconfirm>

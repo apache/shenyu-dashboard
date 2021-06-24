@@ -76,9 +76,9 @@ export async function updateMetadata(params) {
       appName: params.appName,
       enabled: params.enabled,
       id: params.id,
-      pathDesc:params.pathDesc,
+      pathDesc: params.pathDesc,
       methodName: params.methodName,
-      parameterTypes:params.parameterTypes,
+      parameterTypes: params.parameterTypes,
       path: params.path,
       rpcExt: params.rpcExt,
       rpcType: params.rpcType,
@@ -90,17 +90,15 @@ export async function updateMetadata(params) {
 export async function syncData() {
   return request(`${baseUrl}/meta-data/syncData`, {
     method: `POST`,
-    body: {
-
-    }
+    body: {}
   });
 }
 
 /* getfetchMetaGroup */
 export async function getfetchMetaGroup() {
-  return request(`${baseUrl}/meta-data/findAllGroup`,{
+  return request(`${baseUrl}/meta-data/findAllGroup`, {
     method: `GET`
-  })
+  });
 }
 
 /* deleteMetadata */
@@ -112,7 +110,6 @@ export async function deleteMetadata(params) {
 }
 /* updateEnabled */
 export async function updateEnabled(params) {
-
   return request(`${baseUrl}/meta-data/batchEnabled`, {
     method: `POST`,
     body: {
@@ -166,7 +163,8 @@ export async function updatePlugin(params) {
       name: params.name,
       role: params.role,
       config: params.config,
-      enabled: params.enabled
+      enabled: params.enabled,
+      sort: params.sort
     }
   });
 }
@@ -191,7 +189,7 @@ export async function updatepluginEnabled(params) {
       ids: params.list,
       enabled: params.enabled
     }
-  })
+  });
 }
 
 /* addAuth */
@@ -239,11 +237,11 @@ export async function syncAuthsData() {
   return request(`${baseUrl}/appAuth/syncData`, {
     method: `POST`,
     body: {}
-  })
+  });
 }
 /* getAllAuths */
 export async function getAllAuths(params) {
-  const { appKey,phone, currentPage, pageSize } = params;
+  const { appKey, phone, currentPage, pageSize } = params;
   let myParams = params;
   if (appKey || phone) {
     myParams = params;
@@ -269,35 +267,34 @@ export async function findAuthDataDel(params) {
 }
 /* get all metadatas */
 export async function getAllMetadatas() {
-  return request(`${baseUrl}/meta-data/findAll`,{
+  return request(`${baseUrl}/meta-data/findAll`, {
     method: `GET`
-  })
+  });
 }
 /* update auth */
 export async function updateAuthData(params) {
-
   return request(`${baseUrl}/appAuth/updateDetail`, {
     method: `POST`,
     body: {
       ...params
     }
-  })
+  });
 }
 /* update authDel */
 export async function updateAuthDel(params) {
   return request(`${baseUrl}/appAuth/updateDetailPath`, {
     method: `POST`,
     body: params
-  })
+  });
 }
 /* add auth */
 export async function addAuthData(params) {
-    return request(`${baseUrl}/appAuth/apply`, {
-      method: `POST`,
-      body: {
-        ...params
-      }
-    })
+  return request(`${baseUrl}/appAuth/apply`, {
+    method: `POST`,
+    body: {
+      ...params
+    }
+  });
 }
 /* batch enable auth */
 export async function updateAuthEnabled(params) {
@@ -307,14 +304,14 @@ export async function updateAuthEnabled(params) {
       ids: params.list,
       enabled: params.enabled
     }
-  })
+  });
 }
 /* batch delete auth */
 export async function deleteAuths(params) {
-  return request(`${baseUrl}/appAuth/batchDelete`,{
+  return request(`${baseUrl}/appAuth/batchDelete`, {
     method: `POST`,
     body: [...params.list]
-  })
+  });
 }
 /* find auth */
 export async function findAuth(params) {
@@ -439,7 +436,7 @@ export async function getAllPluginHandles(params) {
 }
 // add plugin handle
 export async function addPluginHandle(params) {
-  return request(`${baseUrl}/plugin-handle`,{
+  return request(`${baseUrl}/plugin-handle`, {
     method: `POST`,
     body: {
       ...params
@@ -448,45 +445,48 @@ export async function addPluginHandle(params) {
 }
 // get detail of plugin handle
 export async function findPluginHandle(params) {
-  return request(`${baseUrl}/plugin-handle/${params.id}`,{
-    method: 'GET'
-  })
+  return request(`${baseUrl}/plugin-handle/${params.id}`, {
+    method: "GET"
+  });
 }
 
 // update PluginHandle
 export async function updatePluginHandle(params) {
-  return request(`${baseUrl}/plugin-handle/${params.id}`,{
+  return request(`${baseUrl}/plugin-handle/${params.id}`, {
     method: `PUT`,
     body: {
       ...params
     }
-  })
+  });
 }
 
 // batchDeletePluginHandle
 export async function batchDeletePluginHandle(params) {
-  return request(`${baseUrl}/plugin-handle/batch`,{
+  return request(`${baseUrl}/plugin-handle/batch`, {
     method: `DELETE`,
     body: [...params.list]
   });
 }
 
 export function fetchPluginHandleByPluginId(params) {
-  return request(`${baseUrl}/plugin-handle/all/${params.pluginId}/${params.type}`,{
-    method: `GET`
-  });
+  return request(
+    `${baseUrl}/plugin-handle/all/${params.pluginId}/${params.type}`,
+    {
+      method: `GET`
+    }
+  );
 }
 
 // fetch dict list
 export async function fetchShenYuDicts(params) {
-  return request(`${baseUrl}/shenyu-dict?${stringify(params)}`,{
+  return request(`${baseUrl}/shenyu-dict?${stringify(params)}`, {
     method: `GET`
   });
 }
 
 // add dict
 export async function addShenYuDict(params) {
-  return request(`${baseUrl}/shenyu-dict`,{
+  return request(`${baseUrl}/shenyu-dict`, {
     method: `POST`,
     body: {
       ...params
@@ -496,31 +496,31 @@ export async function addShenYuDict(params) {
 
 // get dict detail
 export async function findShenYuDict(params) {
-  return request(`${baseUrl}/shenyu-dict/${params.id}`,{
-    method: 'GET'
-  })
+  return request(`${baseUrl}/shenyu-dict/${params.id}`, {
+    method: "GET"
+  });
 }
 
 // update dict
 export async function updateShenYuDict(params) {
-  return request(`${baseUrl}/shenyu-dict/${params.id}`,{
+  return request(`${baseUrl}/shenyu-dict/${params.id}`, {
     method: `PUT`,
     body: {
       ...params
     }
-  })
+  });
 }
 
 // batch delete dicts
 export async function batchDeleteShenYuDict(params) {
-  return request(`${baseUrl}/shenyu-dict/batch`,{
+  return request(`${baseUrl}/shenyu-dict/batch`, {
     method: `DELETE`,
     body: [...params.list]
   });
 }
 
 export function fetchShenYuDictByType(params) {
-  return request(`${baseUrl}/shenyu-dict/all/${params.type}`,{
+  return request(`${baseUrl}/shenyu-dict/all/${params.type}`, {
     method: `GET`
   });
 }
@@ -532,7 +532,7 @@ export async function updateShenYuDictEnabled(params) {
       ids: params.list,
       enabled: params.enabled
     }
-  })
+  });
 }
 
 /* get all roles */
@@ -654,9 +654,12 @@ export async function getMenuTree() {
 
 // get userPermission by token
 export async function getUserPermissionByToken(params) {
-  return request(`${baseUrl}/permission/getUserPermissionByToken?token=${params.token}`, {
-    method: `GET`
-  });
+  return request(
+    `${baseUrl}/permission/getUserPermissionByToken?token=${params.token}`,
+    {
+      method: `GET`
+    }
+  );
 }
 
 /* get dataPermision's selectors by page */

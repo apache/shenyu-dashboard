@@ -1,21 +1,29 @@
-import React, { Component } from 'react';
-import { connect } from 'dva';
-import { Redirect } from 'react-router-dom';
-import { Route } from 'dva/router';
-import { Spin } from 'antd';
-import { filterTree } from './utils';
+import React, { Component } from "react";
+import { connect } from "dva";
+import { Redirect } from "react-router-dom";
+import { Route } from "dva/router";
+import { Spin } from "antd";
+import { filterTree } from "./utils";
 
 // not check route url
-const notCheckRouteUrl = ["/", "/home", "/plug/:id"];
+const notCheckRouteUrl = ["/", "/home"];
 
-// menuItem cache  
+// menuItem cache
 let menuCache = [];
-// menus cache  
+// menus cache
 let authMenusCache = {};
+
+function formatRouteUrl(routeUrl) {
+  if (routeUrl.startsWith("/plug/")) {
+    const [flag, plug, , ...id] = routeUrl.split("/");
+    return [flag, plug, ...id].join("/");
+  }
+  return routeUrl;
+}
 
 /**
  *  reset authorized menu cache
- * 
+ *
  */
 export function resetAuthMenuCache() {
   menuCache = [];
@@ -24,25 +32,30 @@ export function resetAuthMenuCache() {
 
 /**
  *  Check the menu's permission
- * 
+ *
  * @param {string} routeUrl
  * @param {Array} permissions
  */
 export function checkMenuAuth(routeUrl, permissions) {
-  if (routeUrl.startsWith("/exception/") || notCheckRouteUrl.some(e => e === routeUrl)) {
-    return routeUrl
+  let routeUrlCopy = formatRouteUrl(routeUrl);
+
+  if (
+    routeUrlCopy.startsWith("/exception/") ||
+    notCheckRouteUrl.some(e => e === routeUrlCopy)
+  ) {
+    return routeUrl;
   }
   if (permissions && permissions.menu && permissions.menu.length > 0) {
     if (!menuCache || menuCache.length === 0) {
       permissions.menu.forEach(m => {
-        filterTree(m, (menuItem) => {
+        filterTree(m, menuItem => {
           menuCache.push(menuItem);
-        })
-      })
+        });
+      });
     }
-    if (menuCache && menuCache.some(e => e.url === routeUrl)) {
+    if (menuCache && menuCache.some(e => e.url === routeUrlCopy)) {
       return routeUrl;
-    }else{
+    } else {
       return false;
     }
   } else {
@@ -54,43 +67,43 @@ export function checkMenuAuth(routeUrl, permissions) {
  *  get all authorized menus
  *  if authMenusCache is not empty,return from cache,
  *  else return from building
- * 
+ *
  * @param {Array} menus
  * @param {Array} permissions
  * @param {Boolean} beginCache
  */
 export function getAuthMenus(menus, permissions, beginCache) {
   let authMenus = [];
-  if(beginCache && authMenusCache && Object.keys(authMenusCache).length > 0){
+  if (beginCache && authMenusCache && Object.keys(authMenusCache).length > 0) {
     let locale = window.sessionStorage.getItem("locale");
-    let authCacheMenus =  authMenusCache[locale];
-    if(authCacheMenus && authCacheMenus.length > 0){
+    let authCacheMenus = authMenusCache[locale];
+    if (authCacheMenus && authCacheMenus.length > 0) {
       return authCacheMenus;
     }
-  }  
+  }
   if (menus && menus.length > 0) {
     setMenuIconAndSort(menus, permissions);
-    authMenus = JSON.parse(JSON.stringify(menus))
-    authMenus.forEach((m) => {
+    authMenus = JSON.parse(JSON.stringify(menus));
+    authMenus.forEach(m => {
       if (checkMenuAuth(m.path, permissions)) {
-        filterTree(m, (menuItem) => {
+        filterTree(m, menuItem => {
           if (menuItem.children && menuItem.children.length > 0) {
             let newChildren = [];
-            menuItem.children.forEach((menuChildItem) => {
+            menuItem.children.forEach(menuChildItem => {
               if (checkMenuAuth(menuChildItem.path, permissions)) {
                 newChildren.push(menuChildItem);
               }
-            })
+            });
             menuItem.children = newChildren;
           }
-        })
+        });
       } else {
         m.deleted = true;
       }
     });
-    authMenus = authMenus.filter(e=>!e.deleted);
+    authMenus = authMenus.filter(e => !e.deleted);
   }
-  if(beginCache){
+  if (beginCache) {
     let locale = window.sessionStorage.getItem("locale");
     authMenusCache[locale] = authMenus;
   }
@@ -98,51 +111,66 @@ export function getAuthMenus(menus, permissions, beginCache) {
 }
 
 const setMenuIconAndSort = (menus, permissions) => {
-  if (permissions && permissions.menu && permissions.menu.length > 0) {
-    menus.forEach(menuTree =>{
-      if(menuTree.children && menuTree.children.length > 0){
-        menuTree.children.forEach(menu => {
-          permissions.menu.forEach(m => {
-            if(m.url === menuTree.path){
-              if(m.meta.icon){
-                menuTree.icon = m.meta.icon;
-              }
-              menuTree.sort = m.sort;
-            }
+  if (permissions && Array.isArray(permissions.menu)) {
+    const iconAndSortMap = (function getIconAndSortMap(menuArr, mapObj) {
+      menuArr.forEach(menu => {
+        mapObj[menu.url] = menu;
+        if (Array.isArray(menu.children)) {
+          getIconAndSortMap(menu.children, mapObj);
+        }
+      });
+      return mapObj;
+    })(permissions.menu, {});
 
-            if(m.children && m.children.length > 0){
-              m.children.forEach(mChild => {
-                if(menu.path === mChild.url){
-                  if(mChild.meta.icon){
-                    menu.icon = mChild.meta.icon;
-                  }
-                  if(!isNaN(mChild.sort)){
-                    menu.sort = mChild.sort;
-                  }
-                }
-              })
-            }
-          })
-          if(isNaN(menu.sort)){
-            menu.sort = 999;
+    (function structureMenu(menuArr) {
+      if (Array.isArray(menuArr)) {
+        menuArr.forEach(menu => {
+          const currentMenu = iconAndSortMap[formatRouteUrl(menu.path)];
+          // console.log(menu, currentMenu, menu.path);
+          if (
+            currentMenu &&
+            currentMenu.meta.icon &&
+            !/^\/plug\/\d+$/.test(menu.path)
+          ) {
+            menu.icon = currentMenu.meta.icon;
           }
-        })
-        menuTree.children.sort((a,b) => a.sort - b.sort);
+
+          if (
+            currentMenu &&
+            currentMenu.sort &&
+            !menu.path.startsWith("/plug/")
+          ) {
+            menu.sort = currentMenu.sort;
+          }
+          // if (menu.sort === undefined) {
+          //   menu.sort = 999;
+          // }
+          if (menu.children) {
+            structureMenu(menu.children);
+          }
+        });
+        menuArr.sort((a, b) => a.sort - b.sort);
       }
-    })
-    menus.sort((a,b) => a.sort - b.sort);
+    })(menus);
   }
-}
+};
 
 @connect(({ global, loading }) => ({
   global,
   loading: loading.effects["global/fetchPermission"]
 }))
 export default class AuthRoute extends Component {
-
   componentWillMount() {
-    const { global: { permissions }, loading, path } = this.props;
-    if ((!permissions || !permissions.menu || permissions.menu.length === 0) && !loading && path === "/") {
+    const {
+      global: { permissions },
+      loading,
+      path
+    } = this.props;
+    if (
+      (!permissions || !permissions.menu || permissions.menu.length === 0) &&
+      !loading &&
+      path === "/"
+    ) {
       this.fetchPermissions();
     }
   }
@@ -150,28 +178,42 @@ export default class AuthRoute extends Component {
   fetchPermissions = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'global/fetchPermission',
+      type: "global/fetchPermission",
       payload: {
         callback: () => {
           resetAuthMenuCache();
         }
       }
     });
-  }
+  };
 
   render() {
-    const { loading, path, component, global: { permissions }, redirectPath, location: { pathname } } = this.props;
+    const {
+      loading,
+      path,
+      component,
+      global: { permissions },
+      redirectPath,
+      location: { pathname }
+    } = this.props;
     if (loading) {
-      return <Spin tip="Loading..." style={{ position: "relative", left: "50%", top: "50%" }} />;
+      return (
+        <Spin
+          tip="Loading..."
+          style={{ position: "relative", left: "50%", top: "50%" }}
+        />
+      );
     } else {
       let paths = path;
-      if(paths.indexOf("/:") > -1){
-        paths = pathname
+      if (paths.indexOf("/:") > -1) {
+        paths = pathname;
       }
       if (checkMenuAuth(paths, permissions)) {
-        return <Route path={path} component={component} />
+        return <Route path={path} component={component} />;
       } else {
-        return <Route render={() => <Redirect to={{ pathname: redirectPath }} />} />
+        return (
+          <Route render={() => <Redirect to={{ pathname: redirectPath }} />} />
+        );
       }
     }
   }
