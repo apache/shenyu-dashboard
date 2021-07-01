@@ -11,7 +11,7 @@ import GlobalHeader from "../components/GlobalHeader";
 import SiderMenu from "../components/SiderMenu";
 import NotFound from "../routes/Exception/404";
 import { getRoutes } from "../utils/utils";
-import AuthRoute, {checkMenuAuth, getAuthMenus } from "../utils/AuthRoute";
+import AuthRoute, { checkMenuAuth, getAuthMenus } from "../utils/AuthRoute";
 import { getMenuData } from "../common/menu";
 import logo from "../assets/logo.svg";
 
@@ -92,9 +92,11 @@ class BasicLayout extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
+      localeName: window.sessionStorage.getItem("locale")
+        ? window.sessionStorage.getItem("locale")
+        : "en-US",
       pluginsLoaded: false
-    }
+    };
   }
 
   getChildContext() {
@@ -113,7 +115,7 @@ class BasicLayout extends React.PureComponent {
         callback: () => {
           this.setState({
             pluginsLoaded: true
-          })
+          });
         }
       }
     });
@@ -121,10 +123,10 @@ class BasicLayout extends React.PureComponent {
       type: "global/fetchPlatform"
     });
     const token = window.sessionStorage.getItem("token");
-    if(!token){
+    if (!token) {
       this.props.history.push({
-        pathname: '/user/login'
-      })
+        pathname: "/user/login"
+      });
     }
   }
 
@@ -174,29 +176,76 @@ class BasicLayout extends React.PureComponent {
     dispatch({
       type: "global/resetPermission"
     });
-
   };
 
-  changeLocalName = (value) => {
+  changeLocalName = value => {
     const { dispatch } = this.props;
     this.setState({
       localeName: value
     });
     dispatch({
-      type: 'global/changeLanguage',
-      payload: value,
-    })
-  }
+      type: "global/changeLanguage",
+      payload: value
+    });
+  };
 
   render() {
-    const { collapsed, routerData, match, location, plugins, permissions, dispatch, } = this.props;
+    const {
+      collapsed,
+      routerData,
+      match,
+      location,
+      plugins,
+      permissions,
+      dispatch
+    } = this.props;
     const { localeName, pluginsLoaded } = this.state;
     const bashRedirect = this.getBaseRedirect();
     let menus = getMenuData();
-    plugins.forEach((item) => {
-      menus[0].children.push({ name: item.name, path: `/plug/${item.name}`, authority: undefined, id: item.id, locale: (`SHENYU.MENU.PLUGIN.${ item.name.toUpperCase()}`) })
-    })
+
+    const menuMap = {};
+    plugins.forEach(item => {
+      if (menuMap[item.role] === undefined) {
+        menuMap[item.role] = [];
+      }
+      menuMap[item.role].push(item);
+    });
+    Object.keys(menuMap).forEach((key, index) => {
+      menus[0].children.push({
+        name: key,
+        path: `/plug/${index}`,
+        authority: undefined,
+        icon: "unordered-list",
+        children: menuMap[key].map(item => ({
+          name: item.name,
+          path: `/plug/${index}/${item.name}`,
+          authority: undefined,
+          id: item.id,
+          locale: `SHENYU.MENU.PLUGIN.${item.name.toUpperCase()}`,
+          exact: true
+        }))
+      });
+    });
+
     menus = getAuthMenus(menus, permissions, pluginsLoaded);
+
+    // Filter empty menu
+    function removeEmptyMenu(menuArr) {
+      return menuArr.filter(menu => {
+        if (Array.isArray(menu.children)) {
+          if (menu.children.length === 0) {
+            return false;
+          } else {
+            menu.children = removeEmptyMenu(menu.children);
+          }
+        }
+        return true;
+      });
+    }
+
+    if (Array.isArray(menus) && menus.length) {
+      removeEmptyMenu(menus);
+    }
 
     const layout = (
       <Layout>
@@ -220,10 +269,7 @@ class BasicLayout extends React.PureComponent {
           </Header>
           <Content
             className="content-wrap"
-            style={{
-              height: "100%",
-              position: "relative"
-            }}
+            style={{ height: "100%", position: "relative" }}
           >
             <Switch>
               {redirectData.map(item => (
@@ -255,7 +301,7 @@ class BasicLayout extends React.PureComponent {
               <div style={{ minWidth: 1200 }} className={classNames(params)}>
                 {layout}
               </div>
-          )}
+            )}
           </ContainerQuery>
         </DocumentTitle>
       </MyContext.Provider>
@@ -264,5 +310,5 @@ class BasicLayout extends React.PureComponent {
 }
 
 export default connect(({ global = {} }) => ({
-  collapsed: global.collapsed,
+  collapsed: global.collapsed
 }))(BasicLayout);

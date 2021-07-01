@@ -1,15 +1,15 @@
-import React, { createElement } from 'react';
-import { Spin } from 'antd';
-import pathToRegexp from 'path-to-regexp';
-import Loadable from 'react-loadable';
-import { getMenuData } from './menu';
+import React, { createElement } from "react";
+import { Spin } from "antd";
+import pathToRegexp from "path-to-regexp";
+import Loadable from "react-loadable";
+import { getMenuData } from "./menu";
 
 let routerDataCache;
 
 const modelNotExisted = (app, model) =>
   // eslint-disable-next-line
   !app._models.some(({ namespace }) => {
-    return namespace === model.substring(model.lastIndexOf('/') + 1);
+    return namespace === model.substring(model.lastIndexOf("/") + 1);
   });
 
 // wrapper of dynamic
@@ -24,14 +24,14 @@ const dynamicWrapper = (app, models, component) => {
 
   // () => require('module')
   // transformed by babel-plugin-dynamic-import-node-sync
-  if (component.toString().indexOf('.then(') < 0) {
+  if (component.toString().indexOf(".then(") < 0) {
     return props => {
       if (!routerDataCache) {
         routerDataCache = getRouterData(app);
       }
       return createElement(component().default, {
         ...props,
-        routerData: routerDataCache,
+        routerData: routerDataCache
       });
     };
   }
@@ -46,13 +46,13 @@ const dynamicWrapper = (app, models, component) => {
         return props =>
           createElement(Component, {
             ...props,
-            routerData: routerDataCache,
+            routerData: routerDataCache
           });
       });
     },
     loading: () => {
       return <Spin size="large" className="global-spin" />;
-    },
+    }
   });
 };
 
@@ -71,59 +71,95 @@ function getFlatMenuData(menus) {
 
 export const getRouterData = app => {
   const routerConfig = {
-    '/': {
-      component: dynamicWrapper(app, ['user', 'login'], () => import('../layouts/BasicLayout')),
+    "/": {
+      component: dynamicWrapper(app, ["user", "login"], () =>
+        import("../layouts/BasicLayout")
+      )
     },
-    '/home': {
-      component: dynamicWrapper(app, [], () => import('../routes/Home')),
+    "/home": {
+      component: dynamicWrapper(app, [], () => import("../routes/Home"))
     },
-    '/plug/:id': {
-      component: dynamicWrapper(app, ['common'], () => import('../routes/Plugin/Common')),
+    "/plug/:index/:id": {
+      component: dynamicWrapper(app, ["common"], () =>
+        import("../routes/Plugin/Common")
+      )
     },
-    '/system/role': { // 角色管理
-      component: dynamicWrapper(app, ['role'], () => import('../routes/System/Role')),
+    "/system/role": {
+      // 角色管理
+      component: dynamicWrapper(app, ["role"], () =>
+        import("../routes/System/Role")
+      )
     },
-    '/system/manage': { // 用户管理
-      component: dynamicWrapper(app, ['manage', 'dataPermission'], () => import('../routes/System/User')),
+    "/system/manage": {
+      // 用户管理
+      component: dynamicWrapper(app, ["manage", "dataPermission"], () =>
+        import("../routes/System/User")
+      )
     },
-    '/system/resource': { // 资源管理
-      component: dynamicWrapper(app, ['resource'], () => import('../routes/System/Resource')),
+    "/system/resource": {
+      // 资源管理
+      component: dynamicWrapper(app, ["resource"], () =>
+        import("../routes/System/Resource")
+      )
     },
-    '/config/metadata': { // 元数据管理
-      component: dynamicWrapper(app, ['metadata'], () => import('../routes/System/Metadata')),
+    "/config/metadata": {
+      // 元数据管理
+      component: dynamicWrapper(app, ["metadata"], () =>
+        import("../routes/System/Metadata")
+      )
     },
-    '/config/plugin': { // 插件管理
-      component: dynamicWrapper(app, ['plugin'], () => import('../routes/System/Plugin')),
+    "/config/plugin": {
+      // 插件管理
+      component: dynamicWrapper(app, ["plugin"], () =>
+        import("../routes/System/Plugin")
+      )
     },
-    '/config/pluginhandle': { // 插件处理管理
-      component: dynamicWrapper(app, ['pluginHandle'], () => import('../routes/System/PluginHandle')),
+    "/config/pluginhandle": {
+      // 插件处理管理
+      component: dynamicWrapper(app, ["pluginHandle"], () =>
+        import("../routes/System/PluginHandle")
+      )
     },
-    '/config/auth': { // 认证管理
-      component: dynamicWrapper(app, ['auth'], () => import('../routes/System/AppAuth')),
+    "/config/auth": {
+      // 认证管理
+      component: dynamicWrapper(app, ["auth"], () =>
+        import("../routes/System/AppAuth")
+      )
     },
-    '/config/dict': { // 字典管理
-    component: dynamicWrapper(app, ['shenyuDict'], () => import('../routes/System/Dict')),
+    "/config/dict": {
+      // 字典管理
+      component: dynamicWrapper(app, ["shenyuDict"], () =>
+        import("../routes/System/Dict")
+      )
     },
-    '/exception/403': {
-      component: dynamicWrapper(app, [], () => import('../routes/Exception/403')),
+    "/exception/403": {
+      component: dynamicWrapper(app, [], () =>
+        import("../routes/Exception/403")
+      )
     },
-    '/exception/404': {
-      component: dynamicWrapper(app, [], () => import('../routes/Exception/404')),
+    "/exception/404": {
+      component: dynamicWrapper(app, [], () =>
+        import("../routes/Exception/404")
+      )
     },
-    '/exception/500': {
-      component: dynamicWrapper(app, [], () => import('../routes/Exception/500')),
+    "/exception/500": {
+      component: dynamicWrapper(app, [], () =>
+        import("../routes/Exception/500")
+      )
     },
-    '/exception/trigger': {
-      component: dynamicWrapper(app, ['error'], () =>
-        import('../routes/Exception/triggerException')
-      ),
+    "/exception/trigger": {
+      component: dynamicWrapper(app, ["error"], () =>
+        import("../routes/Exception/triggerException")
+      )
     },
-    '/user': {
-      component: dynamicWrapper(app, [], () => import('../layouts/UserLayout')),
+    "/user": {
+      component: dynamicWrapper(app, [], () => import("../layouts/UserLayout"))
     },
-    '/user/login': {
-      component: dynamicWrapper(app, ['login'], () => import('../routes/User/Login')),
-    },
+    "/user/login": {
+      component: dynamicWrapper(app, ["login"], () =>
+        import("../routes/User/Login")
+      )
+    }
   };
   // Get name from ./menu.js or just set it in the router data.
   const menuData = getFlatMenuData(getMenuData());
@@ -135,7 +171,9 @@ export const getRouterData = app => {
     // Regular match item name
     // eg.  router /user/:id === /user/chen
     const pathRegexp = pathToRegexp(path);
-    const menuKey = Object.keys(menuData).find(key => pathRegexp.test(`${key}`));
+    const menuKey = Object.keys(menuData).find(key =>
+      pathRegexp.test(`${key}`)
+    );
     let menuItem = {};
     // If menuKey is not empty
     if (menuKey) {
@@ -149,7 +187,7 @@ export const getRouterData = app => {
       ...router,
       name: router.name || menuItem.name,
       authority: router.authority || menuItem.authority,
-      hideInBreadcrumb: router.hideInBreadcrumb || menuItem.hideInBreadcrumb,
+      hideInBreadcrumb: router.hideInBreadcrumb || menuItem.hideInBreadcrumb
     };
     routerData[path] = router;
   });
