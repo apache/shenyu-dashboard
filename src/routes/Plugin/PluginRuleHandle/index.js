@@ -1,9 +1,11 @@
-import RequestRuleHandle from './RequestRuleHandle';
-import HystrixRuleHandle from './HystrixRuleHandle';
+import RequestRuleHandle from "./RequestRuleHandle";
+import HystrixRuleHandle from "./HystrixRuleHandle";
 import ParamPluginRuleHandle from "./ParamPluginRuleHandle";
+import ResponseRuleHandle from "./ResponseRuleHandle";
 
 export default {
-    request:RequestRuleHandle,
-    hystrix:HystrixRuleHandle,
-    param_mapping: ParamPluginRuleHandle
-}
+  request: RequestRuleHandle,
+  modifyResponse: ResponseRuleHandle,
+  hystrix: HystrixRuleHandle,
+  param_mapping: ParamPluginRuleHandle
+};
