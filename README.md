@@ -14,7 +14,6 @@ ShenYu Dashboard is frontend of a management background for [shenyu](https://git
 ### Configuration
 
 Modify the api url for different environment, eg: `http://192.168.1.100:8000`
-![index.ejs](https://dromara.github.io/shenyu-dashboard/doc/img/index.ejs.png)
 
 
 ### Develop Environment
@@ -37,15 +36,4 @@ npm run build
 # copy to shenyu-admin
 cp -rf dist/* shenyu-admin/src/main/resources/static/
 ```
-
-## Screenshots
-
-#### Divide Plugin
-![Divide Plugin](https://dromara.github.io/shenyu-dashboard/doc/img/divide-plugin.png)
-
-#### Add Rules
-![Add Rules](https://dromara.github.io/shenyu-dashboard/doc/img/add-rules.jpg)
-
-#### Plugin Management
-![Plugin Management](https://dromara.github.io/shenyu-dashboard/doc/img/plugin-management.jpg)
 
