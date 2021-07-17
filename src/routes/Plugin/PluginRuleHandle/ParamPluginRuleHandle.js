@@ -16,340 +16,323 @@
  */
 
 import React, {Component} from "react";
-import {Form, Select, Row, Col, Input, Button} from "antd";
-import styles from "../index.less";
+import {Form, Select, Row, Col, Input, Button, Tabs, Table} from "antd";
 import {getIntlContent} from '../../../utils/IntlUtils'
 
-const FormItem = Form.Item;
 const {Option} = Select;
+const {TabPane} = Tabs;
+
+const TypeKey = {
+  body: ["addParameterKeys", "replaceParameterKeys", "removeParameterKeys"]
+};
+
+function ConfigInput(cfProps) {
+  const {code, data, onChange} = cfProps;
+  return (
+    <Input
+      value={data[code]}
+      placeholder={`please enter ${code}`}
+      addonBefore={code}
+      onChange={e => {
+        onChange({[code]: e.target.value}, data.id);
+      }}
+    />
+  );
+}
+
+
+class ParamPluginRuleConfig extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      activeKey: "body",
+      body: [{id: (+new Date() + 1).toString()}],
+    };
+  }
+
+  componentDidMount() {
+    const {value} = this.props;
+    const {body} = this.state;
+    if (value) {
+      const data = {};
+      try {
+        Object.assign(data, JSON.parse(value));
+      } catch (e) {
+        console.log(e);
+      }
+      const bodyData = [];
+      const draftData = [];
+
+      Object.keys(data).forEach(type => {
+        if (Array.isArray(data[type])) {
+          data[type].forEach(item => {
+            if (typeof item === "string") {
+              draftData.push({type, key: item});
+            } else {
+              draftData.push({type, ...item});
+            }
+          });
+        }
+        if (Object.prototype.toString.call(data[type]) === "[object Object]") {
+          Object.keys(data[type]).forEach(key => {
+            draftData.push({type, key, value: data[type][key]});
+          });
+        }
+      });
+      draftData.forEach((item, i) => {
+        if (TypeKey.body.includes(item.type)) {
+          bodyData.push({...item, id: i.toString()});
+        }
+      });
+      this.setState({
+        body: bodyData.concat(body),
+      });
+    }
+  }
+
+  componentDidUpdate() {
+    const {onChange, value} = this.props;
+    const data = {};
+    const currentData = this.getCurrentData();
+    const valueStr = JSON.stringify(currentData);
+    // console.log(currentData);
+    if (value !== undefined) {
+      try {
+        Object.assign(data, JSON.parse(value));
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    if (valueStr !== value && onChange) {
+      onChange(valueStr);
+    }
+  }
+
+  getCurrentData = () => {
+    const {body} = this.state;
+    const currentData = {};
+
+    const hanlePathKeyValue = item => {
+      if (currentData[item.type] === undefined) {
+        currentData[item.type] = [];
+      }
+      currentData[item.type].push({
+        path: item.path,
+        key: item.key,
+        value: item.value
+      });
+    };
+    const hanleKeys = item => {
+      if (currentData[item.type] === undefined) {
+        currentData[item.type] = [];
+      }
+      currentData[item.type].push(item.key);
+    };
+
+    const handleForEach = item => {
+
+      if (["addParameterKeys", "replaceParameterKeys"].includes(item.type)) {
+        hanlePathKeyValue(item);
+      }
+      if (["removeParameterKeys"].includes(item.type)) {
+        hanleKeys(item);
+      }
+    };
+    body.forEach(handleForEach);
+    return currentData;
+  };
+
+  onChangeConfig = (value, id) => {
+    const state = this.state;
+    const {activeKey} = state;
+    const index = state[activeKey].findIndex(v => v.id === id);
+    const newData = state[activeKey].map(v => {
+      if (v.id === id) {
+        return value.type
+          ? {id: v.id, ...value}
+          : {
+            ...v,
+            ...value
+          };
+      }
+      return v;
+    });
+    this.setState({
+      [activeKey]:
+        value.type &&
+        state[activeKey][index].type === undefined &&
+        activeKey === "body"
+          ? newData.concat([{id: (+new Date()).toString()}])
+          : newData
+    });
+  };
+
+  renderConfig = data => {
+    let Comp = null;
+    if (!data.type) {
+      return Comp;
+    }
+
+    switch (data.type) {
+      case "addParameterKeys":
+      case "replaceParameterKeys":
+        Comp = (
+          <Row gutter={8}>
+            <Col span={8}>
+              <ConfigInput
+                code="path"
+                data={data}
+                onChange={this.onChangeConfig}
+              />
+            </Col>
+            <Col span={8}>
+              <ConfigInput
+                code="key"
+                data={data}
+                onChange={this.onChangeConfig}
+              />
+            </Col>
+            <Col span={8}>
+              <ConfigInput
+                code="value"
+                data={data}
+                onChange={this.onChangeConfig}
+              />
+            </Col>
+          </Row>
+        );
+        break;
+      case "removeParameterKeys":
+        Comp = (
+          <Row gutter={8}>
+            <Col span={24}>
+              <ConfigInput
+                code="key"
+                data={data}
+                onChange={this.onChangeConfig}
+              />
+            </Col>
+          </Row>
+        );
+        break;
+      default:
+        break;
+    }
+
+    return Comp;
+  };
+
+  render() {
+    const {activeKey} = this.state;
+
+    const columns = [
+      {
+        title: "Type",
+        dataIndex: "type",
+        width: 180,
+        render: (value, row) => {
+          return (
+            <Select
+              value={row.type}
+              onChange={type => this.onChangeConfig({type}, row.id)}
+            >
+              {TypeKey[activeKey].map(v => (
+                <Option key={v} value={v}>
+                  {v}
+                </Option>
+              ))}
+            </Select>
+          );
+        }
+      },
+      {
+        title: "Config",
+        dataIndex: "config",
+        align: "center",
+        render: (value, row) => this.renderConfig(row)
+      },
+      {
+        title: "Operater",
+        dataIndex: "id",
+        with: 80,
+        fixed: "right",
+        render: (value, row, index) => {
+          return (
+            this.state[activeKey].length - 1 !== index && (
+              <Button
+                type="danger"
+                onClick={() => {
+                  this.setState({
+                    // eslint-disable-next-line react/no-access-state-in-setstate
+                    [activeKey]: this.state[activeKey].filter(
+                      v => v.id !== row.id
+                    )
+                  });
+                }}
+              >
+                {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+              </Button>
+            )
+          );
+        }
+      }
+    ];
+
+    return (
+      <>
+        <Tabs
+          activeKey={activeKey}
+          onChange={key =>
+            this.setState({
+              activeKey: key
+            })
+          }
+        >
+          <TabPane tab="Body" key="body"/>
+        </Tabs>
+        <Table
+          rowKey="id"
+          size="small"
+          columns={activeKey === "body" ? columns : columns}
+          dataSource={this.state[activeKey]}
+          pagination={false}
+        />
+      </>
+    );
+  }
+}
 
 export default class ParamPluginRuleHandle extends Component {
-
   constructor(props) {
     super(props);
     props.onRef(this);
-    this.state = {
-      parameterOperateType: [
-        {
-          label: "addParameterKeys",
-          value: "addParameterKeys"
-        },
-        {
-          label: "replaceParameterKeys",
-          value: "replaceParameterKeys"
-        },
-        {
-          label: "removeParameterKeys",
-          value: "removeParameterKeys"
-        }
-      ]
-    }
-    this.initList(props);
   }
 
-  initList = (props) => {
-    let handle = props.handle && JSON.parse(props.handle);
-    let list = [
-      [
-        {fieldLabel: "OperateType", fieldName: `parameter_type_0`, fieldValue: `addParameterKeys`},
-        {
-          fieldLabel: getIntlContent(`SHENYU.PLUGIN.PARAM.PATH`),
-          fieldName: `parameter_path_0`,
-          fieldValue: null
-        },
-        {
-          fieldLabel: getIntlContent(`SHENYU.PLUGIN.PARAM.KEY`),
-          fieldName: `parameter_key_0`,
-          fieldValue: null
-        },
-        {
-          fieldLabel: getIntlContent(`SHENYU.PLUGIN.PARAM.VALUE`),
-          fieldName: `parameter_value_0`,
-          fieldValue: null
-        },
-
-      ]
-    ];
-    if (handle && (
-      (handle.addParameterKeys && handle.addParameterKeys.length > 0) ||
-      (handle.replaceParameterKeys && handle.replaceParameterKeys.length > 0) ||
-      (handle.removeParameterKeys && handle.removeParameterKeys.length > 0)
-    )) {
-      list = [];
-      let index = 0;
-      // eslint-disable-next-line no-unused-expressions
-      handle.addParameterKeys && handle.addParameterKeys.length > 0 && handle.addParameterKeys.forEach((e) => {
-        list.push([
-          {fieldLabel: "OperateType", fieldName: `parameter_type_${index}`, fieldValue: `addParameterKeys`},
-          {
-            fieldLabel: getIntlContent(`SHENYU.PLUGIN.PARAM.PATH`),
-            fieldName: `parameter_path_${index}`,
-            fieldValue: e.path
-          },
-          {
-            fieldLabel: getIntlContent(`SHENYU.PLUGIN.PARAM.KEY`),
-            fieldName: `parameter_key_${index}`,
-            fieldValue: e.key
-          },
-          {
-            fieldLabel: getIntlContent(`SHENYU.PLUGIN.PARAM.VALUE`),
-            fieldName: `parameter_value_${index}`,
-            fieldValue: e.value
-          }
-        ]);
-        index += 1;
-      })
-      // eslint-disable-next-line no-unused-expressions
-      handle.replaceParameterKeys && handle.replaceParameterKeys.length > 0 && handle.replaceParameterKeys.forEach((e) => {
-        list.push([
-          {
-            fieldLabel: "OperateType",
-            fieldName: `parameter_type_${index}`,
-            fieldValue: `replaceParameterKeys`
-          },
-          {
-            fieldLabel: getIntlContent(`SHENYU.PLUGIN.PARAM.PATH`),
-            fieldName: `parameter_path_${index}`,
-            fieldValue: e.path
-          },
-          {
-            fieldLabel: getIntlContent(`SHENYU.PLUGIN.PARAM.KEY`),
-            fieldName: `parameter_key_${index}`,
-            fieldValue: e.key
-          },
-          {
-            fieldLabel: getIntlContent(`SHENYU.PLUGIN.PARAM.VALUE`),
-            fieldName: `parameter_value_${index}`,
-            fieldValue: e.value
-          },
-        ])
-        index += 1;
-      })
-
-      let removeKeys = [];
-      // eslint-disable-next-line no-unused-expressions
-      (handle.removeParameterKeys && handle.removeParameterKeys.length > 0) && handle.removeParameterKeys.forEach((e, i) => {
-        if (i % 3 === 0) {
-          removeKeys.push([]);
-        }
-        removeKeys[removeKeys.length - 1].push(e);
-      });
-      // eslint-disable-next-line no-unused-expressions
-      (removeKeys && removeKeys.length > 0) && removeKeys.forEach((e) => {
-        let dataItem = [
-          {
-            fieldLabel: "OperateType",
-            fieldName: `parameter_type_${index}`,
-            fieldValue: `removeParameterKeys`
-          },
-          {
-            fieldLabel: getIntlContent(`SHENYU.PLUGIN.PARAM.KEY`),
-            fieldName: `parameter_path_${index}`,
-            fieldValue: e[0]
-          }
-        ];
-        if (e[1]) {
-          dataItem.push(
-            {
-              fieldLabel: getIntlContent(`SHENYU.PLUGIN.PARAM.KEY`),
-              fieldName: `parameter_key_${index}`,
-              fieldValue: e[1]
-            }
-          )
-        }
-        if (e[2]) {
-          dataItem.push(
-            {
-              fieldLabel: getIntlContent(`SHENYU.PLUGIN.PARAM.KEY`),
-              fieldName: `parameter_value_${index}`,
-              fieldValue: e[2]
-            }
-          )
-        }
-        list.push(dataItem)
-        index += 1;
-      })
-    }
-    this.state.parameterList = list;
-  }
-
-  handleAddRow = () => {
-    let {parameterList} = this.state;
-    let strs = parameterList[parameterList.length - 1][0].fieldName.split("_");
-    // eslint-disable-next-line radix
-    let index = parseInt(strs[strs.length - 1]) + 1;
-
-    let defaultFieldType = this.state.parameterOperateType[0].value;
-    parameterList.push(
-      [
-        {fieldLabel: "OperateType", fieldName: `parameter_type_${index}`, fieldValue: defaultFieldType},
-        {
-          fieldLabel: getIntlContent(`SHENYU.PLUGIN.PARAM.PATH`),
-          fieldName: `parameter_path_${index}`,
-          fieldValue: null
-        },
-        {
-          fieldLabel: getIntlContent(`SHENYU.PLUGIN.PARAM.KEY`),
-          fieldName: `parameter_key_${index}`,
-          fieldValue: null
-        },
-        {
-          fieldLabel: getIntlContent(`SHENYU.PLUGIN.PARAM.VALUE`),
-          fieldName: `parameter_value_${index}`,
-          fieldValue: null
-        },
-      ]
-    )
-    this.setState({
-      parameterList
-    })
-  }
-
-  handleDeleteRow = (type, rowIndex) => {
-    if (rowIndex === 0) {
-      return;
-    }
-    // eslint-disable-next-line react/no-access-state-in-setstate
-    let list = this.state.parameterList;
-    list.splice(rowIndex, 1);
-    this.setState({
-       parameterList: list
-    })
-  }
-
-  handleTypeChange = (val, rowIndex) => {
-    // eslint-disable-next-line react/no-access-state-in-setstate
-    let list = this.state.parameterList;
-    if (val.startsWith("remove")) {
-      list[rowIndex][1].fieldLabel = getIntlContent(`SHENYU.PLUGIN.PARAM.KEY`);
-      list[rowIndex][2].fieldLabel = getIntlContent(`SHENYU.PLUGIN.PARAM.KEY`);
-      list[rowIndex][3].fieldLabel = getIntlContent(`SHENYU.PLUGIN.PARAM.KEY`);
-    } else {
-      list[rowIndex][1].fieldLabel = getIntlContent(`SHENYU.PLUGIN.PARAM.PATH`);
-      list[rowIndex][2].fieldLabel = getIntlContent(`SHENYU.PLUGIN.PARAM.KEY`);
-      list[rowIndex][3].fieldLabel = getIntlContent(`SHENYU.PLUGIN.PARAM.VALUE`);
-    }
-    this.setState({
-      parameterList: list
-    })
-  }
-
-  getData = (formValues) => {
-    let handle = {
-      addParameterKeys: [],
-      replaceParameterKeys: [],
-      removeParameterKeys: []
-    };
-    this.buildData(handle, formValues);
-    return JSON.stringify(handle);
-  }
-
-  buildData = (handle, formValues) => {
-    let list = this.state.parameterList;
-    list.forEach(row => {
-      let type = formValues[row[0].fieldName];
-      let value1 = row.length > 1 && formValues[row[1].fieldName];
-      let value2 = row.length > 2 && formValues[row[2].fieldName];
-      let value3 = row.length > 3 && formValues[row[3].fieldName];
-      if (!type.startsWith("remove") && value1 && value2 && value3) {
-        handle[type].push({
-          path: value1,
-          key: value2,
-          value: value3,
-        })
-      }
-      if (type.startsWith("remove")) {
-        if (value1) {
-          handle[type].push(value1)
-        }
-        if (value2) {
-          handle[type].push(value2)
-        }
-        if (value3) {
-          handle[type].push(value3)
-        }
-      }
-    })
-  }
+  getData = () => {
+    const {
+      form: {getFieldValue}
+    } = this.props;
+    const value = getFieldValue("handle");
+    return value;
+  };
 
   render() {
-    const {parameterOperateType, parameterList} = this.state;
-    const {form} = this.props;
-    const {getFieldDecorator} = form;
+    const {
+      handle,
+      form: {getFieldDecorator}
+    } = this.props;
+
     return (
-      <div className={styles.handleWrap} style={{padding: "0px 40px"}}>
-        <div className={styles.header}>
-          <h3 style={{width: 60, marginTop: 10}}>{getIntlContent("SHENYU.COMMON.DEAL")}: </h3>
-        </div>
-        <div style={{display:"flex",flexDirection:"column",marginLeft:"10px"}}>
-          {parameterList && parameterList.length > 0 && (
-            parameterList.map((row, rowIndex) => {
-              return (
-                <Row gutter={12} key={rowIndex}>
-                  {
-                    row.map((field, i) => {
-                      let rules = [];
-                      let placeholder = field.fieldLabel;
-                      return (
-                          field.fieldName.includes("type") ? (
-                            <Col span={6} key={i}>
-                              <FormItem>
-                                {getFieldDecorator(field.fieldName, {
-                                  rules,
-                                  initialValue: field.fieldValue,
-                                })(
-                                  <Select onChange={(val) => { this.handleTypeChange(val, rowIndex) }} placeholder={placeholder} style={{ width: 190 }}>
-                                    {
-                                      parameterOperateType.map(opt => {
-                                        return <Option value={opt.value}>{opt.label}</Option>
-                                      })
-                                    }
-                                  </Select>
-                                )}
-                              </FormItem>
-                            </Col>
-                          ) : (
-                            <Col span={4} key={i}>
-                              <FormItem>
-                                {getFieldDecorator(field.fieldName, {
-                                  rules,
-                                  initialValue: field.fieldValue,
-                                })(
-                                  <Input
-                                    // addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
-                                    placeholder={placeholder}
-                                    key={field.fieldName}
-                                    // type="number"
-                                  />)
-                                }
-                              </FormItem>
-                            </Col>
-                          )
-                      )}
-                    )
-                  }
-                  <Col span={5}>
-                    <Button
-                      type="danger"
-                      style={{marginRight: "20px"}}
-                      onClick={() => {
-                        this.handleDeleteRow("parameter", rowIndex);
-                      }}
-                    >
-                      {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
-                    </Button>
-                    {rowIndex === 0 && (
-                      <Button onClick={() => this.handleAddRow()} type="primary">
-                        {getIntlContent("SHENYU.COMMON.ADD")}
-                      </Button>
-                    )}
-                  </Col>
-                </Row>
-              )
-            })
-          )}
-        </div>
-      </div>
+      <Form.Item
+        label={getIntlContent("SHENYU.COMMON.DEAL")}
+        labelCol={{span: 3}}
+        wrapperCol={{span: 21}}
+      >
+        {getFieldDecorator("handle", {
+          initialValue: handle
+        })(<ParamPluginRuleConfig/>)}
+      </Form.Item>
     );
   }
 }
