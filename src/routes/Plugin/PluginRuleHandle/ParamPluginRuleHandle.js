@@ -40,7 +40,6 @@ function ConfigInput(cfProps) {
   );
 }
 
-
 class ParamPluginRuleConfig extends Component {
   constructor(props) {
     super(props);
