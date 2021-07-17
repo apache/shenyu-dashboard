@@ -57,7 +57,6 @@ class ParamPluginRuleConfig extends Component {
       try {
         Object.assign(data, JSON.parse(value));
       } catch (e) {
-        console.log(e);
       }
       const bodyData = [];
       const draftData = [];
@@ -99,7 +98,6 @@ class ParamPluginRuleConfig extends Component {
       try {
         Object.assign(data, JSON.parse(value));
       } catch (e) {
-        console.log(e);
       }
     }
 
