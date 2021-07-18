@@ -57,6 +57,7 @@ class ParamPluginRuleConfig extends Component {
       try {
         Object.assign(data, JSON.parse(value));
       } catch (e) {
+        console.log(e)
       }
       const bodyData = [];
       const draftData = [];
@@ -98,6 +99,7 @@ class ParamPluginRuleConfig extends Component {
       try {
         Object.assign(data, JSON.parse(value));
       } catch (e) {
+        console.log(e)
       }
     }
 
@@ -141,7 +143,7 @@ class ParamPluginRuleConfig extends Component {
   };
 
   onChangeConfig = (value, id) => {
-    const state = this.state;
+    const state = state;
     const {activeKey} = state;
     const index = state[activeKey].findIndex(v => v.id === id);
     const newData = state[activeKey].map(v => {
@@ -286,7 +288,7 @@ class ParamPluginRuleConfig extends Component {
             })
           }
         >
-          <TabPane tab="Body" key="body"/>
+          <TabPane tab="Body" key="body" />
         </Tabs>
         <Table
           rowKey="id"
@@ -328,7 +330,7 @@ export default class ParamPluginRuleHandle extends Component {
       >
         {getFieldDecorator("handle", {
           initialValue: handle
-        })(<ParamPluginRuleConfig/>)}
+        })(<ParamPluginRuleConfig />)}
       </Form.Item>
     );
   }
