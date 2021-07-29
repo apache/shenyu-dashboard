@@ -1,10 +1,10 @@
-# ShenYu Dashboard
+# Apache ShenYu Dashboard
 
-![build](https://github.com/dromara/shenyu-dashboard/workflows/build/badge.svg)
+![build](https://github.com/apache/shenyu-dashboard/workflows/build/badge.svg)
 
 
 ## Overview
-ShenYu Dashboard is frontend of a management background for [shenyu](https://github.com/dromara/shenyu). The API interface is in the [shenyu-admin](https://github.com/dromara/shenyu/tree/master/shenyu-admin) module.
+Apache ShenYu Dashboard is frontend of a management background for [Apache ShenYu](https://github.com/apache/shenyu). The API interface is in the [Apache Shenyu Admin](https://github.com/apache/shenyu/tree/master/shenyu-admin) module.
                                                                                                    
 ## Prerequisite
 - node v8.0+
@@ -33,7 +33,7 @@ npm install
 # build for production
 npm run build
 
-# copy to shenyu-admin
+# copy to apache-shenyu-admin
 cp -rf dist/* shenyu-admin/src/main/resources/static/
 ```
 

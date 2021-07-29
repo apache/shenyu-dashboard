@@ -1,7 +1,7 @@
 {
-  "name": "shenyu-dashboard",
+  "name": "apache-shenyu-dashboard",
   "version": "2.2.1",
-  "description": "ShenYu Dashboard",
+  "description": "Apache ShenYu Dashboard",
   "private": true,
   "scripts": {
     "start": "cross-env ESLINT=none roadhog dev",
