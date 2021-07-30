@@ -150,7 +150,7 @@ class BasicLayout extends React.PureComponent {
   getPageTitle() {
     const { routerData, location } = this.props;
     const { pathname } = location;
-    let title = "Gateway Management";
+    let title = "Apache ShenYu - Gateway Management";
     let currRouterData = null;
     // match params path
     Object.keys(routerData).forEach(key => {
@@ -159,7 +159,7 @@ class BasicLayout extends React.PureComponent {
       }
     });
     if (currRouterData && currRouterData.name) {
-      title = `ShenYu - Gateway Management`;
+      title = `Apache ShenYu - ${currRouterData.name}`;
     }
     return title;
   }
