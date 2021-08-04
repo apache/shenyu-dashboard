@@ -214,7 +214,7 @@ class AddModal extends Component {
                 }
               ],
               initialValue: role
-            })(<Input maxLength={10} />)}
+            })(<Input maxLength={50} />)}
           </FormItem>
           <FormItem
             label={getIntlContent("SHENYU.PLUGIN.SORT")}
