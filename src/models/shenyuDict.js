@@ -112,7 +112,7 @@ export default {
     *fetchByType(params, {call, put, select }) {
       const {payload} = params;
       let callback = payload.callBack;
-      let shenyuDictMap = yield select((state)=>state.shenyuDict.shenyuDictMap);
+      let shenyuDictMap = yield select((state)=>state.shenyuDict.shenyuDictMap || {});
       if(shenyuDictMap[payload.type]) {
         callback(shenyuDictMap[payload.type])
       } else {
