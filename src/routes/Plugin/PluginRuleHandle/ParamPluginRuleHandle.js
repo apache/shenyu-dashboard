@@ -143,8 +143,8 @@ class ParamPluginRuleConfig extends Component {
   };
 
   onChangeConfig = (value, id) => {
-    const state = state;
-    const {activeKey} = state;
+    const state = this.state;
+    const { activeKey } = state;
     const index = state[activeKey].findIndex(v => v.id === id);
     const newData = state[activeKey].map(v => {
       if (v.id === id) {
@@ -157,14 +157,14 @@ class ParamPluginRuleConfig extends Component {
       }
       return v;
     });
-    this.setState({
+    this.setState(prevState =>({
       [activeKey]:
         value.type &&
-        state[activeKey][index].type === undefined &&
+        prevState[activeKey][index].type === undefined &&
         activeKey === "body"
           ? newData.concat([{id: (+new Date()).toString()}])
           : newData
-    });
+    }))
   };
 
   renderConfig = data => {
