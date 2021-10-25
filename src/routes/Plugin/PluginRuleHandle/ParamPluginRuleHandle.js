@@ -143,7 +143,7 @@ class ParamPluginRuleConfig extends Component {
   };
 
   onChangeConfig = (value, id) => {
-    const state = state;
+    const state = this.state;
     const {activeKey} = state;
     const index = state[activeKey].findIndex(v => v.id === id);
     const newData = state[activeKey].map(v => {
