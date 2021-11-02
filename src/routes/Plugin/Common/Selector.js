@@ -219,6 +219,14 @@ class AddModal extends Component {
     });
   };
 
+  onDealChange = (value,label,item) => {
+    if(label === item.label){
+      item.value = value;
+    }else{
+      item.value = item.label;
+    }
+  }
+
   render() {
     let {
       onCancel,
@@ -380,6 +388,7 @@ class AddModal extends Component {
                         </li>
 
                         <li>
+                          <Tooltip title={item.paramValue}>
                           <Input
                             onChange={e => {
                               this.conditionChange(
@@ -391,6 +400,7 @@ class AddModal extends Component {
                             value={item.paramValue}
                             style={{ width: 300 }}
                           />
+                          </Tooltip>
                         </li>
                         <li>
                           <Button
@@ -528,7 +538,7 @@ class AddModal extends Component {
                             } else {
                               return (
                                 <li key={fieldName}>
-                                  <Tooltip title={placeholder}>
+                                  <Tooltip title={item.value}>
                                     <FormItem>
                                       {getFieldDecorator(fieldName, {
                                         rules,
@@ -538,6 +548,13 @@ class AddModal extends Component {
                                           addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
                                           placeholder={placeholder}
                                           key={fieldName}
+                                          onChange={e=> {
+                                            this.onDealChange(
+                                              e.target.value,
+                                              item.label,
+                                              item
+                                            );
+                                          }}
                                         />
                                       )}
                                     </FormItem>
