@@ -31,6 +31,7 @@
   "SHENYU.COMMON.YES": "YES",
   "SHENYU.COMMON.NO": "NO",
   "SHENYU.COMMON.PLEASESELECT": "Select",
+  "SHENYU.COMMON.SOURCE": "Source",
   "SHENYU.COMMON.RESPONSE.ADD.SUCCESS": "Add Success",
   "SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS": "Update Success",
   "SHENYU.COMMON.RESPONSE.DELETE.SUCCESS": "Delete Success",
@@ -65,7 +66,9 @@
   "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME": "Name",
   "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME": "Name",
   "SHENYU.PLUGIN.SEARCH.RULE.NAME": "RuleName",
+  "SHENYU.PLUGIN.SEARCH.RULE.COPY": "Copy Rule",
   "SHENYU.SELECTOR.NAME": "Selector",
+  "SHENYU.SELECTOR.COPY": "Copy Selector",
   "SHENYU.SELECTOR.CONTINUE": "Continued",
   "SHENYU.SELECTOR.PRINTLOG": "PrintLogs",
   "SHENYU.SELECTOR.WHETHEROPEN": "Enable",
@@ -73,7 +76,10 @@
   "SHENYU.SELECTOR.INPUTNUMBER": "Please Enter The Number 1-100",
   "SHENYU.SELECTOR.INPUTORDER":
     "You can fill in the numeric flag execution order between 1 and 100",
+  "SHENYU.SELECTOR.SOURCE.PLACEHOLDER":
+    "Please select the selector you want to copy",
   "SHENYU.RULE.NAME": "Rules",
+  "SHENYU.RULE.SOURCE.PLACEHOLDER": "Please select the rule you want to copy",
   "SHENYU.COMMON.LOAD": "LoadPlugins",
   "SHENYU.COMMON.LOADSTRATEGY": "LoadStrategy",
   "SHENYU.COMMON.RETRYCOUNT": "RetryCount",

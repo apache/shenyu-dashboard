@@ -19,14 +19,15 @@ import React, { Component } from "react";
 import { Modal, Form, Select, Input, Switch, Button, message } from "antd";
 import { connect } from "dva";
 import styles from "../index.less";
-import { getIntlContent } from "../../../utils/IntlUtils"
+import { getIntlContent } from "../../../utils/IntlUtils";
 import CommonRuleHandle from "./CommonRuleHandle";
-import PluginRuleHandle from "../PluginRuleHandle"
+import PluginRuleHandle from "../PluginRuleHandle";
+import RuleCopy from "./RuleCopy";
 
 const FormItem = Form.Item;
 const { Option } = Select;
 
-@connect(({pluginHandle, shenyuDict }) => ({
+@connect(({ pluginHandle, shenyuDict }) => ({
   pluginHandle,
   shenyuDict
 }))
@@ -36,7 +37,9 @@ class AddModal extends Component {
 
     const customPluginNames = Object.keys(PluginRuleHandle);
     this.state = {
-      customRulePage: customPluginNames.includes(props.pluginName)
+      customRulePage: customPluginNames.includes(props.pluginName),
+
+      visible: false
     };
 
     this.initRuleCondition(props);
@@ -44,12 +47,12 @@ class AddModal extends Component {
   }
 
   componentWillMount() {
-    const { dispatch,pluginId, handle, multiRuleHandle } = this.props;
-    this.setState({pluginHandleList: []})
-    let type = 2
+    const { dispatch, pluginId, handle, multiRuleHandle } = this.props;
+    this.setState({ pluginHandleList: [] });
+    let type = 2;
     dispatch({
       type: "pluginHandle/fetchByPluginId",
-      payload:{
+      payload: {
         pluginId,
         type,
         handle,
@@ -61,7 +64,7 @@ class AddModal extends Component {
     });
   }
 
-  initRuleCondition = (props) => {
+  initRuleCondition = props => {
     const ruleConditions = props.ruleConditions || [
       {
         paramType: "uri",
@@ -81,30 +84,30 @@ class AddModal extends Component {
       }
     });
     this.state.ruleConditions = ruleConditions;
-  }
+  };
 
   initDics = () => {
     this.initDic("operator");
     this.initDic("matchMode");
     this.initDic("paramType");
-  }
+  };
 
-  initDic = (type) => {
+  initDic = type => {
     const { dispatch } = this.props;
     dispatch({
       type: "shenyuDict/fetchByType",
-      payload:{
+      payload: {
         type,
         callBack: dics => {
-          this.state[`${type}Dics`] = dics
+          this.state[`${type}Dics`] = dics;
         }
       }
     });
-  }
+  };
 
-  setPluginHandleList = pluginHandles=>{
-    this.setState({pluginHandleList: pluginHandles})
-  }
+  setPluginHandleList = pluginHandles => {
+    this.setState({ pluginHandleList: pluginHandles });
+  };
 
   checkConditions = () => {
     let { ruleConditions } = this.state;
@@ -148,16 +151,18 @@ class AddModal extends Component {
         const submit = this.checkConditions();
         if (submit) {
           let handle;
-          if(!customRulePage) {
+          if (!customRulePage) {
             handle = [];
             pluginHandleList.forEach((handleList, index) => {
               handle[index] = {};
-              handleList.forEach((item) => {
-                handle[index][item.field] = values[item.field + index]
+              handleList.forEach(item => {
+                handle[index][item.field] = values[item.field + index];
               });
             });
-            handle = multiRuleHandle ? JSON.stringify(handle) : JSON.stringify(handle[0]) ;
-          } else if(this.handleComponentRef){
+            handle = multiRuleHandle
+              ? JSON.stringify(handle)
+              : JSON.stringify(handle[0]);
+          } else if (this.handleComponentRef) {
             handle = this.handleComponentRef.getData(values);
           }
 
@@ -203,27 +208,27 @@ class AddModal extends Component {
   };
 
   handleAddHandle = () => {
-    let {pluginHandleList} = this.state;
+    let { pluginHandleList } = this.state;
     let pluginHandle = pluginHandleList[0];
-    let toAddPluginHandle = pluginHandle.map(e=>{
-      return {...e,value:null};
-    })
+    let toAddPluginHandle = pluginHandle.map(e => {
+      return { ...e, value: null };
+    });
     pluginHandleList.push(toAddPluginHandle);
     this.setState({
       pluginHandleList
-    })
-  }
+    });
+  };
 
-  handleDeleteHandle = (index) => {
-    let {pluginHandleList} = this.state;
-    if(pluginHandleList.length === 1) {
+  handleDeleteHandle = index => {
+    let { pluginHandleList } = this.state;
+    if (pluginHandleList.length === 1) {
       message.destroy();
       message.error(getIntlContent("SHENYU.PLUGIN.HANDLE.TIP"));
     } else {
-      pluginHandleList.splice(index,1);
-      this.setState({pluginHandleList})
+      pluginHandleList.splice(index, 1);
+      this.setState({ pluginHandleList });
     }
-  }
+  };
 
   conditionChange = (index, name, value) => {
     let { ruleConditions } = this.state;
@@ -241,6 +246,32 @@ class AddModal extends Component {
     this.setState({ ruleConditions });
   };
 
+  handleCopyData = copyData => {
+    const { form } = this.props;
+    const { ruleConditions, name, matchMode, loged, enabled, sort } = copyData;
+    const formData = {
+      name,
+      matchMode: matchMode.toString(),
+      loged,
+      enabled,
+      sort
+    };
+    this.initRuleCondition({
+      ruleConditions: ruleConditions.map(v => {
+        const {
+          id: rawId,
+          selectorId,
+          dateCreated,
+          dateUpdated,
+          ...condition
+        } = v;
+        return condition;
+      })
+    });
+    form.setFieldsValue(formData);
+    this.setState({ visible: false });
+  };
+
   render() {
     let {
       onCancel,
@@ -252,14 +283,22 @@ class AddModal extends Component {
       sort = "",
       multiRuleHandle,
       pluginName,
-      handle,
+      handle
     } = this.props;
-    const { ruleConditions,pluginHandleList, operatorDics, matchModeDics, paramTypeDics, customRulePage } = this.state;
+    const {
+      ruleConditions,
+      pluginHandleList,
+      operatorDics,
+      matchModeDics,
+      paramTypeDics,
+      customRulePage,
+      visible
+    } = this.state;
 
     let RuleHandleComponent;
-    if(customRulePage) {
-      RuleHandleComponent = PluginRuleHandle[pluginName]
-    } else if(pluginHandleList && pluginHandleList.length > 0) {
+    if (customRulePage) {
+      RuleHandleComponent = PluginRuleHandle[pluginName];
+    } else if (pluginHandleList && pluginHandleList.length > 0) {
       RuleHandleComponent = CommonRuleHandle;
     }
 
@@ -292,34 +331,73 @@ class AddModal extends Component {
         onCancel={onCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} {...formItemLayout}>
+          <FormItem
+            label={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")}
+            {...formItemLayout}
+          >
             {getFieldDecorator("name", {
-              rules: [{ required: true, message: getIntlContent("SHENYU.COMMON.INPUTNAME") }],
+              rules: [
+                {
+                  required: true,
+                  message: getIntlContent("SHENYU.COMMON.INPUTNAME")
+                }
+              ],
               initialValue: name
-            })(<Input placeholder={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")} />)}
+            })(
+              <Input
+                placeholder={getIntlContent(
+                  "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"
+                )}
+                addonAfter={
+                  <Button
+                    size="small"
+                    type="link"
+                    onClick={() => {
+                      this.setState({ visible: true });
+                    }}
+                  >
+                    {getIntlContent("SHENYU.PLUGIN.SEARCH.RULE.COPY")}
+                  </Button>
+                }
+              />
+            )}
           </FormItem>
-          <FormItem label={getIntlContent("SHENYU.COMMON.MATCHTYPE")} {...formItemLayout}>
+          <RuleCopy
+            visible={visible}
+            onOk={this.handleCopyData}
+            onCancel={() => {
+              this.setState({ visible: false });
+            }}
+          />
+          <FormItem
+            label={getIntlContent("SHENYU.COMMON.MATCHTYPE")}
+            {...formItemLayout}
+          >
             {getFieldDecorator("matchMode", {
-              rules: [{ required: true, message: getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE") }],
+              rules: [
+                {
+                  required: true,
+                  message: getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE")
+                }
+              ],
               initialValue: `${matchMode}`
             })(
               <Select>
-                {matchModeDics&&matchModeDics.map(item => {
-                  return (
-                    <Option
-                      key={item.dictValue}
-                      value={item.dictValue}
-                    >
-                      {item.dictName}
-                    </Option>
-                  );
-                })}
+                {matchModeDics &&
+                  matchModeDics.map(item => {
+                    return (
+                      <Option key={item.dictValue} value={item.dictValue}>
+                        {item.dictName}
+                      </Option>
+                    );
+                  })}
               </Select>
             )}
           </FormItem>
           <div className={styles.ruleConditions}>
-            <h3 className={styles.header} style={{width:105}}>
-              <strong>*</strong>{getIntlContent("SHENYU.COMMON.CONDITION")}:
+            <h3 className={styles.header} style={{ width: 105 }}>
+              <strong>*</strong>
+              {getIntlContent("SHENYU.COMMON.CONDITION")}:
             </h3>
             <div className={styles.content}>
               {ruleConditions.map((item, index) => {
@@ -333,13 +411,17 @@ class AddModal extends Component {
                         value={item.paramType}
                         style={{ width: 120 }}
                       >
-                        {paramTypeDics&&paramTypeDics.map(type => {
-                          return (
-                            <Option key={type.dictValue} value={type.dictValue}>
-                              {type.dictName}
-                            </Option>
-                          );
-                        })}
+                        {paramTypeDics &&
+                          paramTypeDics.map(type => {
+                            return (
+                              <Option
+                                key={type.dictValue}
+                                value={type.dictValue}
+                              >
+                                {type.dictName}
+                              </Option>
+                            );
+                          })}
                       </Select>
                     </li>
                     <li
@@ -369,13 +451,17 @@ class AddModal extends Component {
                         value={item.operator}
                         style={{ width: 150 }}
                       >
-                        {operatorDics&&operatorDics.map(opearte => {
-                          return (
-                            <Option key={opearte.dictValue} value={opearte.dictValue}>
-                              {opearte.dictName}
-                            </Option>
-                          );
-                        })}
+                        {operatorDics &&
+                          operatorDics.map(opearte => {
+                            return (
+                              <Option
+                                key={opearte.dictValue}
+                                value={opearte.dictValue}
+                              >
+                                {opearte.dictName}
+                              </Option>
+                            );
+                          })}
                       </Select>
                     </li>
 
@@ -412,10 +498,10 @@ class AddModal extends Component {
               </Button>
             </div>
           </div>
-          {RuleHandleComponent&&(
+          {RuleHandleComponent && (
             <RuleHandleComponent
-              onRef={handleComponentRef=>{
-                this.handleComponentRef = handleComponentRef
+              onRef={handleComponentRef => {
+                this.handleComponentRef = handleComponentRef;
               }}
               form={form}
               pluginHandleList={pluginHandleList}
@@ -435,7 +521,10 @@ class AddModal extends Component {
                 rules: [{ required: true }]
               })(<Switch />)}
             </FormItem>
-            <FormItem {...formCheckLayout} label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}>
+            <FormItem
+              {...formCheckLayout}
+              label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}
+            >
               {getFieldDecorator("enabled", {
                 initialValue: enabled,
                 valuePropName: "checked",
@@ -444,7 +533,10 @@ class AddModal extends Component {
             </FormItem>
           </div>
 
-          <FormItem label={getIntlContent("SHENYU.SELECTOR.EXEORDER")} {...formItemLayout}>
+          <FormItem
+            label={getIntlContent("SHENYU.SELECTOR.EXEORDER")}
+            {...formItemLayout}
+          >
             {getFieldDecorator("sort", {
               initialValue: sort,
               rules: [
@@ -457,7 +549,11 @@ class AddModal extends Component {
                   message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
                 }
               ]
-            })(<Input placeholder={getIntlContent("SHENYU.SELECTOR.INPUTORDER")} />)}
+            })(
+              <Input
+                placeholder={getIntlContent("SHENYU.SELECTOR.INPUTORDER")}
+              />
+            )}
           </FormItem>
         </Form>
       </Modal>
