@@ -36,6 +36,7 @@ import { connect } from "dva";
 import classnames from "classnames";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import SelectorCopy from "./SelectorCopy";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -81,7 +82,9 @@ class AddModal extends Component {
 
       gray,
       serviceId,
-      divideUpstreams
+      divideUpstreams,
+
+      visible: false
     };
 
     this.initSelectorCondtion(props);
@@ -714,6 +717,46 @@ class AddModal extends Component {
     return null;
   };
 
+  handleCopyData = copyData => {
+    const { form } = this.props;
+    const {
+      selectorConditions,
+      name,
+      type,
+      matchMode,
+      continued,
+      loged,
+      enabled,
+      sort
+    } = copyData;
+    const formData = {
+      name,
+      type: type.toString(),
+      continued,
+      loged,
+      enabled,
+      sort
+    };
+
+    if (type === 1) {
+      formData.matchMode = matchMode.toString();
+      this.initSelectorCondtion({
+        selectorConditions: selectorConditions.map(v => {
+          const {
+            id: rawId,
+            selectorId,
+            dateCreated,
+            dateUpdated,
+            ...condition
+          } = v;
+          return condition;
+        })
+      });
+    }
+    form.setFieldsValue(formData);
+    this.setState({ visible: false, selectValue: type.toString() });
+  };
+
   render() {
     let {
       onCancel,
@@ -734,7 +777,8 @@ class AddModal extends Component {
       pluginHandleList,
       operatorDics,
       matchModeDics,
-      paramTypeDics
+      paramTypeDics,
+      visible
     } = this.state;
 
     type = `${type}`;
@@ -777,9 +821,27 @@ class AddModal extends Component {
                 placeholder={getIntlContent(
                   "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"
                 )}
+                addonAfter={
+                  <Button
+                    size="small"
+                    type="link"
+                    onClick={() => {
+                      this.setState({ visible: true });
+                    }}
+                  >
+                    {getIntlContent("SHENYU.SELECTOR.COPY")}
+                  </Button>
+                }
               />
             )}
           </FormItem>
+          <SelectorCopy
+            visible={visible}
+            onOk={this.handleCopyData}
+            onCancel={() => {
+              this.setState({ visible: false });
+            }}
+          />
           <FormItem
             label={getIntlContent("SHENYU.COMMON.TYPE")}
             {...formItemLayout}
