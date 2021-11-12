@@ -24,5 +24,5 @@ export default {
   request: RequestRuleHandle,
   modifyResponse: ResponseRuleHandle,
   hystrix: HystrixRuleHandle,
-  param_mapping: ParamPluginRuleHandle
+  paramMapping: ParamPluginRuleHandle
 };
