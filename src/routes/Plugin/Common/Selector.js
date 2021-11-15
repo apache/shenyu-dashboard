@@ -983,18 +983,18 @@ class AddModal extends Component {
                         </li>
 
                         <li>
-                        <Tooltip title={item.paramValue}>
-                          <Input
-                            onChange={e => {
-                              this.conditionChange(
-                                index,
-                                "paramValue",
-                                e.target.value
-                              );
-                            }}
-                            value={item.paramValue}
-                            style={{ width: 300 }}
-                          />
+                          <Tooltip title={item.paramValue}>
+                            <Input
+                              onChange={e => {
+                                this.conditionChange(
+                                  index,
+                                  "paramValue",
+                                  e.target.value
+                                );
+                              }}
+                              value={item.paramValue}
+                              style={{ width: 300 }}
+                            />
                           </Tooltip>
                         </li>
                         <li>
