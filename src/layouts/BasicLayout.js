@@ -233,14 +233,17 @@ class BasicLayout extends React.PureComponent {
         path: `/plug/${index}`,
         authority: undefined,
         icon: "unordered-list",
-        children: menuMap[key].map(item => ({
-          name: item.name,
-          path: `/plug/${index}/${item.name}`,
-          authority: undefined,
-          id: item.id,
-          locale: `SHENYU.MENU.PLUGIN.${item.name.toUpperCase()}`,
-          exact: true
-        }))
+        children: menuMap[key].map(item => {
+          const { name } = item;
+          return {
+            name: name.replace(name[0], name[0].toUpperCase()),
+            path: `/plug/${index}/${item.name}`,
+            authority: undefined,
+            id: item.id,
+            locale: `SHENYU.MENU.PLUGIN.${item.name.toUpperCase()}`,
+            exact: true
+          };
+        })
       });
     });
 
