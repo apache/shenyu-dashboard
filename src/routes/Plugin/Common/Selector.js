@@ -656,7 +656,7 @@ class AddModal extends Component {
                         } else {
                           return (
                             <li key={fieldName}>
-                              <Tooltip title={placeholder}>
+                              <Tooltip title={item.value}>
                                 <FormItem>
                                   {getFieldDecorator(fieldName, {
                                     rules,
@@ -670,6 +670,12 @@ class AddModal extends Component {
                                       }
                                       placeholder={placeholder}
                                       key={fieldName}
+                                      onChange={e=> {
+                                        this.onDealChange(
+                                          e.target.value,
+                                          item
+                                        );
+                                      }}
                                     />
                                   )}
                                 </FormItem>
@@ -756,6 +762,10 @@ class AddModal extends Component {
     form.setFieldsValue(formData);
     this.setState({ visible: false, selectValue: type.toString() });
   };
+
+  onDealChange = (value,item) => {
+    item.value = value;
+  }
 
   render() {
     let {
@@ -973,17 +983,19 @@ class AddModal extends Component {
                         </li>
 
                         <li>
-                          <Input
-                            onChange={e => {
-                              this.conditionChange(
-                                index,
-                                "paramValue",
-                                e.target.value
-                              );
-                            }}
-                            value={item.paramValue}
-                            style={{ width: 300 }}
-                          />
+                          <Tooltip title={item.paramValue}>
+                            <Input
+                              onChange={e => {
+                                this.conditionChange(
+                                  index,
+                                  "paramValue",
+                                  e.target.value
+                                );
+                              }}
+                              value={item.paramValue}
+                              style={{ width: 300 }}
+                            />
+                          </Tooltip>
                         </li>
                         <li>
                           <Button
