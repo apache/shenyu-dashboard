@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {message} from "antd";
+import { message } from "antd";
 import {
   addPluginHandle,
   batchDeletePluginHandle,
@@ -23,9 +23,9 @@ import {
   findPluginHandle,
   updatePluginHandle,
   fetchPluginHandleByPluginId,
-  getPluginDropDownList,
+  getPluginDropDownList
 } from "../services/api";
-import {getIntlContent} from "../utils/IntlUtils";
+import { getIntlContent } from "../utils/IntlUtils";
 
 export default {
   namespace: "pluginHandle",
@@ -37,11 +37,11 @@ export default {
   },
 
   effects: {
-    * fetch(params, {call, put}) {
-      const {payload} = params;
+    *fetch(params, { call, put }) {
+      const { payload } = params;
       const json = yield call(getAllPluginHandles, payload);
       if (json.code === 200) {
-        let {page, dataList} = json.data;
+        let { page, dataList } = json.data;
         dataList = dataList.map(item => {
           item.key = item.id;
           return item;
@@ -59,7 +59,7 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(addPluginHandle, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
+        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -78,7 +78,9 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(updatePluginHandle, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS")
+        );
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -90,7 +92,9 @@ export default {
       const { list } = payload;
       const json = yield call(batchDeletePluginHandle, { list });
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS")
+        );
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -98,47 +102,67 @@ export default {
       }
     },
 
-    * fetchByPluginId(params, {call}) {
-      const {payload} = params;
+    *fetchByPluginId(params, { call }) {
+      const { payload } = params;
       let handle = payload.handle;
       let callback = payload.callBack;
       let isHandleArray = payload.isHandleArray;
       let handleJson;
-      if (handle != null && handle !== "" && typeof (handle) !== "undefined" && handle.indexOf("{") !== -1) {
+      if (
+        handle != null &&
+        handle !== "" &&
+        typeof handle !== "undefined" &&
+        handle.indexOf("{") !== -1
+      ) {
         handleJson = JSON.parse(handle);
       }
       const json = yield call(fetchPluginHandleByPluginId, payload);
       if (json.code === 200) {
         let length = 1;
-        if(handleJson && Array.isArray(handleJson) && handleJson.length > 0){
+        if (handleJson && Array.isArray(handleJson) && handleJson.length > 0) {
           length = handleJson.length;
         }
         let handleData = [];
-        if(isHandleArray && Array.isArray(handleJson)){
+        if (isHandleArray && Array.isArray(handleJson)) {
           handleData = handleJson;
-        }else {
+        } else {
           handleData = [handleJson];
         }
 
         let dataList = [];
-        if(json.data&&json.data.length>0){
+        let useJSON = false;
+        if (json.data && json.data.length > 0) {
+          const fieldArr = json.data.map(v => v.field);
           // eslint-disable-next-line no-plusplus
-          for(let i = 0; i < length; i++){
+          for (let i = 0; i < length; i++) {
+            if (handleData[i]) {
+              const keys = Object.keys(handleData[i]);
+              let allKeys = [...fieldArr, ...keys];
+              allKeys = new Set(allKeys);
+              if (allKeys.size !== fieldArr.length) {
+                useJSON = true;
+              }
+            }
             let dataItem = json.data.map(data => {
-              let item = {...data};
+              let item = { ...data };
               item.key = item.id;
-              if (typeof (handleData[i]) === "undefined") {
+              if (typeof handleData[i] === "undefined") {
                 item.value = "";
-              }else {
+              } else {
                 item.value = handleData[i][item.field];
               }
-              if(item.extObj != null && item.extObj !== "" && typeof (item.extObj) !== "undefined" && item.extObj.indexOf("{") !== -1){
-                let extObj = JSON.parse(item.extObj)
+              if (
+                item.extObj != null &&
+                item.extObj !== "" &&
+                typeof item.extObj !== "undefined" &&
+                item.extObj.indexOf("{") !== -1
+              ) {
+                let extObj = JSON.parse(item.extObj);
                 item.required = extObj.required;
-                if(extObj.defaultValue || extObj.defaultValue === 0){
-                  if(item.dataType === 1){
+                if (extObj.defaultValue || extObj.defaultValue === 0) {
+                  if (item.dataType === 1) {
                     item.defaultValue = Number(extObj.defaultValue);
-                  }else{
+                  } else {
                     item.defaultValue = extObj.defaultValue;
                   }
                 }
@@ -149,12 +173,14 @@ export default {
             });
             dataList.push(dataItem);
           }
+        } else {
+          useJSON = true;
         }
-        callback(dataList);
+        callback(dataList, useJSON);
       }
     },
 
-    *fetchPluginList(_, { call, put  }) {
+    *fetchPluginList(_, { call, put }) {
       const json = yield call(getPluginDropDownList);
       if (json.code === 200) {
         let data = json.data;
@@ -165,8 +191,7 @@ export default {
           }
         });
       }
-    },
-
+    }
   },
   reducers: {
     savePluginHandles(state, { payload }) {
@@ -186,8 +211,8 @@ export default {
     savePluginDropDownList(state, { payload }) {
       return {
         ...state,
-        pluginDropDownList: payload.data,
+        pluginDropDownList: payload.data
       };
-    },
+    }
   }
 };

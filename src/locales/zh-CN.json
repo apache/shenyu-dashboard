@@ -188,6 +188,7 @@
   "SHENYU.PLUGIN.HANDLE.TIP": "至少一条处理记录",
   "SHENYU.PLUGIN.RULE": "校验规则(正则)",
   "SHENYU.PLUGIN.RULE.INVALID": "校验规则不通过(正则)",
+  "SHENYU.PLUGIN.RULE.JSON.INVALID": "请输入正确的JSON字符串",
   "SHENYU.AUTH.EDITOR.RESOURCE": "编辑资源详情",
   "SHENYU.PLUGIN.RULE.TIP":
     "请输入正则表达式，以/开始，/结束；例：/^([1-9][0-9]{0,1}|100)$/",

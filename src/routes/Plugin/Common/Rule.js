@@ -47,7 +47,13 @@ class AddModal extends Component {
   }
 
   componentWillMount() {
-    const { dispatch, pluginId, handle, multiRuleHandle } = this.props;
+    const {
+      dispatch,
+      pluginId,
+      handle,
+      multiRuleHandle,
+      form: { setFieldsValue }
+    } = this.props;
     this.setState({ pluginHandleList: [] });
     let type = 2;
     dispatch({
@@ -57,8 +63,15 @@ class AddModal extends Component {
         type,
         handle,
         isHandleArray: multiRuleHandle,
-        callBack: pluginHandles => {
-          this.setPluginHandleList(pluginHandles);
+        callBack: (pluginHandles, useJSON) => {
+          this.setState({ pluginHandleList: pluginHandles }, () => {
+            if (useJSON) {
+              setFieldsValue({
+                handleType: "2",
+                handleJSON: handle
+              });
+            }
+          });
         }
       }
     });
@@ -105,10 +118,6 @@ class AddModal extends Component {
     });
   };
 
-  setPluginHandleList = pluginHandles => {
-    this.setState({ pluginHandleList: pluginHandles });
-  };
-
   checkConditions = () => {
     let { ruleConditions } = this.state;
     let result = true;
@@ -146,23 +155,43 @@ class AddModal extends Component {
     const { ruleConditions, pluginHandleList, customRulePage } = this.state;
 
     form.validateFieldsAndScroll((err, values) => {
-      const { name, matchMode, loged, enabled } = values;
+      const {
+        name,
+        matchMode,
+        loged,
+        enabled,
+        handleType,
+        handleJSON
+      } = values;
       if (!err) {
         const submit = this.checkConditions();
         if (submit) {
           let handle;
+
           if (!customRulePage) {
-            handle = [];
-            pluginHandleList.forEach((handleList, index) => {
-              handle[index] = {};
-              handleList.forEach(item => {
-                handle[index][item.field] = values[item.field + index];
-              });
-            });
-            handle = multiRuleHandle
-              ? JSON.stringify(handle)
-              : JSON.stringify(handle[0]);
-          } else if (this.handleComponentRef) {
+            // commonRule
+            switch (handleType) {
+              case "1":
+                handle = [];
+                pluginHandleList.forEach((handleList, index) => {
+                  handle[index] = {};
+                  handleList.forEach(item => {
+                    handle[index][item.field] = values[item.field + index];
+                  });
+                });
+                handle = multiRuleHandle
+                  ? JSON.stringify(handle)
+                  : JSON.stringify(handle[0]);
+                break;
+              case "2":
+                handle = handleJSON;
+                break;
+              default:
+                break;
+            }
+          }
+          if (this.handleComponentRef) {
+            // customizationRule
             handle = this.handleComponentRef.getData(values);
           }
 
@@ -298,7 +327,7 @@ class AddModal extends Component {
     let RuleHandleComponent;
     if (customRulePage) {
       RuleHandleComponent = PluginRuleHandle[pluginName];
-    } else if (pluginHandleList && pluginHandleList.length > 0) {
+    } else if (pluginHandleList) {
       RuleHandleComponent = CommonRuleHandle;
     }
 
