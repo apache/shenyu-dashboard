@@ -36,7 +36,7 @@ const formItemLayout = {
 export default class CommonRuleHandle extends Component {
   render() {
     const labelWidth = 160;
-    const { pluginHandleList, multiRuleHandle, form } = this.props;
+    const { pluginHandleList, multiRuleHandle, onAddPluginHandle, onDeletePluginHandle, form } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
     return (
       <FormItem
@@ -199,7 +199,7 @@ export default class CommonRuleHandle extends Component {
                         }}
                         onConfirm={e => {
                           e.stopPropagation();
-                          this.handleDeleteHandle(index);
+                          onDeletePluginHandle(index);
                         }}
                         okText={getIntlContent("SHENYU.COMMON.SURE")}
                         cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
@@ -215,8 +215,8 @@ export default class CommonRuleHandle extends Component {
             })}
           </div>
           {multiRuleHandle && (
-            <div style={{ width: 80 }}>
-              <Button onClick={this.handleAddHandle} type="primary">
+            <div style={{ width: 80, marginLeft:10 }}>
+              <Button onClick={onAddPluginHandle} type="primary">
                 {getIntlContent("SHENYU.COMMON.ADD")}
               </Button>
             </div>

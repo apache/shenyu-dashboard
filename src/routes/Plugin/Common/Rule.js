@@ -532,6 +532,8 @@ class AddModal extends Component {
               onRef={handleComponentRef => {
                 this.handleComponentRef = handleComponentRef;
               }}
+              onAddPluginHandle={this.handleAddHandle}
+              onDeletePluginHandle={this.handleDeleteHandle}
               form={form}
               pluginHandleList={pluginHandleList}
               handle={handle}
@@ -574,7 +576,7 @@ class AddModal extends Component {
                   message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
                 },
                 {
-                  pattern: /^([1-9][0-9]{0,1}|100)$/,
+                  pattern: /^([1-9][0-9]{0,2}|1000)$/,
                   message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
                 }
               ]

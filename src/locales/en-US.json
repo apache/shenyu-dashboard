@@ -73,9 +73,9 @@
   "SHENYU.SELECTOR.PRINTLOG": "PrintLogs",
   "SHENYU.SELECTOR.WHETHEROPEN": "Enable",
   "SHENYU.SELECTOR.EXEORDER": "Order",
-  "SHENYU.SELECTOR.INPUTNUMBER": "Please Enter The Number 1-100",
+  "SHENYU.SELECTOR.INPUTNUMBER": "Please Enter The Number 1-1000",
   "SHENYU.SELECTOR.INPUTORDER":
-    "You can fill in the numeric flag execution order between 1 and 100",
+    "You can fill in the numeric flag execution order between 1 and 1000",
   "SHENYU.SELECTOR.SOURCE.PLACEHOLDER":
     "Please select the selector you want to copy",
   "SHENYU.RULE.NAME": "Rules",
