@@ -125,7 +125,17 @@ class BasicLayout extends React.PureComponent {
   }
 
   componentDidMount() {
+    const token = window.sessionStorage.getItem("token");
+    if (!token) {
+      this.props.history.push({
+        pathname: "/user/login"
+      });
+      return;
+    }
     const { dispatch } = this.props;
+    dispatch({
+      type: "global/fetchPlatform"
+    });
     dispatch({
       type: "global/fetchPlugins",
       payload: {
@@ -136,15 +146,6 @@ class BasicLayout extends React.PureComponent {
         }
       }
     });
-    dispatch({
-      type: "global/fetchPlatform"
-    });
-    const token = window.sessionStorage.getItem("token");
-    if (!token) {
-      this.props.history.push({
-        pathname: "/user/login"
-      });
-    }
   }
 
   getPageTitle() {
