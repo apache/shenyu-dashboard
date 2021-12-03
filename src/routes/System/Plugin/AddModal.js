@@ -231,7 +231,7 @@ class AddModal extends Component {
             })(
               <InputNumber
                 min={0}
-                max={99}
+                max={9999}
                 precision={0}
                 style={{ width: "100%" }}
               />
