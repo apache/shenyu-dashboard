@@ -230,8 +230,6 @@ class AddModal extends Component {
               initialValue: sort
             })(
               <InputNumber
-                min={0}
-                max={9999}
                 precision={0}
                 style={{ width: "100%" }}
               />
