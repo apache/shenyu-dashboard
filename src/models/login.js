@@ -42,8 +42,8 @@ export default {
             currentAuthority: "admin"
           }
         });
-        window.sessionStorage.setItem("token",response.data.token);
-        window.sessionStorage.setItem("userName",response.data.userName);
+        window.sessionStorage.setItem("token", response.data.token);
+        window.sessionStorage.setItem("userName", response.data.userName);
         /* const urlParams = new URL(window.location.href);
          const params = getPageQuery();
          let { redirect } = params;
@@ -63,7 +63,11 @@ export default {
         yield put(routerRedux.push("/home"));
       } else {
         message.destroy();
-        message.error("Incorrect user name or password");
+        if (response.code === 404) {
+          message.error("Incorrect user name or password");
+        } else {
+          message.error(response.message);
+        }
       }
     },
     *logout(_, { put }) {
@@ -76,10 +80,10 @@ export default {
       });
       window.sessionStorage.removeItem("token");
       window.sessionStorage.removeItem("userName");
-       yield put(
+      yield put(
         routerRedux.push({
-          pathname: "/user/login",
-         /* search: stringify({
+          pathname: "/user/login"
+          /* search: stringify({
             redirect: window.location.href
           }) */
         })
