@@ -182,7 +182,7 @@ export default class Auth extends Component {
             // pageSize: 10
           },
           callback: datas => {
-            // 去重求和
+            // remove duplicate elements and add
             const pathArr =  auth.auth.map(e => e.path);
             datas.dataList = datas.dataList.filter(item=>!pathArr.includes(item.path)).concat(auth.auth);
             this.setState({
