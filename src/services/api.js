@@ -49,6 +49,18 @@ export async function updateUser(params) {
     }
   });
 }
+
+/* update password */
+export async function updatePassword(params) {
+  return request(`${baseUrl}/dashboardUser/modify-password/${params.id}`, {
+    method: `PUT`,
+    body: {
+      userName: params.userName,
+      password: params.password
+    }
+  });
+}
+
 /* get all metadata */
 export async function getAllMetadata(params) {
   const { appName, currentPage, pageSize } = params;

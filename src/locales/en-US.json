@@ -1,5 +1,19 @@
 {
   "SHENYU.GLOBALHEADER.LOGOUT": "Logout",
+  "SHENYU.GLOBALHEADER.CHANGE.PASSWORD": "Change Password",
+  "SHENYU.GLOBALHEADER.NEW.PASSWORD": "New Password",
+  "SHENYU.GLOBALHEADER.PASSWORD.EXTRA":
+    "The password is 8 ~ 16 characters long and must contain uppercase letters, lowercase letters, numbers and special characters",
+  "SHENYU.GLOBALHEADER.PASSWORD.REQUIRED": "Please enter a new password",
+  "SHENYU.GLOBALHEADER.PASSWORD.LENGTH":
+    "The password length is 8 ~ 16 characters",
+  "SHENYU.GLOBALHEADER.PASSWORD.RULE":
+    "The password must contain uppercase letters, lowercase letters, numbers and special characters",
+  "SHENYU.GLOBALHEADER.CONFIRM.PASSWORD": "Confirm Password",
+  "SHENYU.GLOBALHEADER.CONFIRM.PASSWORD.REQUIRED":
+    "Please enter the confirm password",
+  "SHENYU.GLOBALHEADER.CONFIRM.PASSWORD.RULE":
+    "The two passwords are inconsistent",
   "SHENYU.HOME.WELCOME":
     "Welcome to the Apache ShenYu Gateway Management System",
   "SHENYU.SIDERMENU.LOGO": "Apache ShenYu Gateway Managment",

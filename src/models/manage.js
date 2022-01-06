@@ -21,7 +21,8 @@ import {
   findUser,
   updateUser,
   deleteUser,
-  addUser
+  addUser,
+  updatePassword
 } from "../services/api";
 import { getIntlContent } from "../utils/IntlUtils";
 
@@ -101,12 +102,25 @@ export default {
           getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS")
         );
         callback();
-        yield put({ type: "reload", fetchValue });
+        if (fetchValue) {
+          yield put({ type: "reload", fetchValue });
+        }
       } else {
         message.warn(json.message);
       }
     },
-
+    *updatePassword(params, { call }) {
+      const { payload, callback } = params;
+      const json = yield call(updatePassword, payload);
+      if (json.code === 200) {
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS")
+        );
+        callback();
+      } else {
+        message.warn(json.message);
+      }
+    },
     *reload(params, { put }) {
       const { fetchValue } = params;
       const { userName, currentPage, pageSize } = fetchValue;
