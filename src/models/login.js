@@ -33,7 +33,6 @@ export default {
       const response = yield call(queryLogin, payload);
 
       // Login successfully
-
       if (response.data) {
         yield put({
           type: "changeLoginStatus",
@@ -44,6 +43,7 @@ export default {
         });
         window.sessionStorage.setItem("token", response.data.token);
         window.sessionStorage.setItem("userName", response.data.userName);
+        window.sessionStorage.setItem("userId", response.data.id);
         /* const urlParams = new URL(window.location.href);
          const params = getPageQuery();
          let { redirect } = params;
@@ -80,6 +80,7 @@ export default {
       });
       window.sessionStorage.removeItem("token");
       window.sessionStorage.removeItem("userName");
+      window.sessionStorage.removeItem("userId");
       yield put(
         routerRedux.push({
           pathname: "/user/login"
