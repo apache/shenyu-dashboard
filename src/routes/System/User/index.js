@@ -16,12 +16,12 @@
  */
 
 import React, { Component } from "react";
-import { Table, Input, Button, message, Popconfirm } from "antd";
+import { Table, Input, Button, message, Popconfirm, Switch } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
 import DataPermModal from "./DataPermModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
-import AuthButton from '../../../utils/AuthButton';
+import AuthButton from "../../../utils/AuthButton";
 
 @connect(({ manage, role, loading }) => ({
   manage,
@@ -36,7 +36,7 @@ export default class Manage extends Component {
       selectedRowKeys: [],
       userName: "",
       popup: "",
-      localeName: ''
+      localeName: ""
     };
   }
 
@@ -64,13 +64,16 @@ export default class Manage extends Component {
   };
 
   getAllRoles = () => {
-    const { dispatch, role: { allRoles } } = this.props;
+    const {
+      dispatch,
+      role: { allRoles }
+    } = this.props;
     if (!allRoles || allRoles.length === 0) {
       dispatch({
         type: "role/fetchAll"
       });
     }
-  }
+  };
 
   pageOnchange = page => {
     this.setState({ currentPage: page });
@@ -82,7 +85,10 @@ export default class Manage extends Component {
   };
 
   editClick = record => {
-    const { dispatch, role: { allRoles } } = this.props;
+    const {
+      dispatch,
+      role: { allRoles }
+    } = this.props;
     const { currentPage } = this.state;
     const name = this.state.userName;
     dispatch({
@@ -175,7 +181,9 @@ export default class Manage extends Component {
   };
 
   addClick = () => {
-    const { role: { allRoles } } = this.props;
+    const {
+      role: { allRoles }
+    } = this.props;
     const { currentPage } = this.state;
     const name = this.state.userName;
     this.setState({
@@ -217,10 +225,10 @@ export default class Manage extends Component {
       localeName: locale
     });
     getCurrentLocale(this.state.localeName);
-  };
+  }
 
   render() {
-    const { manage, loading } = this.props;
+    const { manage, loading, dispatch } = this.props;
     const { userList, total } = manage;
     const { currentPage, selectedRowKeys, userName, popup } = this.state;
     const userColumns = [
@@ -229,44 +237,57 @@ export default class Manage extends Component {
         title: getIntlContent("SHENYU.SYSTEM.USERNAME"),
         dataIndex: "userName",
         key: "userName",
-        ellipsis:true,
+        ellipsis: true
       },
       {
         align: "center",
         title: getIntlContent("SHENYU.SYSTEM.STATUS"),
         dataIndex: "enabled",
         key: "enabled",
-        ellipsis:true,
-        render: text => {
-          if (text) {
-            return <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>;
-          } else {
-            return <div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>;
-          }
-        }
+        ellipsis: true,
+        render: (text, row) => (
+          <Switch
+            checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+            unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+            checked={text}
+            onChange={checked => {
+              dispatch({
+                type: "manage/updateUserStatus",
+                payload: {
+                  id: row.id,
+                  enabled: checked,
+                  userName: row.userName
+                },
+                callback: () => {
+                  this.getAllUsers(currentPage);
+                }
+              });
+            }}
+          />
+        )
       },
       {
         align: "center",
         title: getIntlContent("SHENYU.SYSTEM.CREATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated",
-        ellipsis:true,
-        sorter: (a,b) => a.dateCreated > b.dateCreated ? 1 : -1,
+        ellipsis: true,
+        sorter: (a, b) => (a.dateCreated > b.dateCreated ? 1 : -1)
       },
       {
         align: "center",
         title: getIntlContent("SHENYU.SYSTEM.UPDATETIME"),
         dataIndex: "dateUpdated",
         key: "dateUpdated",
-        ellipsis:true,
-        sorter: (a,b) => a.dateUpdated > b.dateUpdated ? 1 : -1,
+        ellipsis: true,
+        sorter: (a, b) => (a.dateUpdated > b.dateUpdated ? 1 : -1)
       },
       {
         align: "center",
         title: getIntlContent("SHENYU.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
-        ellipsis:true,
+        ellipsis: true,
         render: (text, record) => {
           return (
             <div>
@@ -325,17 +346,14 @@ export default class Manage extends Component {
           <AuthButton perms="system:manager:delete">
             <Popconfirm
               title={getIntlContent("SHENYU.COMMON.DELETE")}
-              placement='bottom'
+              placement="bottom"
               onConfirm={() => {
-                this.deleteClick()
+                this.deleteClick();
               }}
               okText={getIntlContent("SHENYU.COMMON.SURE")}
               cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
             >
-              <Button
-                style={{ marginLeft: 20 }}
-                type="danger"
-              >
+              <Button style={{ marginLeft: 20 }} type="danger">
                 {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
               </Button>
             </Popconfirm>
