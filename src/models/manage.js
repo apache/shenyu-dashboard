@@ -121,6 +121,18 @@ export default {
         message.warn(json.message);
       }
     },
+    *updateUserStatus(params, { call }) {
+      const { payload, callback } = params;
+      const json = yield call(updateUser, payload);
+      if (json.code === 200) {
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS")
+        );
+        callback();
+      } else {
+        message.warn(json.message);
+      }
+    },
     *reload(params, { put }) {
       const { fetchValue } = params;
       const { userName, currentPage, pageSize } = fetchValue;
