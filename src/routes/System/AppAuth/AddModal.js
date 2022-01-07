@@ -116,9 +116,9 @@ class AddModal extends Component {
   };
 
   handleDeletePath = (index) => {
-    let { pathDatas } = this.state;
+    let { pathDatas, pagination } = this.state;
     if (pathDatas && pathDatas.length > 1) {
-      pathDatas.splice(index, 1);
+      pathDatas.splice(index + (pagination-1)*10, 1);
     } else {
       message.destroy();
       message.error("At least one app path");
@@ -127,10 +127,16 @@ class AddModal extends Component {
   };
 
   handleTableInput = (value, index) => {
-    let { pathDatas } = this.state;
-    pathDatas[index].path = value;
+    let { pathDatas, pagination } = this.state;
+    pathDatas[index + (pagination-1)*10].path = value;
     this.setState({ pathDatas });
-  }
+  };
+
+  handleTableChange = paginationObj => {
+    this.setState({
+      pagination: paginationObj.current,
+    });
+  };
 
   render() {
     let {
@@ -282,8 +288,9 @@ class AddModal extends Component {
                 bordered
                 columns={columns}
                 dataSource={this.state.pathDatas}
+                onChange={this.handleTableChange}
                 rowKey={(record, index) => index}
-                pagination={{ current: 1, pageSize: 10 }}
+                pagination={{ current: this.state.pagination, pageSize: 10 }}
               />
             </div>
           )}

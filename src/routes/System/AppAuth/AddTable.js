@@ -54,7 +54,7 @@ class AddTable extends Component {
         dataIndex: 'operation',
         render: (text, record) =>
           this.state.allData.length > 1 ? (
-            <Popconfirm title={getIntlContent("SHENYU.COMMON.DELETE")} onConfirm={() => this.handleDelete(record.key)}>
+            <Popconfirm title={getIntlContent("SHENYU.COMMON.DELETE")} onConfirm={() => this.handleDelete(record.path)}>
               <a>{getIntlContent("SHENYU.COMMON.DELETE.NAME")}</a>
             </Popconfirm>
           ) : null,
@@ -132,7 +132,7 @@ class AddTable extends Component {
   handleDelete = (key) => {
     // const allData = [...this.state.allData];
     this.setState((prev) => ({
-      allData: prev.allData.filter((item) => item.key !== key),
+      allData: prev.allData.filter((item) => item.path !== key),
     }));
   };
 
@@ -158,6 +158,12 @@ class AddTable extends Component {
   handleOpenChange = (checked) => {
     this.setState({pathTableVisible: checked});
   }
+
+  handleTableChange = paginationObj => {
+    this.setState({
+      pagination: paginationObj.current,
+    });
+  };
 
   render() {
     let {
@@ -295,8 +301,9 @@ class AddTable extends Component {
                 bordered
                 columns={columns}
                 dataSource={data}
+                onChange={this.handleTableChange}
                 rowKey={record => record.id}
-                pagination={{ current: 1, pageSize: 10 }}
+                pagination={{ current: this.state.pagination, pageSize: 10 }}
               />
             </div>
           )}
