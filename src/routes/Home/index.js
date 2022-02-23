@@ -33,10 +33,13 @@ export default class Home extends Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "global/fetchPlatform"
-    });
+    const token = window.sessionStorage.getItem("token");
+    if (token) {
+      const { dispatch } = this.props;
+      dispatch({
+        type: "global/fetchPlatform"
+      });
+    }
   }
 
   changeLocales(locale) {
