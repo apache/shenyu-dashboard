@@ -166,7 +166,7 @@ export default class PluginHandle extends Component {
                       type: "pluginHandle/fetch",
                       payload: {
                         pluginId: searchPluginId,
-                        currentPage: {currentPage},
+                        currentPage: 1,
                         pageSize: 12
                       }
                     });
@@ -228,7 +228,7 @@ export default class PluginHandle extends Component {
                   type: "pluginHandle/fetch",
                   payload: {
                     pluginId: searchPluginId,
-                    currentPage: {currentPage},
+                    currentPage: 1,
                     pageSize: 12
                   }
                 });

@@ -250,6 +250,8 @@ export default class ShenYuDict extends Component {
                 dispatch({
                   type: "shenyuDict/fetch",
                   payload: {
+                    currentPage: 1,
+                    pageSize: 12,
                     callback: () => { }
                   }
                 });
