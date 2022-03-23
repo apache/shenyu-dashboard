@@ -160,6 +160,7 @@ class TableTransferComponent extends React.Component {
   };
 
   render() {
+    // eslint-disable-next-line
     return (
       <TableTransfer
         auth={this.state.auth}

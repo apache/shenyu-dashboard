@@ -153,6 +153,7 @@ export default class HystrixRuleHandle extends Component {
           sm: { span: 21 }
         }
       };
+    // eslint-disable-next-line
     return (
       <Fragment>
         <FormItem label={getIntlContent("SHENYU.HYSTRIX.LSOLATION.MODE")} {...formItemLayout}>
