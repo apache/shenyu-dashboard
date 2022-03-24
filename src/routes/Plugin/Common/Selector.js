@@ -67,7 +67,8 @@ class AddModal extends Component {
       try {
         data = JSON.parse(handle);
       } catch (e) {
-        console.log(e);
+        // eslint-disable-next-line no-console
+        console.error(e);
       }
     }
 

@@ -77,7 +77,8 @@ class ResponseConfig extends Component {
       try {
         Object.assign(data, JSON.parse(value));
       } catch (e) {
-        console.log(e);
+        // eslint-disable-next-line no-console
+        console.error(e);
       }
       const headerData = [];
       const bodyData = [];
@@ -129,12 +130,12 @@ class ResponseConfig extends Component {
     const data = {};
     const currentData = this.getCurrentData();
     const valueStr = JSON.stringify(currentData);
-    // console.log(currentData);
     if (value !== undefined) {
       try {
         Object.assign(data, JSON.parse(value));
       } catch (e) {
-        console.log(e);
+        // eslint-disable-next-line no-console
+        console.error(e);
       }
     }
 
