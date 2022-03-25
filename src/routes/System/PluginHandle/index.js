@@ -38,6 +38,7 @@ export default class PluginHandle extends Component {
     this.state = {
       currentPage: 1,
       selectedRowKeys: [],
+      pluginDict: [],
       popup: "",
       pluginId:'',
       field: '',
@@ -46,12 +47,11 @@ export default class PluginHandle extends Component {
   }
 
   componentWillMount = async () => {
-    await this.getPluginDropDownList();
+    this.loadPluginDict();
 
     this.initPluginColumns();
 
-    const {currentPage} = this.state;
-    this.getAllPluginHandles(currentPage);
+    this.query()
   }
 
   componentDidUpdate() {
@@ -63,56 +63,63 @@ export default class PluginHandle extends Component {
     }
   }
 
-  getAllPluginHandles = page => {
+  /**
+   * condition query page list
+   */
+  query = () => {
     const {dispatch} = this.props;
-    const {pluginId, field} = this.state;
+    const {pluginId, field, currentPage} = this.state;
     dispatch({
       type: "pluginHandle/fetch",
       payload: {
         pluginId,
         field,
-        currentPage: page,
+        currentPage,
         pageSize: 12
       }
     });
   };
 
-  getPluginDropDownList = async () => {
+  /**
+   * load plugin drop dict
+   */
+  loadPluginDict = () => {
     const {dispatch} = this.props;
-    await dispatch({
+    dispatch({
       type: "pluginHandle/fetchPluginList",
     });
+    this.setState({pluginDict: this.props.pluginHandle.pluginDropDownList})
   };
 
   pageOnchange = page => {
-    this.setState({ currentPage: page });
-    this.getAllPluginHandles(page);
+    this.setState({ currentPage: page },this.query);
   };
 
-  closeModal = () => {
-    this.setState({ popup: "" });
+  /**
+   * close model
+   * @param reset after is reset search condition
+   */
+  closeModal = (reset = false) => {
+    this.setState(reset ? { popup: "" ,currentPage: 1, pluginId: '',field: ''} : {popup: ""},this.query);
   };
 
   searchOnchange = e => {
-    const pluginId = e;
-    this.setState({ pluginId });
+    this.setState({ pluginId: e, currentPage: 1}, this.query);
   };
 
   fieldOnchange = e => {
-    const field = e.target.value;
-    this.setState({ field });
+    this.setState({ field: e.target.value, currentPage: 1}, this.query);
   };
 
   searchClick = () => {
-    this.getAllPluginHandles(1);
-    this.setState({ currentPage: 1 });
+    this.setState({ currentPage: 1}, this.query);
   };
 
   editClick = record => {
     const { dispatch } = this.props;
     const { currentPage } = this.state;
-    const searchPluginId = this.state.pluginId;
-    const pluginDropDownList = this.props.pluginHandle.pluginDropDownList
+    this.loadPluginDict()
+    const pluginDropDownList = this.state.pluginDict
     dispatch({
       type: "pluginHandle/fetchItem",
       payload: {
@@ -161,16 +168,7 @@ export default class PluginHandle extends Component {
                     pageSize: 12
                   },
                   callback: () => {
-                    this.closeModal();
-                    dispatch({
-                      type: "pluginHandle/fetch",
-                      payload: {
-                        pluginId: searchPluginId,
-                        currentPage: 1,
-                        pageSize: 12
-                      }
-                    });
-                    this.getPluginDropDownList()
+                    this.closeModal(true);
                   }
                 });
               }}
@@ -186,8 +184,8 @@ export default class PluginHandle extends Component {
 
   addClick = () => {
     const {currentPage} = this.state;
-    const searchPluginId = this.state.pluginId;
-    const pluginDropDownList = this.props.pluginHandle.pluginDropDownList
+    this.loadPluginDict()
+    const pluginDropDownList = this.state.pluginDict
     this.setState({
       popup: (
         <AddModal
@@ -223,16 +221,7 @@ export default class PluginHandle extends Component {
                 pageSize: 12
               },
               callback: () => {
-                this.closeModal();
-                dispatch({
-                  type: "pluginHandle/fetch",
-                  payload: {
-                    pluginId: searchPluginId,
-                    currentPage: 1,
-                    pageSize: 12
-                  }
-                });
-                this.getPluginDropDownList()
+                this.closeModal(true);
               }
             });
           }}
@@ -251,7 +240,6 @@ export default class PluginHandle extends Component {
   deleteClick = () => {
     const { dispatch } = this.props;
     const { currentPage, selectedRowKeys } = this.state;
-    const searchPluginId = this.state.pluginId;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "pluginHandle/delete",
@@ -263,23 +251,7 @@ export default class PluginHandle extends Component {
           pageSize: 12
         },
         callback: () => {
-          this.setState({ selectedRowKeys: [] });
-          dispatch({
-            type: "global/fetchPlugins",
-            payload: {
-              callback: () => { }
-            }
-          });
-
-          dispatch({
-            type: "pluginHandle/fetch",
-            payload: {
-              pluginId: searchPluginId,
-              currentPage: {currentPage},
-              pageSize: 12
-            }
-          });
-          this.getPluginDropDownList()
+          this.setState({ selectedRowKeys: [],currentPage:1 },this.query);
         }
       });
     } else {
@@ -319,7 +291,8 @@ export default class PluginHandle extends Component {
           width: 120,
           render: text => {
             const {pluginHandle} = this.props;
-            const {pluginHandleList, pluginDropDownList} = pluginHandle;
+            const {pluginHandleList} = pluginHandle;
+            const pluginDropDownList = this.state.pluginDict;
             if (pluginHandleList) {
               pluginHandleList.forEach(item => {
                 if (item.extObj) {
