@@ -16,13 +16,15 @@
  */
 
 import React, { Component } from "react";
-import { Table, Input, Button, message, Popconfirm, Select } from "antd";
+import { Table, Input, Button, message, Popconfirm, Select, Popover, Tag, Typography } from "antd";
 import { connect } from "dva";
 import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { resetAuthMenuCache } from "../../../utils/AuthRoute";
+
+const { Text } = Typography;
 
 const { Option } = Select;
 
@@ -49,8 +51,7 @@ export default class Plugin extends Component {
   }
 
   componentWillMount() {
-    const { currentPage } = this.state;
-    this.getAllPlugins(currentPage);
+    this.query()
     this.initPluginColumns();
   }
 
@@ -75,8 +76,22 @@ export default class Plugin extends Component {
   };
 
   onSelectChange = selectedRowKeys => {
-    this.setState({ selectedRowKeys });
+    this.setState({ selectedRowKeys }, this.query);
   };
+
+  query = () => {
+    const { dispatch } = this.props;
+    const { name, enabled, currentPage } = this.state;
+    dispatch({
+      type: "plugin/fetch",
+      payload: {
+        name,
+        enabled,
+        currentPage,
+        pageSize: 12
+      }
+    });
+  }
 
   getAllPlugins = page => {
     const { dispatch } = this.props;
@@ -93,12 +108,15 @@ export default class Plugin extends Component {
   };
 
   pageOnchange = page => {
-    this.setState({ currentPage: page });
-    this.getAllPlugins(page);
+    this.setState({ currentPage: page }, this.query);
   };
 
-  closeModal = () => {
-    this.setState({ popup: "" });
+  closeModal = (refresh = false) => {
+    if (refresh) {
+      this.setState({ popup: "", currentPage:1 }, this.query);
+      return
+    }
+    this.setState({ popup: "", currentPage:1 });
   };
 
   editClick = record => {
@@ -143,7 +161,7 @@ export default class Plugin extends Component {
                       },
                       callback: () => {
                         this.setState({ selectedRowKeys: [] });
-                        this.closeModal();
+                        this.closeModal(true);
                       }
                     });
                   }}
@@ -160,18 +178,15 @@ export default class Plugin extends Component {
   };
 
   searchOnchange = e => {
-    const name = e.target.value;
-    this.setState({ name });
+    this.setState({ name:e.target.value}, this.query);
   };
 
   enabledOnchange = e => {
-    const enabled = e;
-    this.setState({ enabled });
+    this.setState({ enabled:e }, this.query);
   };
 
   searchClick = () => {
-    this.getAllPlugins(1);
-    this.setState({ currentPage: 1 });
+    this.setState({ currentPage: 1 }, this.query);
   };
 
   deleteClick = () => {
@@ -230,7 +245,7 @@ export default class Plugin extends Component {
                 pageSize: 12
               },
               callback: () => {
-                this.closeModal();
+                this.closeModal(true);
                 dispatch({
                   type: "global/fetchPlugins",
                   payload: {
@@ -328,7 +343,10 @@ export default class Plugin extends Component {
           dataIndex: "name",
           key: "name",
           ellipsis: true,
-          width: 120
+          width: 120,
+          render: text => {
+            return <div style={{color: "#260033","font-weight":"bold"}}>{text || "----"}</div>;
+          }
         },
         {
           align: "center",
@@ -339,11 +357,7 @@ export default class Plugin extends Component {
           width: 120,
           sorter: (a, b) => (a.role > b.role ? 1 : -1),
           render: text => {
-            // const map = {
-            //   0: getIntlContent("SHENYU.SYSTEM.SYSTEM"),
-            //   1: getIntlContent("SHENYU.SYSTEM.CUSTOM")
-            // };
-            return <div>{text || "----"}</div>;
+            return <div style={{color: "#1f640a"}}>{text || "----"}</div>;
           }
         },
         {
@@ -353,32 +367,39 @@ export default class Plugin extends Component {
           ellipsis: true,
           key: "sort",
           width: 120,
-          sorter: (a, b) => (a.role > b.role ? 1 : -1)
+          sorter: (a, b) => (a.role > b.role ? 1 : -1),
+          render: text => {
+            return <div style={{color: "#014955"}}>{text}</div>;
+          }
         },
         {
           align: "center",
           title: getIntlContent("SHENYU.COMMON.SETTING"),
           dataIndex: "config",
           key: "config",
-          ellipsis: true
-        },
-        {
-          align: "center",
-          title: getIntlContent("SHENYU.SYSTEM.CREATETIME"),
-          dataIndex: "dateCreated",
-          key: "dateCreated",
           ellipsis: true,
-          width: 180,
-          sorter: (a, b) => (a.dateCreated > b.dateCreated ? 1 : -1)
-        },
-        {
-          align: "center",
-          title: getIntlContent("SHENYU.SYSTEM.UPDATETIME"),
-          dataIndex: "dateUpdated",
-          key: "dateUpdated",
-          ellipsis: true,
-          width: 180,
-          sorter: (a, b) => (a.dateUpdated > b.dateUpdated ? 1 : -1)
+          render: (text, record) => {
+            const tag = (
+              <div>
+                <Tag color="#9dd3a8">{record.name}</Tag>
+                <Tag color="#CCCC99">{record.role}</Tag>
+                <Tag color="#3b9a9c">{record.sort}</Tag>
+              </div>
+            );
+            const t = JSON.stringify(JSON.parse(text !== null?text:'{}'), null, 4) ;
+            const content = (
+              <div>
+                <Text type="secondary">{`${getIntlContent("SHENYU.SYSTEM.CREATETIME") }: ${ record.dateCreated}`}</Text>
+                <br />
+                <Text type="secondary">{`${getIntlContent("SHENYU.SYSTEM.UPDATETIME") }: ${ record.dateUpdated}`}</Text>
+                <hr />
+                <div style={{ "font-weight":"bold" }}>
+                  <pre><code>{t}</code></pre>
+                </div>
+              </div>
+            );
+            return (<Popover content={content} title={tag}><div>{text || "----"}</div></Popover>);
+          }
         },
         {
           align: "center",
@@ -392,13 +413,13 @@ export default class Plugin extends Component {
           render: text => {
             if (text) {
               return (
-                <div className="open">
+                <div className="open" style={{ "font-weight":"bold" }}>
                   {getIntlContent("SHENYU.COMMON.OPEN")}
                 </div>
               );
             } else {
               return (
-                <div className="close">
+                <div className="close" style={{ "font-weight":"bold" }}>
                   {getIntlContent("SHENYU.COMMON.CLOSE")}
                 </div>
               );
@@ -528,7 +549,6 @@ export default class Plugin extends Component {
           bordered
           loading={loading}
           columns={columns}
-          scroll={{ x: 1350 }}
           dataSource={pluginList}
           rowSelection={rowSelection}
           pagination={{
