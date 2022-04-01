@@ -16,12 +16,12 @@
  */
 
 import React, { Component } from "react";
-import { Table, Row, Col, Button, Input, message,Popconfirm } from "antd";
+import { Table, Row, Col, Button, Input, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import styles from "../index.less";
 import Selector from "./Selector";
 import Rule from "./Rule";
-import { getIntlContent, getCurrentLocale } from '../../../utils/IntlUtils'
+import { getIntlContent, getCurrentLocale } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 
 const { Search } = Input;
@@ -38,7 +38,7 @@ export default class Common extends Component {
       selectorPage: 1,
       rulePage: 1,
       popup: "",
-      localeName:'',
+      localeName: "",
       selectorName: undefined,
       ruleName: undefined
     };
@@ -46,43 +46,42 @@ export default class Common extends Component {
 
   componentDidMount() {
     const { dispatch, plugins } = this.props;
-    if(plugins && plugins.length > 0){
+    if (plugins && plugins.length > 0) {
       this.getAllSelectors(1, plugins);
-    }else{
+    } else {
       dispatch({
         type: "global/fetchPlugins",
         payload: {
-          callback: (pluginList) => {
+          callback: pluginList => {
             this.getAllSelectors(1, pluginList);
           }
         }
-      })
+      });
     }
   }
 
   componentDidUpdate(prevProps) {
-
-    const preId = prevProps.match.params.id
+    const preId = prevProps.match.params.id;
     const newId = this.props.match.params.id;
 
     if (newId !== preId) {
       const { dispatch } = this.props;
 
       dispatch({
-        type: "common/resetData",
+        type: "common/resetData"
       });
 
-      if(prevProps.plugins && prevProps.plugins.length > 0){
+      if (prevProps.plugins && prevProps.plugins.length > 0) {
         this.getAllSelectors(1, prevProps.plugins);
-      }else{
+      } else {
         dispatch({
           type: "global/fetchPlugins",
           payload: {
-            callback: (pluginList) => {
+            callback: pluginList => {
               this.getAllSelectors(1, pluginList);
             }
           }
-        })
+        });
       }
     }
   }
@@ -90,16 +89,16 @@ export default class Common extends Component {
   componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
-      type: "common/resetData",
+      type: "common/resetData"
     });
   }
 
   getAllSelectors = (page, plugins) => {
     const { dispatch } = this.props;
     const { selectorName } = this.state;
-    let name = this.props.match.params ? this.props.match.params.id : '';
+    let name = this.props.match.params ? this.props.match.params.id : "";
     const tempPluginId = this.getPluginId(plugins, name);
-    this.setState({pluginId : tempPluginId});
+    this.setState({ pluginId: tempPluginId });
     dispatch({
       type: "common/fetchSelector",
       payload: {
@@ -130,7 +129,7 @@ export default class Common extends Component {
     const plugin = plugins.filter(item => {
       return item.name === name;
     });
-    return (plugin && plugin.length > 0) ? plugin[0] : null;
+    return plugin && plugin.length > 0 ? plugin[0] : null;
   };
 
   getPluginId = (plugins, name) => {
@@ -142,14 +141,14 @@ export default class Common extends Component {
     }
   };
 
-  getPluginConfigField = (config,fieldName) => {
-    if(config){
+  getPluginConfigField = (config, fieldName) => {
+    if (config) {
       let configObj = JSON.parse(config);
       return configObj[fieldName];
-     }else {
+    } else {
       return "";
-     }
-  }
+    }
+  };
 
   closeModal = () => {
     this.setState({ popup: "" });
@@ -164,15 +163,16 @@ export default class Common extends Component {
     const { plugins } = this.props;
     this.setState({ selectorPage: 1 });
     this.getAllSelectors(1, plugins);
-  }
+  };
 
   addSelector = () => {
     const { selectorPage } = this.state;
     const { dispatch, plugins } = this.props;
-    let name = this.props.match.params ? this.props.match.params.id : ''
+    let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
-    const {id: pluginId, config } = plugin;
-    const multiSelectorHandle = this.getPluginConfigField(config, "multiSelectorHandle") === "1";
+    const { id: pluginId, config } = plugin;
+    const multiSelectorHandle =
+      this.getPluginConfigField(config, "multiSelectorHandle") === "1";
     this.setState({
       popup: (
         <Selector
@@ -202,15 +202,16 @@ export default class Common extends Component {
   searchRule = () => {
     this.setState({ rulePage: 1 });
     this.getAllRules(1);
-  }
+  };
 
   addRule = () => {
-    const { rulePage,pluginId } = this.state;
-    const { dispatch, currentSelector, plugins} = this.props;
-    let name = this.props.match.params ? this.props.match.params.id : ''
+    const { rulePage, pluginId } = this.state;
+    const { dispatch, currentSelector, plugins } = this.props;
+    let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
     const { config } = plugin;
-    const multiRuleHandle = this.getPluginConfigField(config, "multiRuleHandle") === "1";
+    const multiRuleHandle =
+      this.getPluginConfigField(config, "multiRuleHandle") === "1";
     if (currentSelector && currentSelector.id) {
       const selectorId = currentSelector.id;
       this.setState({
@@ -239,17 +240,18 @@ export default class Common extends Component {
       });
     } else {
       message.destroy();
-      message.warn(getIntlContent('SHENYU.COMMON.WARN.INPUT_SELECTOR'));
+      message.warn(getIntlContent("SHENYU.COMMON.WARN.INPUT_SELECTOR"));
     }
   };
 
   editSelector = record => {
     const { dispatch, plugins } = this.props;
     const { selectorPage } = this.state;
-    let name = this.props.match.params ? this.props.match.params.id : ''
+    let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
     const { id: pluginId, config } = plugin;
-    const multiSelectorHandle = this.getPluginConfigField(config, "multiSelectorHandle") === "1";
+    const multiSelectorHandle =
+      this.getPluginConfigField(config, "multiSelectorHandle") === "1";
     const { id } = record;
     dispatch({
       type: "common/fetchSeItem",
@@ -291,7 +293,7 @@ export default class Common extends Component {
   deleteSelector = record => {
     const { dispatch, plugins } = this.props;
     const { selectorPage } = this.state;
-    let name = this.props.match.params ? this.props.match.params.id : ''
+    let name = this.props.match.params ? this.props.match.params.id : "";
     const pluginId = this.getPluginId(plugins, name);
     dispatch({
       type: "common/deleteSelector",
@@ -339,11 +341,12 @@ export default class Common extends Component {
 
   editRule = record => {
     const { dispatch, currentSelector, plugins } = this.props;
-    const { rulePage,pluginId } = this.state;
-    let name = this.props.match.params ? this.props.match.params.id : ''
-    const plugin = this.getPlugin(plugins, name)
+    const { rulePage, pluginId } = this.state;
+    let name = this.props.match.params ? this.props.match.params.id : "";
+    const plugin = this.getPlugin(plugins, name);
     const { config } = plugin;
-    const multiRuleHandle = this.getPluginConfigField(config, "multiRuleHandle") === "1";
+    const multiRuleHandle =
+      this.getPluginConfigField(config, "multiRuleHandle") === "1";
     const selectorId = currentSelector ? currentSelector.id : "";
     const { id } = record;
     dispatch({
@@ -386,8 +389,10 @@ export default class Common extends Component {
   };
 
   deleteRule = record => {
-    const { dispatch, currentSelector } = this.props;
+    const { dispatch, currentSelector, ruleList } = this.props;
     const { rulePage } = this.state;
+    const currentPage =
+      rulePage > 1 && ruleList.length === 1 ? rulePage - 1 : rulePage;
     dispatch({
       type: "common/deleteRule",
       payload: {
@@ -395,7 +400,7 @@ export default class Common extends Component {
       },
       fetchValue: {
         selectorId: currentSelector.id,
-        currentPage: rulePage,
+        currentPage,
         pageSize: 12
       }
     });
@@ -403,7 +408,7 @@ export default class Common extends Component {
 
   asyncClick = () => {
     const { dispatch, plugins } = this.props;
-    let name = this.props.match.params ? this.props.match.params.id : ''
+    let name = this.props.match.params ? this.props.match.params.id : "";
     const id = this.getPluginId(plugins, name);
     dispatch({
       type: "global/asyncPlugin",
@@ -429,7 +434,7 @@ export default class Common extends Component {
       ruleTotal,
       currentSelector
     } = this.props;
-    const name = this.props.match.params ? this.props.match.params.id : '';
+    const name = this.props.match.params ? this.props.match.params.id : "";
     const selectColumns = [
       {
         align: "center",
@@ -444,9 +449,15 @@ export default class Common extends Component {
         key: "enabled",
         render: text => {
           if (text) {
-            return <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>;
+            return (
+              <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>
+            );
           } else {
-            return <div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>;
+            return (
+              <div className="close">
+                {getIntlContent("SHENYU.COMMON.CLOSE")}
+              </div>
+            );
           }
         }
       },
@@ -473,12 +484,12 @@ export default class Common extends Component {
               <AuthButton perms={`plugin:${name}Selector:delete`}>
                 <Popconfirm
                   title={getIntlContent("SHENYU.COMMON.DELETE")}
-                  placement='bottom'
-                  onCancel={(e) => {
-                    e.stopPropagation()
+                  placement="bottom"
+                  onCancel={e => {
+                    e.stopPropagation();
                   }}
-                  onConfirm={(e) => {
-                    e.stopPropagation()
+                  onConfirm={e => {
+                    e.stopPropagation();
                     this.deleteSelector(record);
                   }}
                   okText={getIntlContent("SHENYU.COMMON.SURE")}
@@ -486,8 +497,8 @@ export default class Common extends Component {
                 >
                   <span
                     className="edit"
-                    onClick={(e) => {
-                      e.stopPropagation()
+                    onClick={e => {
+                      e.stopPropagation();
                     }}
                   >
                     {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
@@ -514,9 +525,15 @@ export default class Common extends Component {
         key: "enabled",
         render: text => {
           if (text) {
-            return <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>;
+            return (
+              <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>
+            );
           } else {
-            return <div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>;
+            return (
+              <div className="close">
+                {getIntlContent("SHENYU.COMMON.CLOSE")}
+              </div>
+            );
           }
         }
       },
@@ -525,7 +542,7 @@ export default class Common extends Component {
         title: getIntlContent("SHENYU.SYSTEM.UPDATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated",
-        sorter: (a,b) => a.dateCreated > b.dateCreated ? 1 : -1,
+        sorter: (a, b) => (a.dateCreated > b.dateCreated ? 1 : -1)
       },
       {
         align: "center",
@@ -550,12 +567,12 @@ export default class Common extends Component {
               <AuthButton perms={`plugin:${name}Rule:delete`}>
                 <Popconfirm
                   title={getIntlContent("SHENYU.COMMON.DELETE")}
-                  placement='bottom'
-                  onCancel={(e) => {
-                    e.stopPropagation()
+                  placement="bottom"
+                  onCancel={e => {
+                    e.stopPropagation();
                   }}
-                  onConfirm={(e) => {
-                    e.stopPropagation()
+                  onConfirm={e => {
+                    e.stopPropagation();
                     this.deleteRule(record);
                   }}
                   okText={getIntlContent("SHENYU.COMMON.SURE")}
@@ -563,8 +580,8 @@ export default class Common extends Component {
                 >
                   <span
                     className="edit"
-                    onClick={(e) => {
-                      e.stopPropagation()
+                    onClick={e => {
+                      e.stopPropagation();
                     }}
                   >
                     {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
@@ -587,8 +604,10 @@ export default class Common extends Component {
                 <AuthButton perms={`plugin:${name}Selector:query`}>
                   <Search
                     className={styles.search}
-                    style={{maxWidth:"50%"}}
-                    placeholder={getIntlContent("SHENYU.PLUGIN.SEARCH.SELECTOR.NAME")}
+                    style={{ maxWidth: "50%" }}
+                    placeholder={getIntlContent(
+                      "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME"
+                    )}
                     enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
                     size="default"
                     onChange={this.searchSelectorOnchange}
@@ -633,9 +652,15 @@ export default class Common extends Component {
           <Col span={16}>
             <div className="table-header">
               <div style={{ display: "flex" }}>
-                <h3 style={{ marginRight: 30 }}>{getIntlContent("SHENYU.PLUGIN.SELECTOR.RULE.LIST")}</h3>
-                <AuthButton perms={`plugin:${name }:modify`}>
-                  <Button icon="reload" onClick={this.asyncClick} type="primary">
+                <h3 style={{ marginRight: 30 }}>
+                  {getIntlContent("SHENYU.PLUGIN.SELECTOR.RULE.LIST")}
+                </h3>
+                <AuthButton perms={`plugin:${name}:modify`}>
+                  <Button
+                    icon="reload"
+                    onClick={this.asyncClick}
+                    type="primary"
+                  >
                     {getIntlContent("SHENYU.COMMON.SYN")} {name}
                   </Button>
                 </AuthButton>
@@ -645,7 +670,9 @@ export default class Common extends Component {
                 <AuthButton perms={`plugin:${name}Rule:query`}>
                   <Search
                     className={styles.search}
-                    placeholder={getIntlContent("SHENYU.PLUGIN.SEARCH.RULE.NAME")}
+                    placeholder={getIntlContent(
+                      "SHENYU.PLUGIN.SEARCH.RULE.NAME"
+                    )}
                     enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
                     size="default"
                     onChange={this.searchRuleOnchange}
@@ -664,7 +691,15 @@ export default class Common extends Component {
               style={{ marginTop: 30 }}
               bordered
               columns={rulesColumns}
-              expandedRowRender={record => <p style={{maxWidth:document.documentElement.clientWidth*0.5-50}}>{record.handle}</p>}
+              expandedRowRender={record => (
+                <p
+                  style={{
+                    maxWidth: document.documentElement.clientWidth * 0.5 - 50
+                  }}
+                >
+                  {record.handle}
+                </p>
+              )}
               dataSource={ruleList}
               pagination={{
                 total: ruleTotal,
