@@ -58,6 +58,7 @@ export default class PluginHandle extends Component {
     const { language } = this.props;
     const { localeName } = this.state;
     if (language !== localeName) {
+      this.loadPluginDict();
       this.initPluginColumns();
       this.changeLocale(language);
     }
@@ -369,7 +370,8 @@ export default class PluginHandle extends Component {
             return <div>{getIntlContent("SHENYU.PLUGIN.RULES")}</div>;
           } else if (text === 3) {
             return <div>{getIntlContent("SHENYU.PLUGIN")}</div>;
-          }return <div>{getIntlContent("SHENYU.PLUGIN.UNDEFINETYPE")}</div>;
+          }
+          return <div>{getIntlContent("SHENYU.PLUGIN.UNDEFINETYPE")}</div>;
         }
       },
       {
@@ -394,7 +396,8 @@ export default class PluginHandle extends Component {
             return <div>{getIntlContent("SHENYU.COMMON.YES")}</div>;
           } else if (text === "0") {
             return <div>{getIntlContent("SHENYU.COMMON.NO")}</div>;
-          }return <div>{getIntlContent("SHENYU.PLUGIN.UNDEFINETYPE")}</div>;
+          }
+          return <div>{getIntlContent("SHENYU.PLUGIN.UNDEFINETYPE")}</div>;
         }
        },
        {
