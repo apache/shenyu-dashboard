@@ -48,8 +48,7 @@ export default class Auth extends Component {
   }
 
   componentWillMount() {
-    const { currentPage } = this.state;
-    this.getAllAuths(currentPage);
+    this.query()
     this.initPluginColumns();
   }
 
@@ -74,10 +73,22 @@ export default class Auth extends Component {
   };
 
   onSelectChange = selectedRowKeys => {
-    this.setState({ selectedRowKeys });
+    this.setState({ selectedRowKeys }, this.query);
   };
 
-  // 发送请求获取数据
+  query = () =>{
+    const { dispatch } = this.props;
+    const { appKey,phone,currentPage } = this.state;
+    dispatch({
+      type: "auth/fetch",
+      payload: {
+        appKey,
+        phone,
+        currentPage,
+        pageSize: 20
+      }
+    });
+  }
 
   getAllAuths = page => {
     const { dispatch } = this.props;
@@ -93,52 +104,31 @@ export default class Auth extends Component {
     });
   };
 
-  // 发送请求获取所有元数据信息
-  // getAllMetaDel = () => {
-  //   const { dispatch } = this.props;
-  //   dispatch({
-  //     type: "auth/fetchMeta",
-  //     payload: {
-  //       currentPage: 1,
-  //       pageSize: 10
-  //     },
-  //     callback: datas => datas
-  //   })
-  // }
-
-  // 分页数据
-
   pageOnchange = page => {
-    this.setState({ currentPage: page });
-    this.getAllAuths(page);
+    this.setState({ currentPage: page }, this.query);
   };
 
-  // 关闭弹框
-
-  closeModal = () => {
+  closeModal = (refresh) => {
+    if (refresh) {
+      this.setState({ popup: "" }, this.query);
+    }
     this.setState({ popup: "" });
   };
-
-  // 编辑弹框
 
   editClick = record => {
     const { dispatch } = this.props;
     const { currentPage } = this.state;
-    // const authName = this.state.appKey;
     dispatch({
       type: "auth/fetchItem",
       payload: {
         id: record.id
       },
       callback: (auth) => {
-
         this.setState({
           popup: (
             <AddModal
               {...auth}
               handleOk={values => {
-                // const { appKey, appSecret, authParamVOList, enabled, id, phone,userId } = values;
-                // 发送更新请求
                 dispatch({
                   type: "auth/update",
                   payload: {
@@ -151,7 +141,7 @@ export default class Auth extends Component {
                     pageSize: 20
                   },
                   callback: () => {
-                    this.closeModal();
+                    this.closeModal(true);
                   }
                 });
               }}
@@ -196,8 +186,6 @@ export default class Auth extends Component {
                     this.closeModal();
                   }}
                   handleOk={values => {
-                    // const { appKey, appSecret, enabled, id, authParamVOList } = values;
-                    // 发送更新请求
                     dispatch({
                       type: "auth/updateDel",
                       payload: values,
@@ -207,7 +195,7 @@ export default class Auth extends Component {
                         pageSize: 20
                       },
                       callback: () => {
-                        this.closeModal();
+                        this.closeModal(true);
                       }
                     });
                   }}
@@ -216,43 +204,18 @@ export default class Auth extends Component {
             })
           }
         })
-
       }
     })
   }
 
-
-
-  // 点击搜索事件
-
   searchClick = res => {
-    // console.log(res)
-    const {dispatch} = this.props;
-    dispatch({
-      type: "auth/fetch",
-      payload: {
-        appKey: res.appKey?res.appKey:null,
-        phone: res.phone?res.phone:null,
-        pageSize: 20,
-        currentPage: 1
-      }
-    })
-
-
-
-
-
-
-    this.setState({ currentPage: 1 });
+    this.setState({ currentPage: 1, appKey : res.appKey, phone: res.phone, }, this.query);
   };
-
-  // 点击删除事件
 
   deleteClick = () => {
     const { dispatch } = this.props;
     const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
-      // 发送删除请求
       dispatch({
         type: "auth/delete",
         payload: {
@@ -260,7 +223,7 @@ export default class Auth extends Component {
         },
         fetchValue: {},
         callback: () => {
-          this.setState({ selectedRowKeys: [] })
+          this.setState({ selectedRowKeys: [], currentPage: 1,},this.query)
         }
       });
     } else {
@@ -278,25 +241,21 @@ export default class Auth extends Component {
       type: "auth/fetchMetaGroup",
       payload: {},
       callback: (metaGroup)=>{
-
         this.setState({
           popup: (
             <AddTable
               metaGroup={metaGroup}
               handleOk={values => {
-                // const { appKey, appSecret, enabled } = values;
-                // 发送添加请求
                 dispatch({
                   type: "auth/add",
                   payload: values,
                   fetchValue: {
-                    // appKey: authName,
                     currentPage,
                     pageSize: 20
                   },
                   callback: () => {
-                    this.setState({ selectedRowKeys: [] })
-                    this.closeModal();
+                    this.setState({ selectedRowKeys: [], currentPage : 1 })
+                    this.closeModal(true);
                   }
                 });
               }}
@@ -309,8 +268,6 @@ export default class Auth extends Component {
       }
     })
   };
-
-  // 批量启用或禁用
 
   enableClick = () => {
     const {dispatch} = this.props;
@@ -330,7 +287,7 @@ export default class Auth extends Component {
             },
             fetchValue: {},
             callback: () => {
-              this.setState({selectedRowKeys: []});
+              this.setState({selectedRowKeys: []}, this.query);
             }
           })
         }
@@ -442,7 +399,6 @@ export default class Auth extends Component {
           fixed: "right",
           render: (text, record) => {
             return (
-              // 弹窗中的编辑事件
               <AuthButton perms="system:authen:edit">
                 <div
                   className="edit"
@@ -506,14 +462,8 @@ export default class Auth extends Component {
 
     return (
       <div className="plug-content-wrap">
-        {/* 头部导航栏 */}
         <div style={{ display: "flex",alignItems: 'center' }}>
-
-
-          {/* 内联查询 */}
-          <SearchContent onClick={res=>this.searchClick(res)} />
-
-          {/* 删除勾选按钮 */}
+          <SearchContent onClick={this.searchClick} />
           <AuthButton perms="system:authen:delete">
             <Popconfirm
               title={getIntlContent("SHENYU.COMMON.DELETE")}
@@ -532,7 +482,6 @@ export default class Auth extends Component {
               </Button>
             </Popconfirm>
           </AuthButton>
-          {/* 添加数据按钮 */}
           <AuthButton perms="system:authen:add">
             <Button
               style={{ marginLeft: 20 }}
@@ -542,7 +491,6 @@ export default class Auth extends Component {
               {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
             </Button>
           </AuthButton>
-          {/* 批量启用或禁用按钮 */}
           <AuthButton perms="system:authen:disable">
             <Button
               style={{ marginLeft: 20 }}
@@ -552,7 +500,6 @@ export default class Auth extends Component {
               {getIntlContent("SHENYU.PLUGIN.BATCH")}
             </Button>
           </AuthButton>
-          {/* 同步数据按钮 */}
           <AuthButton perms="system:authen:modify">
             <Button
               style={{ marginLeft: 20 }}

@@ -43,8 +43,7 @@ export default class Metadata extends Component {
   }
 
   componentWillMount() {
-    const { currentPage } = this.state;
-    this.getAllMetadata(currentPage);
+    this.query()
     this.initPluginColumns();
   }
 
@@ -69,25 +68,24 @@ export default class Metadata extends Component {
   };
 
   onSelectChange = selectedRowKeys => {
-    this.setState({ selectedRowKeys });
+    this.setState({ selectedRowKeys }, this.query);
   };
 
-  getAllMetadata = page => {
+  query = () => {
     const { dispatch } = this.props;
-    const { appName } = this.state;
+    const { appName, currentPage } = this.state;
     dispatch({
       type: "metadata/fetch",
       payload: {
         appName,
-        currentPage: page,
+        currentPage,
         pageSize: 12
       }
     });
   };
 
   pageOnchange = page => {
-    this.setState({ currentPage: page });
-    this.getAllMetadata(page);
+    this.setState({ currentPage: page }, this.query);
   };
 
   closeModal = () => {
@@ -104,16 +102,13 @@ export default class Metadata extends Component {
         id: record.id
       },
       callback: user => {
-        // console.log(user)
         this.setState({
-
           popup: (
             <AddModal
               isShow={false}
               {...user}
               handleOk={values => {
                 const { appName, methodName,id, parameterTypes,path,pathDesc, rpcExt, rpcType, serviceName } = values;
-
                 dispatch({
                   type: "metadata/update",
                   payload: {
@@ -149,22 +144,17 @@ export default class Metadata extends Component {
   };
 
   searchOnchange = e => {
-    const appName = e.target.value;
-    this.setState({ appName });
+    this.setState({ appName: e.target.value, currentPage: 1 },this.query);
   };
 
   searchClick = () => {
-    this.getAllMetadata(1);
-    this.setState({ currentPage: 1 });
+    this.setState({ currentPage: 1 }, this.query);
   };
 
   deleteClick = () => {
     const { dispatch } = this.props;
     const { appName, currentPage, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
-      // console.log('000000000000000000')
-      // console.log(selectedRowKeys)
-      // console.log('000000000000000000')
       dispatch({
         type: "metadata/delete",
         payload: {
@@ -176,7 +166,7 @@ export default class Metadata extends Component {
           pageSize: 12
         },
         callback: () => {
-          this.setState({ selectedRowKeys: [] });
+          this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
         }
       });
     } else {
@@ -214,7 +204,7 @@ export default class Metadata extends Component {
                 pageSize: 12
               },
               callback: () => {
-                this.setState({ selectedRowKeys: [] });
+                this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
                 this.closeModal();
               }
             });
@@ -251,7 +241,7 @@ export default class Metadata extends Component {
               pageSize: 12
             },
             callback: () => {
-              this.setState({ selectedRowKeys: [] });
+              this.setState({ selectedRowKeys: [] }, this.query);
             }
           });
         }
