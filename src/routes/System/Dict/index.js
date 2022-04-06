@@ -45,8 +45,7 @@ export default class ShenYuDict extends Component {
   }
 
   componentWillMount() {
-    const { currentPage } = this.state;
-    this.getAllDict(currentPage);
+    this.query()
     this.initPluginColumns();
   }
 
@@ -71,27 +70,26 @@ export default class ShenYuDict extends Component {
   };
 
   onSelectChange = selectedRowKeys => {
-    this.setState({ selectedRowKeys });
+    this.setState({ selectedRowKeys }, this.query);
   };
 
-  getAllDict = page => {
+  query = () =>{
     const { dispatch } = this.props;
-    const { type, dictName, dictCode } = this.state;
+    const { type, dictName, dictCode, currentPage } = this.state;
     dispatch({
       type: "shenyuDict/fetch",
       payload: {
         type,
         dictName,
         dictCode,
-        currentPage: page,
+        currentPage,
         pageSize: 12
       }
     });
-  };
+  }
 
   pageOnchange = page => {
-    this.setState({ currentPage: page });
-    this.getAllDict(page);
+    this.setState({ currentPage: page }, this.query);
   };
 
   closeModal = () => {
@@ -110,9 +108,7 @@ export default class ShenYuDict extends Component {
         id: record.id
       },
       callback: user => {
-        // console.log(user)
         this.setState({
-
           popup: (
             <AddModal
               isShow={false}
@@ -141,16 +137,7 @@ export default class ShenYuDict extends Component {
                   },
                   callback: () => {
                     this.closeModal();
-                    dispatch({
-                      type: "shenyuDict/fetch",
-                      payload: {
-                        type: currentType,
-                        dictName:currentDictName,
-                        dictCode:currentDictCode,
-                        pageSize: 12,
-                        callback: () => { }
-                      }
-                    });
+                    this.query()
                   }
                 });
               }}
@@ -165,23 +152,19 @@ export default class ShenYuDict extends Component {
   };
 
   searchTypeOnchange = e => {
-    const type = e.target.value;
-    this.setState({ type });
+    this.setState({ type : e.target.value, currentPage: 1}, this.query);
   };
 
   searchDictCodeOnchange = e => {
-    const dictCode = e.target.value;
-    this.setState({ dictCode });
+    this.setState({ dictCode : e.target.value, currentPage: 1}, this.query);
   };
 
   searchDictNameOnchange = e => {
-    const dictName = e.target.value;
-    this.setState({ dictName });
+    this.setState({ dictName : e.target.value ,currentPage: 1}, this.query);
   };
 
   searchClick = () => {
-    this.getAllDict(1);
-    this.setState({ currentPage: 1 });
+    this.setState({ currentPage: 1 }, this.query);
   };
 
   deleteClick = () => {
@@ -201,17 +184,7 @@ export default class ShenYuDict extends Component {
           pageSize: 12
         },
         callback: () => {
-          this.setState({ selectedRowKeys: [] });
-          dispatch({
-            type: "shenyuDict/fetch",
-            payload: {
-              type,
-              dictName,
-              dictCode,
-              pageSize: 12,
-              callback: () => { }
-            }
-          });
+          this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
         }
       });
     } else {
@@ -245,16 +218,7 @@ export default class ShenYuDict extends Component {
                 pageSize: 12
               },
               callback: () => {
-                this.setState({ selectedRowKeys: [] });
-                this.closeModal();
-                dispatch({
-                  type: "shenyuDict/fetch",
-                  payload: {
-                    currentPage: 1,
-                    pageSize: 12,
-                    callback: () => { }
-                  }
-                });
+                this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
               }
             });
           }}
@@ -268,7 +232,7 @@ export default class ShenYuDict extends Component {
 
   enableClick = () => {
     const { dispatch } = this.props;
-    const { type, dictName, dictCode, selectedRowKeys } = this.state;
+    const {selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
 
       dispatch({
@@ -277,7 +241,6 @@ export default class ShenYuDict extends Component {
           id: selectedRowKeys[0]
         },
         callback: user => {
-
           dispatch({
             type: "shenyuDict/updateEn",
             payload: {
@@ -286,17 +249,7 @@ export default class ShenYuDict extends Component {
             },
             fetchValue: {},
             callback: () => {
-              this.setState({ selectedRowKeys: [] });
-              dispatch({
-                type: "shenyuDict/fetch",
-                payload: {
-                  type,
-                  dictName,
-                  dictCode,
-                  pageSize: 12,
-                  callback: () => { }
-                }
-              });
+              this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
             }
           });
         }
@@ -312,7 +265,7 @@ export default class ShenYuDict extends Component {
       localeName: locale
     });
     getCurrentLocale(this.state.localeName);
-  };
+  }
 
   initPluginColumns() {
     this.setState({

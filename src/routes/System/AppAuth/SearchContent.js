@@ -26,7 +26,6 @@ class InlineSearch extends React.Component {
     e.preventDefault();
     const searchCont= this.props.form.getFieldsValue()
     this.props.onClick(searchCont)
-    // console.log(searchCont)
 
   };
 
