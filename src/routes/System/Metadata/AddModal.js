@@ -167,7 +167,7 @@ class AddModal extends Component {
             )}
           </FormItem>
           {/* status */}
-          {this.props.isShow?
+          {
           (
             <FormItem
               {...formItemLayout}
@@ -177,10 +177,10 @@ class AddModal extends Component {
               initialValue: enabled,
               valuePropName: 'checked',
             })(
-              <Switch />
+              <Switch disabled="{!this.props.isShow}"/>
             )}
             </FormItem>
-          ) : ''}
+          )}
         </Form>
       </Modal>
     )

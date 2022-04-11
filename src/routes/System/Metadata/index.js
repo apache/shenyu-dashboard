@@ -108,14 +108,14 @@ export default class Metadata extends Component {
               isShow={false}
               {...user}
               handleOk={values => {
-                const { appName, methodName,id, parameterTypes,path,pathDesc, rpcExt, rpcType, serviceName } = values;
+                const { appName,enabled, methodName,id, parameterTypes,path,pathDesc, rpcExt, rpcType, serviceName } = values;
                 dispatch({
                   type: "metadata/update",
                   payload: {
                     appName,
                     methodName,
                     parameterTypes,
-                    // enabled,
+                    enabled,
                     pathDesc,
                     id,
                     path,
