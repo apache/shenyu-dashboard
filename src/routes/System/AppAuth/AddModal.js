@@ -59,6 +59,7 @@ class AddModal extends Component {
    this.state = {
      selectorConditions,
      pathTableVisible: true,
+     pagination: 1,
      pathDatas,
    }
  }
