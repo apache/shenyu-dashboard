@@ -16,10 +16,9 @@
  */
 
 import fetch from 'dva/fetch';
-import { notification } from 'antd';
-import { routerRedux } from 'dva/router';
+import {notification} from 'antd';
 import store from '../index';
-import { getIntlContent } from './IntlUtils'
+import {getIntlContent} from './IntlUtils'
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -38,6 +37,7 @@ const codeMessage = {
   503: '服务不可用，服务器暂时过载或维护。',
   504: '网关超时。',
 };
+
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
     return response;
@@ -55,7 +55,7 @@ function checkStatus(response) {
 
 /**
  * check response's code
- * @param {} response
+ * @param {response} response
  */
 const checkResponseCode = response => {
   if (response.code === 401) {
@@ -80,9 +80,8 @@ const checkResponseCode = response => {
  * @return {object}           An object containing either "data" or "err"
  */
 export default function request(url, options) {
-  const defaultOptions = {
-  };
-  const newOptions = { ...defaultOptions, ...options };
+  const defaultOptions = {};
+  const newOptions = {...defaultOptions, ...options};
   if (
     newOptions.method === 'POST' ||
     newOptions.method === 'PUT' ||
@@ -91,7 +90,7 @@ export default function request(url, options) {
     if (!(newOptions.body instanceof FormData)) {
       newOptions.headers = {
         Accept: 'application/json',
-       'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json; charset=utf-8',
         ...newOptions.headers,
       };
@@ -107,11 +106,11 @@ export default function request(url, options) {
 
   // add token
   let token = window.sessionStorage.getItem("token");
-  if(token){
-    if(!newOptions.headers){
+  if (token) {
+    if (!newOptions.headers) {
       newOptions.headers = {};
     }
-    newOptions.headers = {...newOptions.headers,"X-Access-Token":token};
+    newOptions.headers = {...newOptions.headers, "X-Access-Token": token};
   }
 
   return fetch(url, newOptions)
@@ -122,12 +121,12 @@ export default function request(url, options) {
       }
       return response.json();
     }).then(res => {
-      if(checkResponseCode(res)){
+      if (checkResponseCode(res)) {
         return res;
       }
     })
     .catch(e => {
-      const { dispatch } = store;
+      const {dispatch} = store;
       const status = e.name;
       if (status === 401) {
         dispatch({
@@ -136,18 +135,6 @@ export default function request(url, options) {
         dispatch({
           type: "global/resetPermission"
         });
-        return;
-      }
-      if (status === 403) {
-        dispatch(routerRedux.push('/exception/403'));
-        return;
-      }
-      if (status <= 504 && status >= 500) {
-        dispatch(routerRedux.push('/exception/500'));
-        return;
-      }
-      if (status >= 404 && status < 422) {
-        dispatch(routerRedux.push('/exception/404'));
       }
     });
 }
