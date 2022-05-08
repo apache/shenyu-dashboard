@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-import { stringify } from "qs";
+import {stringify} from "qs";
 import request from "../utils/request";
 
 const baseUrl = document.getElementById("httpPath").innerHTML;
+
 /* add user */
 export async function addUser(params) {
   return request(`${baseUrl}/dashboardUser`, {
@@ -29,6 +30,7 @@ export async function addUser(params) {
     }
   });
 }
+
 /* delete user */
 export async function deleteUser(params) {
   return request(`${baseUrl}/dashboardUser/batch`, {
@@ -36,6 +38,7 @@ export async function deleteUser(params) {
     body: [...params.list]
   });
 }
+
 /* update user */
 export async function updateUser(params) {
   return request(`${baseUrl}/dashboardUser/${params.id}`, {
@@ -63,31 +66,18 @@ export async function updatePassword(params) {
 
 /* get all metadata */
 export async function getAllMetadata(params) {
-  const { appName, currentPage, pageSize } = params;
-  let myParams = params;
-  if (appName) {
-    myParams = params;
-  } else {
-    myParams = { currentPage, pageSize };
-  }
-
-  return request(`${baseUrl}/meta-data/queryList?${stringify(myParams)}`, {
+  const {appName, currentPage, pageSize} = params;
+  return request(`${baseUrl}/meta-data/queryList?${stringify(appName ? params : {currentPage, pageSize})}`, {
     method: `GET`
   });
 }
 
 export async function findMetadata(params) {
-  // const { appName, currentPage, pageSize } = params;
-  // let myParams = params;
-  // if (appName) {
-  //   myParams = params;
-  // } else {
-  //   myParams = { currentPage, pageSize };
-  // }
   return request(`${baseUrl}/meta-data/${params.id}`, {
     method: `GET`
   });
 }
+
 /* addMetadata */
 export async function addMetadata(params) {
   return request(`${baseUrl}/meta-data/createOrUpdate`, {
@@ -97,6 +87,7 @@ export async function addMetadata(params) {
     }
   });
 }
+
 /* updateMetadata */
 export async function updateMetadata(params) {
   return request(`${baseUrl}/meta-data/createOrUpdate`, {
@@ -115,6 +106,7 @@ export async function updateMetadata(params) {
     }
   });
 }
+
 /* syncData */
 export async function syncData() {
   return request(`${baseUrl}/meta-data/syncData`, {
@@ -137,6 +129,7 @@ export async function deleteMetadata(params) {
     body: [...params.list]
   });
 }
+
 /* updateEnabled */
 export async function updateEnabled(params) {
   return request(`${baseUrl}/meta-data/batchEnabled`, {
@@ -147,19 +140,16 @@ export async function updateEnabled(params) {
     }
   });
 }
+
 /* getAllUsers */
 export async function getAllUsers(params) {
-  const { userName, currentPage, pageSize } = params;
-  let myParams = params;
-  if (userName) {
-    myParams = params;
-  } else {
-    myParams = { currentPage, pageSize };
-  }
+  const {userName, currentPage, pageSize} = params;
+  const myParams = userName ? params : {currentPage, pageSize};
   return request(`${baseUrl}/dashboardUser?${stringify(myParams)}`, {
     method: `GET`
   });
 }
+
 /* findUser */
 export async function findUser(params) {
   return request(`${baseUrl}/dashboardUser/${params.id}`, {
@@ -176,6 +166,7 @@ export async function addPlugin(params) {
     }
   });
 }
+
 /* deletePlugin */
 export async function deletePlugin(params) {
   return request(`${baseUrl}/plugin/batch`, {
@@ -183,6 +174,7 @@ export async function deletePlugin(params) {
     body: [...params.list]
   });
 }
+
 /* updatePlugin */
 export async function updatePlugin(params) {
   return request(`${baseUrl}/plugin/${params.id}`, {
@@ -204,12 +196,21 @@ export async function getAllPlugins(params) {
     method: `GET`
   });
 }
+
+/* get Plugins snapshot */
+export  function activePluginSnapshot() {
+  return request(`${baseUrl}/plugin/snapshot/active`, {
+    method: `GET`
+  });
+}
+
 /* findPlugin */
 export async function findPlugin(params) {
   return request(`${baseUrl}/plugin/${params.id}`, {
     method: `GET`
   });
 }
+
 /* updatepluginEnabled */
 export async function updatepluginEnabled(params) {
   return request(`${baseUrl}/plugin/enabled`, {
@@ -230,6 +231,7 @@ export async function addAuth(params) {
     }
   });
 }
+
 /* deleteAuth */
 export async function deleteAuth(params) {
   return request(`${baseUrl}/appAuth/batch`, {
@@ -237,6 +239,7 @@ export async function deleteAuth(params) {
     body: [...params.list]
   });
 }
+
 /* updateAuth */
 export async function updateAuth(params) {
   return request(`${baseUrl}/appAuth/${params.id}`, {
@@ -248,19 +251,16 @@ export async function updateAuth(params) {
     }
   });
 }
+
 /* getAllAuth */
 export async function getAllAuth(params) {
-  const { appKey, currentPage, pageSize } = params;
-  let myParams = params;
-  if (appKey) {
-    myParams = params;
-  } else {
-    myParams = { currentPage, pageSize };
-  }
+  const {appKey, currentPage, pageSize} = params;
+  let myParams = appKey ? params : {currentPage, pageSize};
   return request(`${baseUrl}/appAuth?${stringify(myParams)}`, {
     method: `GET`
   });
 }
+
 /* syncAuthsData */
 export async function syncAuthsData() {
   return request(`${baseUrl}/appAuth/syncData`, {
@@ -268,15 +268,11 @@ export async function syncAuthsData() {
     body: {}
   });
 }
+
 /* getAllAuths */
 export async function getAllAuths(params) {
-  const { appKey, phone, currentPage, pageSize } = params;
-  let myParams = params;
-  if (appKey || phone) {
-    myParams = params;
-  } else {
-    myParams = { currentPage, pageSize };
-  }
+  const {appKey, phone, currentPage, pageSize} = params;
+  const myParams = appKey || phone ? params : {currentPage, pageSize};
   return request(`${baseUrl}/appAuth/findPageByQuery?${stringify(myParams)}`, {
     method: `GET`
   });
@@ -288,18 +284,21 @@ export async function findAuthData(params) {
     method: `GET`
   });
 }
+
 /* findAuthDataDel */
 export async function findAuthDataDel(params) {
   return request(`${baseUrl}/appAuth/detailPath?id=${params.id}`, {
     method: `GET`
   });
 }
+
 /* get all metadatas */
 export async function getAllMetadatas() {
   return request(`${baseUrl}/meta-data/findAll`, {
     method: `GET`
   });
 }
+
 /* update auth */
 export async function updateAuthData(params) {
   return request(`${baseUrl}/appAuth/updateDetail`, {
@@ -309,6 +308,7 @@ export async function updateAuthData(params) {
     }
   });
 }
+
 /* update authDel */
 export async function updateAuthDel(params) {
   return request(`${baseUrl}/appAuth/updateDetailPath`, {
@@ -316,6 +316,7 @@ export async function updateAuthDel(params) {
     body: params
   });
 }
+
 /* add auth */
 export async function addAuthData(params) {
   return request(`${baseUrl}/appAuth/apply`, {
@@ -325,6 +326,7 @@ export async function addAuthData(params) {
     }
   });
 }
+
 /* batch enable auth */
 export async function updateAuthEnabled(params) {
   return request(`${baseUrl}/appAuth/batchEnabled`, {
@@ -335,6 +337,7 @@ export async function updateAuthEnabled(params) {
     }
   });
 }
+
 /* batch delete auth */
 export async function deleteAuths(params) {
   return request(`${baseUrl}/appAuth/batchDelete`, {
@@ -342,6 +345,7 @@ export async function deleteAuths(params) {
     body: [...params.list]
   });
 }
+
 /* find auth */
 export async function findAuth(params) {
   return request(`${baseUrl}/appAuth/${params.id}`, {
@@ -358,6 +362,7 @@ export async function addSelector(params) {
     }
   });
 }
+
 /* delete selector */
 export async function deleteSelector(params) {
   return request(`${baseUrl}/selector/batch`, {
@@ -365,6 +370,7 @@ export async function deleteSelector(params) {
     body: [...params.list]
   });
 }
+
 /* update selector */
 export async function updateSelector(params) {
   return request(`${baseUrl}/selector/${params.id}`, {
@@ -374,12 +380,14 @@ export async function updateSelector(params) {
     }
   });
 }
+
 /* get all selectors */
 export async function getAllSelectors(params) {
   return request(`${baseUrl}/selector?${stringify(params)}`, {
     method: `GET`
   });
 }
+
 /* get single selector */
 export async function findSelector(params) {
   return request(`${baseUrl}/selector/${params.id}`, {
@@ -401,6 +409,7 @@ export async function addRule(params) {
     }
   });
 }
+
 export async function deleteRule(params) {
   return request(`${baseUrl}/rule/batch`, {
     method: `DELETE`,
@@ -443,6 +452,7 @@ export async function asyncPlugin() {
     method: `POST`
   });
 }
+
 // 同步单个插件
 export async function asyncOnePlugin(params) {
   return request(`${baseUrl}/plugin/syncPluginData/${params.id}`, {
@@ -463,6 +473,7 @@ export async function getAllPluginHandles(params) {
     method: `GET`
   });
 }
+
 // add plugin handle
 export async function addPluginHandle(params) {
   return request(`${baseUrl}/plugin-handle`, {
@@ -472,6 +483,7 @@ export async function addPluginHandle(params) {
     }
   });
 }
+
 // get detail of plugin handle
 export async function findPluginHandle(params) {
   return request(`${baseUrl}/plugin-handle/${params.id}`, {
@@ -573,10 +585,10 @@ export async function getAllRoles() {
 
 /* get roles by page */
 export async function getRoleList(params) {
-  const { roleName, currentPage, pageSize } = params;
-  let myParams = { ...params };
+  const {roleName, currentPage, pageSize} = params;
+  let myParams = {...params};
   if (!roleName) {
-    myParams = { currentPage, pageSize };
+    myParams = {currentPage, pageSize};
   }
   return request(`${baseUrl}/role?${stringify(myParams)}`, {
     method: `GET`
@@ -622,10 +634,10 @@ export async function updateRole(params) {
 
 /* get resources by page */
 export async function getAllResources(params) {
-  const { title, currentPage, pageSize } = params;
-  let myParams = { ...params };
+  const {title, currentPage, pageSize} = params;
+  let myParams = {...params};
   if (!title) {
-    myParams = { currentPage, pageSize };
+    myParams = {currentPage, pageSize};
   }
   return request(`${baseUrl}/resource?${stringify(myParams)}`, {
     method: `GET`
@@ -724,7 +736,7 @@ export async function addDataPermisionRule(params) {
     }
   });
 }
-
+// Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and
 /* delete dataPermision's selector */
 export async function deleteDataPermisionSelector(params) {
   return request(`${baseUrl}/data-permission/selector`, {
@@ -742,5 +754,12 @@ export async function deleteDataPermisionRule(params) {
     body: {
       ...params
     }
+  });
+}
+
+/* get new event recode logs */
+export  function getNewEventRecodLogList() {
+  return request(`${baseUrl}/operation-record/log/list`, {
+    method: `GET`
   });
 }
