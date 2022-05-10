@@ -17,19 +17,19 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { Layout, message } from "antd";
+import {Layout, message} from "antd";
 import DocumentTitle from "react-document-title";
-import { connect } from "dva";
-import { Route, Redirect, Switch } from "dva/router";
-import { ContainerQuery } from "react-container-query";
+import {connect} from "dva";
+import {Redirect, Route, Switch} from "dva/router";
+import {ContainerQuery} from "react-container-query";
 import classNames from "classnames";
 import pathToRegexp from "path-to-regexp";
 import GlobalHeader from "../components/GlobalHeader";
 import SiderMenu from "../components/SiderMenu";
 import NotFound from "../routes/Exception/404";
-import { getRoutes } from "../utils/utils";
-import AuthRoute, { checkMenuAuth, getAuthMenus } from "../utils/AuthRoute";
-import { getMenuData } from "../common/menu";
+import {getRoutes} from "../utils/utils";
+import AuthRoute, {checkMenuAuth, getAuthMenus} from "../utils/AuthRoute";
+import {getMenuData} from "../common/menu";
 import logo from "../assets/logo.svg";
 
 const MyContext = React.createContext();
@@ -177,10 +177,9 @@ class BasicLayout extends React.PureComponent {
     } else {
       const { routerData, permissions } = this.props;
       // get the first authorized route path in routerData
-      const authorizedPath = Object.keys(routerData).find(
+      return Object.keys(routerData).find(
         item => checkMenuAuth(item, permissions) && item !== "/"
       );
-      return authorizedPath;
     }
     return redirect;
   };
@@ -228,17 +227,17 @@ class BasicLayout extends React.PureComponent {
       }
       menuMap[item.role].push(item);
     });
-    Object.keys(menuMap).forEach((key, index) => {
+    Object.keys(menuMap).forEach((key) => {
       menus[0].children.push({
         name: key,
-        path: `/plug/${index}`,
+        path: `/plug/${menuMap[key][0].role}`,
         authority: undefined,
         icon: "unordered-list",
         children: menuMap[key].map(item => {
           const { name } = item;
           return {
             name: name.replace(name[0], name[0].toUpperCase()),
-            path: `/plug/${index}/${item.name}`,
+            path: `/plug/${item.role}/${item.name}`,
             authority: undefined,
             id: item.id,
             locale: `SHENYU.MENU.PLUGIN.${item.name.toUpperCase()}`,
