@@ -22,7 +22,7 @@ import { connect } from "dva";
 import { Icon, message } from "antd";
 import GlobalFooter from "../components/GlobalFooter";
 import styles from "./UserLayout.less";
-import logo from "../assets/logo.svg";
+import TitleLogo from "../assets/TitleLogo.svg";
 import { getRoutes, getPageQuery, getQueryPath } from "../utils/utils";
 
 message.config({
@@ -66,8 +66,7 @@ class UserLayout extends React.PureComponent {
             <div className={styles.top}>
               <div className={styles.header}>
                 <Link to="/">
-                  <img alt="logo" className={styles.logo} src={logo} />
-                  <span className={styles.title}>Apache ShenYu Gateway</span>
+                  <img alt="logo" className={styles.logo} src={TitleLogo} />
                 </Link>
               </div>
               <div className={styles.desc}>Apache ShenYu Gateway Management System</div>
