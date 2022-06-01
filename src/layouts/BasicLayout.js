@@ -31,6 +31,7 @@ import {getRoutes} from "../utils/utils";
 import AuthRoute, {checkMenuAuth, getAuthMenus} from "../utils/AuthRoute";
 import {getMenuData} from "../common/menu";
 import logo from "../assets/logo.svg";
+import TitleLogo from "../assets/TitleLogo.svg";
 
 const MyContext = React.createContext();
 
@@ -271,6 +272,7 @@ class BasicLayout extends React.PureComponent {
       <Layout>
         <SiderMenu
           logo={logo}
+          TitleLogo={TitleLogo}
           dispatch={dispatch}
           menuData={menus}
           collapsed={collapsed}
