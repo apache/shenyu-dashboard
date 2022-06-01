@@ -66,8 +66,7 @@ class UserLayout extends React.PureComponent {
             <div className={styles.top}>
               <div className={styles.header}>
                 <Link to="/">
-                <img alt="logo" className={styles.logo} src={TitleLogo} />
-
+                  <img alt="logo" className={styles.logo} src={TitleLogo} />
                 </Link>
               </div>
               <div className={styles.desc}>Apache ShenYu Gateway Management System</div>

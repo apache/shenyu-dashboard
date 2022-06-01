@@ -147,8 +147,8 @@ export default class SiderMenu extends PureComponent {
         onClick={
           isMobile
             ? () => {
-                onCollapse(true);
-              }
+              onCollapse(true);
+            }
             : undefined
         }
       >
@@ -299,14 +299,14 @@ export default class SiderMenu extends PureComponent {
 
   render() {
     this.updateMenuData();
-    const { logo, menuData, collapsed, onCollapse,TitleLogo } = this.props;
+    const { menuData, collapsed, onCollapse, TitleLogo } = this.props;
     const { openKeys } = this.state;
     // Don't show popup menu when it is been collapsed
     const menuProps = collapsed
       ? {}
       : {
-          openKeys
-        };
+        openKeys
+      };
     // if pathname can't match, use the nearest parent's key
     let selectedKeys = this.getSelectedMenuKeys();
     if (!selectedKeys.length) {
@@ -323,7 +323,7 @@ export default class SiderMenu extends PureComponent {
         width={220}
         className={styles.sider}
       >
-       <Link to="/">
+        <Link to="/">
           <div className={styles.logo} key="logo">
             <img className={styles.TitleLogo} src={TitleLogo} alt="logo" />
           </div>
