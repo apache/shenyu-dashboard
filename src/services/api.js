@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {stringify} from "qs";
+import { stringify } from "qs";
 import request from "../utils/request";
 
 const baseUrl = document.getElementById("httpPath").innerHTML;
@@ -66,10 +66,15 @@ export async function updatePassword(params) {
 
 /* get all metadata */
 export async function getAllMetadata(params) {
-  const {appName, currentPage, pageSize} = params;
-  return request(`${baseUrl}/meta-data/queryList?${stringify(appName ? params : {currentPage, pageSize})}`, {
-    method: `GET`
-  });
+  const { appName, currentPage, pageSize } = params;
+  return request(
+    `${baseUrl}/meta-data/queryList?${stringify(
+      appName ? params : { currentPage, pageSize }
+    )}`,
+    {
+      method: `GET`
+    }
+  );
 }
 
 export async function findMetadata(params) {
@@ -143,8 +148,8 @@ export async function updateEnabled(params) {
 
 /* getAllUsers */
 export async function getAllUsers(params) {
-  const {userName, currentPage, pageSize} = params;
-  const myParams = userName ? params : {currentPage, pageSize};
+  const { userName, currentPage, pageSize } = params;
+  const myParams = userName ? params : { currentPage, pageSize };
   return request(`${baseUrl}/dashboardUser?${stringify(myParams)}`, {
     method: `GET`
   });
@@ -198,7 +203,7 @@ export async function getAllPlugins(params) {
 }
 
 /* get Plugins snapshot */
-export  function activePluginSnapshot() {
+export function activePluginSnapshot() {
   return request(`${baseUrl}/plugin/snapshot/active`, {
     method: `GET`
   });
@@ -254,8 +259,8 @@ export async function updateAuth(params) {
 
 /* getAllAuth */
 export async function getAllAuth(params) {
-  const {appKey, currentPage, pageSize} = params;
-  let myParams = appKey ? params : {currentPage, pageSize};
+  const { appKey, currentPage, pageSize } = params;
+  let myParams = appKey ? params : { currentPage, pageSize };
   return request(`${baseUrl}/appAuth?${stringify(myParams)}`, {
     method: `GET`
   });
@@ -271,8 +276,8 @@ export async function syncAuthsData() {
 
 /* getAllAuths */
 export async function getAllAuths(params) {
-  const {appKey, phone, currentPage, pageSize} = params;
-  const myParams = appKey || phone ? params : {currentPage, pageSize};
+  const { appKey, phone, currentPage, pageSize } = params;
+  const myParams = appKey || phone ? params : { currentPage, pageSize };
   return request(`${baseUrl}/appAuth/findPageByQuery?${stringify(myParams)}`, {
     method: `GET`
   });
@@ -585,10 +590,10 @@ export async function getAllRoles() {
 
 /* get roles by page */
 export async function getRoleList(params) {
-  const {roleName, currentPage, pageSize} = params;
-  let myParams = {...params};
+  const { roleName, currentPage, pageSize } = params;
+  let myParams = { ...params };
   if (!roleName) {
-    myParams = {currentPage, pageSize};
+    myParams = { currentPage, pageSize };
   }
   return request(`${baseUrl}/role?${stringify(myParams)}`, {
     method: `GET`
@@ -634,10 +639,10 @@ export async function updateRole(params) {
 
 /* get resources by page */
 export async function getAllResources(params) {
-  const {title, currentPage, pageSize} = params;
-  let myParams = {...params};
+  const { title, currentPage, pageSize } = params;
+  let myParams = { ...params };
   if (!title) {
-    myParams = {currentPage, pageSize};
+    myParams = { currentPage, pageSize };
   }
   return request(`${baseUrl}/resource?${stringify(myParams)}`, {
     method: `GET`
@@ -758,8 +763,27 @@ export async function deleteDataPermisionRule(params) {
 }
 
 /* get new event recode logs */
-export  function getNewEventRecodLogList() {
+export function getNewEventRecodLogList() {
   return request(`${baseUrl}/operation-record/log/list`, {
     method: `GET`
   });
+}
+
+/* get all api */
+export function getDocMenus() {
+  return request(`${baseUrl}/apidoc/getDocMenus`, {
+    method: `GET`
+  });
+}
+
+/* get api item */
+export function getDocItem(params) {
+  return request(`${baseUrl}/apidoc/getDocItem?${stringify(params)}`, {
+    method: `GET`
+  });
+}
+
+/* sandbox proxyGateway */
+export function sandboxProxyGateway() {
+  return `${baseUrl}/sandbox/proxyGateway`;
 }

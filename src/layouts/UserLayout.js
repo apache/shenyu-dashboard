@@ -34,7 +34,7 @@ const links = [];
 
 const copyright = (
   <Fragment>
-    Copyright <Icon type="copyright" /> 2018 出品
+    Copyright <Icon type="copyright" /> {new Date().getFullYear()} 出品
   </Fragment>
 );
 
@@ -69,7 +69,9 @@ class UserLayout extends React.PureComponent {
                   <img alt="logo" className={styles.logo} src={TitleLogo} />
                 </Link>
               </div>
-              <div className={styles.desc}>Apache ShenYu Gateway Management System</div>
+              <div className={styles.desc}>
+                Apache ShenYu Gateway Management System
+              </div>
             </div>
             <Switch>
               {getRoutes(match.path, routerData).map(item => (
