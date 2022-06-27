@@ -150,7 +150,7 @@ class BasicLayout extends React.PureComponent {
   }
 
   componentWillUnmount() {
-    this.setState = (state, callback) => {}
+    this.setState = () => {}
   }
 
   getPageTitle() {
