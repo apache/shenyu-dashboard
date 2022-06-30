@@ -66,10 +66,10 @@ export async function updatePassword(params) {
 
 /* get all metadata */
 export async function getAllMetadata(params) {
-  const { appName, currentPage, pageSize } = params;
+  const { path, currentPage, pageSize } = params;
   return request(
     `${baseUrl}/meta-data/queryList?${stringify(
-      appName ? params : { currentPage, pageSize }
+      path ? params : { currentPage, pageSize }
     )}`,
     {
       method: `GET`
