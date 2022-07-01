@@ -37,7 +37,7 @@ export default class Metadata extends Component {
       currentPage: 1,
       selectedRowKeys: [],
       appName: "",
-      path:"",
+      path: "",
       popup: "",
       localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
     };
