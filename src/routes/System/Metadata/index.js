@@ -401,7 +401,7 @@ export default class Metadata extends Component {
           <Input
             value={path}
             onChange={this.searchOnchange}
-            placeholder={getIntlContent("SHENYU.META.PATH")}
+            placeholder={getIntlContent("SHENYU.META.INPUTPATH")}
             style={{ width: 240 }}
           />
           <AuthButton perms="system:meta:list">
