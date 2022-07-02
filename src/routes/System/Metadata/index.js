@@ -37,6 +37,7 @@ export default class Metadata extends Component {
       currentPage: 1,
       selectedRowKeys: [],
       appName: "",
+      path: "",
       popup: "",
       localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
     };
@@ -73,11 +74,11 @@ export default class Metadata extends Component {
 
   query = () => {
     const { dispatch } = this.props;
-    const { appName, currentPage } = this.state;
+    const { path, currentPage } = this.state;
     dispatch({
       type: "metadata/fetch",
       payload: {
-        appName,
+        path,
         currentPage,
         pageSize: 12
       }
@@ -144,7 +145,7 @@ export default class Metadata extends Component {
   };
 
   searchOnchange = e => {
-    this.setState({ appName: e.target.value, currentPage: 1 },this.query);
+    this.setState({ path: e.target.value, currentPage: 1 },this.query);
   };
 
   searchClick = () => {
@@ -381,7 +382,7 @@ export default class Metadata extends Component {
     const { metadata, loading } = this.props;
     const { userList, total } = metadata;
 
-    const { currentPage, selectedRowKeys, appName, popup } = this.state;
+    const { currentPage, selectedRowKeys, path, popup } = this.state;
     const columns = this.state.columns.map((col, index) => ({
       ...col,
       onHeaderCell: column => ({
@@ -398,9 +399,9 @@ export default class Metadata extends Component {
       <div className="plug-content-wrap">
         <div style={{ display: "flex" }}>
           <Input
-            value={appName}
+            value={path}
             onChange={this.searchOnchange}
-            placeholder={getIntlContent("SHENYU.META.INPUTAPPNAME")}
+            placeholder={getIntlContent("SHENYU.META.INPUTPATH")}
             style={{ width: 240 }}
           />
           <AuthButton perms="system:meta:list">

@@ -245,7 +245,7 @@
   "SHENYU.DIC.DESCRIBE": "DictionaryDescribe",
   "SHENYU.DIC": "Dictionary",
   "SHENYU.AUTH.INPUTAPPKEY": "AppKey",
-  "SHENYU.META.INPUTAPPNAME": "AppName",
+  "SHENYU.META.INPUTPATH": "Path",
   "SHENYU.DIC.INPUTTYPE": "DictionaryType",
   "SHENYU.DIC.INPUTCODE": "DictionaryCode",
   "SHENYU.DIC.INPUTNAME": "DictionaryName",

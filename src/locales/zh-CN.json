@@ -238,7 +238,7 @@
   "SHENYU.DIC.DESCRIBE": "字典描述或备注",
   "SHENYU.DIC": "字典",
   "SHENYU.AUTH.INPUTAPPKEY": "请输入AppKey",
-  "SHENYU.META.INPUTAPPNAME": "请输入应用名称",
+  "SHENYU.META.INPUTPATH": "请输入路径",
   "SHENYU.DIC.INPUTTYPE": "请输入类型",
   "SHENYU.DIC.INPUTCODE": "请输入字典编码",
   "SHENYU.DIC.INPUTNAME": "请输入字典名称",
