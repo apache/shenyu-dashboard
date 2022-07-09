@@ -72,7 +72,7 @@ const checkResponseCode = response => {
   }
 };
 
-const _cloneDeep = require('lodash/cloneDeep')
+const cloneDeep = require('lodash/cloneDeep')
 
 export function toRawType(value) {
   return Object.prototype.toString.call(value).slice(8, -1)
@@ -87,7 +87,7 @@ function clearEmptyParam(config) {
           if (['', undefined, null].includes(config[key]) &&
               ['Object'].includes(rawType)) {
             // 移除属性之前，进行深拷贝断开引用，避免影响页面
-            config = _cloneDeep(config)
+            config = cloneDeep(config)
             delete config[key]
           }
         })
