@@ -47,18 +47,18 @@ export default class PluginHandle extends Component {
   }
 
   componentWillMount = async () => {
-    this.loadPluginDict();
+    await this.loadPluginDict();
 
     this.initPluginColumns();
 
     this.query()
   }
 
-  componentDidUpdate() {
+  componentDidUpdate = async () => {
     const { language } = this.props;
     const { localeName } = this.state;
     if (language !== localeName) {
-      this.loadPluginDict();
+      await this.loadPluginDict();
       this.initPluginColumns();
       this.changeLocale(language);
     }
@@ -84,9 +84,9 @@ export default class PluginHandle extends Component {
   /**
    * load plugin drop dict
    */
-  loadPluginDict = () => {
+  loadPluginDict = async () => {
     const {dispatch} = this.props;
-    dispatch({
+    await dispatch({
       type: "pluginHandle/fetchPluginList",
     });
     this.setState({pluginDict: this.props.pluginHandle.pluginDropDownList})

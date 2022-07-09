@@ -345,7 +345,7 @@ export default class Plugin extends Component {
           ellipsis: true,
           width: 120,
           render: text => {
-            return <div style={{color: "#260033","font-weight":"bold"}}>{text || "----"}</div>;
+            return <div style={{color: "#260033","fontWeight":"bold"}}>{text || "----"}</div>;
           }
         },
         {
@@ -393,7 +393,7 @@ export default class Plugin extends Component {
                 <br />
                 <Text type="secondary">{`${getIntlContent("SHENYU.SYSTEM.UPDATETIME") }: ${ record.dateUpdated}`}</Text>
                 <hr />
-                <div style={{ "font-weight":"bold" }}>
+                <div style={{ "fontWeight":"bold" }}>
                   <pre><code>{t}</code></pre>
                 </div>
               </div>
@@ -413,13 +413,13 @@ export default class Plugin extends Component {
           render: text => {
             if (text) {
               return (
-                <div className="open" style={{ "font-weight":"bold" }}>
+                <div className="open" style={{ "fontWeight":"bold" }}>
                   {getIntlContent("SHENYU.COMMON.OPEN")}
                 </div>
               );
             } else {
               return (
-                <div className="close" style={{ "font-weight":"bold" }}>
+                <div className="close" style={{ "fontWeight":"bold" }}>
                   {getIntlContent("SHENYU.COMMON.CLOSE")}
                 </div>
               );

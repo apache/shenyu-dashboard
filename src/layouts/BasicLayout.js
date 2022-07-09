@@ -149,6 +149,10 @@ class BasicLayout extends React.PureComponent {
     });
   }
 
+  componentWillUnmount() {
+    this.setState = () => {}
+  }
+
   getPageTitle() {
     const { routerData, location } = this.props;
     const { pathname } = location;
