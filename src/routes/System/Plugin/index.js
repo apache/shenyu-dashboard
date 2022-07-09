@@ -103,17 +103,17 @@ export default class Plugin extends Component {
         name,
         enabled,
         currentPage: page,
-        pageSize: pageSize
+        pageSize
       }
     });
   };
 
   pageOnchange = page => {
-    this.setState({ currentPage: page,pageSize: this.state.pageSize }, this.query);
+    this.setState({ currentPage: page }, this.query);
   };
 
   onShowSizeChange = (currentPage,pageSize) => {
-    this.setState({ currentPage: 1,pageSize: pageSize }, this.query);
+    this.setState({ currentPage: 1, pageSize}, this.query);
   };
 
   closeModal = (refresh = false) => {
@@ -126,7 +126,7 @@ export default class Plugin extends Component {
 
   editClick = record => {
     const { dispatch } = this.props;
-    const { currentPage } = this.state;
+    const { currentPage,pageSize } = this.state;
     const pluginName = this.state.name;
     dispatch({
       type: "plugin/fetchItem",
@@ -162,7 +162,7 @@ export default class Plugin extends Component {
                       fetchValue: {
                         name: pluginName,
                         currentPage,
-                        pageSize: 12
+                        pageSize
                       },
                       callback: () => {
                         this.setState({ selectedRowKeys: [] });
@@ -226,7 +226,7 @@ export default class Plugin extends Component {
   };
 
   addClick = () => {
-    const { currentPage } = this.state;
+    const { currentPage,pageSize } = this.state;
     const pluginName = this.state.name;
     this.setState({
       popup: (
@@ -247,7 +247,7 @@ export default class Plugin extends Component {
               fetchValue: {
                 name: pluginName,
                 currentPage,
-                pageSize: 12
+                pageSize
               },
               callback: () => {
                 this.closeModal(true);
@@ -284,7 +284,7 @@ export default class Plugin extends Component {
   // 批量启用或禁用
   enableClick = () => {
     const { dispatch } = this.props;
-    const { selectedRowKeys, currentPage, name } = this.state;
+    const { selectedRowKeys, currentPage, pageSize, name } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "plugin/fetchItem",
@@ -301,7 +301,7 @@ export default class Plugin extends Component {
             fetchValue: {
               name,
               currentPage,
-              pageSize: 12
+              pageSize
             },
             callback: () => {
               this.setState({ selectedRowKeys: [] });
@@ -558,11 +558,11 @@ export default class Plugin extends Component {
           rowSelection={rowSelection}
           pagination={{
             total,
-            showTotal: (total) => `${total}`,
+            showTotal: (showTotal) => `${showTotal}`,
             showSizeChanger: true,
             pageSizeOptions: ["12", "20", "50", "100"],
             current: currentPage,
-            pageSize: pageSize,
+            pageSize,
             onShowSizeChange: this.onShowSizeChange,
             onChange: this.pageOnchange
           }}

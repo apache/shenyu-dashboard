@@ -98,7 +98,7 @@ export default class PluginHandle extends Component {
   };
 
   onShowSizeChange = (currentPage,pageSize) => {
-    this.setState({ currentPage: 1,pageSize: pageSize }, this.query);
+    this.setState({ currentPage: 1,pageSize }, this.query);
   };
 
   /**
@@ -123,7 +123,7 @@ export default class PluginHandle extends Component {
 
   editClick = record => {
     const { dispatch } = this.props;
-    const { currentPage } = this.state;
+    const { currentPage,pageSize } = this.state;
     this.loadPluginDict()
     const pluginDropDownList = this.state.pluginDict
     dispatch({
@@ -171,7 +171,7 @@ export default class PluginHandle extends Component {
                   },
                   fetchValue: {
                     currentPage,
-                    pageSize: 12
+                    pageSize
                   },
                   callback: () => {
                     this.closeModal(true);
@@ -189,7 +189,7 @@ export default class PluginHandle extends Component {
   };
 
   addClick = () => {
-    const {currentPage} = this.state;
+    const {currentPage,pageSize} = this.state;
     this.loadPluginDict()
     const pluginDropDownList = this.state.pluginDict
     this.setState({
@@ -224,7 +224,7 @@ export default class PluginHandle extends Component {
               },
               fetchValue: {
                 currentPage,
-                pageSize: 12
+                pageSize
               },
               callback: () => {
                 this.closeModal(true);
@@ -245,7 +245,7 @@ export default class PluginHandle extends Component {
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { currentPage, selectedRowKeys } = this.state;
+    const { currentPage, pageSize, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "pluginHandle/delete",
@@ -254,7 +254,7 @@ export default class PluginHandle extends Component {
         },
         fetchValue: {
           currentPage,
-          pageSize: 12
+          pageSize
         },
         callback: () => {
           this.setState({ selectedRowKeys: [],currentPage:1 },this.query);
@@ -549,11 +549,11 @@ export default class PluginHandle extends Component {
           rowSelection={rowSelection}
           pagination={{
             total,
-            showTotal: (total) => `${total}`,
+            showTotal: (showTotal) => `${showTotal}`,
             showSizeChanger: true,
             pageSizeOptions: ["12", "20", "50", "100"],
             current: currentPage,
-            pageSize: pageSize,
+            pageSize,
             onShowSizeChange: this.onShowSizeChange,
             onChange: this.pageOnchange
           }}

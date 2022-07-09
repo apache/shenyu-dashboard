@@ -94,7 +94,7 @@ export default class ShenYuDict extends Component {
   };
 
   onShowSizeChange = (currentPage,pageSize) => {
-    this.setState({ currentPage: 1,pageSize: pageSize }, this.query);
+    this.setState({ currentPage: 1,pageSize }, this.query);
   };
 
   closeModal = () => {
@@ -103,7 +103,7 @@ export default class ShenYuDict extends Component {
 
   editClick = record => {
     const { dispatch } = this.props;
-    const { currentPage } = this.state;
+    const { currentPage,pageSize } = this.state;
     const currentType = this.state.type;
     const currentDictCode = this.state.dictCode;
     const currentDictName = this.state.dictName;
@@ -138,7 +138,7 @@ export default class ShenYuDict extends Component {
                     dictCode: currentDictCode,
                     dictName: currentDictName,
                     currentPage,
-                    pageSize: 12
+                    pageSize
                   },
                   callback: () => {
                     this.closeModal();
@@ -174,7 +174,7 @@ export default class ShenYuDict extends Component {
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { type, dictCode, dictName, currentPage, selectedRowKeys } = this.state;
+    const { type, dictCode, dictName, currentPage, pageSize, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "shenyuDict/delete",
@@ -186,7 +186,7 @@ export default class ShenYuDict extends Component {
           dictCode,
           dictName,
           currentPage,
-          pageSize: 12
+          pageSize
         },
         callback: () => {
           this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
@@ -199,7 +199,7 @@ export default class ShenYuDict extends Component {
   };
 
   addClick = () => {
-    const { currentPage } = this.state;
+    const { currentPage,pageSize } = this.state;
     this.setState({
       popup: (
         <AddModal
@@ -220,7 +220,7 @@ export default class ShenYuDict extends Component {
               },
               fetchValue: {
                 currentPage,
-                pageSize: 12
+                pageSize
               },
               callback: () => {
                 this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
@@ -463,11 +463,11 @@ export default class ShenYuDict extends Component {
           rowSelection={rowSelection}
           pagination={{
             total,
-            showTotal: (total) => `${total}`,
+            showTotal: (showTotal) => `${showTotal}`,
             showSizeChanger: true,
             pageSizeOptions: ["12", "20", "50", "100"],
             current: currentPage,
-            pageSize: pageSize,
+            pageSize,
             onShowSizeChange: this.onShowSizeChange,
             onChange: this.pageOnchange
           }}

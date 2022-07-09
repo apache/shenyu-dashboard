@@ -79,7 +79,7 @@ export default class Auth extends Component {
 
   query = () =>{
     const { dispatch } = this.props;
-    const { appKey,phone,currentPage, pageSize } = this.state;
+    const { appKey,phone,currentPage,pageSize} = this.state;
     dispatch({
       type: "auth/fetch",
       payload: {
@@ -93,14 +93,14 @@ export default class Auth extends Component {
 
   getAllAuths = page => {
     const { dispatch } = this.props;
-    const { appKey,phone } = this.state;
+    const { appKey,phone,pageSize } = this.state;
     dispatch({
       type: "auth/fetch",
       payload: {
         appKey,
         phone,
         currentPage: page,
-        pageSize: 20
+        pageSize
       }
     });
   };
@@ -110,7 +110,7 @@ export default class Auth extends Component {
   };
 
   onShowSizeChange = (currentPage,pageSize) => {
-    this.setState({ currentPage: 1,pageSize: pageSize }, this.query);
+    this.setState({ currentPage: 1, pageSize }, this.query);
   };
 
   closeModal = (refresh) => {
@@ -529,11 +529,11 @@ export default class Auth extends Component {
           rowSelection={rowSelection}
           pagination={{
             total,
-            showTotal: (total) => `${total}`,
+            showTotal: (showTotal) => `${showTotal}`,
             showSizeChanger: true,
             pageSizeOptions: ["12", "20", "50", "100"],
             current: currentPage,
-            pageSize: pageSize,
+            pageSize,
             onShowSizeChange: this.onShowSizeChange,
             onChange: this.pageOnchange
           }}
