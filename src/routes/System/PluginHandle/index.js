@@ -37,6 +37,7 @@ export default class PluginHandle extends Component {
     super(props);
     this.state = {
       currentPage: 1,
+      pageSize: 12,
       selectedRowKeys: [],
       pluginDict: [],
       popup: "",
@@ -69,14 +70,14 @@ export default class PluginHandle extends Component {
    */
   query = () => {
     const {dispatch} = this.props;
-    const {pluginId, field, currentPage} = this.state;
+    const {pluginId, field, currentPage, pageSize} = this.state;
     dispatch({
       type: "pluginHandle/fetch",
       payload: {
         pluginId,
         field,
         currentPage,
-        pageSize: 12
+        pageSize
       }
     });
   };
@@ -94,6 +95,10 @@ export default class PluginHandle extends Component {
 
   pageOnchange = page => {
     this.setState({ currentPage: page },this.query);
+  };
+
+  onShowSizeChange = (currentPage,pageSize) => {
+    this.setState({ currentPage: 1,pageSize: pageSize }, this.query);
   };
 
   /**
@@ -455,7 +460,7 @@ export default class PluginHandle extends Component {
   render() {
     const {pluginHandle, loading} = this.props;
     const {pluginHandleList, total, pluginDropDownList} = pluginHandle;
-    const {currentPage, selectedRowKeys, pluginId, field, popup, columns = []} = this.state;
+    const {currentPage, pageSize, selectedRowKeys, pluginId, field, popup, columns = []} = this.state;
 
 
     const tableColumns = columns.map((col, index) => ({
@@ -544,8 +549,12 @@ export default class PluginHandle extends Component {
           rowSelection={rowSelection}
           pagination={{
             total,
+            showTotal: (total) => `${total}`,
+            showSizeChanger: true,
+            pageSizeOptions: ["12", "20", "50", "100"],
             current: currentPage,
-            pageSize: 12,
+            pageSize: pageSize,
+            onShowSizeChange: this.onShowSizeChange,
             onChange: this.pageOnchange
           }}
         />

@@ -39,6 +39,7 @@ export default class Auth extends Component {
     super(props);
     this.state = {
       currentPage: 1,
+      pageSize: 12,
       selectedRowKeys: [],
       appKey: "",
       phone: "",
@@ -78,14 +79,14 @@ export default class Auth extends Component {
 
   query = () =>{
     const { dispatch } = this.props;
-    const { appKey,phone,currentPage } = this.state;
+    const { appKey,phone,currentPage, pageSize } = this.state;
     dispatch({
       type: "auth/fetch",
       payload: {
         appKey,
         phone,
         currentPage,
-        pageSize: 20
+        pageSize
       }
     });
   }
@@ -106,6 +107,10 @@ export default class Auth extends Component {
 
   pageOnchange = page => {
     this.setState({ currentPage: page }, this.query);
+  };
+
+  onShowSizeChange = (currentPage,pageSize) => {
+    this.setState({ currentPage: 1,pageSize: pageSize }, this.query);
   };
 
   closeModal = (refresh) => {
@@ -447,7 +452,7 @@ export default class Auth extends Component {
   render() {
     const { auth, loading } = this.props;
     const { authList, total } = auth;
-    const { currentPage, selectedRowKeys, popup } = this.state;
+    const { currentPage, pageSize, selectedRowKeys, popup } = this.state;
     const columns = this.state.columns.map((col, index) => ({
       ...col,
       onHeaderCell: column => ({
@@ -524,8 +529,12 @@ export default class Auth extends Component {
           rowSelection={rowSelection}
           pagination={{
             total,
+            showTotal: (total) => `${total}`,
+            showSizeChanger: true,
+            pageSizeOptions: ["12", "20", "50", "100"],
             current: currentPage,
-            pageSize:20,
+            pageSize: pageSize,
+            onShowSizeChange: this.onShowSizeChange,
             onChange: this.pageOnchange
           }}
         />

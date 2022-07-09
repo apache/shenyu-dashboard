@@ -35,6 +35,7 @@ export default class ShenYuDict extends Component {
     super(props);
     this.state = {
       currentPage: 1,
+      pageSize: 12,
       selectedRowKeys: [],
       type: "",
       dictName: "",
@@ -75,7 +76,7 @@ export default class ShenYuDict extends Component {
 
   query = () =>{
     const { dispatch } = this.props;
-    const { type, dictName, dictCode, currentPage } = this.state;
+    const { type, dictName, dictCode, currentPage, pageSize } = this.state;
     dispatch({
       type: "shenyuDict/fetch",
       payload: {
@@ -83,13 +84,17 @@ export default class ShenYuDict extends Component {
         dictName,
         dictCode,
         currentPage,
-        pageSize: 12
+        pageSize
       }
     });
   }
 
   pageOnchange = page => {
     this.setState({ currentPage: page }, this.query);
+  };
+
+  onShowSizeChange = (currentPage,pageSize) => {
+    this.setState({ currentPage: 1,pageSize: pageSize }, this.query);
   };
 
   closeModal = () => {
@@ -364,7 +369,7 @@ export default class ShenYuDict extends Component {
     const { shenyuDict, loading } = this.props;
     const { shenyuDictList, total } = shenyuDict;
 
-    const { currentPage, selectedRowKeys, type, dictCode, dictName, popup } = this.state;
+    const { currentPage, pageSize, selectedRowKeys, type, dictCode, dictName, popup } = this.state;
     const columns = this.state.columns.map((col, index) => ({
       ...col,
       onHeaderCell: column => ({
@@ -458,8 +463,12 @@ export default class ShenYuDict extends Component {
           rowSelection={rowSelection}
           pagination={{
             total,
+            showTotal: (total) => `${total}`,
+            showSizeChanger: true,
+            pageSizeOptions: ["12", "20", "50", "100"],
             current: currentPage,
-            pageSize: 12,
+            pageSize: pageSize,
+            onShowSizeChange: this.onShowSizeChange,
             onChange: this.pageOnchange
           }}
         />

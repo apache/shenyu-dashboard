@@ -40,6 +40,7 @@ export default class Plugin extends Component {
     super(props);
     this.state = {
       currentPage: 1,
+      pageSize: 12,
       selectedRowKeys: [],
       name: "",
       enabled: null,
@@ -81,34 +82,38 @@ export default class Plugin extends Component {
 
   query = () => {
     const { dispatch } = this.props;
-    const { name, enabled, currentPage } = this.state;
+    const { name, enabled, currentPage, pageSize } = this.state;
     dispatch({
       type: "plugin/fetch",
       payload: {
         name,
         enabled,
         currentPage,
-        pageSize: 12
+        pageSize
       }
     });
   }
 
   getAllPlugins = page => {
     const { dispatch } = this.props;
-    const { name, enabled } = this.state;
+    const { name, enabled,pageSize } = this.state;
     dispatch({
       type: "plugin/fetch",
       payload: {
         name,
         enabled,
         currentPage: page,
-        pageSize: 12
+        pageSize: pageSize
       }
     });
   };
 
   pageOnchange = page => {
-    this.setState({ currentPage: page }, this.query);
+    this.setState({ currentPage: page,pageSize: this.state.pageSize }, this.query);
+  };
+
+  onShowSizeChange = (currentPage,pageSize) => {
+    this.setState({ currentPage: 1,pageSize: pageSize }, this.query);
   };
 
   closeModal = (refresh = false) => {
@@ -456,7 +461,7 @@ export default class Plugin extends Component {
   render() {
     const { plugin, loading } = this.props;
     const { pluginList, total } = plugin;
-    const { currentPage, selectedRowKeys, name, enabled, popup } = this.state;
+    const { currentPage, pageSize, selectedRowKeys, name, enabled, popup } = this.state;
     const columns = this.state.columns.map((col, index) => ({
       ...col,
       onHeaderCell: column => ({
@@ -553,8 +558,12 @@ export default class Plugin extends Component {
           rowSelection={rowSelection}
           pagination={{
             total,
+            showTotal: (total) => `${total}`,
+            showSizeChanger: true,
+            pageSizeOptions: ["12", "20", "50", "100"],
             current: currentPage,
-            pageSize: 12,
+            pageSize: pageSize,
+            onShowSizeChange: this.onShowSizeChange,
             onChange: this.pageOnchange
           }}
         />

@@ -35,6 +35,7 @@ export default class Metadata extends Component {
     super(props);
     this.state = {
       currentPage: 1,
+      pageSize: 12,
       selectedRowKeys: [],
       appName: "",
       path: "",
@@ -74,19 +75,23 @@ export default class Metadata extends Component {
 
   query = () => {
     const { dispatch } = this.props;
-    const { path, currentPage } = this.state;
+    const { path, currentPage, pageSize } = this.state;
     dispatch({
       type: "metadata/fetch",
       payload: {
         path,
         currentPage,
-        pageSize: 12
+        pageSize
       }
     });
   };
 
   pageOnchange = page => {
     this.setState({ currentPage: page }, this.query);
+  };
+
+  onShowSizeChange = (currentPage,pageSize) => {
+    this.setState({ currentPage: 1,pageSize: pageSize }, this.query);
   };
 
   closeModal = () => {
@@ -382,7 +387,7 @@ export default class Metadata extends Component {
     const { metadata, loading } = this.props;
     const { userList, total } = metadata;
 
-    const { currentPage, selectedRowKeys, path, popup } = this.state;
+    const { currentPage, pageSize, selectedRowKeys, path, popup } = this.state;
     const columns = this.state.columns.map((col, index) => ({
       ...col,
       onHeaderCell: column => ({
@@ -473,8 +478,12 @@ export default class Metadata extends Component {
           rowSelection={rowSelection}
           pagination={{
             total,
+            showTotal: (total) => `${total}`,
+            showSizeChanger: true,
+            pageSizeOptions: ["12", "20", "50", "100"],
             current: currentPage,
-            pageSize: 12,
+            pageSize: pageSize,
+            onShowSizeChange: this.onShowSizeChange,
             onChange: this.pageOnchange
           }}
         />
