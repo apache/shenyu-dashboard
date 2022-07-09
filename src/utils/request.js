@@ -72,6 +72,29 @@ const checkResponseCode = response => {
   }
 };
 
+const _cloneDeep = require('lodash/cloneDeep')
+
+export function toRawType(value) {
+  return Object.prototype.toString.call(value).slice(8, -1)
+}
+
+function clearEmptyParam(config) {
+    if (config) {
+      const keys = Object.keys(config)
+      if (keys.length) {
+        keys.forEach(key => {
+          const rawType = toRawType(config)
+          if (['', undefined, null].includes(config[key]) &&
+              ['Object'].includes(rawType)) {
+            // 移除属性之前，进行深拷贝断开引用，避免影响页面
+            config = _cloneDeep(config)
+            delete config[key]
+          }
+        })
+      }
+    }
+    return config
+}
 /**
  * Requests a URL, returning a promise.
  *
@@ -80,8 +103,13 @@ const checkResponseCode = response => {
  * @return {object}           An object containing either "data" or "err"
  */
 export default function request(url, options) {
+
   const defaultOptions = {};
+  let result = {};
   const newOptions = {...defaultOptions, ...options};
+  if(newOptions.body){
+    result =  clearEmptyParam(newOptions.body)
+  }
   if (
     newOptions.method === 'POST' ||
     newOptions.method === 'PUT' ||
@@ -94,7 +122,7 @@ export default function request(url, options) {
         'Content-Type': 'application/json; charset=utf-8',
         ...newOptions.headers,
       };
-      newOptions.body = JSON.stringify(newOptions.body);
+      newOptions.body = JSON.stringify(result);
     } else {
       // newOptions.body is FormData
       newOptions.headers = {
