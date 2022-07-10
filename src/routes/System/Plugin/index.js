@@ -40,6 +40,7 @@ export default class Plugin extends Component {
     super(props);
     this.state = {
       currentPage: 1,
+      pageSize: 12,
       selectedRowKeys: [],
       name: "",
       enabled: null,
@@ -81,34 +82,38 @@ export default class Plugin extends Component {
 
   query = () => {
     const { dispatch } = this.props;
-    const { name, enabled, currentPage } = this.state;
+    const { name, enabled, currentPage, pageSize } = this.state;
     dispatch({
       type: "plugin/fetch",
       payload: {
         name,
         enabled,
         currentPage,
-        pageSize: 12
+        pageSize
       }
     });
   }
 
   getAllPlugins = page => {
     const { dispatch } = this.props;
-    const { name, enabled } = this.state;
+    const { name, enabled,pageSize } = this.state;
     dispatch({
       type: "plugin/fetch",
       payload: {
         name,
         enabled,
         currentPage: page,
-        pageSize: 12
+        pageSize
       }
     });
   };
 
   pageOnchange = page => {
     this.setState({ currentPage: page }, this.query);
+  };
+
+  onShowSizeChange = (currentPage,pageSize) => {
+    this.setState({ currentPage: 1, pageSize}, this.query);
   };
 
   closeModal = (refresh = false) => {
@@ -121,7 +126,7 @@ export default class Plugin extends Component {
 
   editClick = record => {
     const { dispatch } = this.props;
-    const { currentPage } = this.state;
+    const { currentPage,pageSize } = this.state;
     const pluginName = this.state.name;
     dispatch({
       type: "plugin/fetchItem",
@@ -157,7 +162,7 @@ export default class Plugin extends Component {
                       fetchValue: {
                         name: pluginName,
                         currentPage,
-                        pageSize: 12
+                        pageSize
                       },
                       callback: () => {
                         this.setState({ selectedRowKeys: [] });
@@ -221,7 +226,7 @@ export default class Plugin extends Component {
   };
 
   addClick = () => {
-    const { currentPage } = this.state;
+    const { currentPage,pageSize } = this.state;
     const pluginName = this.state.name;
     this.setState({
       popup: (
@@ -242,7 +247,7 @@ export default class Plugin extends Component {
               fetchValue: {
                 name: pluginName,
                 currentPage,
-                pageSize: 12
+                pageSize
               },
               callback: () => {
                 this.closeModal(true);
@@ -279,7 +284,7 @@ export default class Plugin extends Component {
   // 批量启用或禁用
   enableClick = () => {
     const { dispatch } = this.props;
-    const { selectedRowKeys, currentPage, name } = this.state;
+    const { selectedRowKeys, currentPage, pageSize, name } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "plugin/fetchItem",
@@ -296,7 +301,7 @@ export default class Plugin extends Component {
             fetchValue: {
               name,
               currentPage,
-              pageSize: 12
+              pageSize
             },
             callback: () => {
               this.setState({ selectedRowKeys: [] });
@@ -456,7 +461,7 @@ export default class Plugin extends Component {
   render() {
     const { plugin, loading } = this.props;
     const { pluginList, total } = plugin;
-    const { currentPage, selectedRowKeys, name, enabled, popup } = this.state;
+    const { currentPage, pageSize, selectedRowKeys, name, enabled, popup } = this.state;
     const columns = this.state.columns.map((col, index) => ({
       ...col,
       onHeaderCell: column => ({
@@ -553,8 +558,12 @@ export default class Plugin extends Component {
           rowSelection={rowSelection}
           pagination={{
             total,
+            showTotal: (showTotal) => `${showTotal}`,
+            showSizeChanger: true,
+            pageSizeOptions: ["12", "20", "50", "100"],
             current: currentPage,
-            pageSize: 12,
+            pageSize,
+            onShowSizeChange: this.onShowSizeChange,
             onChange: this.pageOnchange
           }}
         />
