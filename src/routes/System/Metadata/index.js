@@ -35,6 +35,7 @@ export default class Metadata extends Component {
     super(props);
     this.state = {
       currentPage: 1,
+      pageSize: 12,
       selectedRowKeys: [],
       appName: "",
       path: "",
@@ -74,13 +75,13 @@ export default class Metadata extends Component {
 
   query = () => {
     const { dispatch } = this.props;
-    const { path, currentPage } = this.state;
+    const { path, currentPage, pageSize } = this.state;
     dispatch({
       type: "metadata/fetch",
       payload: {
         path,
         currentPage,
-        pageSize: 12
+        pageSize
       }
     });
   };
@@ -89,13 +90,17 @@ export default class Metadata extends Component {
     this.setState({ currentPage: page }, this.query);
   };
 
+  onShowSizeChange = (currentPage,pageSize) => {
+    this.setState({ currentPage: 1, pageSize }, this.query);
+  };
+
   closeModal = () => {
     this.setState({ popup: "" });
   };
 
   editClick = record => {
     const { dispatch } = this.props;
-    const { currentPage } = this.state;
+    const { currentPage,pageSize } = this.state;
     const name = this.state.appName;
     dispatch({
       type: "metadata/fetchItem",
@@ -127,7 +132,7 @@ export default class Metadata extends Component {
                   fetchValue: {
                     appName: name,
                     currentPage,
-                    pageSize: 12
+                    pageSize
                   },
                   callback: () => {
                     this.closeModal();
@@ -154,7 +159,7 @@ export default class Metadata extends Component {
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { appName, currentPage, selectedRowKeys } = this.state;
+    const { appName, currentPage,pageSize, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "metadata/delete",
@@ -164,7 +169,7 @@ export default class Metadata extends Component {
         fetchValue: {
           appName,
           currentPage,
-          pageSize: 12
+          pageSize
         },
         callback: () => {
           this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
@@ -177,7 +182,7 @@ export default class Metadata extends Component {
   };
 
   addClick = () => {
-    const { currentPage } = this.state;
+    const { currentPage,pageSize } = this.state;
     const name = this.state.appName;
     this.setState({
       popup: (
@@ -202,7 +207,7 @@ export default class Metadata extends Component {
               fetchValue: {
                 appName: name,
                 currentPage,
-                pageSize: 12
+                pageSize
               },
               callback: () => {
                 this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
@@ -220,7 +225,7 @@ export default class Metadata extends Component {
 
   enableClick = () => {
     const { dispatch } = this.props;
-    const { appName, currentPage, selectedRowKeys } = this.state;
+    const { appName, currentPage, pageSize, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
 
       dispatch({
@@ -239,7 +244,7 @@ export default class Metadata extends Component {
             fetchValue: {
               appName,
               currentPage,
-              pageSize: 12
+              pageSize
             },
             callback: () => {
               this.setState({ selectedRowKeys: [] }, this.query);
@@ -382,7 +387,7 @@ export default class Metadata extends Component {
     const { metadata, loading } = this.props;
     const { userList, total } = metadata;
 
-    const { currentPage, selectedRowKeys, path, popup } = this.state;
+    const { currentPage, pageSize, selectedRowKeys, path, popup } = this.state;
     const columns = this.state.columns.map((col, index) => ({
       ...col,
       onHeaderCell: column => ({
@@ -473,8 +478,12 @@ export default class Metadata extends Component {
           rowSelection={rowSelection}
           pagination={{
             total,
+            showTotal: (showTotal) => `${showTotal}`,
+            showSizeChanger: true,
+            pageSizeOptions: ["12", "20", "50", "100"],
             current: currentPage,
-            pageSize: 12,
+            pageSize,
+            onShowSizeChange: this.onShowSizeChange,
             onChange: this.pageOnchange
           }}
         />
