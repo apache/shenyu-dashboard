@@ -36,7 +36,9 @@ export default class Common extends Component {
     super(props);
     this.state = {
       selectorPage: 1,
+      selectorPageSize: 12,
       rulePage: 1,
+      rulePageSize: 12,
       popup: "",
       localeName: "",
       selectorName: undefined,
@@ -46,14 +48,15 @@ export default class Common extends Component {
 
   componentDidMount() {
     const { dispatch, plugins } = this.props;
+    const { selectorPage,selectorPageSize} = this.state;
     if (plugins && plugins.length > 0) {
-      this.getAllSelectors(1, plugins);
+      this.getAllSelectors(selectorPage,selectorPageSize, plugins);
     } else {
       dispatch({
         type: "global/fetchPlugins",
         payload: {
           callback: pluginList => {
-            this.getAllSelectors(1, pluginList);
+            this.getAllSelectors(selectorPage,selectorPageSize, pluginList);
           }
         }
       });
@@ -63,22 +66,21 @@ export default class Common extends Component {
   componentDidUpdate(prevProps) {
     const preId = prevProps.match.params.id;
     const newId = this.props.match.params.id;
-
+    const {selectorPage,selectorPageSize} = this.state;
     if (newId !== preId) {
       const { dispatch } = this.props;
-
       dispatch({
         type: "common/resetData"
       });
 
       if (prevProps.plugins && prevProps.plugins.length > 0) {
-        this.getAllSelectors(1, prevProps.plugins);
+        this.getAllSelectors(selectorPage,selectorPageSize, prevProps.plugins);
       } else {
         dispatch({
           type: "global/fetchPlugins",
           payload: {
             callback: pluginList => {
-              this.getAllSelectors(1, pluginList);
+              this.getAllSelectors(selectorPage,selectorPageSize, pluginList);
             }
           }
         });
@@ -93,7 +95,7 @@ export default class Common extends Component {
     });
   }
 
-  getAllSelectors = (page, plugins) => {
+  getAllSelectors = (page, pageSize, plugins) => {
     const { dispatch } = this.props;
     const { selectorName } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
@@ -103,14 +105,14 @@ export default class Common extends Component {
       type: "common/fetchSelector",
       payload: {
         currentPage: page,
-        pageSize: 12,
+        pageSize,
         pluginId: tempPluginId,
         name: selectorName
       }
     });
   };
 
-  getAllRules = page => {
+  getAllRules = (page,pageSize) => {
     const { dispatch, currentSelector } = this.props;
     const { ruleName } = this.state;
     const selectorId = currentSelector ? currentSelector.id : "";
@@ -119,7 +121,7 @@ export default class Common extends Component {
       payload: {
         selectorId,
         currentPage: page,
-        pageSize: 12,
+        pageSize,
         name: ruleName
       }
     });
@@ -161,12 +163,12 @@ export default class Common extends Component {
 
   searchSelector = () => {
     const { plugins } = this.props;
-    this.setState({ selectorPage: 1 });
-    this.getAllSelectors(1, plugins);
+    const {selectorPage,selectorPageSize} = this.state;
+    this.getAllSelectors(selectorPage,selectorPageSize, plugins);
   };
 
   addSelector = () => {
-    const { selectorPage } = this.state;
+    const { selectorPage,selectorPageSize } = this.state;
     const { dispatch, plugins } = this.props;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
@@ -182,7 +184,7 @@ export default class Common extends Component {
             dispatch({
               type: "common/addSelector",
               payload: { pluginId, ...selector },
-              fetchValue: { pluginId, currentPage: selectorPage, pageSize: 12 },
+              fetchValue: { pluginId, currentPage: selectorPage, pageSize: selectorPageSize },
               callback: () => {
                 this.closeModal();
               }
@@ -201,11 +203,12 @@ export default class Common extends Component {
 
   searchRule = () => {
     this.setState({ rulePage: 1 });
-    this.getAllRules(1);
+    const {rulePageSize } = this.state;
+    this.getAllRules(1,rulePageSize);
   };
 
   addRule = () => {
-    const { rulePage, pluginId } = this.state;
+    const { rulePage,rulePageSize, pluginId } = this.state;
     const { dispatch, currentSelector, plugins } = this.props;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
@@ -227,7 +230,7 @@ export default class Common extends Component {
                 fetchValue: {
                   selectorId,
                   currentPage: rulePage,
-                  pageSize: 12
+                  pageSize: rulePageSize
                 },
                 callback: () => {
                   this.closeModal();
@@ -246,7 +249,7 @@ export default class Common extends Component {
 
   editSelector = record => {
     const { dispatch, plugins } = this.props;
-    const { selectorPage } = this.state;
+    const { selectorPage,selectorPageSize } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
     const { id: pluginId, config } = plugin;
@@ -275,7 +278,7 @@ export default class Common extends Component {
                   fetchValue: {
                     pluginId,
                     currentPage: selectorPage,
-                    pageSize: 12
+                    pageSize: selectorPageSize
                   },
                   callback: () => {
                     this.closeModal();
@@ -292,7 +295,7 @@ export default class Common extends Component {
 
   deleteSelector = record => {
     const { dispatch, plugins } = this.props;
-    const { selectorPage } = this.state;
+    const { selectorPage,selectorPageSize } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const pluginId = this.getPluginId(plugins, name);
     dispatch({
@@ -303,26 +306,40 @@ export default class Common extends Component {
       fetchValue: {
         pluginId,
         currentPage: selectorPage,
-        pageSize: 12
+        pageSize: selectorPageSize
       }
     });
   };
 
   pageSelectorChange = page => {
-    const { plugins } = this.props;
     this.setState({ selectorPage: page });
-    this.getAllSelectors(page, plugins);
+    const { plugins } = this.props;
+    const {selectorPageSize} = this.state;
+    this.getAllSelectors(page,selectorPageSize, plugins);
+  };
+
+  pageSelectorChangeSize = (currentPage,pageSize) => {
+    const { plugins } = this.props;
+    this.setState({ selectorPage: 1, selectorPageSize: pageSize});
+    this.getAllSelectors(1, pageSize, plugins);
   };
 
   pageRuleChange = page => {
-    this.setState({ rulePage: page });
-    this.getAllRules(page);
+    this.setState({ rulePage: page});
+    const { rulePageSize } = this.state;
+    this.getAllRules(page,rulePageSize);
+  };
+
+  pageRuleChangeSize = (currentPage,pageSize) => {
+    this.setState({rulePage: 1, rulePageSize: pageSize});
+    this.getAllRules(1,pageSize);
   };
 
   // select
   rowClick = record => {
     const { id } = record;
     const { dispatch } = this.props;
+    const { selectorPageSize } = this.state;
     dispatch({
       type: "common/saveCurrentSelector",
       payload: {
@@ -333,7 +350,7 @@ export default class Common extends Component {
       type: "common/fetchRule",
       payload: {
         currentPage: 1,
-        pageSize: 12,
+        pageSize: selectorPageSize,
         selectorId: id
       }
     });
@@ -341,7 +358,7 @@ export default class Common extends Component {
 
   editRule = record => {
     const { dispatch, currentSelector, plugins } = this.props;
-    const { rulePage, pluginId } = this.state;
+    const { rulePage,rulePageSize, pluginId } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
     const { config } = plugin;
@@ -373,7 +390,7 @@ export default class Common extends Component {
                   fetchValue: {
                     selectorId,
                     currentPage: rulePage,
-                    pageSize: 12
+                    pageSize: rulePageSize
                   },
                   callback: () => {
                     this.closeModal();
@@ -390,7 +407,7 @@ export default class Common extends Component {
 
   deleteRule = record => {
     const { dispatch, currentSelector, ruleList } = this.props;
-    const { rulePage } = this.state;
+    const { rulePage,rulePageSize } = this.state;
     const currentPage =
       rulePage > 1 && ruleList.length === 1 ? rulePage - 1 : rulePage;
     dispatch({
@@ -401,7 +418,7 @@ export default class Common extends Component {
       fetchValue: {
         selectorId: currentSelector.id,
         currentPage,
-        pageSize: 12
+        pageSize: rulePageSize
       }
     });
   };
@@ -426,7 +443,7 @@ export default class Common extends Component {
   }
 
   render() {
-    const { popup, selectorPage, rulePage } = this.state;
+    const { popup, selectorPage, selectorPageSize, rulePage, rulePageSize } = this.state;
     const {
       selectorList,
       ruleList,
@@ -636,9 +653,13 @@ export default class Common extends Component {
               dataSource={selectorList}
               pagination={{
                 total: selectorTotal,
+                showTotal: (showTotal) => `${showTotal}`,
+                showSizeChanger: true,
+                pageSizeOptions: ["12", "20", "50", "100"],
                 current: selectorPage,
-                pageSize: 12,
-                onChange: this.pageSelectorChange
+                pageSize: selectorPageSize,
+                onChange: this.pageSelectorChange,
+                onShowSizeChange: this.pageSelectorChangeSize,
               }}
               rowClassName={item => {
                 if (currentSelector && currentSelector.id === item.id) {
@@ -703,9 +724,13 @@ export default class Common extends Component {
               dataSource={ruleList}
               pagination={{
                 total: ruleTotal,
+                showTotal: (showTotal) => `${showTotal}`,
+                showSizeChanger: true,
+                pageSizeOptions: ["12", "20", "50", "100"],
                 current: rulePage,
-                pageSize: 12,
-                onChange: this.pageRuleChange
+                pageSize: rulePageSize,
+                onChange: this.pageRuleChange,
+                onShowSizeChange: this.pageRuleChangeSize,
               }}
             />
           </Col>
