@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Typography, Table } from "antd";
+import { Typography, Table, Tabs, Icon } from "antd";
 import React, { useContext } from "react";
 import ApiDebug from "./ApiDebug";
 import ApiContext from "./ApiContext";
@@ -31,7 +31,8 @@ function ApiInfo() {
       name: apiName,
       description,
       requestParameters,
-      responseParameters
+      responseParameters,
+      requestHeaders
     }
   } = useContext(ApiContext);
 
@@ -98,99 +99,134 @@ function ApiInfo() {
       dataIndex: "envLabel"
     },
     {
-      title: getIntlContent("SHENYU.COMMON.TYPE"),
-      dataIndex: "addressLabel"
-    },
-    {
       title: getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS"),
       dataIndex: "addressUrl"
+    },
+    {
+      title: getIntlContent("SHENYU.PLUGIN.DESCRIBE"),
+      dataIndex: "envDesc"
     }
   ];
 
   return (
     <>
-      <Title level={2}>{summary}</Title>
-      <Title level={4}>
-        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.NAME")}
-      </Title>
-      <Text code>{apiName}</Text>
-      <Title level={4}>
-        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.DESCRIPTION")}
-      </Title>
-      <Text type="secondary">{description}</Text>
-      <Title level={4}>
-        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS")}
-      </Title>
-      <Paragraph>
-        <Table
-          size="small"
-          rowKey="envLabel"
-          bordered
-          dataSource={envProps}
-          pagination={false}
-          columns={envPropsColumns}
-        />
-      </Paragraph>
+      <Tabs>
+        <Tabs.TabPane
+          tab={
+            <>
+              <Icon type="file-text" />
+              {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.INTERFACE.DOCUMENT")}
+            </>
+          }
+          key="1"
+        >
+          <Title level={2}>{summary}</Title>
+          <Title level={4}>
+            {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.INTERFACE.ADDRESS")}
+          </Title>
+          <Text code>{apiName}</Text>
+          <Title level={4}>
+            {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.DESCRIPTION")}
+          </Title>
+          <Text type="secondary">{description || "-"}</Text>
+          <Title level={4}>
+            {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS")}
+          </Title>
+          <Paragraph>
+            <Table
+              size="small"
+              rowKey="envLabel"
+              bordered
+              dataSource={envProps}
+              pagination={false}
+              columns={envPropsColumns}
+            />
+          </Paragraph>
+          <Title level={2}>
+            {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.PARAMETERS")}
+          </Title>
 
-      <Title level={2}>
-        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.PARAMETERS")}
-      </Title>
-      <Title level={4}>
-        {getIntlContent(
-          "SHENYU.DOCUMENT.APIDOC.INFO.SERVICE.REQUEST.PARAMETERS"
-        )}
-      </Title>
-      <Paragraph>
-        <Table
-          size="small"
-          rowKey="id"
-          bordered
-          dataSource={requestParameters}
-          pagination={false}
-          childrenColumnName="refs"
-          columns={columns}
-        />
-      </Paragraph>
+          <Title level={4}>
+            {getIntlContent(
+              "SHENYU.DOCUMENT.APIDOC.INFO.SERVICE.REQUEST.HEADERS"
+            )}
+          </Title>
+          <Paragraph>
+            <Table
+              size="small"
+              rowKey="id"
+              bordered
+              dataSource={requestHeaders}
+              pagination={false}
+              childrenColumnName="refs"
+              columns={columns}
+            />
+          </Paragraph>
 
-      <Title level={2}>
-        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.RESPONSE.PARAMETERS")}
-      </Title>
-      <Title level={4}>
-        {getIntlContent(
-          "SHENYU.DOCUMENT.APIDOC.INFO.COMMON.RESPONSE.PARAMETERS"
-        )}
-      </Title>
-      <Paragraph>
-        <Table
-          size="small"
-          rowKey="id"
-          bordered
-          dataSource={defaultCommonData}
-          pagination={false}
-          columns={columns.filter((_, i) => ![2, 3].includes(i))}
-        />
-      </Paragraph>
-      <Title level={4}>
-        {getIntlContent(
-          "SHENYU.DOCUMENT.APIDOC.INFO.BUSINESS.RESPONSE.PARAMETERS"
-        )}
-      </Title>
-      <Paragraph>
-        <Table
-          size="small"
-          rowKey="id"
-          bordered
-          dataSource={responseParameters}
-          pagination={false}
-          childrenColumnName="refs"
-          columns={columns}
-        />
-      </Paragraph>
+          <Title level={4}>
+            {getIntlContent(
+              "SHENYU.DOCUMENT.APIDOC.INFO.SERVICE.REQUEST.PARAMETERS"
+            )}
+          </Title>
+          <Paragraph>
+            <Table
+              size="small"
+              rowKey="id"
+              bordered
+              dataSource={requestParameters}
+              pagination={false}
+              childrenColumnName="refs"
+              columns={columns}
+            />
+          </Paragraph>
 
-      <Title level={2}>
-        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.INTERFACE.DEBUG")}
-      </Title>
-      <ApiDebug />
+          <Title level={2}>
+            {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.RESPONSE.PARAMETERS")}
+          </Title>
+          <Title level={4}>
+            {getIntlContent(
+              "SHENYU.DOCUMENT.APIDOC.INFO.COMMON.RESPONSE.PARAMETERS"
+            )}
+          </Title>
+          <Paragraph>
+            <Table
+              size="small"
+              rowKey="id"
+              bordered
+              dataSource={defaultCommonData}
+              pagination={false}
+              columns={columns.filter((_, i) => ![2, 3].includes(i))}
+            />
+          </Paragraph>
+          <Title level={4}>
+            {getIntlContent(
+              "SHENYU.DOCUMENT.APIDOC.INFO.BUSINESS.RESPONSE.PARAMETERS"
+            )}
+          </Title>
+          <Paragraph>
+            <Table
+              size="small"
+              rowKey="id"
+              bordered
+              dataSource={responseParameters}
+              pagination={false}
+              childrenColumnName="refs"
+              columns={columns}
+            />
+          </Paragraph>
+        </Tabs.TabPane>
+        <Tabs.TabPane
+          tab={
+            <>
+              <Icon type="code" />
+              {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.INTERFACE.DEBUG")}
+            </>
+          }
+          key="2"
+        >
+          <ApiDebug />
+        </Tabs.TabPane>
+      </Tabs>
     </>
   );
 }
