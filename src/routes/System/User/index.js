@@ -33,6 +33,7 @@ export default class Manage extends Component {
     super(props);
     this.state = {
       currentPage: 1,
+      pageSize: 12,
       selectedRowKeys: [],
       userName: "",
       popup: "",
@@ -41,8 +42,7 @@ export default class Manage extends Component {
   }
 
   componentWillMount() {
-    const { currentPage } = this.state;
-    this.getAllUsers(currentPage);
+    this.getAllUsers();
     this.getAllRoles();
   }
 
@@ -50,15 +50,15 @@ export default class Manage extends Component {
     this.setState({ selectedRowKeys });
   };
 
-  getAllUsers = page => {
+  getAllUsers = () => {
     const { dispatch } = this.props;
-    const { userName } = this.state;
+    const { userName,currentPage,pageSize } = this.state;
     dispatch({
       type: "manage/fetch",
       payload: {
         userName,
-        currentPage: page,
-        pageSize: 12
+        currentPage,
+        pageSize
       }
     });
   };
@@ -76,8 +76,11 @@ export default class Manage extends Component {
   };
 
   pageOnchange = page => {
-    this.setState({ currentPage: page });
-    this.getAllUsers(page);
+    this.setState({ currentPage: page },this.getAllUsers);
+  };
+
+  onShowSizeChange = (currentPage,pageSize) => {
+    this.setState({ currentPage: 1, pageSize}, this.getAllUsers);
   };
 
   closeModal = () => {
@@ -89,7 +92,7 @@ export default class Manage extends Component {
       dispatch,
       role: { allRoles }
     } = this.props;
-    const { currentPage } = this.state;
+    const { currentPage,pageSize } = this.state;
     const name = this.state.userName;
     dispatch({
       type: "manage/fetchItem",
@@ -116,7 +119,7 @@ export default class Manage extends Component {
                   fetchValue: {
                     userName: name,
                     currentPage,
-                    pageSize: 12
+                    pageSize
                   },
                   callback: () => {
                     this.closeModal();
@@ -152,13 +155,12 @@ export default class Manage extends Component {
   };
 
   searchClick = () => {
-    this.getAllUsers(1);
-    this.setState({ currentPage: 1 });
+    this.getAllUsers();
   };
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { userName, currentPage, selectedRowKeys } = this.state;
+    const { userName, currentPage,pageSize, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "manage/delete",
@@ -168,7 +170,7 @@ export default class Manage extends Component {
         fetchValue: {
           userName,
           currentPage,
-          pageSize: 12
+          pageSize
         },
         callback: () => {
           this.setState({ selectedRowKeys: [] });
@@ -184,7 +186,7 @@ export default class Manage extends Component {
     const {
       role: { allRoles }
     } = this.props;
-    const { currentPage } = this.state;
+    const { currentPage,pageSize } = this.state;
     const name = this.state.userName;
     this.setState({
       popup: (
@@ -204,7 +206,7 @@ export default class Manage extends Component {
               fetchValue: {
                 userName: name,
                 currentPage,
-                pageSize: 12
+                pageSize
               },
               callback: () => {
                 this.setState({ selectedRowKeys: [] });
@@ -230,7 +232,7 @@ export default class Manage extends Component {
   render() {
     const { manage, loading, dispatch } = this.props;
     const { userList, total } = manage;
-    const { currentPage, selectedRowKeys, userName, popup } = this.state;
+    const { currentPage, pageSize, selectedRowKeys, userName, popup } = this.state;
     const userColumns = [
       {
         align: "center",
@@ -259,7 +261,7 @@ export default class Manage extends Component {
                   userName: row.userName
                 },
                 callback: () => {
-                  this.getAllUsers(currentPage);
+                  this.getAllUsers();
                 }
               });
             }}
@@ -379,8 +381,12 @@ export default class Manage extends Component {
           rowSelection={rowSelection}
           pagination={{
             total,
+            showTotal: (showTotal) => `${showTotal}`,
+            showSizeChanger: true,
+            pageSizeOptions: ["12", "20", "50", "100"],
             current: currentPage,
-            pageSize: 12,
+            pageSize,
+            onShowSizeChange: this.onShowSizeChange,
             onChange: this.pageOnchange
           }}
         />
