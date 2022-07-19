@@ -39,6 +39,7 @@ import ReactJson from "react-json-view";
 import fetch from "dva/fetch";
 import { sandboxProxyGateway } from "../../../services/api";
 import ApiContext from "./ApiContext";
+import HeadersEditor from "./HeadersEditor";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 
@@ -53,7 +54,12 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   }));
 
   const {
-    apiDetail: { name: apiUrl, httpMethodList, requestParameters },
+    apiDetail: {
+      name: apiUrl,
+      httpMethodList,
+      requestHeaders,
+      requestParameters
+    },
     apiData: { appKey, gatewayUrl, cookie }
   } = useContext(ApiContext);
   const [questJson, setRequestJson] = useState({});
@@ -174,6 +180,27 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
           />
         )}
       </FormItem>
+
+      <FormItem label="Headers">
+        {form.getFieldDecorator("headers", {
+          initialValue: requestHeaders || [],
+          rules: [
+            {
+              validator: (rule, value, callback) => {
+                const errorRow = value.find(
+                  item => item.required && item.example === ""
+                );
+                if (errorRow) {
+                  callback(`${errorRow.name} is required`);
+                } else {
+                  callback();
+                }
+              }
+            }
+          ]
+        })(<HeadersEditor />)}
+      </FormItem>
+
       <FormItem label={getIntlContent("SHENYU.COMMON.HTTP.METHOD")}>
         {form.getFieldDecorator("httpMethod", {
           initialValue: httpMethodList?.[0]?.toLocaleUpperCase(),
@@ -241,13 +268,19 @@ function ApiDebug() {
   const formRef = createRef();
 
   const handleSubmit = async values => {
+    const { headers, ...params } = values;
+    const headersObj = {};
+    headers.forEach(item => {
+      headersObj[item.name] = item.example;
+    });
+    params.headers = headersObj;
     fetch(sandboxProxyGateway(), {
       method: "POST",
       headers: {
         "X-Access-Token": sessionStorage.token,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(values)
+      body: JSON.stringify(params)
     }).then(async response => {
       const data = await response.json();
       setResponseInfo({
@@ -263,7 +296,7 @@ function ApiDebug() {
     () => {
       setResponseInfo({});
       // eslint-disable-next-line no-unused-expressions
-      formRef.current?.form.resetFields(["method"]);
+      formRef.current?.form.resetFields(["method", "headers"]);
       setActiveKey("2");
     },
     [id]
