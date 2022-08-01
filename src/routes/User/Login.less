@@ -20,6 +20,7 @@
 .main {
   width: 368px;
   margin: 0 auto;
+
   @media screen and (max-width: @screen-sm) {
     width: 95%;
   }
@@ -45,5 +46,19 @@
     .register {
       float: right;
     }
+  }
+}
+
+.verify {
+  width: 70%;
+  float: left;
+  margin-right: 10px;
+}
+
+
+:global {
+  .ant-input .ant-input-lg {
+    font-size: 240px;
+    background-color: #fff;
   }
 }

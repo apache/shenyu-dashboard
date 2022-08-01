@@ -21,14 +21,18 @@
   .tabs {
     padding: 0 2px;
     margin: 0 -2px;
+
     :global {
       .ant-tabs-tab {
         font-size: 16px;
         line-height: 24px;
       }
+
       .ant-input-affix-wrapper .ant-input:not(:first-child) {
         padding-left: 34px;
       }
+
+
     }
   }
 
@@ -57,5 +61,12 @@
   .submit {
     width: 100%;
     margin-top: 24px;
+    background-color: rgba(91, 66, 54, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0)
+  }
+
+  .submit:hover {
+    background-color: rgba(91, 66, 54, 1);
+    border: 1px solid black
   }
 }

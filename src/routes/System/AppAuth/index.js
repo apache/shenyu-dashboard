@@ -39,7 +39,6 @@ export default class Auth extends Component {
     super(props);
     this.state = {
       currentPage: 1,
-      pageSize: 12,
       selectedRowKeys: [],
       appKey: "",
       phone: "",
@@ -79,38 +78,34 @@ export default class Auth extends Component {
 
   query = () =>{
     const { dispatch } = this.props;
-    const { appKey,phone,currentPage,pageSize} = this.state;
+    const { appKey,phone,currentPage } = this.state;
     dispatch({
       type: "auth/fetch",
       payload: {
         appKey,
         phone,
         currentPage,
-        pageSize
+        pageSize: 20
       }
     });
   }
 
   getAllAuths = page => {
     const { dispatch } = this.props;
-    const { appKey,phone,pageSize } = this.state;
+    const { appKey,phone } = this.state;
     dispatch({
       type: "auth/fetch",
       payload: {
         appKey,
         phone,
         currentPage: page,
-        pageSize
+        pageSize: 20
       }
     });
   };
 
   pageOnchange = page => {
     this.setState({ currentPage: page }, this.query);
-  };
-
-  onShowSizeChange = (currentPage,pageSize) => {
-    this.setState({ currentPage: 1, pageSize }, this.query);
   };
 
   closeModal = (refresh) => {
@@ -452,7 +447,7 @@ export default class Auth extends Component {
   render() {
     const { auth, loading } = this.props;
     const { authList, total } = auth;
-    const { currentPage, pageSize, selectedRowKeys, popup } = this.state;
+    const { currentPage, selectedRowKeys, popup } = this.state;
     const columns = this.state.columns.map((col, index) => ({
       ...col,
       onHeaderCell: column => ({
@@ -529,12 +524,8 @@ export default class Auth extends Component {
           rowSelection={rowSelection}
           pagination={{
             total,
-            showTotal: (showTotal) => `${showTotal}`,
-            showSizeChanger: true,
-            pageSizeOptions: ["12", "20", "50", "100"],
             current: currentPage,
-            pageSize,
-            onShowSizeChange: this.onShowSizeChange,
+            pageSize:20,
             onChange: this.pageOnchange
           }}
         />

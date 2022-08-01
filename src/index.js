@@ -18,9 +18,9 @@
 import './polyfill';
 import dva from 'dva';
 
-import createHistory from 'history/createHashHistory';
 // user BrowserHistory
-// import createHistory from 'history/createBrowserHistory';
+import createHistory from 'history/createHashHistory';
+
 import createLoading from 'dva-loading';
 import { initIntl } from './utils/IntlUtils'
 

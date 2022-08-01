@@ -32,7 +32,6 @@ export default class Role extends Component {
     super(props);
     this.state = {
       currentPage: 1,
-      pageSize: 12,
       selectedRowKeys: [],
       roleName: "",
       popup: ""
@@ -40,32 +39,30 @@ export default class Role extends Component {
   }
 
   componentWillMount() {
-    this.getAllRoles();
+    const { currentPage } = this.state;
+    this.getAllRoles(currentPage);
   }
 
   onSelectChange = selectedRowKeys => {
     this.setState({ selectedRowKeys });
   };
 
-  getAllRoles = () => {
+  getAllRoles = page => {
     const { dispatch } = this.props;
-    const { roleName,currentPage,pageSize } = this.state;
+    const { roleName } = this.state;
     dispatch({
       type: "role/fetch",
       payload: {
         roleName,
-        currentPage,
-        pageSize
+        currentPage: page,
+        pageSize: 12
       }
     });
   };
 
   pageOnchange = page => {
-    this.setState({ currentPage: page },this.getAllRoles);
-  };
-
-  onShowSizeChange = (currentPage,pageSize) => {
-    this.setState({ currentPage: 1, pageSize}, this.getAllRoles);
+    this.setState({ currentPage: page });
+    this.getAllRoles(page);
   };
 
   closeModal = () => {
@@ -74,7 +71,7 @@ export default class Role extends Component {
 
   editClick = record => {
     const { dispatch } = this.props;
-    const { currentPage,pageSize } = this.state;
+    const { currentPage } = this.state;
     const name = this.state.roleName;
     dispatch({
       type: "role/fetchItem",
@@ -99,7 +96,7 @@ export default class Role extends Component {
                   fetchValue: {
                     roleName: name,
                     currentPage,
-                    pageSize
+                    pageSize: 12
                   },
                   callback: () => {
                     this.closeModal();
@@ -122,12 +119,13 @@ export default class Role extends Component {
   };
 
   searchClick = () => {
-    this.getAllRoles();
+    this.getAllRoles(1);
+    this.setState({ currentPage: 1 });
   };
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { roleName, currentPage, pageSize, selectedRowKeys } = this.state;
+    const { roleName, currentPage, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "role/delete",
@@ -137,7 +135,7 @@ export default class Role extends Component {
         fetchValue: {
           roleName,
           currentPage,
-          pageSize
+          pageSize: 12
         },
         callback: () => {
           this.setState({ selectedRowKeys: [] });
@@ -150,7 +148,7 @@ export default class Role extends Component {
   };
 
   addClick = () => {
-    const { currentPage,pageSize } = this.state;
+    const { currentPage } = this.state;
     const name = this.state.roleName;
     this.setState({
       popup: (
@@ -170,7 +168,7 @@ export default class Role extends Component {
               fetchValue: {
                 roleName: name,
                 currentPage,
-                pageSize
+                pageSize: 12
               },
               callback: () => {
                 this.setState({ selectedRowKeys: [] });
@@ -189,7 +187,7 @@ export default class Role extends Component {
   render() {
     const { role, loading } = this.props;
     const { roleList, total } = role;
-    const { currentPage, pageSize, selectedRowKeys, roleName, popup } = this.state;
+    const { currentPage, selectedRowKeys, roleName, popup } = this.state;
     const roleColumns = [
       {
         align: "center",
@@ -306,12 +304,8 @@ export default class Role extends Component {
           rowSelection={rowSelection}
           pagination={{
             total,
-            showTotal: (showTotal) => `${showTotal}`,
-            showSizeChanger: true,
-            pageSizeOptions: ["12", "20", "50", "100"],
             current: currentPage,
-            pageSize,
-            onShowSizeChange: this.onShowSizeChange,
+            pageSize: 12,
             onChange: this.pageOnchange
           }}
         />

@@ -17,9 +17,12 @@
 
 import React from 'react';
 import classNames from 'classnames';
+import supportImg from '../../assets/support-apache.png'
+import asfLogo from '../../assets/asf_logo.svg'
 import styles from './index.less';
 
 const GlobalFooter = ({ className, links, copyright }) => {
+  const imgStyle = classNames(styles.imgStyle, className);
   const clsString = classNames(styles.globalFooter, className);
   return (
     <div className={clsString}>
@@ -32,6 +35,10 @@ const GlobalFooter = ({ className, links, copyright }) => {
           ))}
         </div>
       )}
+      <div>
+        <img className={imgStyle} src={supportImg}></img>
+        <img className={imgStyle} src={asfLogo}></img>
+      </div>
       {copyright && <div className={styles.copyright}>{copyright}</div>}
     </div>
   );

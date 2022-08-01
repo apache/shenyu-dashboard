@@ -37,7 +37,6 @@ export default class PluginHandle extends Component {
     super(props);
     this.state = {
       currentPage: 1,
-      pageSize: 12,
       selectedRowKeys: [],
       pluginDict: [],
       popup: "",
@@ -70,14 +69,14 @@ export default class PluginHandle extends Component {
    */
   query = () => {
     const {dispatch} = this.props;
-    const {pluginId, field, currentPage, pageSize} = this.state;
+    const {pluginId, field, currentPage} = this.state;
     dispatch({
       type: "pluginHandle/fetch",
       payload: {
         pluginId,
         field,
         currentPage,
-        pageSize
+        pageSize: 12
       }
     });
   };
@@ -95,10 +94,6 @@ export default class PluginHandle extends Component {
 
   pageOnchange = page => {
     this.setState({ currentPage: page },this.query);
-  };
-
-  onShowSizeChange = (currentPage,pageSize) => {
-    this.setState({ currentPage: 1,pageSize }, this.query);
   };
 
   /**
@@ -123,7 +118,7 @@ export default class PluginHandle extends Component {
 
   editClick = record => {
     const { dispatch } = this.props;
-    const { currentPage,pageSize } = this.state;
+    const { currentPage } = this.state;
     this.loadPluginDict()
     const pluginDropDownList = this.state.pluginDict
     dispatch({
@@ -171,7 +166,7 @@ export default class PluginHandle extends Component {
                   },
                   fetchValue: {
                     currentPage,
-                    pageSize
+                    pageSize: 12
                   },
                   callback: () => {
                     this.closeModal(true);
@@ -189,7 +184,7 @@ export default class PluginHandle extends Component {
   };
 
   addClick = () => {
-    const {currentPage,pageSize} = this.state;
+    const {currentPage} = this.state;
     this.loadPluginDict()
     const pluginDropDownList = this.state.pluginDict
     this.setState({
@@ -224,7 +219,7 @@ export default class PluginHandle extends Component {
               },
               fetchValue: {
                 currentPage,
-                pageSize
+                pageSize: 12
               },
               callback: () => {
                 this.closeModal(true);
@@ -245,7 +240,7 @@ export default class PluginHandle extends Component {
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { currentPage, pageSize, selectedRowKeys } = this.state;
+    const { currentPage, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "pluginHandle/delete",
@@ -254,7 +249,7 @@ export default class PluginHandle extends Component {
         },
         fetchValue: {
           currentPage,
-          pageSize
+          pageSize: 12
         },
         callback: () => {
           this.setState({ selectedRowKeys: [],currentPage:1 },this.query);
@@ -460,7 +455,7 @@ export default class PluginHandle extends Component {
   render() {
     const {pluginHandle, loading} = this.props;
     const {pluginHandleList, total, pluginDropDownList} = pluginHandle;
-    const {currentPage, pageSize, selectedRowKeys, pluginId, field, popup, columns = []} = this.state;
+    const {currentPage, selectedRowKeys, pluginId, field, popup, columns = []} = this.state;
 
 
     const tableColumns = columns.map((col, index) => ({
@@ -549,12 +544,8 @@ export default class PluginHandle extends Component {
           rowSelection={rowSelection}
           pagination={{
             total,
-            showTotal: (showTotal) => `${showTotal}`,
-            showSizeChanger: true,
-            pageSizeOptions: ["12", "20", "50", "100"],
             current: currentPage,
-            pageSize,
-            onShowSizeChange: this.onShowSizeChange,
+            pageSize: 12,
             onChange: this.pageOnchange
           }}
         />
