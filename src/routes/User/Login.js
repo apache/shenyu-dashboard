@@ -21,18 +21,28 @@ import { Alert } from 'antd';
 import Login from 'components/Login';
 import styles from './Login.less';
 
-const { UserName, Password, Submit } = Login;
-
+const { UserName, Password, Submit, VerifyCode, LoginCode } = Login;
 @connect(({ login, loading }) => ({
   login,
   submitting: loading.effects['login/login'],
 }))
 export default class LoginPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      VCode: "",
+      codeError: true
+    }
+  }
 
   handleSubmit = (err, values) => {
 
     const { dispatch } = this.props;
     if (!err) {
+      if (values.verifyCode !== this.state.VCode) {
+        this.setState({ codeError: false })
+        return;
+      }
       dispatch({
         type: 'login/login',
         payload: {
@@ -44,17 +54,31 @@ export default class LoginPage extends Component {
 
   renderMessage = content => {
     return <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />;
-  };
+  }
+
+  getCode = (code) => {
+    this.setState({
+      VCode: code
+    })
+  }
+
+  codeError = () => {
+    return this.state.codeError ? <span /> : <span className={styles.codeError} id='codeError'>Please enter correct verify code!</span>
+  }
 
   render() {
-    const {  submitting } = this.props;
-
+    const { submitting } = this.props;
     return (
       <div className={styles.main}>
         <Login onSubmit={this.handleSubmit}>
           <div>
             <UserName name="userName" placeholder="Account" />
             <Password name="password" placeholder="Password" />
+            <div className={styles.verify}>
+              <VerifyCode name="verifyCode" placeholder="Verification Code" />
+              {this.codeError()}
+            </div>
+            <LoginCode ChildGetCode={(code) => this.getCode(code)} />
           </div>
           <Submit loading={submitting}>Login</Submit>
         </Login>
