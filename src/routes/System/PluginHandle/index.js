@@ -320,7 +320,7 @@ export default class PluginHandle extends Component {
               if (arr && arr.length > 0) {
                 return <div>{arr[0].name}</div>
               } else {
-                return <div>111</div>
+                return <div>text</div>
               }
             }
           }
@@ -459,7 +459,8 @@ export default class PluginHandle extends Component {
 
   render() {
     const {pluginHandle, loading} = this.props;
-    const {pluginHandleList, total, pluginDropDownList} = pluginHandle;
+    const {pluginHandleList, total} = pluginHandle;
+    const pluginDropDownList = this.state.pluginDict
     const {currentPage, pageSize, selectedRowKeys, pluginId, field, popup, columns = []} = this.state;
 
 
