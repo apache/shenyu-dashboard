@@ -164,17 +164,15 @@ export default class Resource extends Component {
             dispatch({
               type: "resource/add",
               payload: {
-                icon: icon || "",
+                icon,
                 sort : isNaN(sort) ? 0: sort,
                 title,
-                url: url || "",
-                parentId: resourceType === 2 ? currentMenu.id : (parentId || ""),
+                url,
+                parentId: resourceType === 2 ? currentMenu.id : parentId,
                 resourceType,
-                name: "",
-                component: "",
                 isLeaf: resourceType === 2,
                 isRoute: 0,
-                perms: perms || "",
+                perms,
                 status: 1
               },
               callback: () => {
