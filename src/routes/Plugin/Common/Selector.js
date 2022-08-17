@@ -88,7 +88,7 @@ class AddModal extends Component {
       visible: false
     };
 
-    this.initSelectorCondtion(props);
+    this.initSelectorCondition(props);
     this.initDics();
   }
 
@@ -110,7 +110,7 @@ class AddModal extends Component {
     });
   }
 
-  initSelectorCondtion = props => {
+  initSelectorCondition = props => {
     const selectorConditions = props.selectorConditions || [
       {
         paramType: "uri",
@@ -712,7 +712,7 @@ class AddModal extends Component {
 
     if (type === 1) {
       formData.matchMode = matchMode.toString();
-      this.initSelectorCondtion({
+      this.initSelectorCondition({
         selectorConditions: selectorConditions.map(v => {
           const {
             id: rawId,
@@ -779,7 +779,6 @@ class AddModal extends Component {
     const {
       selectorConditions,
       selectValue,
-      pluginHandleList,
       operatorDics,
       matchModeDics,
       paramTypeDics,
@@ -793,13 +792,7 @@ class AddModal extends Component {
 
     return (
       <Modal
-        width={
-          pluginHandleList &&
-          pluginHandleList.length > 0 &&
-          pluginHandleList[0].length > 3
-            ? 1350
-            : 1000
-        }
+        width='900px'
         centered
         title={getIntlContent("SHENYU.SELECTOR.NAME")}
         visible
@@ -907,26 +900,26 @@ class AddModal extends Component {
                 )}
               </Item>
               <div className={styles.condition}>
-                <h3 className={styles.header}>
-                  <strong>*</strong>
-                  {getIntlContent("SHENYU.COMMON.CONDITION")}:{" "}
-                </h3>
-                <div>
+                <Item
+                  label={getIntlContent("SHENYU.COMMON.CONDITION")}
+                  required
+                  {...formItemLayout}
+                >
                   {selectorConditions.map((item, index) => {
                     return (
-                      <ul key={index}>
-                        <li>
+                      <Row key={index} gutter={8}>
+                        <Col span={5}>
                           <Select
                             onChange={value => {
                               this.conditionChange(index, "paramType", value);
                             }}
                             value={item.paramType}
-                            style={{ width: 120 }}
                           >
                             {this.renderParamTypeOptions(paramTypeDics)}
                           </Select>
-                        </li>
-                        <li
+                        </Col>
+                        <Col
+                          span={4}
                           style={{
                             display: this.state[`paramTypeValueEn${index}`]
                               ? "none"
@@ -942,22 +935,20 @@ class AddModal extends Component {
                               );
                             }}
                             value={item.paramName}
-                            style={{ width: 100 }}
                           />
-                        </li>
-                        <li>
+                        </Col>
+                        <Col span={4}>
                           <Select
                             onChange={value => {
                               this.conditionChange(index, "operator", value);
                             }}
                             value={item.operator}
-                            style={{ width: 120 }}
                           >
                             {this.renderOperatorOptions(operatorDics)}
                           </Select>
-                        </li>
+                        </Col>
 
-                        <li>
+                        <Col span={7}>
                           <Tooltip title={item.paramValue}>
                             <Input
                               onChange={e => {
@@ -968,11 +959,10 @@ class AddModal extends Component {
                                 );
                               }}
                               value={item.paramValue}
-                              style={{ width: 220 }}
                             />
                           </Tooltip>
-                        </li>
-                        <li>
+                        </Col>
+                        <Col span={4}>
                           <Button
                             type="danger"
                             onClick={() => {
@@ -981,16 +971,23 @@ class AddModal extends Component {
                           >
                             {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
                           </Button>
-                        </li>
-                      </ul>
+                        </Col>
+                      </Row>
                     );
                   })}
-                </div>
-
-                <Button onClick={this.handleAdd} type="primary">
-                  {getIntlContent("SHENYU.COMMON.ADD")}
-                </Button>
+                </Item>
+                <Item
+                  label={' '}
+                  colon={false}
+                  {...formItemLayout}
+                >
+                  <Button className={styles.addButton} onClick={this.handleAdd} type="primary">
+                    {getIntlContent("SHENYU.COMMON.ADD")} {" "}
+                    {getIntlContent("SHENYU.COMMON.CONDITION")}
+                  </Button>
+                </Item>
               </div>
+
             </Fragment>
           )}
           <div className={styles.layout}>
