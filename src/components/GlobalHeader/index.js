@@ -16,7 +16,7 @@
  */
 
 import React, { PureComponent } from "react";
-import { Dropdown, Form, Icon, Input, Menu, Modal } from "antd";
+import { Dropdown, Form, Icon, Input, Menu, Modal, Button } from "antd";
 import { connect } from "dva";
 import styles from "./index.less";
 import { getIntlContent, getCurrentLocale } from "../../utils/IntlUtils";
@@ -116,21 +116,21 @@ class GlobalHeader extends PureComponent {
     );
     return (
       <div className={styles.header}>
-        <Dropdown
-          placement="bottomCenter"
-          overlay={this.state.menu}
-          trigger={["click"]}
-        >
-          <TranslationOutlined />
-        </Dropdown>
-        <div className={styles.right}>
-          <Dropdown overlay={menu}>
-            <span>
-              <Icon type="user" />
-              {userName}
-              <Icon type="down" />
-            </span>
+        <span className={styles.text}>Apache ShenYu Gateway Management System</span>
+        <div>
+          <Dropdown
+            placement="bottomCenter"
+            overlay={this.state.menu}
+          >
+            <Button><TranslationOutlined /></Button>
           </Dropdown>
+          <div className={styles.right}>
+            <Dropdown.Button overlay={menu} icon={<Icon type="user" />}>
+              <span>
+                {userName}
+              </span>
+            </Dropdown.Button>
+          </div>
         </div>
         <Modal
           title={getIntlContent("SHENYU.GLOBALHEADER.CHANGE.PASSWORD")}
