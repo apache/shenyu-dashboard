@@ -38,7 +38,7 @@ import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import SelectorCopy from "./SelectorCopy";
 
-const FormItem = Form.Item;
+const { Item } = Form;
 const { Option } = Select;
 
 const formItemLayout = {
@@ -322,7 +322,7 @@ class AddModal extends Component {
       });
       const keys = getFieldValue("keys");
       const Rule = keys.map((key, index) => (
-        <FormItem
+        <Item
           required
           key={key}
           {...(index === 0
@@ -334,11 +334,7 @@ class AddModal extends Component {
             <div style={{ display: "flex", alignItems: "center" }}>
               <Row gutter={8}>
                 <Col span={8}>
-                  <FormItem
-                    label="protocol"
-                    labelCol={{ span: 8 }}
-                    wrapperCol={{ span: 16 }}
-                  >
+                  <Item label="protocol" wrapperCol={{ span: 16 }}>
                     {getFieldDecorator(`divideUpstreams[${key}].protocol`, {
                       initialValue: divideUpstreams[key]
                         ? divideUpstreams[key].protocol
@@ -350,14 +346,10 @@ class AddModal extends Component {
                         }
                       ]
                     })(<Input />)}
-                  </FormItem>
+                  </Item>
                 </Col>
                 <Col span={16}>
-                  <FormItem
-                    label="upstreamUrl"
-                    labelCol={{ span: 5 }}
-                    wrapperCol={{ span: 19 }}
-                  >
+                  <Item label="upstreamUrl" wrapperCol={{ span: 19 }}>
                     {getFieldDecorator(`divideUpstreams[${key}].upstreamUrl`, {
                       initialValue: divideUpstreams[key]
                         ? divideUpstreams[key].upstreamUrl
@@ -369,14 +361,10 @@ class AddModal extends Component {
                         }
                       ]
                     })(<Input />)}
-                  </FormItem>
+                  </Item>
                 </Col>
                 <Col span={6}>
-                  <FormItem
-                    label="weight"
-                    labelCol={{ span: 9 }}
-                    wrapperCol={{ span: 15 }}
-                  >
+                  <Item label="weight" wrapperCol={{ span: 15 }}>
                     {getFieldDecorator(`divideUpstreams[${key}].weight`, {
                       initialValue: divideUpstreams[key]
                         ? divideUpstreams[key].weight
@@ -394,15 +382,11 @@ class AddModal extends Component {
                         style={{ width: "100%" }}
                       />
                     )}
-                  </FormItem>
+                  </Item>
                 </Col>
 
                 <Col span={4}>
-                  <FormItem
-                    label="status"
-                    labelCol={{ span: 13 }}
-                    wrapperCol={{ span: 11 }}
-                  >
+                  <Item label="status" wrapperCol={{ span: 11 }}>
                     {getFieldDecorator(`divideUpstreams[${key}].status`, {
                       initialValue: divideUpstreams[key]
                         ? divideUpstreams[key].status
@@ -415,15 +399,11 @@ class AddModal extends Component {
                         }
                       ]
                     })(<Switch />)}
-                  </FormItem>
+                  </Item>
                 </Col>
 
                 <Col span={8}>
-                  <FormItem
-                    label="timestamp"
-                    labelCol={{ span: 9 }}
-                    wrapperCol={{ span: 15 }}
-                  >
+                  <Item label="timestamp" wrapperCol={{ span: 15 }}>
                     {getFieldDecorator(`divideUpstreams[${key}].timestamp`, {
                       initialValue: divideUpstreams[key]
                         ? divideUpstreams[key].timestamp
@@ -435,15 +415,11 @@ class AddModal extends Component {
                         }
                       ]
                     })(<InputNumber style={{ width: "100%" }} />)}
-                  </FormItem>
+                  </Item>
                 </Col>
 
                 <Col span={6}>
-                  <FormItem
-                    label="warmup"
-                    labelCol={{ span: 10 }}
-                    wrapperCol={{ span: 14 }}
-                  >
+                  <Item label="warmup" wrapperCol={{ span: 14 }}>
                     {getFieldDecorator(`divideUpstreams[${key}].warmup`, {
                       initialValue: divideUpstreams[key]
                         ? divideUpstreams[key].warmup
@@ -455,7 +431,7 @@ class AddModal extends Component {
                         }
                       ]
                     })(<InputNumber style={{ width: "100%" }} />)}
-                  </FormItem>
+                  </Item>
                 </Col>
               </Row>
               <div style={{ width: 64, textAlign: "right" }}>
@@ -475,17 +451,13 @@ class AddModal extends Component {
               </div>
             </div>
           </Card>
-        </FormItem>
+        </Item>
       ));
 
       return (
         <Row gutter={16} key="8">
           <Col span={10}>
-            <FormItem
-              label="serviceId"
-              labelCol={{ span: 8 }}
-              wrapperCol={{ span: 16 }}
-            >
+            <Item label="serviceId" wrapperCol={{ span: 16 }}>
               {getFieldDecorator("serviceId", {
                 initialValue: serviceId,
                 rules: [
@@ -494,14 +466,10 @@ class AddModal extends Component {
                   }
                 ]
               })(<Input placeholder="serviceId" />)}
-            </FormItem>
+            </Item>
           </Col>
           <Col span={8}>
-            <FormItem
-              label="gray"
-              labelCol={{ span: 4 }}
-              wrapperCol={{ span: 16 }}
-            >
+            <Item label="gray" wrapperCol={{ span: 16 }}>
               {getFieldDecorator("gray", {
                 valuePropName: "checked",
                 initialValue: gray,
@@ -511,11 +479,11 @@ class AddModal extends Component {
                   }
                 ]
               })(<Switch />)}
-            </FormItem>
+            </Item>
           </Col>
           <Col span={24}>
             {Rule}
-            <FormItem wrapperCol={{ span: 16, offset: 3 }}>
+            <Item wrapperCol={{ span: 16, offset: 3 }}>
               <Button
                 type="dashed"
                 onClick={() => {
@@ -529,7 +497,7 @@ class AddModal extends Component {
               >
                 <Icon type="plus" /> Add divide upstream
               </Button>
-            </FormItem>
+            </Item>
           </Col>
         </Row>
       );
@@ -599,7 +567,7 @@ class AddModal extends Component {
                           return (
                             <li key={fieldName}>
                               <Tooltip title={placeholder}>
-                                <FormItem>
+                                <Item>
                                   {getFieldDecorator(fieldName, {
                                     rules,
                                     initialValue: defaultValue
@@ -615,7 +583,7 @@ class AddModal extends Component {
                                       type="number"
                                     />
                                   )}
-                                </FormItem>
+                                </Item>
                               </Tooltip>
                             </li>
                           );
@@ -623,7 +591,7 @@ class AddModal extends Component {
                           return (
                             <li key={fieldName}>
                               <Tooltip title={placeholder}>
-                                <FormItem>
+                                <Item>
                                   {getFieldDecorator(fieldName, {
                                     rules,
                                     initialValue: defaultValue
@@ -650,7 +618,7 @@ class AddModal extends Component {
                                       })}
                                     </Select>
                                   )}
-                                </FormItem>
+                                </Item>
                               </Tooltip>
                             </li>
                           );
@@ -658,7 +626,7 @@ class AddModal extends Component {
                           return (
                             <li key={fieldName}>
                               <Tooltip title={item.value}>
-                                <FormItem>
+                                <Item>
                                   {getFieldDecorator(fieldName, {
                                     rules,
                                     initialValue: defaultValue
@@ -671,15 +639,12 @@ class AddModal extends Component {
                                       }
                                       placeholder={placeholder}
                                       key={fieldName}
-                                      onChange={e=> {
-                                        this.onDealChange(
-                                          e.target.value,
-                                          item
-                                        );
+                                      onChange={e => {
+                                        this.onDealChange(e.target.value, item);
                                       }}
                                     />
                                   )}
-                                </FormItem>
+                                </Item>
                               </Tooltip>
                             </li>
                           );
@@ -764,9 +729,38 @@ class AddModal extends Component {
     this.setState({ visible: false, selectValue: type.toString() });
   };
 
-  onDealChange = (value,item) => {
+  onDealChange = (value, item) => {
     item.value = value;
-  }
+  };
+
+  renderOperatorOptions = operators => {
+    if (operators && operators instanceof Array) {
+      return operators.map(operate => {
+        return (
+          <Option key={operate.dictValue} value={operate.dictValue}>
+            {operate.dictName}
+          </Option>
+        );
+      });
+    }
+
+    return "";
+  };
+
+  renderParamTypeOptions = (paramTypes = []) => {
+    if (paramTypes && paramTypes instanceof Array) {
+      return paramTypes.map(typeItem => {
+        const { dictValue, dictName } = typeItem;
+        return (
+          <Option key={dictValue} value={dictValue}>
+            {dictName}
+          </Option>
+        );
+      });
+    }
+
+    return "";
+  };
 
   render() {
     let {
@@ -815,7 +809,7 @@ class AddModal extends Component {
         onCancel={onCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem
+          <Item
             label={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")}
             {...formItemLayout}
           >
@@ -845,7 +839,7 @@ class AddModal extends Component {
                 }
               />
             )}
-          </FormItem>
+          </Item>
           <SelectorCopy
             visible={visible}
             onOk={this.handleCopyData}
@@ -853,7 +847,7 @@ class AddModal extends Component {
               this.setState({ visible: false });
             }}
           />
-          <FormItem
+          <Item
             label={getIntlContent("SHENYU.COMMON.TYPE")}
             {...formItemLayout}
           >
@@ -882,10 +876,10 @@ class AddModal extends Component {
                 })}
               </Select>
             )}
-          </FormItem>
+          </Item>
           {selectValue !== "0" && (
             <Fragment>
-              <FormItem
+              <Item
                 label={getIntlContent("SHENYU.COMMON.MATCHTYPE")}
                 {...formItemLayout}
               >
@@ -911,7 +905,7 @@ class AddModal extends Component {
                       })}
                   </Select>
                 )}
-              </FormItem>
+              </Item>
               <div className={styles.condition}>
                 <h3 className={styles.header}>
                   <strong>*</strong>
@@ -929,17 +923,7 @@ class AddModal extends Component {
                             value={item.paramType}
                             style={{ width: 120 }}
                           >
-                            {paramTypeDics &&
-                              paramTypeDics.map(typeItem => {
-                                return (
-                                  <Option
-                                    key={typeItem.dictValue}
-                                    value={typeItem.dictValue}
-                                  >
-                                    {typeItem.dictName}
-                                  </Option>
-                                );
-                              })}
+                            {this.renderParamTypeOptions(paramTypeDics)}
                           </Select>
                         </li>
                         <li
@@ -967,19 +951,9 @@ class AddModal extends Component {
                               this.conditionChange(index, "operator", value);
                             }}
                             value={item.operator}
-                            style={{ width: 150 }}
+                            style={{ width: 120 }}
                           >
-                            {operatorDics &&
-                              operatorDics.map(opearte => {
-                                return (
-                                  <Option
-                                    key={opearte.dictValue}
-                                    value={opearte.dictValue}
-                                  >
-                                    {opearte.dictName}
-                                  </Option>
-                                );
-                              })}
+                            {this.renderOperatorOptions(operatorDics)}
                           </Select>
                         </li>
 
@@ -994,7 +968,7 @@ class AddModal extends Component {
                                 );
                               }}
                               value={item.paramValue}
-                              style={{ width: 300 }}
+                              style={{ width: 220 }}
                             />
                           </Tooltip>
                         </li>
@@ -1020,7 +994,7 @@ class AddModal extends Component {
             </Fragment>
           )}
           <div className={styles.layout}>
-            <FormItem
+            <Item
               {...formCheckLayout}
               label={getIntlContent("SHENYU.SELECTOR.CONTINUE")}
             >
@@ -1029,8 +1003,8 @@ class AddModal extends Component {
                 valuePropName: "checked",
                 rules: [{ required: true }]
               })(<Switch />)}
-            </FormItem>
-            <FormItem
+            </Item>
+            <Item
               style={{ margin: "0 30px" }}
               {...formCheckLayout}
               label={getIntlContent("SHENYU.SELECTOR.PRINTLOG")}
@@ -1040,8 +1014,8 @@ class AddModal extends Component {
                 valuePropName: "checked",
                 rules: [{ required: true }]
               })(<Switch />)}
-            </FormItem>
-            <FormItem
+            </Item>
+            <Item
               {...formCheckLayout}
               label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}
             >
@@ -1050,10 +1024,10 @@ class AddModal extends Component {
                 valuePropName: "checked",
                 rules: [{ required: true }]
               })(<Switch />)}
-            </FormItem>
+            </Item>
           </div>
           {this.renderPluginHandler()}
-          <FormItem
+          <Item
             label={getIntlContent("SHENYU.SELECTOR.EXEORDER")}
             {...formItemLayout}
           >
@@ -1074,7 +1048,7 @@ class AddModal extends Component {
                 placeholder={getIntlContent("SHENYU.SELECTOR.INPUTORDER")}
               />
             )}
-          </FormItem>
+          </Item>
         </Form>
       </Modal>
     );
