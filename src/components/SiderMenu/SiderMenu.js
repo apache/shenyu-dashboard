@@ -341,8 +341,8 @@ export default class SiderMenu extends PureComponent {
         </Link>
         <Switch
           onChange={this.changeMode}
-          checkedChildren="change theme"
-          unCheckedChildren="change theme"
+          checkedChildren="Change Mode"
+          unCheckedChildren="Change Mode"
           className={styles.changeMode}
         />
         <Menu
