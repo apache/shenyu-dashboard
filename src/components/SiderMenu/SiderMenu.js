@@ -16,7 +16,7 @@
  */
 
 import React, { PureComponent } from "react";
-import { Layout, Menu, Icon } from "antd";
+import { Layout, Menu, Icon, Switch } from "antd";
 import pathToRegexp from "path-to-regexp";
 import { Link } from "dva/router";
 import styles from "./index.less";
@@ -83,7 +83,9 @@ export default class SiderMenu extends PureComponent {
     this.flatMenuKeys = getFlatMenuKeys(props.menuData);
     this.state = {
       openKeys: this.getDefaultCollapsedSubMenus(props),
-      localeName: ""
+      localeName: "",
+      mode: "inline",
+      theme: "dark"
     };
   }
 
@@ -253,13 +255,16 @@ export default class SiderMenu extends PureComponent {
   };
 
   handleOpenChange = openKeys => {
-    const lastOpenKey = openKeys[openKeys.length - 1];
-    const moreThanOne =
-      openKeys.filter(openKey => this.isMainMenu(openKey)).length > 1;
     this.setState({
-      openKeys: moreThanOne ? [lastOpenKey] : [...openKeys]
+      openKeys: [...openKeys]
     });
   };
+
+  changeMode = (value) => {
+    this.setState({
+      mode: value ? "vertical" : 'inline'
+    })
+  }
 
   /** Modify the menu based on the current language */
   updateMenuData() {
@@ -302,11 +307,6 @@ export default class SiderMenu extends PureComponent {
     const { menuData, collapsed, onCollapse, TitleLogo } = this.props;
     const { openKeys } = this.state;
     // Don't show popup menu when it is been collapsed
-    const menuProps = collapsed
-      ? {}
-      : {
-        openKeys
-      };
     // if pathname can't match, use the nearest parent's key
     let selectedKeys = this.getSelectedMenuKeys();
     if (!selectedKeys.length) {
@@ -328,13 +328,16 @@ export default class SiderMenu extends PureComponent {
             <img className={styles.TitleLogo} src={TitleLogo} alt="logo" />
           </div>
         </Link>
+        <Switch
+          onChange={this.changeMode}
+          checkedChildren="Change Mode"
+          unCheckedChildren="Change Mode"
+          className={styles.changeMode}
+        />
         <Menu
           key="Menu"
-          theme="dark"
-          mode="inline"
-          {...menuProps}
-          onOpenChange={this.handleOpenChange}
-          selectedKeys={selectedKeys}
+          theme={this.state.theme}
+          mode={this.state.mode}
           style={{ padding: "16px 0", width: "100%" }}
         >
           {this.getNavMenuItems(menuData)}
