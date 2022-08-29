@@ -16,15 +16,22 @@
  */
 
 @import '~antd/lib/style/themes/default.less';
+
 .header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   height: 64px;
-  padding: 0 12px 0 0;
+  padding: 0 24px 0 0;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  box-shadow: 0 4px 4px rgba(0, 21, 41, 0.08);
   position: relative;
+}
+
+.text {
+  font-size: 20px;
+  font-weight: 600;
+  margin-left: 24px;
 }
 
 :global {
@@ -42,6 +49,7 @@
   padding: 0 0 0 24px;
   cursor: pointer;
   font-size: 20px;
+
   img {
     display: inline-block;
     vertical-align: middle;
@@ -52,6 +60,7 @@
   :global(.anticon) {
     margin-right: 8px;
   }
+
   :global(.ant-dropdown-menu-item) {
     width: 160px;
   }
@@ -63,6 +72,7 @@ i.trigger {
   cursor: pointer;
   transition: all 0.3s, padding 0s;
   padding: 0 24px;
+
   &:hover {
     background: @primary-1;
   }
@@ -73,32 +83,39 @@ i.trigger {
   float: right;
   height: 100%;
   cursor: pointer;
+
   &:hover {
     color: @primary-color;
   }
+
   .action {
     cursor: pointer;
     padding: 0 12px;
     display: inline-block;
     transition: all 0.3s;
     height: 100%;
+
     >i {
       font-size: 16px;
       vertical-align: middle;
       color: @text-color;
     }
+
     &:hover,
     &:global(.ant-popover-open) {
       background: @primary-1;
     }
   }
+
   .search {
     padding: 0;
     margin: 0 12px;
+
     &:hover {
       background: transparent;
     }
   }
+
   .account {
     .avatar {
       margin: 20px 8px 20px 0;
@@ -114,21 +131,26 @@ i.trigger {
     :global(.ant-divider-vertical) {
       vertical-align: unset;
     }
+
     .name {
       display: none;
     }
+
     i.trigger {
       padding: 0 12px;
     }
+
     .logo {
       padding-right: 12px;
       position: relative;
     }
+
     .right {
       position: absolute;
       right: 12px;
       top: 0;
       background: #fff;
+
       .account {
         .avatar {
           margin-right: 0;

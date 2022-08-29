@@ -15,37 +15,27 @@
  * limitations under the License.
  */
 
-@import '~antd/lib/style/themes/default.less';
+import React, { useCallback, useState, useRef } from "react";
+import Captcha from "react-captcha-code";
 
-.globalFooter {
-  padding: 0px 240px;
-  margin: 0px 0 15px 0;
-  text-align: center;
-
-  .links {
-    margin-bottom: 8px;
-
-    a {
-      color: @text-color-secondary;
-      transition: all 0.3s;
-
-      &:not(:last-child) {
-        margin-right: 40px;
-      }
-
-      &:hover {
-        color: @text-color;
-      }
-    }
-  }
-
-  .copyright {
-    color: #ffffff;
-    font-size: @font-size-base;
-  }
-
-  .imgStyle {
-    height: 50px;
-    margin: 0px 10px;
-  }
+interface childProps {
+    ChildGetCode: Function,
 }
+
+const LoginCode: React.FC<childProps> = (props) => {
+    const { ChildGetCode } = props;
+    const captchaRef = useRef<any>();
+    const [captcha, setCaptcha] = useState("");
+    const handleChange = useCallback((code) => {
+        setCaptcha(code);
+        ChildGetCode(code)
+    }, []);
+
+    return (
+        <span style={{ cursor: 'pointer' }}>
+            <Captcha onChange={handleChange} ref={captchaRef} />
+        </span>
+    );
+}
+
+export default LoginCode;

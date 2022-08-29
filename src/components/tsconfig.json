@@ -14,38 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-@import '~antd/lib/style/themes/default.less';
-
-.globalFooter {
-  padding: 0px 240px;
-  margin: 0px 0 15px 0;
-  text-align: center;
-
-  .links {
-    margin-bottom: 8px;
-
-    a {
-      color: @text-color-secondary;
-      transition: all 0.3s;
-
-      &:not(:last-child) {
-        margin-right: 40px;
-      }
-
-      &:hover {
-        color: @text-color;
-      }
+{
+    "include": [
+        "./src/*"
+    ],
+    "compilerOptions": {
+        "strict": true,
+        "esModuleInterop": true,
+        "lib": [
+            "dom",
+            "es2015"
+        ],
+        "jsx": "react-jsx"
     }
-  }
-
-  .copyright {
-    color: #ffffff;
-    font-size: @font-size-base;
-  }
-
-  .imgStyle {
-    height: 50px;
-    margin: 0px 10px;
-  }
 }

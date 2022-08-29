@@ -34,7 +34,7 @@ const links = [];
 
 const copyright = (
   <Fragment>
-    Copyright <Icon type="copyright" /> {new Date().getFullYear()} 出品
+    Copyright <Icon type="copyright" /> {new Date().getFullYear()} The Apache Software Foundation, Licensed under the Apache License, Version 2.0. Apache ShenYu, Apache, the Apache feather logo, the Apache ShenYu logo are trademarks of The Apache Software Foundation.
   </Fragment>
 );
 

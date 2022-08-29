@@ -17,10 +17,24 @@
 
 import React from 'react';
 import { Input, Icon } from 'antd';
-import styles from './index.less';
+import styles from './index.less'
 import { getIntlContent } from '../../utils/IntlUtils';
 
 const map = {
+  VerifyCode: {
+    component: Input,
+    props: {
+      size: 'large',
+      prefix: <Icon type="home" className={styles.prefixIcon} />,
+    },
+    rules: [
+      {
+        required: true,
+        message: getIntlContent("SHENYU.SYSTEM.VERIFICATION.CODE"),
+      },
+    ],
+  }
+  ,
   UserName: {
     component: Input,
     props: {

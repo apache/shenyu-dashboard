@@ -17,6 +17,7 @@
 
 @import "~antd/lib/style/themes/default.less";
 @ease-in-out-circ: cubic-bezier(0.78, 0.14, 0.15, 0.86);
+
 .logo {
   height: 64px;
   position: relative;
@@ -32,18 +33,22 @@
     width: 32px;
     height: 32px;
   }
-  .TitleLogo{
+
+  .TitleLogo {
     width: 184px;
     height: 184px;
   }
+
   .systemTitle {
     color: #ffffff;
     font-family: "Myriad Pro", "Helvetica Neue", Arial, Helvetica, sans-serif;
     font-weight: 600;
+
     .title {
       font-size: 18px;
       line-height: 18px;
     }
+
     .subTitle {
       font-size: 14px;
       line-height: 17px;
@@ -56,15 +61,22 @@
   box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
   position: relative;
   z-index: 10;
+
   &.ligth {
     background-color: white;
+
     .logo {
       background: white;
+
       h1 {
         color: #002140;
       }
     }
   }
+}
+
+.changeMode {
+  margin: 10px 0px 0px 20px !important;
 }
 
 .icon {
@@ -76,26 +88,20 @@
   .drawer .drawer-content {
     background: #001529;
   }
+
   .ant-menu-inline-collapsed {
-    & > .ant-menu-item .sider-menu-item-img + span,
-    &
-      > .ant-menu-item-group
-      > .ant-menu-item-group-list
-      > .ant-menu-item
-      .sider-menu-item-img
-      + span,
-    &
-      > .ant-menu-submenu
-      > .ant-menu-submenu-title
-      .sider-menu-item-img
-      + span {
+
+    &>.ant-menu-item .sider-menu-item-img+span,
+    &>.ant-menu-item-group>.ant-menu-item-group-list>.ant-menu-item .sider-menu-item-img+span,
+    &>.ant-menu-submenu>.ant-menu-submenu-title .sider-menu-item-img+span {
       max-width: 0;
       display: inline-block;
       opacity: 0;
     }
   }
-  .ant-menu-item .sider-menu-item-img + span,
-  .ant-menu-submenu-title .sider-menu-item-img + span {
+
+  .ant-menu-item .sider-menu-item-img+span,
+  .ant-menu-submenu-title .sider-menu-item-img+span {
     transition: opacity 0.3s @ease-in-out, width 0.3s @ease-in-out;
     opacity: 1;
   }

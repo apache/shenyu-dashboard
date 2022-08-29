@@ -22,6 +22,7 @@ import classNames from 'classnames';
 import LoginItem from './LoginItem';
 import LoginTab from './LoginTab';
 import LoginSubmit from './LoginSubmit';
+import LoginCode from './LoginCode';
 import styles from './index.less';
 
 class Login extends Component {
@@ -41,8 +42,8 @@ class Login extends Component {
   static defaultProps = {
     className: '',
     defaultActiveKey: '',
-    onTabChange: () => {},
-    onSubmit: () => {},
+    onTabChange: () => { },
+    onSubmit: () => { },
   };
 
   constructor(props) {
@@ -145,6 +146,7 @@ class Login extends Component {
 
 Login.Tab = LoginTab;
 Login.Submit = LoginSubmit;
+Login.LoginCode = LoginCode;
 Object.keys(LoginItem).forEach(item => {
   Login[item] = LoginItem[item];
 });
