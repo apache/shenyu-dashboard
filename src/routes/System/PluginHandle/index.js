@@ -16,7 +16,7 @@
  */
 
 import React, {Component} from "react";
-import {Table, Button, Popconfirm, message, Select, Input} from "antd";
+import {Table, Button, Popconfirm, message, Select, Input, Popover, Tag} from "antd";
 import {connect} from "dva";
 import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
@@ -48,18 +48,18 @@ export default class PluginHandle extends Component {
   }
 
   componentWillMount = async () => {
-    await this.loadPluginDict();
+    this.loadPluginDict();
 
     this.initPluginColumns();
 
     this.query()
   }
 
-  componentDidUpdate = async () => {
+  componentDidUpdate() {
     const { language } = this.props;
     const { localeName } = this.state;
     if (language !== localeName) {
-      await this.loadPluginDict();
+      this.loadPluginDict();
       this.initPluginColumns();
       this.changeLocale(language);
     }
@@ -85,9 +85,9 @@ export default class PluginHandle extends Component {
   /**
    * load plugin drop dict
    */
-  loadPluginDict = async () => {
+  loadPluginDict = () => {
     const {dispatch} = this.props;
-    await dispatch({
+    dispatch({
       type: "pluginHandle/fetchPluginList",
     });
     this.setState({pluginDict: this.props.pluginHandle.pluginDropDownList})
@@ -294,7 +294,7 @@ export default class PluginHandle extends Component {
           key: "pluginId",
           ellipsis: true,
           sorter: (a,b)=> a.pluginId - b.pluginId,
-          width: 120,
+          width: 140,
           render: text => {
             const {pluginHandle} = this.props;
             const {pluginHandleList} = pluginHandle;
@@ -318,7 +318,7 @@ export default class PluginHandle extends Component {
             if (pluginDropDownList) {
               let arr = pluginDropDownList.filter(item => item.id === text)
               if (arr && arr.length > 0) {
-                return <div>{arr[0].name}</div>
+                return <div style={{color: "#260033","fontWeight":"bold"}}>{arr[0].name}</div>
               } else {
                 return <div>text</div>
               }
@@ -327,20 +327,65 @@ export default class PluginHandle extends Component {
         },
         {
           align: "center",
+          title: getIntlContent("SHENYU.PLUGIN.FIELDTYPE"),
+          dataIndex: "type",
+          key: "type",
+          ellipsis:true,
+          width: 120,
+          sorter: (a,b)=> a.type - b.type,
+          render: text => {
+            if (text === 1) {
+              return <Tag color="cyan">{getIntlContent("SHENYU.SELECTOR.NAME")}</Tag>;
+            } else if (text === 2) {
+              return <Tag color="purple">{getIntlContent("SHENYU.PLUGIN.RULES")}</Tag>;
+            } else if (text === 3) {
+              return <Tag color="blue">{getIntlContent("SHENYU.PLUGIN")}</Tag>;
+            }
+            return <Tag color="red">{getIntlContent("SHENYU.PLUGIN.UNDEFINETYPE")}</Tag>;
+          }
+        },
+        {
+          align: "center",
           title: getIntlContent("SHENYU.PLUGIN.FIELDNAME"),
           dataIndex: "field",
           key: "field",
           ellipsis: true,
-          width: 200,
+          // width: 200,
+          render: (text, record) => {
+            let content =(
+              <div>
+                <p>{record.label}</p>
+                <p>{getIntlContent("SHENYU.SYSTEM.CREATETIME")}:{record.dateCreated}</p>
+                <p>{getIntlContent("SHENYU.SYSTEM.UPDATETIME")}:{record.dateUpdated}</p>
+              </div>
+            );
+            return <Popover placement="topLeft" content={content} title={getIntlContent("SHENYU.PLUGIN.LABEL")}><div style={{color: "#1f640a"}}>{text || "----"}</div></Popover>
+          }
         },
         {
           align: "center",
-          title: getIntlContent("SHENYU.PLUGIN.LABEL"),
-          dataIndex: "label",
-          key: "label",
+          title: getIntlContent("SHENYU.PLUGIN.REQUIRED"),
+          dataIndex: "required",
+          key: "required",
+          ellipsis:true,
+          width: 120,
+          sorter: (a,b) => (a.required || "-1") > (b.required || "-1") ? 1 : -1,
+          render: text => {
+            if (text === "1") {
+              return <span style={{color:"green",fontWeight:"bold"}}>{getIntlContent("SHENYU.COMMON.YES")}</span>;
+            } else if (text === "0") {
+              return <span style={{color:"red",fontWeight:"bold"}}>{getIntlContent("SHENYU.COMMON.NO")}</span>;
+            }
+            return <span style={{color:"orange",fontWeight:"bold"}}>{getIntlContent("SHENYU.PLUGIN.UNDEFINETYPE")}</span>;
+          }
+        },
+        {
+          align: "center",
+          title: getIntlContent("SHENYU.PLUGIN.DEFAULTVALUE"),
+          dataIndex: "defaultValue",
+          key: "defaultValue",
           ellipsis: true,
-          width: 200,
-          sorter: (a,b) => a.label > b.label ? 1 : -1,
+          width: 120,
         },
         {
           align: "center",
@@ -351,34 +396,16 @@ export default class PluginHandle extends Component {
           width: 100,
           render: text => {
             if (text === 1) {
-              return <div>{getIntlContent("SHENYU.PLUGIN.DIGITAL")}</div>;
+              return <Tag color="green">{getIntlContent("SHENYU.PLUGIN.DIGITAL")}</Tag>;
             } else if (text === 2) {
-              return <div>{getIntlContent("SHENYU.PLUGIN.STRING")}</div>;
+              return <Tag color="orange">{getIntlContent("SHENYU.PLUGIN.STRING")}</Tag>;
             } else if (text === 3) {
-              return <div>{getIntlContent("SHENYU.PLUGIN.DROPDOWN")}</div>;
+              return <Tag color="magenta">{getIntlContent("SHENYU.PLUGIN.DROPDOWN")}</Tag>;
             }
-            return <div>{getIntlContent("SHENYU.PLUGIN.UNDEFINETYPE")}</div>;
+            return <Tag color="red">{getIntlContent("SHENYU.PLUGIN.UNDEFINETYPE")}</Tag>;
           }
       },
-      {
-        align: "center",
-        title: getIntlContent("SHENYU.PLUGIN.FIELDTYPE"),
-        dataIndex: "type",
-        key: "type",
-        ellipsis:true,
-        width: 120,
-        sorter: (a,b)=> a.type - b.type,
-        render: text => {
-          if (text === 1) {
-            return <div>{getIntlContent("SHENYU.SELECTOR.NAME")}</div>;
-          } else if (text === 2) {
-            return <div>{getIntlContent("SHENYU.PLUGIN.RULES")}</div>;
-          } else if (text === 3) {
-            return <div>{getIntlContent("SHENYU.PLUGIN")}</div>;
-          }
-          return <div>{getIntlContent("SHENYU.PLUGIN.UNDEFINETYPE")}</div>;
-        }
-      },
+
       {
         align: "center",
         title: getIntlContent("SHENYU.PLUGIN.SORT"),
@@ -390,69 +417,27 @@ export default class PluginHandle extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SHENYU.PLUGIN.REQUIRED"),
-        dataIndex: "required",
-        key: "required",
-        ellipsis:true,
-        width: 120,
-        sorter: (a,b) => (a.required || "-1") > (b.required || "-1") ? 1 : -1,
-        render: text => {
-          if (text === "1") {
-            return <div>{getIntlContent("SHENYU.COMMON.YES")}</div>;
-          } else if (text === "0") {
-            return <div>{getIntlContent("SHENYU.COMMON.NO")}</div>;
-          }
-          return <div>{getIntlContent("SHENYU.PLUGIN.UNDEFINETYPE")}</div>;
+        title: getIntlContent("SHENYU.COMMON.OPERAT"),
+        dataIndex: "time",
+        key: "time",
+        ellipsis: true,
+        fixed: 'right',
+        width: 100,
+        render: (text, record) => {
+          return (
+            <AuthButton perms="system:pluginHandler:edit">
+              <div
+                className="edit"
+                onClick={() => {
+                  this.editClick(record);
+                }}
+              >
+                {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+              </div>
+            </AuthButton>
+          );
         }
-       },
-       {
-          align: "center",
-          title: getIntlContent("SHENYU.PLUGIN.DEFAULTVALUE"),
-          dataIndex: "defaultValue",
-          key: "defaultValue",
-          ellipsis: true,
-          width: 120,
-        },
-        {
-          align: "center",
-          title: getIntlContent("SHENYU.SYSTEM.CREATETIME"),
-          dataIndex: "dateCreated",
-          key: "dateCreated",
-          ellipsis: true,
-          width: 180,
-          sorter: (a,b) => a.dateCreated > b.dateCreated ? 1 : -1,
-        },
-        {
-          align: "center",
-          title: getIntlContent("SHENYU.SYSTEM.UPDATETIME"),
-          dataIndex: "dateUpdated",
-          key: "dateUpdated",
-          ellipsis: true,
-          sorter: (a,b) => a.dateUpdated > b.dateUpdated ? 1 : -1,
-        },
-        {
-          align: "center",
-          title: getIntlContent("SHENYU.COMMON.OPERAT"),
-          dataIndex: "time",
-          key: "time",
-          ellipsis: true,
-          fixed: 'right',
-          width: 100,
-          render: (text, record) => {
-            return (
-              <AuthButton perms="system:pluginHandler:edit">
-                <div
-                  className="edit"
-                  onClick={() => {
-                    this.editClick(record);
-                  }}
-                >
-                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                </div>
-              </AuthButton>
-            );
-          }
-        }
+      }
       ]
     })
   }
@@ -545,7 +530,7 @@ export default class PluginHandle extends Component {
           bordered
           loading={loading}
           columns={tableColumns}
-          scroll={{ x: 1550 }}
+          // scroll={{ x: 1550 }}
           dataSource={pluginHandleList}
           rowSelection={rowSelection}
           pagination={{
