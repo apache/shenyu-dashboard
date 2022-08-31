@@ -156,6 +156,7 @@ class GlobalHeader extends PureComponent {
                   callback: () => {
                     this.setState({ visible: false });
                     resetFields();
+                    onLogout();
                   }
                 });
               }
