@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Table, Input, Button, message, Popconfirm } from "antd";
+import {Table, Input, Button, message, Popconfirm, Tag, Popover} from "antd";
 import { connect } from "dva";
 import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
@@ -282,7 +282,11 @@ export default class Metadata extends Component {
           dataIndex: "appName",
           key: "appName",
           ellipsis:true,
+          width: 150,
           sorter: (a,b) => a.appName > b.appName ? 1 : -1,
+          render: text => {
+            return <div style={{color: "#260033","fontWeight":"bold"}}>{text}</div>
+          }
         },
         {
           align: "center",
@@ -290,32 +294,41 @@ export default class Metadata extends Component {
           dataIndex: "path",
           key: "path",
           ellipsis:true,
-          width: 120,
-        },
-        {
-          align: "center",
-          title: getIntlContent("SHENYU.META.SERVER.INTER"),
-          dataIndex: "serviceName",
-          key: "serviceName",
-          ellipsis:true,
-          width: 120,
-        },
-        {
-          align: "center",
-          title: getIntlContent("SHENYU.META.FUNC.NAME"),
-          dataIndex: "methodName",
-          key: "methodName",
-          ellipsis:true,
-          sorter: (a,b) => a.methodName > b.methodName ? 1 : -1,
-        },
-        {
-          align: "center",
-          title: `${getIntlContent("SHENYU.AUTH.PARAMS")}${getIntlContent("SHENYU.COMMON.TYPE")}`,
-          dataIndex: "parameterTypes",
-          key: "parameterTypes",
-          ellipsis:true,
-          width: 120,
-          sorter: (a,b) => a.parameterTypes > b.parameterTypes ? 1 : -1,
+          render: (text,record) => {
+            let content =(
+              <div>
+                <p>{record.pathDesc}</p>
+                <hr />
+                <p>
+                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.META.SERVER.INTER")}</span> :
+                  <span style={{color:"#1f640a"}}>{record.serviceName}</span>
+                </p>
+                <p>
+                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.META.FUNC.NAME")}</span>:
+                  <span style={{color:"#1f640a"}}>{record.methodName}</span>
+                </p>
+                <p>
+                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.AUTH.PARAMS")}</span> :
+                  <span style={{color:"#1f640a"}}>{record.parameterTypes}</span>
+                </p>
+                <p>
+                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.META.EXPAND.PARAMS")}</span> :
+                  <span style={{color:"#1f640a"}}>{record.rpcExt}</span>
+                </p>
+                <hr />
+                <p>
+                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.SYSTEM.CREATETIME")}</span> :
+                  <span style={{color:"#1f640a"}}>{record.dateCreated}</span>
+                </p>
+                <p>
+                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.SYSTEM.UPDATETIME")}</span> :
+                  <span style={{color:"#1f640a"}}>{record.dateUpdated}</span>
+                </p>
+              </div>
+            );
+            return <Popover placement="topLeft" content={content} title={getIntlContent("SHENYU.AUTH.PATH.DESCRIBE")}><div style={{color: "#1f640a"}}>{text || "----"}</div></Popover>
+
+          }
         },
         {
           align: "center",
@@ -323,24 +336,20 @@ export default class Metadata extends Component {
           dataIndex: "rpcType",
           key: "rpcType",
           ellipsis:true,
+          width: 120,
           sorter: (a,b) => a.rpcType > b.rpcType ? 1 : -1,
+          render: text => {
+            if (text.length < 5) {
+              return <Tag color="cyan">{text}</Tag>;
+            } else if (text.length < 15) {
+              return <Tag color="purple">{text}</Tag>;
+            } else if (text.length < 25) {
+              return <Tag color="blue">{text}</Tag>;
+            }
+            return <Tag color="red">{text}</Tag>;
+          }
         },
-        {
-          align: "center",
-          title: `Rpc${getIntlContent("SHENYU.META.EXPAND.PARAMS")}`,
-          dataIndex: "rpcExt",
-          key: "rpcExt",
-          ellipsis:true,
-          width: 120,
-        },
-        {
-          align: "center",
-          title: getIntlContent("SHENYU.AUTH.PATH.DESCRIBE"),
-          dataIndex: "pathDesc",
-          key: "pathDesc",
-          ellipsis:true,
-          width: 120,
-        },
+
         {
           align: "center",
           title: getIntlContent("SHENYU.SYSTEM.STATUS"),
@@ -473,7 +482,7 @@ export default class Metadata extends Component {
           rowKey={record => record.id}
           loading={loading}
           columns={columns}
-          scroll={{ x: 1350 }}
+          // scroll={{ x: 1350 }}
           dataSource={userList}
           rowSelection={rowSelection}
           pagination={{
