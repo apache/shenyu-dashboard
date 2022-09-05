@@ -177,7 +177,7 @@ class AddModal extends Component {
               initialValue: enabled,
               valuePropName: 'checked',
             })(
-              <Switch disabled="{!this.props.isShow}" />
+              <Switch disabled={!this.props.isShow} />
             )}
             </FormItem>
           )}
