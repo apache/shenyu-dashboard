@@ -25,7 +25,6 @@ import { emit } from "../../utils/emit";
 const TranslationOutlinedSvg = () => (
   <svg
     viewBox="64 64 896 896"
-    focusable="false"
     data-icon="translation"
     width="1em"
     height="1em"
