@@ -14,26 +14,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, { useCallback, useState, useRef } from "react";
+import React, { useCallback, useState, useRef, useImperativeHandle } from "react";
 import Captcha from "react-captcha-code";
+import { randomNum, originalCharacter } from "../_utils/utils";
 
 interface childProps {
     ChildGetCode: Function,
+    onRef: any,
 }
 
 const LoginCode: React.FC<childProps> = (props) => {
     const { ChildGetCode } = props;
     const captchaRef = useRef<any>();
-    const [captcha, setCaptcha] = useState("");
-    const handleChange = useCallback((code) => {
-        setCaptcha(code);
-        ChildGetCode(code)
+    const [code, setCode] = useState("");
+
+    const handleClick = useCallback(() => {
+        let str = "";
+        for (let i = 0; i < 4; i++) {
+            const temp =
+                originalCharacter[randomNum(0, originalCharacter.length - 1)];
+            str = `${str}${temp}`;
+        }
+        setCode(str);
+        ChildGetCode(str);
     }, []);
+
+    useImperativeHandle(props.onRef, () => {
+        return {
+            handleChange: handleClick,
+        };
+    });
 
     return (
         <span style={{ cursor: 'pointer' }}>
-            <Captcha onChange={handleChange} ref={captchaRef} />
+            <Captcha onClick={handleClick} code={code} />
         </span>
     );
 }
