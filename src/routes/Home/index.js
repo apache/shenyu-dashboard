@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-import React, {Component} from "react";
-import {Steps, Divider, Card, Col, Row, Timeline, Statistic, Icon, Popover, Tag, Alert} from 'antd';
-import {connect} from "dva";
+import React, { Component } from "react";
+import { Steps, Divider, Card, Col, Row, Timeline, Statistic, Icon, Popover, Tag, Alert } from 'antd';
+import { connect } from "dva";
 import { routerRedux } from 'dva/router';
 import styles from "./home.less";
-import {getIntlContent} from '../../utils/IntlUtils';
-import {activePluginSnapshot, getNewEventRecodLogList} from "../../services/api";
+import { getIntlContent } from '../../utils/IntlUtils';
+import { activePluginSnapshot, getNewEventRecodLogList } from "../../services/api";
 
-const {Step} = Steps;
+const { Step } = Steps;
 
-const colors = ["magenta","red","green","cyan","purple","blue","orange"];
+const colors = ["magenta", "red", "green", "cyan", "purple", "blue", "orange"];
 
-@connect(({global}) => ({
+@connect(({ global }) => ({
   global
 }))
 export default class Home extends Component {
@@ -45,37 +45,37 @@ export default class Home extends Component {
   componentDidMount() {
     const token = window.sessionStorage.getItem("token");
     if (token) {
-      const {dispatch} = this.props;
+      const { dispatch } = this.props;
       dispatch({
         type: "global/fetchPlatform"
       });
     }
     activePluginSnapshot().then(res => {
-      if (res){
-        this.setState({activePluginSnapshot: res.data || []})
+      if (res) {
+        this.setState({ activePluginSnapshot: res.data || [] })
       }
     });
-    getNewEventRecodLogList().then(res =>{
-      if (res){
-        this.setState({activeLog: res.data || []})
+    getNewEventRecodLogList().then(res => {
+      if (res) {
+        this.setState({ activeLog: res.data || [] })
       }
     })
 
   }
 
   componentWillUnmount() {
-    this.setState = ()=>false;
+    this.setState = () => false;
   }
 
-  pluginOnClick = (plugin) =>{
-    const {dispatch} = this.props;
+  pluginOnClick = (plugin) => {
+    const { dispatch } = this.props;
     dispatch(routerRedux.push(`plug/${plugin.role}/${plugin.name}`));
 
   }
 
   render() {
-    const contextStyle = {"fontWeight": "bold",color:"#3b9a9c"}
-    const pluginSteps = this.state.activePluginSnapshot.map((p,index )=> {
+    const contextStyle = { "fontWeight": "bold", color: "#3b9a9c" }
+    const pluginSteps = this.state.activePluginSnapshot.map((p, index) => {
       const content = (
         <div>
           <p><Tag color={colors[(p.role.length + index) % colors.length]}>{p.role}</Tag></p>
@@ -88,19 +88,19 @@ export default class Home extends Component {
         </div>
       );
       const title = (
-        <Popover placement="topLeft" content={content} title={<Tag color="geekblue" onClick={this.pluginOnClick.bind(this,p)}>{p.name} </Tag>}>
-          <Tag color="geekblue" onClick={this.pluginOnClick.bind(this,p)} style={{"fontWeight": "bold"}}>{p.name} </Tag>
+        <Popover placement="topLeft" content={content} title={<Tag color="geekblue" onClick={this.pluginOnClick.bind(this, p)}>{p.name} </Tag>}>
+          <Tag color="geekblue" onClick={this.pluginOnClick.bind(this, p)} style={{ "fontWeight": "bold" }}>{p.name} </Tag>
           <Tag color={colors[(p.role.length + index) % colors.length]}>{p.role}</Tag>
         </Popover>
       );
       const description = <span>handle is <span style={contextStyle}>{p.handleCount}</span>  selector is <span style={contextStyle}>{p.selectorCount} </span></span>;
       return <Step title={title} key={index} description={description} />;
     })
-    const activeLogItems = this.state.activeLog.map((log,index) =>{
-      const textStyle = {"fontWeight": "bold",color:log.color};
+    const activeLogItems = this.state.activeLog.map((log, index) => {
+      const textStyle = { "fontWeight": "bold", color: "#4f6eee" };
       const type = log.operationType.startsWith("CREATE") ? "success" : log.operationType.startsWith("DELETE") ? "warning" : "info";
-      return(
-        <Timeline.Item color={log.color} label={index} key={index}>
+      return (
+        <Timeline.Item color="#e8e8e8" label={index} key={index}>
           <Alert
             className={styles.logItem}
             message={<p><span style={textStyle}>{log.operationType}</span> by <span style={textStyle}>{log.operator}</span></p>}
@@ -114,94 +114,92 @@ export default class Home extends Component {
     return (
       <div>
         <div className={styles.content}>
-          <span>{getIntlContent("SHENYU.HOME.WELCOME")}</span>
+          <span style={{ textShadow: '1px 1px 3px' }}>{getIntlContent("SHENYU.HOME.WELCOME")}</span>
         </div>
         <div className={styles.processContent}>
           <Steps current={1}>
-            <Step title="User Request"  />
+            <Step title="User Request" />
             <Step title="Shenyu-Gateway BootStrap Proxy" subTitle="plugin list" description="Admin manager." />
             <Step title="Server Waiting" description="do server processing" />
           </Steps>
           <Divider />
-          <div style={{background: '#ECECEC', padding: '15px'}}>
-            <Row gutter={16}>
-              <Col span={10}>
-                <Card title="Activity plugin list" bordered={false}>
-                  <Steps size="small" current={this.state.activePluginSnapshot.length} direction="vertical">
-                    {pluginSteps}
-                  </Steps>
-                  <Divider />
-                </Card>
-              </Col>
-              <Col span={0}>
-                <Card title="Monitor" bordered={false}>
-                  <div style={{padding: '10px'}}>
-                    <Row gutter={16}>
-                      <Col span={12}>
-                        <Statistic title="RPC plugin" value={5} prefix={<Icon type="plugin" />} />
-                      </Col>
-                      <Col span={12}>
-                        <Statistic title="Active/Plugin" value={7} suffix="/ 28" />
-                      </Col>
-                    </Row>
-                  </div>
-                  <div style={{padding: '10px'}}>
-                    <Row gutter={16}>
-                      <Col span={12}>
-                        <Statistic title="rule" value={238} prefix={<Icon type="plugin" />} />
-                      </Col>
-                      <Col span={12}>
-                        <Statistic title="Selector" value={87} suffix="/ 3 plugin" />
-                      </Col>
-                    </Row>
-                  </div>
-                  <div style={{padding: '10px'}}>
-                    <Row gutter={16}>
-                      <Col span={12}>
-                        <Statistic title="metadata" value={0} prefix={<Icon type="plugin" />} />
-                      </Col>
-                      <Col span={12}>
-                        <Statistic title="Dictionary" value={55} />
-                      </Col>
-                    </Row>
-                  </div>
-                  <div style={{padding: '10px'}}>
-                    <Row gutter={16}>
-                      <Col span={12}>
-                        <Statistic
-                          title="Proxy count"
-                          value={11280}
-                          precision={0}
-                          valueStyle={{color: '#3f8600'}}
-                          prefix={<Icon type="arrow-up" />}
-                          suffix=""
-                        />
-                      </Col>
-                      <Col span={12}>
-                        <Statistic
-                          title="Fail count"
-                          value={930}
-                          precision={0}
-                          valueStyle={{color: '#cf1322'}}
-                          prefix={<Icon type="arrow-down" />}
-                          suffix=""
-                        />
-                      </Col>
-                    </Row>
-                  </div>
-                  <Divider />
-                </Card>
-              </Col>
-              <Col span={14}>
-                <Card title="Event log" bordered={false}>
-                  <Timeline>
-                    {activeLogItems}
-                  </Timeline>
-                  <Divider />
-                </Card>
-              </Col>
-            </Row>
-          </div>
+          <Row gutter={16} className={styles.row}>
+            <Col span={10}>
+              <Card title="Activity plugin list" bordered={false} className={styles.card}>
+                <Steps size="small" current={this.state.activePluginSnapshot.length} direction="vertical">
+                  {pluginSteps}
+                </Steps>
+                <Divider />
+              </Card>
+            </Col>
+            <Col span={0}>
+              <Card title="Monitor" bordered={false}>
+                <div style={{ padding: '10px' }}>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Statistic title="RPC plugin" value={5} prefix={<Icon type="plugin" />} />
+                    </Col>
+                    <Col span={12}>
+                      <Statistic title="Active/Plugin" value={7} suffix="/ 28" />
+                    </Col>
+                  </Row>
+                </div>
+                <div style={{ padding: '10px' }}>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Statistic title="rule" value={238} prefix={<Icon type="plugin" />} />
+                    </Col>
+                    <Col span={12}>
+                      <Statistic title="Selector" value={87} suffix="/ 3 plugin" />
+                    </Col>
+                  </Row>
+                </div>
+                <div style={{ padding: '10px' }}>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Statistic title="metadata" value={0} prefix={<Icon type="plugin" />} />
+                    </Col>
+                    <Col span={12}>
+                      <Statistic title="Dictionary" value={55} />
+                    </Col>
+                  </Row>
+                </div>
+                <div style={{ padding: '10px' }}>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Statistic
+                        title="Proxy count"
+                        value={11280}
+                        precision={0}
+                        valueStyle={{ color: '#3f8600' }}
+                        prefix={<Icon type="arrow-up" />}
+                        suffix=""
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <Statistic
+                        title="Fail count"
+                        value={930}
+                        precision={0}
+                        valueStyle={{ color: '#cf1322' }}
+                        prefix={<Icon type="arrow-down" />}
+                        suffix=""
+                      />
+                    </Col>
+                  </Row>
+                </div>
+                <Divider />
+              </Card>
+            </Col>
+            <Col span={14}>
+              <Card title="Event log" bordered={false} className={styles.card}>
+                <Timeline>
+                  {activeLogItems}
+                </Timeline>
+                <Divider />
+              </Card>
+            </Col>
+          </Row>
         </div>
       </div>
     );
