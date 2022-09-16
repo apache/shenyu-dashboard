@@ -124,83 +124,81 @@ export default class Home extends Component {
           </Steps>
           <Divider />
           <Row gutter={16} className={styles.row}>
-            <div>
-              <Col span={10} >
-                <Card title="Activity plugin list" bordered={false} className={styles.card}>
-                  <Steps size="small" current={this.state.activePluginSnapshot.length} direction="vertical">
-                    {pluginSteps}
-                  </Steps>
-                  <Divider />
-                </Card>
-              </Col>
-              <Col span={0}>
-                <Card title="Monitor" bordered={false}>
-                  <div style={{ padding: '10px' }}>
-                    <Row gutter={16}>
-                      <Col span={12}>
-                        <Statistic title="RPC plugin" value={5} prefix={<Icon type="plugin" />} />
-                      </Col>
-                      <Col span={12}>
-                        <Statistic title="Active/Plugin" value={7} suffix="/ 28" />
-                      </Col>
-                    </Row>
-                  </div>
-                  <div style={{ padding: '10px' }}>
-                    <Row gutter={16}>
-                      <Col span={12}>
-                        <Statistic title="rule" value={238} prefix={<Icon type="plugin" />} />
-                      </Col>
-                      <Col span={12}>
-                        <Statistic title="Selector" value={87} suffix="/ 3 plugin" />
-                      </Col>
-                    </Row>
-                  </div>
-                  <div style={{ padding: '10px' }}>
-                    <Row gutter={16}>
-                      <Col span={12}>
-                        <Statistic title="metadata" value={0} prefix={<Icon type="plugin" />} />
-                      </Col>
-                      <Col span={12}>
-                        <Statistic title="Dictionary" value={55} />
-                      </Col>
-                    </Row>
-                  </div>
-                  <div style={{ padding: '10px' }}>
-                    <Row gutter={16}>
-                      <Col span={12}>
-                        <Statistic
-                          title="Proxy count"
-                          value={11280}
-                          precision={0}
-                          valueStyle={{ color: '#3f8600' }}
-                          prefix={<Icon type="arrow-up" />}
-                          suffix=""
-                        />
-                      </Col>
-                      <Col span={12}>
-                        <Statistic
-                          title="Fail count"
-                          value={930}
-                          precision={0}
-                          valueStyle={{ color: '#cf1322' }}
-                          prefix={<Icon type="arrow-down" />}
-                          suffix=""
-                        />
-                      </Col>
-                    </Row>
-                  </div>
-                  <Divider />
-                </Card>
-              </Col>
-              <Col span={14}>
-                <Card title="Event log" bordered={false} className={styles.card}>
-                  <Timeline>
-                    {activeLogItems}
-                  </Timeline>
-                  <Divider />
-                </Card>
-              </Col>
-            </div>
+            <Col span={10}>
+              <Card title="Activity plugin list" bordered={false} className={styles.card}>
+                <Steps size="small" current={this.state.activePluginSnapshot.length} direction="vertical">
+                  {pluginSteps}
+                </Steps>
+                <Divider />
+              </Card>
+            </Col>
+            <Col span={0}>
+              <Card title="Monitor" bordered={false}>
+                <div style={{ padding: '10px' }}>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Statistic title="RPC plugin" value={5} prefix={<Icon type="plugin" />} />
+                    </Col>
+                    <Col span={12}>
+                      <Statistic title="Active/Plugin" value={7} suffix="/ 28" />
+                    </Col>
+                  </Row>
+                </div>
+                <div style={{ padding: '10px' }}>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Statistic title="rule" value={238} prefix={<Icon type="plugin" />} />
+                    </Col>
+                    <Col span={12}>
+                      <Statistic title="Selector" value={87} suffix="/ 3 plugin" />
+                    </Col>
+                  </Row>
+                </div>
+                <div style={{ padding: '10px' }}>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Statistic title="metadata" value={0} prefix={<Icon type="plugin" />} />
+                    </Col>
+                    <Col span={12}>
+                      <Statistic title="Dictionary" value={55} />
+                    </Col>
+                  </Row>
+                </div>
+                <div style={{ padding: '10px' }}>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Statistic
+                        title="Proxy count"
+                        value={11280}
+                        precision={0}
+                        valueStyle={{ color: '#3f8600' }}
+                        prefix={<Icon type="arrow-up" />}
+                        suffix=""
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <Statistic
+                        title="Fail count"
+                        value={930}
+                        precision={0}
+                        valueStyle={{ color: '#cf1322' }}
+                        prefix={<Icon type="arrow-down" />}
+                        suffix=""
+                      />
+                    </Col>
+                  </Row>
+                </div>
+                <Divider />
+              </Card>
+            </Col>
+            <Col span={14}>
+              <Card title="Event log" bordered={false} className={styles.card}>
+                <Timeline>
+                  {activeLogItems}
+                </Timeline>
+                <Divider />
+              </Card>
+            </Col>
           </Row>
         </div>
       </div>
