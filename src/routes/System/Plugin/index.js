@@ -457,14 +457,14 @@ export default class Plugin extends Component {
                     {getIntlContent("SHENYU.SYSTEM.EDITOR")}
                   </div>
                 </AuthButton>
-                <AuthButton perms="system:plugin:edit">
+                <AuthButton perms="system:plugin:resource">
                   <div
                     className="edit"
                     onClick={() => {
                       this.generatePermissionResource(record);
                     }}
                   >
-                    {getIntlContent("SHENYU.PLUGIN.GENERATE.PERMISSION.RESOURCE.DATA")}
+                    {getIntlContent("SHENYU.PLUGIN.GENERATE.RESOURCE")}
                   </div>
                 </AuthButton>
               </div>
