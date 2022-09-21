@@ -209,6 +209,7 @@
   "SHENYU.PLUGIN.RULE.JSON.INVALID": "Please Enter The Correct JSON String",
   "SHENYU.PLUGIN.RULE.TIP":
     "Please enter RegExp, start with /, and end with /, eg：/^([1-9][0-9]{0,1}|100)$/",
+  "SHENYU.PLUGIN.GENERATE.PERMISSION.RESOURCE.DATA": "Generate Permission Resource Data",
   "SHENYU.AUTH.EDITOR.RESOURCE": "EditResourceDetails",
   "SHENYU.AUTH.SYNCDATA": "SynchronousData",
   "SHENYU.AUTH.INPUT": "Input",

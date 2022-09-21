@@ -203,6 +203,7 @@
   "SHENYU.AUTH.EDITOR.RESOURCE": "编辑资源详情",
   "SHENYU.PLUGIN.RULE.TIP":
     "请输入正则表达式，以/开始，/结束；例：/^([1-9][0-9]{0,1}|100)$/",
+  "SHENYU.PLUGIN.GENERATE.PERMISSION.RESOURCE.DATA": "生成权限资源数据",
   "SHENYU.AUTH.SYNCDATA": "同步数据",
   "SHENYU.AUTH.INPUT": "请输入",
   "SHENYU.AUTH.AUTH": "认证",
