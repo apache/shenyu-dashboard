@@ -182,6 +182,11 @@ export default class Plugin extends Component {
     });
   };
 
+  generatePermissionResource = (record) => {
+    // code here...
+    console.log(record);
+  };
+
   searchOnchange = e => {
     this.setState({ name:e.target.value}, this.query);
   };
@@ -441,16 +446,29 @@ export default class Plugin extends Component {
           fixed: "right",
           render: (text, record) => {
             return (
-              <AuthButton perms="system:plugin:edit">
-                <div
-                  className="edit"
-                  onClick={() => {
-                    this.editClick(record);
-                  }}
-                >
-                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                </div>
-              </AuthButton>
+              <div>
+                <AuthButton perms="system:plugin:edit">
+                  <div
+                    className="edit"
+                    onClick={() => {
+                      this.editClick(record);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                  </div>
+                </AuthButton>
+                <AuthButton perms="system:plugin:edit">
+                  <div
+                    className="edit"
+                    onClick={() => {
+                      this.generatePermissionResource(record);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.PLUGIN.GENERATE.PERMISSION.RESOURCE.DATA")}
+                  </div>
+                </AuthButton>
+              </div>
+
             );
           }
         }
