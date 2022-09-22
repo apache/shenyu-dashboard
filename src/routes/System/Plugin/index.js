@@ -23,6 +23,7 @@ import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { resetAuthMenuCache } from "../../../utils/AuthRoute";
+import styles from "./index.less";
 
 const { Text } = Typography;
 
@@ -182,9 +183,21 @@ export default class Plugin extends Component {
     });
   };
 
-  generatePermissionResource = (record) => {
+  resourceClick = (record) => {
     // code here...
-    console.log(record);
+    const { dispatch } = this.props;
+    const {name, role, sort, config, id, enabled} = record;
+    dispatch({
+      type: "plugin/createPluginResource",
+      payload: {
+        name,
+        role,
+        sort,
+        config,
+        id,
+        enabled
+      },
+    });
   };
 
   searchOnchange = e => {
@@ -442,11 +455,11 @@ export default class Plugin extends Component {
           dataIndex: "time",
           key: "time",
           ellipsis: true,
-          width: 80,
+          width: 160,
           fixed: "right",
           render: (text, record) => {
             return (
-              <div>
+              <div className={styles.optionParts}>
                 <AuthButton perms="system:plugin:edit">
                   <div
                     className="edit"
@@ -461,7 +474,7 @@ export default class Plugin extends Component {
                   <div
                     className="edit"
                     onClick={() => {
-                      this.generatePermissionResource(record);
+                      this.resourceClick(record);
                     }}
                   >
                     {getIntlContent("SHENYU.PLUGIN.GENERATE.RESOURCE")}

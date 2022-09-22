@@ -24,7 +24,7 @@ import {
   addPlugin,
   asyncPlugin,
   updatepluginEnabled,
-  fetchPluginHandleByPluginId
+  fetchPluginHandleByPluginId, addPluginResource
 } from "../services/api";
 import {getIntlContent} from "../utils/IntlUtils";
 
@@ -120,12 +120,14 @@ export default {
         message.warn(json.message)
       }
     },
+
     *reload(params, { put }) {
       const { fetchValue } = params;
       const { name, currentPage, pageSize } = fetchValue;
       const payload = { name, currentPage, pageSize };
       yield put({ type: "fetch", payload });
     },
+
     *asyncAll(_, { call }) {
       const json = yield call(asyncPlugin);
       if (json.code === 200) {
@@ -134,6 +136,7 @@ export default {
         message.warn(json.message);
       }
     },
+
     * fetchByPluginId(params, {call}) {
       const {payload,callback} = params;
       const json = yield call(fetchPluginHandleByPluginId, payload);
@@ -141,6 +144,17 @@ export default {
         callback(json);
       }
     },
+
+    * createPluginResource(params, {call}) {
+      const {payload, callback} = params;
+      const json = yield call(addPluginResource, payload);
+      if (json.code === 200) {
+        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
+        callback(json)
+      } else {
+        message.warn(json.message);
+      }
+    }
 
   },
 
