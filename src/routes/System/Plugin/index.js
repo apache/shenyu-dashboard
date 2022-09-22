@@ -477,7 +477,7 @@ export default class Plugin extends Component {
                       this.resourceClick(record);
                     }}
                   >
-                    {getIntlContent("SHENYU.PLUGIN.GENERATE.RESOURCE")}
+                    {getIntlContent("SHENYU.BUTTON.SYSTEM.RESOURCE")}
                   </div>
                 </AuthButton>
               </div>
