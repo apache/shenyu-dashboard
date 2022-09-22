@@ -523,6 +523,17 @@ export function fetchPluginHandleByPluginId(params) {
   );
 }
 
+// create plugin resource
+export function addPluginResource(params) {
+  return request(
+    `${baseUrl}/plugin/createPluginResource/${params.id}`,
+    {
+      method: `PUT`,
+      body: params
+    },
+  );
+}
+
 // fetch dict list
 export async function fetchShenYuDicts(params) {
   return request(`${baseUrl}/shenyu-dict?${stringify(params)}`, {
