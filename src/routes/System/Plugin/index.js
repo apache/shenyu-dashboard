@@ -23,6 +23,7 @@ import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { resetAuthMenuCache } from "../../../utils/AuthRoute";
+import styles from "./index.less";
 
 const { Text } = Typography;
 
@@ -179,6 +180,23 @@ export default class Plugin extends Component {
           }
         });
       }
+    });
+  };
+
+  resourceClick = (record) => {
+    // code here...
+    const { dispatch } = this.props;
+    const {name, role, sort, config, id, enabled} = record;
+    dispatch({
+      type: "plugin/createPluginResource",
+      payload: {
+        name,
+        role,
+        sort,
+        config,
+        id,
+        enabled
+      },
     });
   };
 
@@ -437,20 +455,33 @@ export default class Plugin extends Component {
           dataIndex: "time",
           key: "time",
           ellipsis: true,
-          width: 80,
+          width: 160,
           fixed: "right",
           render: (text, record) => {
             return (
-              <AuthButton perms="system:plugin:edit">
-                <div
-                  className="edit"
-                  onClick={() => {
-                    this.editClick(record);
-                  }}
-                >
-                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                </div>
-              </AuthButton>
+              <div className={styles.optionParts}>
+                <AuthButton perms="system:plugin:edit">
+                  <div
+                    className="edit"
+                    onClick={() => {
+                      this.editClick(record);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                  </div>
+                </AuthButton>
+                <AuthButton perms="system:plugin:resource">
+                  <div
+                    className="edit"
+                    onClick={() => {
+                      this.resourceClick(record);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.BUTTON.SYSTEM.RESOURCE")}
+                  </div>
+                </AuthButton>
+              </div>
+
             );
           }
         }
