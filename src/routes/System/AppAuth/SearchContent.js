@@ -19,12 +19,13 @@ import React from "react";
 import { Form, Input, Button } from 'antd';
 import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from '../../../utils/AuthButton';
+import styles from "./index.less";
 
 class InlineSearch extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const searchCont= this.props.form.getFieldsValue()
+    const searchCont = this.props.form.getFieldsValue()
     this.props.onClick(searchCont)
 
   };
@@ -33,18 +34,18 @@ class InlineSearch extends React.Component {
     const { getFieldDecorator } = this.props.form;
     return (
       <Form layout="inline" onSubmit={this.handleSubmit}>
-        <Form.Item>
+        <Form.Item className={styles.formInput}>
           {getFieldDecorator('appKey', {
-              initialValue:null
+            initialValue: null
           })(
             <Input
               placeholder={getIntlContent("SHENYU.AUTH.INPUTAPPKEY")}
             />,
           )}
         </Form.Item>
-        <Form.Item>
+        <Form.Item className={styles.formInput}>
           {getFieldDecorator('phone', {
-              initialValue:null
+            initialValue: null
           })(
             <Input
               type="phone"
@@ -52,7 +53,7 @@ class InlineSearch extends React.Component {
             />,
           )}
         </Form.Item>
-        <Form.Item>
+        <Form.Item className={styles.formItem}>
           <AuthButton perms="system:authen:list">
             <Button type="primary" htmlType="submit">
               {getIntlContent("SHENYU.SYSTEM.SEARCH")}
