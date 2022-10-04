@@ -68,6 +68,10 @@ export default class LoginPage extends Component {
     return this.state.codeError ? <span /> : <span className={styles.codeError} id='codeError'>Please enter correct verify code!</span>
   }
 
+  componentDidMount() {
+    this.ChildRef.current.handleChange();
+  }
+
   render() {
     const { submitting } = this.props;
     return (
