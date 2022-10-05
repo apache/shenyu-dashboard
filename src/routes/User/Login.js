@@ -36,6 +36,10 @@ export default class LoginPage extends Component {
     this.ChildRef = React.createRef();
   }
 
+  componentDidMount() {
+    this.ChildRef.current.handleChange();
+  }
+
   handleSubmit = (err, values) => {
 
     const { dispatch } = this.props;
@@ -67,6 +71,8 @@ export default class LoginPage extends Component {
   codeError = () => {
     return this.state.codeError ? <span /> : <span className={styles.codeError} id='codeError'>Please enter correct verify code!</span>
   }
+
+
 
   render() {
     const { submitting } = this.props;
