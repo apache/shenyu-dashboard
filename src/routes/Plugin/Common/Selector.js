@@ -30,13 +30,16 @@ import {
   Col,
   Card,
   Icon,
-  InputNumber
+  InputNumber,
+  DatePicker,
+  TimePicker
 } from "antd";
 import { connect } from "dva";
 import classnames from "classnames";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import SelectorCopy from "./SelectorCopy";
+import { indexOf } from "lodash";
 
 const { Item } = Form;
 const { Option } = Select;
@@ -122,11 +125,14 @@ class AddModal extends Component {
     selectorConditions.forEach((item, index) => {
       const { paramType } = item;
       let key = `paramTypeValueEn${index}`;
-      if (paramType === "uri" || paramType === "host" || paramType === "ip") {
+      if (paramType === "uri" || paramType === "host" || paramType === "ip" || paramType == "req_method" || paramType == "domain") {
         this.state[key] = true;
         selectorConditions[index].paramName = "/";
       } else {
         this.state[key] = false;
+      }
+      if (paramType === "uri") {
+        item.operator = "pathPattern"
       }
     });
     this.state.selectorConditions = selectorConditions;
@@ -236,7 +242,7 @@ class AddModal extends Component {
     let { selectorConditions } = this.state;
     selectorConditions.push({
       paramType: "uri",
-      operator: "=",
+      operator: "pathPattern",
       paramName: "/",
       paramValue: ""
     });
@@ -288,11 +294,32 @@ class AddModal extends Component {
 
     if (name === "paramType") {
       let key = `paramTypeValueEn${index}`;
-      if (value === "uri" || value === "host" || value === "ip") {
+      if (value === "uri" || value === "host" || value === "ip" || value === "req_method" || value === "domain") {
         this.setState({ [key]: true });
         selectorConditions[index].paramName = "/";
       } else {
         this.setState({ [key]: false });
+      }
+      if (value === "post") {
+        selectorConditions[index].paramName = "filedName";
+      }
+      if (value === "query") {
+        selectorConditions[index].paramName = "paramName";
+      }
+      if (value === "header") {
+        selectorConditions[index].paramName = "headerName";
+      }
+      if (value === "cookie") {
+        selectorConditions[index].paramName = "cookieName";
+      }
+      if (value === "uri") {
+        selectorConditions[index].operator = "pathPattern";
+      }
+      else if (value === "req_method") {
+        selectorConditions[index].operator = "=";
+      }
+      else {
+        selectorConditions[index].operator = "";
       }
     }
 
@@ -537,11 +564,11 @@ class AddModal extends Component {
                           item.value === 0 || item.value === false
                             ? item.value
                             : item.value ||
-                              (item.defaultValue === "true"
-                                ? true
-                                : item.defaultValue === "false"
-                                  ? false
-                                  : item.defaultValue);
+                            (item.defaultValue === "true"
+                              ? true
+                              : item.defaultValue === "false"
+                                ? false
+                                : item.defaultValue);
                         let placeholder = item.placeholder || item.label;
                         let checkRule = item.checkRule;
                         let fieldName = item.field + index;
@@ -733,15 +760,31 @@ class AddModal extends Component {
     item.value = value;
   };
 
-  renderOperatorOptions = operators => {
+  renderOperatorOptions = (operators, paramType) => {
     if (operators && operators instanceof Array) {
-      return operators.map(operate => {
+      let operatorsFil = operators.map(operate => {
         return (
           <Option key={operate.dictValue} value={operate.dictValue}>
             {operate.dictName}
           </Option>
-        );
-      });
+        )
+      })
+      if (paramType != "uri") {
+        operatorsFil = operatorsFil.filter(operate => {
+          return operate.key != "pathPattern" ? operate : ""
+        })
+      }
+      if (paramType == "uri" || paramType == "host" || paramType == "ip" || paramType == "cookie" || paramType == "domain") {
+        operatorsFil = operatorsFil.filter(operate => {
+          return operate.key != "TimeBefore" && operate.key != "TimeAfter" ? operate : ""
+        })
+      }
+      if (paramType == "req_method") {
+        operatorsFil = operatorsFil.filter(operate => {
+          return operate.key == "=" ? operate : ""
+        })
+      }
+      return operatorsFil
     }
 
     return "";
@@ -761,6 +804,49 @@ class AddModal extends Component {
 
     return "";
   };
+
+  getParamValueInput = (item, index) => {
+    if (item.operator == "TimeBefore" || item.operator == "TimeAfter") {
+      let date = new Date()
+      const defaultDay = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+      let day = defaultDay
+      return <Input.Group compact
+        style={{ width: 213, top: -2 }}
+      >
+        <DatePicker
+          onChange={e => {
+            day = e ? e._d.getFullYear() + "-" + (e._d.getMonth() + 1) + "-" + e._d.getDate() : defaultDay
+          }}
+          style={{ width: "51%" }}
+        ></DatePicker>
+        <TimePicker
+          style={{ width: "49%" }}
+          onChange={e => {
+            let Time = e ? day + " " + e._d.getHours() + ":" + e._d.getMinutes() + ":" + e._d.getSeconds() : ""
+            this.conditionChange(
+              index,
+              "paramValue",
+              Time
+            );
+          }}
+          ref="time"
+        ></TimePicker>
+      </Input.Group>
+    }
+    else {
+      return <Input
+        onChange={e => {
+          this.conditionChange(
+            index,
+            "paramValue",
+            e.target.value
+          );
+        }}
+        value={item.paramValue}
+        style={{ width: 160 }}
+      />
+    }
+  }
 
   render() {
     let {
@@ -934,7 +1020,7 @@ class AddModal extends Component {
                                 e.target.value
                               );
                             }}
-                            value={item.paramName}
+                            placeholder={item.paramName}
                           />
                         </Col>
                         <Col span={4}>
@@ -944,22 +1030,13 @@ class AddModal extends Component {
                             }}
                             value={item.operator}
                           >
-                            {this.renderOperatorOptions(operatorDics)}
+                            {this.renderOperatorOptions(operatorDics, item.paramType)}
                           </Select>
                         </Col>
 
                         <Col span={7}>
                           <Tooltip title={item.paramValue}>
-                            <Input
-                              onChange={e => {
-                                this.conditionChange(
-                                  index,
-                                  "paramValue",
-                                  e.target.value
-                                );
-                              }}
-                              value={item.paramValue}
-                            />
+                            {this.getParamValueInput(item, index)}
                           </Tooltip>
                         </Col>
                         <Col span={4}>
@@ -968,6 +1045,7 @@ class AddModal extends Component {
                             onClick={() => {
                               this.handleDelete(index);
                             }}
+                            style={{ marginLeft: 10 }}
                           >
                             {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
                           </Button>
