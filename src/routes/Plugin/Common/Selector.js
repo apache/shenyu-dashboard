@@ -39,7 +39,6 @@ import classnames from "classnames";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import SelectorCopy from "./SelectorCopy";
-import { indexOf } from "lodash";
 
 const { Item } = Form;
 const { Option } = Select;
@@ -125,7 +124,7 @@ class AddModal extends Component {
     selectorConditions.forEach((item, index) => {
       const { paramType } = item;
       let key = `paramTypeValueEn${index}`;
-      if (paramType === "uri" || paramType === "host" || paramType === "ip" || paramType == "req_method" || paramType == "domain") {
+      if (paramType === "uri" || paramType === "host" || paramType === "ip" || paramType === "req_method" || paramType === "domain") {
         this.state[key] = true;
         selectorConditions[index].paramName = "/";
       } else {
@@ -769,19 +768,19 @@ class AddModal extends Component {
           </Option>
         )
       })
-      if (paramType != "uri") {
+      if (paramType !== "uri") {
         operatorsFil = operatorsFil.filter(operate => {
-          return operate.key != "pathPattern" ? operate : ""
+          return operate.key !== "pathPattern" ? operate : ""
         })
       }
-      if (paramType == "uri" || paramType == "host" || paramType == "ip" || paramType == "cookie" || paramType == "domain") {
+      if (paramType === "uri" || paramType === "host" || paramType === "ip" || paramType === "cookie" || paramType === "domain") {
         operatorsFil = operatorsFil.filter(operate => {
-          return operate.key != "TimeBefore" && operate.key != "TimeAfter" ? operate : ""
+          return operate.key !== "TimeBefore" && operate.key !== "TimeAfter" ? operate : ""
         })
       }
-      if (paramType == "req_method") {
+      if (paramType === "req_method") {
         operatorsFil = operatorsFil.filter(operate => {
-          return operate.key == "=" ? operate : ""
+          return operate.key === "=" ? operate : ""
         })
       }
       return operatorsFil
@@ -806,45 +805,49 @@ class AddModal extends Component {
   };
 
   getParamValueInput = (item, index) => {
-    if (item.operator == "TimeBefore" || item.operator == "TimeAfter") {
+    if (item.operator === "TimeBefore" || item.operator === "TimeAfter") {
       let date = new Date()
-      const defaultDay = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+      const defaultDay = date.getFullYear().toString().concat("-").concat((date.getMonth() + 1)).concat("-").concat(date.getDate())
       let day = defaultDay
-      return <Input.Group compact
-        style={{ width: 213, top: -2 }}
-      >
-        <DatePicker
+      return (
+        <Input.Group
+          compact
+          style={{ width: 213, top: -2 }}
+        >
+          <DatePicker
+            onChange={e => {
+              day = e ? e.eraYear().toString().concat('-').concat((e.month() + 1)).concat("-").concat(e.date() < 10 ? '0'.concat(e.date()) : e.date()) : defaultDay
+            }}
+            style={{ width: "51%" }}
+          />
+          <TimePicker
+            style={{ width: "49%" }}
+            onChange={e => {
+              let Time = e ? day.concat(" ").concat(e.hours()).concat(":").concat(e.minutes()).concat(":").concat(e.seconds() < 10 ? '0'.concat(e.seconds()) : e.seconds()) : ""
+              this.conditionChange(
+                index,
+                "paramValue",
+                Time
+              );
+            }}
+          />
+        </Input.Group>
+      )
+    }
+    else {
+      return (
+        <Input
           onChange={e => {
-            day = e ? e._d.getFullYear() + "-" + (e._d.getMonth() + 1) + "-" + e._d.getDate() : defaultDay
-          }}
-          style={{ width: "51%" }}
-        ></DatePicker>
-        <TimePicker
-          style={{ width: "49%" }}
-          onChange={e => {
-            let Time = e ? day + " " + e._d.getHours() + ":" + e._d.getMinutes() + ":" + e._d.getSeconds() : ""
             this.conditionChange(
               index,
               "paramValue",
-              Time
+              e.target.value
             );
           }}
-          ref="time"
-        ></TimePicker>
-      </Input.Group>
-    }
-    else {
-      return <Input
-        onChange={e => {
-          this.conditionChange(
-            index,
-            "paramValue",
-            e.target.value
-          );
-        }}
-        value={item.paramValue}
-        style={{ width: 160 }}
-      />
+          value={item.paramValue}
+          style={{ width: 160 }}
+        />
+      )
     }
   }
 
