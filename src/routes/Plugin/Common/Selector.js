@@ -116,7 +116,7 @@ class AddModal extends Component {
     const selectorConditions = props.selectorConditions || [
       {
         paramType: "uri",
-        operator: "=",
+        operator: "pathPattern",
         paramName: "/",
         paramValue: ""
       }
@@ -129,9 +129,6 @@ class AddModal extends Component {
         selectorConditions[index].paramName = "/";
       } else {
         this.state[key] = false;
-      }
-      if (paramType === "uri") {
-        item.operator = "pathPattern"
       }
     });
     this.state.selectorConditions = selectorConditions;
