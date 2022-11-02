@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Modal, Form, Select, Input, Switch, Button, message } from "antd";
+import { Modal, Form, Select, Input, Switch, Button, message, DatePicker, TimePicker } from "antd";
 import { connect } from "dva";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
@@ -81,7 +81,7 @@ class AddModal extends Component {
     const ruleConditions = props.ruleConditions || [
       {
         paramType: "uri",
-        operator: "=",
+        operator: "pathPattern",
         paramName: "/",
         paramValue: ""
       }
@@ -213,7 +213,7 @@ class AddModal extends Component {
     let { ruleConditions } = this.state;
     ruleConditions.push({
       paramType: "uri",
-      operator: "=",
+      operator: "pathPattern",
       paramName: "/",
       paramValue: ""
     });
@@ -264,11 +264,32 @@ class AddModal extends Component {
     ruleConditions[index][name] = value;
     if (name === "paramType") {
       let key = `paramTypeValueEn${index}`;
-      if (value === "uri" || value === "host" || value === "ip") {
+      if (value === "uri" || value === "host" || value === "ip" || value === "req_method" || value === "domain") {
         this.setState({ [key]: true });
         ruleConditions[index].paramName = "/";
       } else {
         this.setState({ [key]: false });
+      }
+      if (value === "post") {
+        ruleConditions[index].paramName = "filedName";
+      }
+      if (value === "query") {
+        ruleConditions[index].paramName = "paramName";
+      }
+      if (value === "header") {
+        ruleConditions[index].paramName = "headerName";
+      }
+      if (value === "cookie") {
+        ruleConditions[index].paramName = "cookieName";
+      }
+      if (value === "uri") {
+        ruleConditions[index].operator = "pathPattern";
+      }
+      else if (value === "req_method") {
+        ruleConditions[index].operator = "=";
+      }
+      else {
+        ruleConditions[index].operator = "";
       }
     }
 
@@ -300,6 +321,83 @@ class AddModal extends Component {
     form.setFieldsValue(formData);
     this.setState({ visible: false });
   };
+
+  renderOperatorOptions = (operators, paramType) => {
+    if (operators && operators instanceof Array) {
+      let operatorsFil = operators.map(operate => {
+        return (
+          <Option key={operate.dictValue} value={operate.dictValue}>
+            {operate.dictName}
+          </Option>
+        )
+      })
+      if (paramType !== "uri") {
+        operatorsFil = operatorsFil.filter(operate => {
+          return operate.key !== "pathPattern" ? operate : ""
+        })
+      }
+      if (paramType === "uri" || paramType === "host" || paramType === "ip" || paramType === "cookie" || paramType === "domain") {
+        operatorsFil = operatorsFil.filter(operate => {
+          return operate.key !== "TimeBefore" && operate.key !== "TimeAfter" ? operate : ""
+        })
+      }
+      if (paramType === "req_method") {
+        operatorsFil = operatorsFil.filter(operate => {
+          return operate.key === "=" ? operate : ""
+        })
+      }
+      return operatorsFil
+    }
+
+    return "";
+  };
+
+  getParamValueInput = (item, index) => {
+    if (item.operator === "TimeBefore" || item.operator === "TimeAfter") {
+      let date = new Date()
+      const defaultDay = date.getFullYear().toString().concat("-").concat((date.getMonth() + 1)).concat("-").concat(date.getDate())
+      let day = defaultDay
+      return (
+        <Input.Group
+          compact
+          style={{ width: 213, top: 0 }}
+        >
+          <DatePicker
+            onChange={e => {
+              day = e ? e.eraYear().toString().concat('-').concat((e.month() + 1)).concat("-").concat(e.date() < 10 ? '0'.concat(e.date()) : e.date()) : defaultDay
+            }}
+            style={{ width: "51%" }}
+          />
+          <TimePicker
+            style={{ width: "49%" }}
+            onChange={e => {
+              let Time = e ? day.concat(" ").concat(e.hours()).concat(":").concat(e.minutes()).concat(":").concat(e.seconds() < 10 ? '0'.concat(e.seconds()) : e.seconds()) : ""
+              this.conditionChange(
+                index,
+                "paramValue",
+                Time
+              );
+            }}
+          />
+        </Input.Group>
+      )
+    }
+    else {
+      return (
+        <Input
+          onChange={e => {
+            this.conditionChange(
+              index,
+              "paramValue",
+              e.target.value
+            );
+          }}
+          value={item.paramValue}
+          style={{ width: 160 }}
+        />
+      )
+    }
+  }
 
   render() {
     let {
@@ -424,7 +522,7 @@ class AddModal extends Component {
             )}
           </FormItem>
           <div className={styles.ruleConditions}>
-            <h3 className={styles.header} style={{ width: 105 }}>
+            <h3 className={styles.header} style={{ width: 95 }}>
               <strong>*</strong>
               {getIntlContent("SHENYU.COMMON.CONDITION")}:
             </h3>
@@ -468,8 +566,8 @@ class AddModal extends Component {
                             e.target.value
                           );
                         }}
-                        value={item.paramName}
-                        style={{ width: 100 }}
+                        placeholder={item.paramName}
+                        style={{ width: 105 }}
                       />
                     </li>
                     <li>
@@ -478,34 +576,14 @@ class AddModal extends Component {
                           this.conditionChange(index, "operator", value);
                         }}
                         value={item.operator}
-                        style={{ width: 150 }}
+                        style={{ width: 114 }}
                       >
-                        {operatorDics &&
-                          operatorDics.map(opearte => {
-                            return (
-                              <Option
-                                key={opearte.dictValue}
-                                value={opearte.dictValue}
-                              >
-                                {opearte.dictName}
-                              </Option>
-                            );
-                          })}
+                        {this.renderOperatorOptions(operatorDics, item.paramType)}
                       </Select>
                     </li>
 
                     <li>
-                      <Input
-                        onChange={e => {
-                          this.conditionChange(
-                            index,
-                            "paramValue",
-                            e.target.value
-                          );
-                        }}
-                        value={item.paramValue}
-                        style={{ width: 280 }}
-                      />
+                      {this.getParamValueInput(item, index)}
                     </li>
                     <li>
                       <Button
