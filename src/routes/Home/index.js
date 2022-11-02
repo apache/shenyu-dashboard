@@ -83,7 +83,7 @@ export default class Home extends Component {
           <p>the plugin has selector is : <span style={contextStyle}>{p.selectorCount} </span></p>
           <hr />
           <div style={contextStyle}>
-            <pre><code>{JSON.stringify(JSON.parse(p.config !== null ? p.config : '{}'), null, 4)}</code></pre>
+            <pre><code>{JSON.stringify(JSON.parse(p.config  ? p.config : '{}'), null, 4)}</code></pre>
           </div>
         </div>
       );
