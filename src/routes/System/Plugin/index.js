@@ -162,6 +162,7 @@ export default class Plugin extends Component {
                       },
                       fetchValue: {
                         name: pluginName,
+                        enabled: this.state.enabled,
                         currentPage,
                         pageSize
                       },
