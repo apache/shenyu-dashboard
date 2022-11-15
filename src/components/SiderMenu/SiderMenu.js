@@ -339,6 +339,7 @@ export default class SiderMenu extends PureComponent {
           theme={this.state.theme}
           mode={this.state.mode}
           style={{ padding: "16px 0", width: "100%" }}
+          selectedKeys={selectedKeys}
         >
           {this.getNavMenuItems(menuData)}
         </Menu>
