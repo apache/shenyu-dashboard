@@ -150,6 +150,7 @@ export default class Plugin extends Component {
                   {...pluginConfigList}
                   handleOk={values => {
                     const { name, enabled, id, role, config, sort } = values;
+                    const enabledStr = enabled?'1':'0';
                     dispatch({
                       type: "plugin/update",
                       payload: {
@@ -162,6 +163,7 @@ export default class Plugin extends Component {
                       },
                       fetchValue: {
                         name: pluginName,
+                        enabled: enabledStr,
                         currentPage,
                         pageSize
                       },

@@ -123,8 +123,8 @@ export default {
 
     *reload(params, { put }) {
       const { fetchValue } = params;
-      const { name, currentPage, pageSize } = fetchValue;
-      const payload = { name, currentPage, pageSize };
+      const { name, currentPage, enabled, pageSize } = fetchValue;
+      const payload = { name, enabled, currentPage,  pageSize };
       yield put({ type: "fetch", payload });
     },
 
