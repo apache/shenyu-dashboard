@@ -54,12 +54,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   }));
 
   const {
-    apiDetail: {
-      name: apiUrl,
-      httpMethodList,
-      requestHeaders,
-      requestParameters
-    },
+    apiDetail: { apiPath, httpMethodList, requestHeaders, requestParameters },
     apiData: { appKey, gatewayUrl, cookie }
   } = useContext(ApiContext);
   const [questJson, setRequestJson] = useState({});
@@ -154,7 +149,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
       </Title>
       <FormItem label={getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS")}>
         {form.getFieldDecorator("requestUrl", {
-          initialValue: gatewayUrl + apiUrl,
+          initialValue: gatewayUrl + apiPath,
           rules: [{ type: "string", required: true }]
         })(<Input allowClear />)}
       </FormItem>
