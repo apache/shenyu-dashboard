@@ -15,26 +15,36 @@
  * limitations under the License.
  */
 
-import { Typography, Table, Tabs, Icon } from "antd";
+import { Typography, Table, Tabs, Icon, Row, Col } from "antd";
 import React, { useContext } from "react";
 import ApiDebug from "./ApiDebug";
 import ApiContext from "./ApiContext";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import { Method } from "./globalData";
 
 const { Title, Text, Paragraph } = Typography;
 
 function ApiInfo() {
   const {
     apiData: { envProps = [] },
-    apiDetail: {
-      summary,
-      name: apiName,
-      description,
-      requestParameters,
-      responseParameters,
-      requestHeaders
-    }
+    apiDetail,
+    apiDetail: { document, responseParameters, requestHeaders }
   } = useContext(ApiContext);
+  let documentJSON = {};
+  try {
+    documentJSON = JSON.parse(document);
+    documentJSON.errorCode = [];
+    Object.keys(documentJSON.responses).forEach(key => {
+      documentJSON.errorCode.push({
+        code: key,
+        description: documentJSON.responses[key].description,
+        content: documentJSON.responses[key].content
+      });
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+  }
 
   const columns = [
     {
@@ -43,7 +53,8 @@ function ApiInfo() {
     },
     {
       title: getIntlContent("SHENYU.COMMON.TYPE"),
-      dataIndex: "type"
+      dataIndex: "type",
+      render: (_, record) => record?.schema?.type
     },
     {
       title: getIntlContent("SHENYU.COMMON.REQUIRED"),
@@ -66,6 +77,22 @@ function ApiInfo() {
     {
       title: getIntlContent("SHENYU.COMMON.MAX.EXAMPLE"),
       dataIndex: "example"
+    }
+  ];
+
+  const errorCodeColumns = [
+    {
+      title: "Code",
+      dataIndex: "code"
+    },
+    {
+      title: "Description",
+      dataIndex: "description"
+    },
+    {
+      title: "Content",
+      dataIndex: "content",
+      render: v => JSON.stringify(v)
     }
   ];
 
@@ -107,7 +134,6 @@ function ApiInfo() {
       dataIndex: "envDesc"
     }
   ];
-
   return (
     <>
       <Tabs>
@@ -120,15 +146,40 @@ function ApiInfo() {
           }
           key="1"
         >
-          <Title level={2}>{summary}</Title>
-          <Title level={4}>
-            {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.INTERFACE.ADDRESS")}
+          <Title level={2}>
+            {apiDetail.tags[apiDetail.tags.length - 1].name}
           </Title>
-          <Text code>{apiName}</Text>
-          <Title level={4}>
-            {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.DESCRIPTION")}
-          </Title>
-          <Text type="secondary">{description || "-"}</Text>
+          <Paragraph>
+            <Title level={4}>
+              {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.INTERFACE.ADDRESS")}
+            </Title>
+            <Text code>{Method?.[apiDetail.httpMethod]}</Text>
+            <Text code>{apiDetail.apiPath}</Text>
+            <Text code>{apiDetail.version}</Text>
+          </Paragraph>
+          <Paragraph>
+            <Title level={4}>
+              {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.DESCRIPTION")}
+            </Title>
+            <Text type="secondary">{apiDetail.apiDesc || "-"}</Text>
+          </Paragraph>
+          <Paragraph>
+            <Row gutter={24}>
+              <Col span={8}>
+                <Title level={4}>Owner</Title>
+                <Text code>{apiDetail.apiOwner}</Text>
+              </Col>
+              <Col span={8}>
+                <Title level={4}>Consume</Title>
+                <Text code>{apiDetail.consume}</Text>
+              </Col>
+              <Col span={8}>
+                <Title level={4}>Produce</Title>
+                <Text code>{apiDetail.produce}</Text>
+              </Col>
+            </Row>
+          </Paragraph>
+
           <Title level={4}>
             {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS")}
           </Title>
@@ -145,7 +196,6 @@ function ApiInfo() {
           <Title level={2}>
             {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.PARAMETERS")}
           </Title>
-
           <Title level={4}>
             {getIntlContent(
               "SHENYU.DOCUMENT.APIDOC.INFO.SERVICE.REQUEST.HEADERS"
@@ -162,7 +212,6 @@ function ApiInfo() {
               columns={columns}
             />
           </Paragraph>
-
           <Title level={4}>
             {getIntlContent(
               "SHENYU.DOCUMENT.APIDOC.INFO.SERVICE.REQUEST.PARAMETERS"
@@ -173,13 +222,12 @@ function ApiInfo() {
               size="small"
               rowKey="id"
               bordered
-              dataSource={requestParameters}
+              dataSource={documentJSON.parameters || []}
               pagination={false}
               childrenColumnName="refs"
               columns={columns}
             />
           </Paragraph>
-
           <Title level={2}>
             {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.RESPONSE.PARAMETERS")}
           </Title>
@@ -196,6 +244,19 @@ function ApiInfo() {
               dataSource={defaultCommonData}
               pagination={false}
               columns={columns.filter((_, i) => ![2, 3].includes(i))}
+            />
+          </Paragraph>
+          <Title level={4}>
+            {getIntlContent("SHENYU.DOCUMENT.APIDOC.ERROR.CODE.DETAILS")}
+          </Title>
+          <Paragraph>
+            <Table
+              size="small"
+              rowKey="code"
+              bordered
+              dataSource={documentJSON.errorCode || []}
+              pagination={false}
+              columns={errorCodeColumns}
             />
           </Paragraph>
           <Title level={4}>

@@ -525,13 +525,10 @@ export function fetchPluginHandleByPluginId(params) {
 
 // create plugin resource
 export function addPluginResource(params) {
-  return request(
-    `${baseUrl}/plugin/createPluginResource/${params.id}`,
-    {
-      method: `PUT`,
-      body: params
-    },
-  );
+  return request(`${baseUrl}/plugin/createPluginResource/${params.id}`, {
+    method: `PUT`,
+    body: params
+  });
 }
 
 // fetch dict list
@@ -797,4 +794,31 @@ export function getDocItem(params) {
 /* sandbox proxyGateway */
 export function sandboxProxyGateway() {
   return `${baseUrl}/sandbox/proxyGateway`;
+}
+
+export function getRootTag() {
+  return request(`${baseUrl}/tag/queryRootTag`, {
+    method: `GET`
+  });
+}
+
+/* getParentTagId */
+export function getParentTagId(id) {
+  return request(`${baseUrl}/tag/parentTagId/${id}`, {
+    method: `GET`
+  });
+}
+
+/* queryApi */
+export function getApi(tagId) {
+  return request(`${baseUrl}/api?tagId=${tagId}&currentPage=0&pageSize=100`, {
+    method: `GET`
+  });
+}
+
+/* queryApi */
+export function getApiDetail(id) {
+  return request(`${baseUrl}/api/${id}`, {
+    method: `GET`
+  });
 }

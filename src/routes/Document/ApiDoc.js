@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import { Col, Row, Card, BackTop, Empty } from "antd";
+import { Col, Row, Card, BackTop, Empty, message } from "antd";
 import React, { useEffect, useState } from "react";
 import SearchApi from "./components/SearchApi";
 import ApiInfo from "./components/ApiInfo";
-import { getDocItem, getDocMenus } from "../../services/api";
+import { getDocMenus, getApiDetail } from "../../services/api";
 import ApiContext from "./components/ApiContext";
 
 function ApiDoc() {
@@ -51,13 +51,20 @@ function ApiDoc() {
   const handleSelectNode = async (_, e) => {
     const {
       node: {
-        props: { id }
+        props: {
+          dataRef: { id, isLeaf }
+        }
       }
     } = e;
-    const { code, data } = await getDocItem({ id });
-    if (code === 200) {
-      setApiDetail(data);
+    if (!isLeaf) {
+      return;
     }
+    const { code, message: msg, data } = await getApiDetail(id);
+    if (code !== 200) {
+      message.error(msg);
+      return;
+    }
+    setApiDetail(data);
   };
 
   useEffect(() => {
