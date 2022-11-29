@@ -223,6 +223,7 @@ export default class ShenYuDict extends Component {
                 pageSize
               },
               callback: () => {
+                this.closeModal();
                 this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
               }
             });
