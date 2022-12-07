@@ -31,6 +31,7 @@ class AddModal extends Component {
     }];
    const pathDatas = props.authPathVOList || [{
      "path": "",
+     "enabled": true,
    }];
    this.columns = [
      {
@@ -110,6 +111,7 @@ class AddModal extends Component {
     const pathDatas = this.state.pathDatas
     const newData = {
       path: '',
+      enabled: true,
     };
     this.setState({
       pathDatas: [...pathDatas, newData]
