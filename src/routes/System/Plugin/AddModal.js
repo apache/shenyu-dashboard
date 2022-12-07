@@ -36,8 +36,9 @@ class AddModal extends Component {
         if (data && data.length > 0) {
           config = {};
           data.forEach(item => {
-            if (values[item.field]) {
-              config[item.field] = values[item.field];
+            let fieldName = `__${  item.field}__`
+            if (values[fieldName]) {
+              config[item.field] = values[fieldName];
             }
           });
           config = JSON.stringify(config);
@@ -113,7 +114,8 @@ class AddModal extends Component {
                   let fieldInitialValue = config
                     ? config[eachField.field]
                     : undefined;
-                  let fieldName = eachField.field;
+                  // Add prefixes to prevent naming conflicts
+                  let fieldName = `__${  eachField.field}__`;
                   let dataType = eachField.dataType;
                   let required = "";
                   let checkRule;
@@ -147,6 +149,7 @@ class AddModal extends Component {
                     return (
                       <FormItem
                         label={eachField.label}
+                        name={fieldName}
                         {...formItemLayout}
                         key={index}
                       >
@@ -162,6 +165,7 @@ class AddModal extends Component {
                     return (
                       <FormItem
                         label={eachField.label}
+                        name={fieldName}
                         {...formItemLayout}
                         key={index}
                       >
@@ -188,6 +192,7 @@ class AddModal extends Component {
                     return (
                       <FormItem
                         label={eachField.label}
+                        name={fieldName}
                         {...formItemLayout}
                         key={index}
                       >
