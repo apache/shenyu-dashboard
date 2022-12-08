@@ -411,7 +411,7 @@ export default class Plugin extends Component {
                 <Tag color="#3b9a9c">{record.sort}</Tag>
               </div>
             );
-            const t = JSON.stringify(JSON.parse(text !== null?text:'{}'), null, 4) ;
+            const t = JSON.stringify(JSON.parse(text !== null && text.length > 0?text:'{}'), null, 4) ;
             const content = (
               <div>
                 <Text type="secondary">{`${getIntlContent("SHENYU.SYSTEM.CREATETIME") }: ${ record.dateCreated}`}</Text>
