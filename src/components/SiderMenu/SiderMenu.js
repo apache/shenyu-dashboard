@@ -18,7 +18,7 @@
 import React, { PureComponent } from "react";
 import { Layout, Menu, Icon, Switch } from "antd";
 import pathToRegexp from "path-to-regexp";
-import { Link } from "dva/router";
+import { withRouter, Link } from "dva/router";
 import styles from "./index.less";
 import { urlToList } from "../_utils/pathTools";
 import { getCurrentLocale, getIntlContent } from "../../utils/IntlUtils";
@@ -77,7 +77,7 @@ export const getMenuMatchKeys = (flatMenuKeys, paths) =>
     []
   );
 
-export default class SiderMenu extends PureComponent {
+class SiderMenu extends PureComponent {
   constructor(props) {
     super(props);
     this.flatMenuKeys = getFlatMenuKeys(props.menuData);
@@ -87,6 +87,16 @@ export default class SiderMenu extends PureComponent {
       mode: "inline",
       theme: "dark"
     };
+  }
+
+  componentDidMount() {
+    this.props.history.listen(location => {
+      if (this.props.location.pathname !== location.pathname) {
+        this.setState({
+          openKeys: this.getDefaultCollapsedSubMenus(this.props)
+        });
+      }
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -339,6 +349,8 @@ export default class SiderMenu extends PureComponent {
           theme={this.state.theme}
           mode={this.state.mode}
           style={{ padding: "16px 0", width: "100%" }}
+          selectedKeys={selectedKeys}
+          openKeys={openKeys}
         >
           {this.getNavMenuItems(menuData)}
         </Menu>
@@ -346,3 +358,5 @@ export default class SiderMenu extends PureComponent {
     );
   }
 }
+
+export default withRouter(SiderMenu);
