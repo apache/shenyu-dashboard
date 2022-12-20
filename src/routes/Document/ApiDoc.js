@@ -15,16 +15,36 @@
  * limitations under the License.
  */
 
-import { Col, Row, Card, BackTop, Empty, message } from "antd";
+import { Col, Row, Card, BackTop, Empty, message, Button } from "antd";
 import React, { useEffect, useState } from "react";
 import SearchApi from "./components/SearchApi";
+import AddAndUpdateApiDoc from "./components/AddAndUpdateApiDoc";
 import ApiInfo from "./components/ApiInfo";
-import { getDocMenus, getApiDetail } from "../../services/api";
+import { getDocMenus, getApiDetail, addApi, updateApi } from "../../services/api";
 import ApiContext from "./components/ApiContext";
 
 function ApiDoc() {
   const [apiDetail, setApiDetail] = useState({});
   const [apiData, setApiData] = useState({});
+  const [open, setOpen] = useState(false);
+  const [flag, setflag] = useState('add');
+
+  const [initialValue, setInitialValue] = useState({
+    id: '',
+    contextPath: '',
+    apiPath: '',
+    httpMethod: '',
+    consume: '',
+    produce: '',
+    version: '',
+    rpcType: '',
+    state: '',
+    ext: '',
+    apiOwner: '',
+    apiDesc: '',
+    apiSource: '',
+    document: ''
+  })
 
   const initData = async () => {
     const { code, data = {} } = await getDocMenus();
@@ -59,7 +79,7 @@ function ApiDoc() {
     if (!isLeaf) {
       return;
     }
-    const { code, message: msg, data } = await getApiDetail(id);
+    const { code, message: msg, data } = await getApiDetail('1604675139728617472');
     if (code !== 200) {
       message.error(msg);
       return;
@@ -67,9 +87,57 @@ function ApiDoc() {
     setApiDetail(data);
   };
 
+  const callSaveOrUpdateApi = async (params, e) => {
+    console.log("callAddApi", params)
+    let rs = (flag === 'add' ? await addApi(params) : await updateApi({ ...params, id: initialValue.id }));
+    if (rs.code !== 200) {
+      message.error(rs.msg);
+      return;
+    } else {
+      setOpen(false)
+    }
+  };
+
   useEffect(() => {
     initData();
   }, []);
+
+  const handleAddApi = e => {
+    console.log('handleClick', 1)
+    setflag('add')
+    setInitialValue({
+      id: '',
+      contextPath: '',
+      apiPath: '',
+      httpMethod: '',
+      consume: '',
+      produce: '',
+      version: '',
+      rpcType: '',
+      state: '',
+      ext: '',
+      apiOwner: '',
+      apiDesc: '',
+      apiSource: '',
+      document: ''
+    });
+    setOpen(true)
+  };
+
+  const handleDeleteApi = e => {
+    console.log('handleDelete', 1)
+  };
+
+  const handleUpdateApi = async () => {
+    //todo add update api
+    // json = getAPi;
+    let queryData = await getApiDetail('1604756913158664192')
+    console.log("getApiDetail", queryData)
+    setInitialValue(queryData.data);
+    setOpen(true)
+    setflag('update')
+  }
+
 
   return (
     <ApiContext.Provider
@@ -79,6 +147,11 @@ function ApiDoc() {
       }}
     >
       <Card style={{ margin: 24 }}>
+        <Button onClick={handleAddApi}>add API</Button>
+        <Button onClick={handleUpdateApi}>update API</Button>
+        <Button onClick={handleDeleteApi}>delete API</Button>
+        {open && <AddAndUpdateApiDoc onCancel={() => setOpen(false)} handleOk={callSaveOrUpdateApi} {...initialValue} />
+        }
         <Row gutter={24}>
           <Col span={6}>
             <SearchApi onSelect={handleSelectNode} />

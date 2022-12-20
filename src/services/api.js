@@ -822,3 +822,24 @@ export function getApiDetail(id) {
     method: `GET`
   });
 }
+
+/** addApi */
+export function addApi(params) {
+  return request(`${baseUrl}/api`, {
+    method: `POST`,
+    body: {
+      ...params
+    }
+  });
+}
+
+/** addApi */
+export function updateApi(params) {
+  return request(`${baseUrl}/api/${params.id}`, {
+    method: `PUT`,
+    body: {
+      ...params
+    }
+  });
+}
+
