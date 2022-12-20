@@ -189,4 +189,4 @@ class AddAndUpdateApiDoc extends Component {
 }
 
 
-export default Form.create()(AddApiDoc);
+export default Form.create()(AddAndUpdateApiDoc);
