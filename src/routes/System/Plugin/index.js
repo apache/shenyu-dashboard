@@ -16,6 +16,7 @@
  */
 
 import React, { Component } from "react";
+import { Link } from "dva/router";
 import { Table, Input, Button, message, Popconfirm, Select, Popover, Tag, Typography } from "antd";
 import { connect } from "dva";
 import { resizableComponents } from "../../../utils/resizable";
@@ -369,8 +370,8 @@ export default class Plugin extends Component {
           key: "name",
           ellipsis: true,
           width: 120,
-          render: text => {
-            return <div style={{color: "#260033","fontWeight":"bold"}}>{text || "----"}</div>;
+          render: (text, record) => {
+            return <Link to={`/plug/${record.role}/${text}`} style={{color: "#260033","fontWeight":"bold"}}>{text || "----"}</Link>;
           }
         },
         {
