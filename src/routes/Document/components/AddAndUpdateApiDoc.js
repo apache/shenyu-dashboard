@@ -17,9 +17,8 @@
 
 import { Modal, Form, Input, Select } from "antd";
 import React, { Component } from "react";
-import { getIntlContent } from '../../../utils/IntlUtils';
 import { Method } from "./globalData";
-import { values } from "lodash";
+import { getIntlContent } from '../../../utils/IntlUtils';
 
 class AddAndUpdateApiDoc extends Component {
 
@@ -36,7 +35,7 @@ class AddAndUpdateApiDoc extends Component {
 				sm: { span: 19 },
 			},
 		};
-		const handleSubmit = e => {
+		const handleSubmit = () => {
 			const { handleOk } = this.props;
 			let newValues = '';
 			form.validateFieldsAndScroll((err, values) => {
@@ -44,11 +43,9 @@ class AddAndUpdateApiDoc extends Component {
 					values['state'] = parseInt(values['state']);
 					values['apiSource'] = parseInt(values['apiSource']);
 					values['httpMethod'] = parseInt(values['httpMethod']);
-					console.log(values);
 					newValues = values;
 				}
 			});
-			console.log('handleSubmit', values)
 			handleOk(newValues)
 		}
 
