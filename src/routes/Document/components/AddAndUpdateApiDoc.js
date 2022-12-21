@@ -26,7 +26,7 @@ class AddAndUpdateApiDoc extends Component {
 	render() {
 		const RPCTYPE = ['http', 'dubbo', 'sofa', 'tars', 'websocket', 'springCloud', 'motan', 'grpc'];
 		const API_SOURCE_TYPE = ['swagger', 'annotation generation', 'create manuallym', 'import swagger', 'import yapi']
-		const {onCancel, form,  contextPath = '', apiPath = '', httpMethod = '', consume = '', produce = '', version = '', rpcType = '', state = '', ext = '', apiOwner = '', apiDesc = '', apiSource = '', document = '' } = this.props;
+		const {onCancel, form,  contextPath = '', apiPath = '', httpMethod = '', consume = '', produce = '', version = '', rpcType = '', state = '', ext = '', apiOwner = '', apiDesc = '', apiSource = '', document = ''} = this.props;
 		const { getFieldDecorator } = form;
 		const formItemLayout = {
 			labelCol: {

@@ -843,3 +843,12 @@ export function updateApi(params) {
   });
 }
 
+/** delete Api */
+export function deleteApi(params) {
+  return request(`${baseUrl}/api/batch`, {
+    method: `DELETE`,
+    body: params
+  });
+}
+
+

@@ -20,7 +20,7 @@ import React, { useEffect, useState } from "react";
 import SearchApi from "./components/SearchApi";
 import AddAndUpdateApiDoc from "./components/AddAndUpdateApiDoc";
 import ApiInfo from "./components/ApiInfo";
-import { getDocMenus, getApiDetail, addApi, updateApi } from "../../services/api";
+import { getDocMenus, getApiDetail, addApi, updateApi ,deleteApi} from "../../services/api";
 import ApiContext from "./components/ApiContext";
 
 function ApiDoc() {
@@ -43,7 +43,8 @@ function ApiDoc() {
     apiOwner: '',
     apiDesc: '',
     apiSource: '',
-    document: ''
+    document: '',
+    tagIds:[]
   })
 
   const initData = async () => {
@@ -67,7 +68,6 @@ function ApiDoc() {
       setApiData(data);
     }
   };
-
   const handleSelectNode = async (_, e) => {
     const {
       node: {
@@ -79,65 +79,62 @@ function ApiDoc() {
     if (!isLeaf) {
       return;
     }
-    const { code, message: msg, data } = await getApiDetail('1604675139728617472');
+    //最后一行不需要
+    if(!id){
+      const targetId = _
+      handleAddApi(targetId)
+      return;
+    }
+    const { code, message: msg, data } = await getApiDetail(id);
     if (code !== 200) {
       message.error(msg);
       return;
     }
+    setInitialValue({
+      id: id
+    });
     setApiDetail(data);
   };
-
+  const handleAddApi = (targetId,e) => {
+    console.log('targetId', targetId)
+    setflag('add')
+    setInitialValue({
+      tagIds:[targetId]
+    });
+    setOpen(true)
+  };
   const callSaveOrUpdateApi = async (params, e) => {
-    console.log("callAddApi", params)
-    let rs = (flag === 'add' ? await addApi(params) : await updateApi({ ...params, id: initialValue.id }));
+    let rs = (flag === 'add' ? await addApi({...params, tagIds: initialValue.tagIds[0]}) : await updateApi({ ...params, id: initialValue.id , tagIds: initialValue.tagIds}));
     if (rs.code !== 200) {
       message.error(rs.msg);
       return;
     } else {
       setOpen(false)
+      location.reload()
     }
   };
-
-  useEffect(() => {
-    initData();
-  }, []);
-
-  const handleAddApi = e => {
-    console.log('handleClick', 1)
-    setflag('add')
-    setInitialValue({
-      id: '',
-      contextPath: '',
-      apiPath: '',
-      httpMethod: '',
-      consume: '',
-      produce: '',
-      version: '',
-      rpcType: '',
-      state: '',
-      ext: '',
-      apiOwner: '',
-      apiDesc: '',
-      apiSource: '',
-      document: ''
-    });
-    setOpen(true)
+  const handleDeleteApi = async e => {
+    console.log('handleDelete', initialValue.id)
+    
+    const { code, message: msg, data } = await deleteApi([initialValue.id]);
+    if (code !== 200) {
+      message.error(msg);
+      return;
+    } else {
+      location.reload()
+    }
   };
-
-  const handleDeleteApi = e => {
-    console.log('handleDelete', 1)
-  };
-
   const handleUpdateApi = async () => {
-    //todo add update api
-    // json = getAPi;
-    let queryData = await getApiDetail('1604756913158664192')
+    let queryData = await getApiDetail(initialValue.id)
     console.log("getApiDetail", queryData)
     setInitialValue(queryData.data);
     setOpen(true)
     setflag('update')
   }
 
+  useEffect(() => {
+    initData();
+  }, []);
 
   return (
     <ApiContext.Provider
@@ -147,9 +144,6 @@ function ApiDoc() {
       }}
     >
       <Card style={{ margin: 24 }}>
-        <Button onClick={handleAddApi}>add API</Button>
-        <Button onClick={handleUpdateApi}>update API</Button>
-        <Button onClick={handleDeleteApi}>delete API</Button>
         {open && <AddAndUpdateApiDoc onCancel={() => setOpen(false)} handleOk={callSaveOrUpdateApi} {...initialValue} />
         }
         <Row gutter={24}>
@@ -158,7 +152,11 @@ function ApiDoc() {
           </Col>
           <Col span={18}>
             {apiDetail.id ? (
-              <ApiInfo />
+              <>
+              {/* <Button onClick={handleUpdateApi}>edit</Button>
+              <Button onClick={handleDeleteApi}>delete</Button> */}
+              <ApiInfo handleUpdateApi= {handleUpdateApi} handleDeleteApi={handleDeleteApi}/>
+              </>
             ) : (
               <Empty description={false} style={{ padding: "160px 0" }} />
             )}
