@@ -21,7 +21,6 @@ import ApiDebug from "./ApiDebug";
 import ApiContext from "./ApiContext";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { Method } from "./globalData";
-import { flatMap } from "lodash";
 
 const { Title, Text, Paragraph } = Typography;
 

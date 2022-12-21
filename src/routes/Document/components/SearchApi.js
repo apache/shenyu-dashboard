@@ -115,7 +115,6 @@ function SearchApi(props) {
         key: `${treeNode.props.eventKey}-${index}`,
         isLeaf: true
       }))
-      console.log("just test" , treeNode.props.dataRef)
       treeNode.props.dataRef.children.push({
         title: (
           <>
