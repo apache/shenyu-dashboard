@@ -153,8 +153,6 @@ function ApiDoc() {
           <Col span={18}>
             {apiDetail.id ? (
               <>
-              {/* <Button onClick={handleUpdateApi}>edit</Button>
-              <Button onClick={handleDeleteApi}>delete</Button> */}
               <ApiInfo handleUpdateApi= {handleUpdateApi} handleDeleteApi={handleDeleteApi}/>
               </>
             ) : (
