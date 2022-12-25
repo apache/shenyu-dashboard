@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import { Col, Row, Card, BackTop, Empty, message, Button } from "antd";
+import { Col, Row, Card, BackTop, Empty, message } from "antd";
 import React, { useEffect, useState } from "react";
 import SearchApi from "./components/SearchApi";
 import AddAndUpdateApiDoc from "./components/AddAndUpdateApiDoc";
 import ApiInfo from "./components/ApiInfo";
-import { getDocMenus, getApiDetail, addApi, updateApi ,deleteApi} from "../../services/api";
+import { getDocMenus, getApiDetail, addApi, updateApi, deleteApi } from "../../services/api";
 import ApiContext from "./components/ApiContext";
 
 function ApiDoc() {
@@ -44,7 +44,7 @@ function ApiDoc() {
     apiDesc: '',
     apiSource: '',
     document: '',
-    tagIds:[]
+    tagIds: []
   })
 
   const initData = async () => {
@@ -79,8 +79,7 @@ function ApiDoc() {
     if (!isLeaf) {
       return;
     }
-    //最后一行不需要
-    if(!id){
+    if (!id) {
       const targetId = _
       handleAddApi(targetId)
       return;
@@ -91,42 +90,36 @@ function ApiDoc() {
       return;
     }
     setInitialValue({
-      id: id
+      id
     });
     setApiDetail(data);
   };
-  const handleAddApi = (targetId,e) => {
-    console.log('targetId', targetId)
+  const handleAddApi = (targetId) => {
     setflag('add')
     setInitialValue({
-      tagIds:[targetId]
+      tagIds: [targetId]
     });
     setOpen(true)
   };
-  const callSaveOrUpdateApi = async (params, e) => {
-    let rs = (flag === 'add' ? await addApi({...params, tagIds: initialValue.tagIds[0]}) : await updateApi({ ...params, id: initialValue.id , tagIds: initialValue.tagIds}));
+  const callSaveOrUpdateApi = async (params) => {
+    let rs = (flag === 'add' ? await addApi({ ...params, tagIds: initialValue.tagIds[0] }) : await updateApi({ ...params, id: initialValue.id, tagIds: initialValue.tagIds }));
     if (rs.code !== 200) {
       message.error(rs.msg);
-      return;
     } else {
       setOpen(false)
       location.reload()
     }
   };
-  const handleDeleteApi = async e => {
-    console.log('handleDelete', initialValue.id)
-    
-    const { code, message: msg, data } = await deleteApi([initialValue.id]);
+  const handleDeleteApi = async () => {
+    const { code, message: msg } = await deleteApi([initialValue.id]);
     if (code !== 200) {
       message.error(msg);
-      return;
     } else {
       location.reload()
     }
   };
   const handleUpdateApi = async () => {
     let queryData = await getApiDetail(initialValue.id)
-    console.log("getApiDetail", queryData)
     setInitialValue(queryData.data);
     setOpen(true)
     setflag('update')
@@ -153,7 +146,7 @@ function ApiDoc() {
           <Col span={18}>
             {apiDetail.id ? (
               <>
-              <ApiInfo handleUpdateApi= {handleUpdateApi} handleDeleteApi={handleDeleteApi}/>
+                <ApiInfo handleUpdateApi={handleUpdateApi} handleDeleteApi={handleDeleteApi} />
               </>
             ) : (
               <Empty description={false} style={{ padding: "160px 0" }} />
