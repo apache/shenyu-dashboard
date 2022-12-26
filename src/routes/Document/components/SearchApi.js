@@ -114,7 +114,17 @@ function SearchApi(props) {
         ),
         key: `${treeNode.props.eventKey}-${index}`,
         isLeaf: true
-      }));
+      }))
+      treeNode.props.dataRef.children.push({
+        title: (
+          <>
+            <Text code>&nbsp;+&nbsp;</Text>
+          </>
+        ),
+        key: treeNode.props.dataRef.id,
+        isLeaf: true
+      })
+      ;
     }
     setApiTree([...apiTree]);
     return Promise.resolve();

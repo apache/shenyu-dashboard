@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Typography, Table, Tabs, Icon, Row, Col } from "antd";
+import { Typography, Table, Tabs, Icon, Row, Col , Button } from "antd";
 import React, { useContext } from "react";
 import ApiDebug from "./ApiDebug";
 import ApiContext from "./ApiContext";
@@ -24,13 +24,14 @@ import { Method } from "./globalData";
 
 const { Title, Text, Paragraph } = Typography;
 
-function ApiInfo() {
+function ApiInfo(props) {
   const {
     apiData: { envProps = [] },
     apiDetail,
     apiDetail: { document, responseParameters, requestHeaders }
   } = useContext(ApiContext);
   let documentJSON = {};
+  let {handleUpdateApi,handleDeleteApi} = props
   try {
     documentJSON = JSON.parse(document);
     documentJSON.errorCode = [];
@@ -148,6 +149,8 @@ function ApiInfo() {
         >
           <Title level={2}>
             {apiDetail.tags[apiDetail.tags.length - 1].name}
+            <Button style={{float:'right'}} onClick={handleDeleteApi}>delete</Button>
+            <Button style={{float:'right'}} onClick={handleUpdateApi}>edit</Button>
           </Title>
           <Paragraph>
             <Title level={4}>

@@ -18,13 +18,34 @@
 import { Col, Row, Card, BackTop, Empty, message } from "antd";
 import React, { useEffect, useState } from "react";
 import SearchApi from "./components/SearchApi";
+import AddAndUpdateApiDoc from "./components/AddAndUpdateApiDoc";
 import ApiInfo from "./components/ApiInfo";
-import { getDocMenus, getApiDetail } from "../../services/api";
+import { getDocMenus, getApiDetail, addApi, updateApi, deleteApi } from "../../services/api";
 import ApiContext from "./components/ApiContext";
 
 function ApiDoc() {
   const [apiDetail, setApiDetail] = useState({});
   const [apiData, setApiData] = useState({});
+  const [open, setOpen] = useState(false);
+  const [flag, setflag] = useState('add');
+
+  const [initialValue, setInitialValue] = useState({
+    id: '',
+    contextPath: '',
+    apiPath: '',
+    httpMethod: '',
+    consume: '',
+    produce: '',
+    version: '',
+    rpcType: '',
+    state: '',
+    ext: '',
+    apiOwner: '',
+    apiDesc: '',
+    apiSource: '',
+    document: '',
+    tagIds: []
+  })
 
   const initData = async () => {
     const { code, data = {} } = await getDocMenus();
@@ -47,7 +68,6 @@ function ApiDoc() {
       setApiData(data);
     }
   };
-
   const handleSelectNode = async (_, e) => {
     const {
       node: {
@@ -59,13 +79,51 @@ function ApiDoc() {
     if (!isLeaf) {
       return;
     }
+    if (!id) {
+      const targetId = _
+      handleAddApi(targetId)
+      return;
+    }
     const { code, message: msg, data } = await getApiDetail(id);
     if (code !== 200) {
       message.error(msg);
       return;
     }
+    setInitialValue({
+      id
+    });
     setApiDetail(data);
   };
+  const handleAddApi = (targetId) => {
+    setflag('add')
+    setInitialValue({
+      tagIds: [targetId]
+    });
+    setOpen(true)
+  };
+  const callSaveOrUpdateApi = async (params) => {
+    let rs = (flag === 'add' ? await addApi({ ...params, tagIds: initialValue.tagIds[0] }) : await updateApi({ ...params, id: initialValue.id, tagIds: initialValue.tagIds }));
+    if (rs.code !== 200) {
+      message.error(rs.msg);
+    } else {
+      setOpen(false)
+      location.reload()
+    }
+  };
+  const handleDeleteApi = async () => {
+    const { code, message: msg } = await deleteApi([initialValue.id]);
+    if (code !== 200) {
+      message.error(msg);
+    } else {
+      location.reload()
+    }
+  };
+  const handleUpdateApi = async () => {
+    let queryData = await getApiDetail(initialValue.id)
+    setInitialValue(queryData.data);
+    setOpen(true)
+    setflag('update')
+  }
 
   useEffect(() => {
     initData();
@@ -79,13 +137,17 @@ function ApiDoc() {
       }}
     >
       <Card style={{ margin: 24 }}>
+        {open && <AddAndUpdateApiDoc onCancel={() => setOpen(false)} handleOk={callSaveOrUpdateApi} {...initialValue} />
+        }
         <Row gutter={24}>
           <Col span={6}>
             <SearchApi onSelect={handleSelectNode} />
           </Col>
           <Col span={18}>
             {apiDetail.id ? (
-              <ApiInfo />
+              <>
+                <ApiInfo handleUpdateApi={handleUpdateApi} handleDeleteApi={handleDeleteApi} />
+              </>
             ) : (
               <Empty description={false} style={{ padding: "160px 0" }} />
             )}
