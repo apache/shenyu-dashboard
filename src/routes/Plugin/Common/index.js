@@ -455,6 +455,12 @@ export default class Common extends Component {
     const selectColumns = [
       {
         align: "center",
+        title: getIntlContent("SHENYU.SELECTOR.EXEORDER"),
+        dataIndex: "sort",
+        key: "sort"
+      },
+      {
+        align: "center",
         title: getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"),
         dataIndex: "name",
         key: "name"
@@ -529,6 +535,12 @@ export default class Common extends Component {
     ];
 
     const rulesColumns = [
+      {
+        align: "center",
+        title: getIntlContent("SHENYU.SELECTOR.EXEORDER"),
+        dataIndex: "sort",
+        key: "sort"
+      },
       {
         align: "center",
         title: getIntlContent("SHENYU.COMMON.RULE.NAME"),
