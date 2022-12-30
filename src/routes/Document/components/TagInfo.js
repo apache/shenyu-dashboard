@@ -15,10 +15,42 @@
  * limitations under the License.
  */
 
-import { createContext } from "react";
+import { Typography, Card, Form, Input} from "antd";
+import Paragraph from "antd/lib/skeleton/Paragraph";
+import React, { useContext } from "react";
+import TagContext from "./TagContext";
 
-export default createContext({
-  apiDetail: {},
-  apiData: {},
-  tagDetail: {}
-});
+
+const { Title, Text } = Typography;
+
+const abc = "33333";
+const formItemLayout = {
+  labelCol: {
+    sm: { span: 5 }
+  },
+  wrapperCol: {
+    sm: { span: 19 }
+  }
+};
+
+function TagInfo(props) {
+  const {
+    tagData: { envProps = [] },
+    tagDetail
+  } = useContext(TagContext);
+
+  return (
+    <>
+      <Form>
+        <Form.Item
+          label="Password"
+          name="password"
+          value
+          rules={[{ required: true, message: 'Please input your password!' }]}
+        />
+      </Form>
+    </>
+  );
+}
+
+export default TagInfo;

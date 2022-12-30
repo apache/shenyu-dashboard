@@ -62,7 +62,13 @@ function SearchApi(props) {
           </TreeNode>
         );
       }
-      return <TreeNode key={item.key} {...item} dataRef={item} />;
+      return (
+        <TreeNode
+          key={item.key}
+          {...item}
+          dataRef={item}
+        />
+      );
     });
   };
 
@@ -72,15 +78,30 @@ function SearchApi(props) {
       message.error(msg);
       return;
     }
+    const arr =  data?.map((item, index) => ({
+      ...item,
+      title: item.name,
+      key: index.toString(),
+      isLeaf: !item.hasChildren,
+      isTag: true
+    })) || []
+
+    arr.push({
+      title: (
+        <>
+          <Text code>&nbsp;+&nbsp;</Text>
+        </>
+      ),
+      key: arr.length,
+      isLeaf: true,
+      isTag: true
+    })
+
     setApiTree(
-      data?.map((item, index) => ({
-        ...item,
-        title: item.name,
-        key: index.toString(),
-        isLeaf: !item.hasChildren
-      })) || []
+      arr
     );
   };
+
 
   const onLoadData = async treeNode => {
     if (treeNode.props.children) {
@@ -96,7 +117,8 @@ function SearchApi(props) {
       treeNode.props.dataRef.children = data?.map((item, index) => ({
         ...item,
         title: item.name,
-        key: `${treeNode.props.eventKey}-${index}`
+        key: `${treeNode.props.eventKey}-${index}`,
+        isTag: true
       }));
     } else {
       const { code, message: msg, data } = await getApi(id);
