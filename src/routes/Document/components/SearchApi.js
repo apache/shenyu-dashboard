@@ -77,7 +77,8 @@ function SearchApi(props) {
         ...item,
         title: item.name,
         key: index.toString(),
-        isLeaf: !item.hasChildren
+        isLeaf: !item.hasChildren,
+        isTag: true
       })) || []
     );
   };
@@ -96,7 +97,8 @@ function SearchApi(props) {
       treeNode.props.dataRef.children = data?.map((item, index) => ({
         ...item,
         title: item.name,
-        key: `${treeNode.props.eventKey}-${index}`
+        key: `${treeNode.props.eventKey}-${index}`,
+        isTag: true
       }));
     } else {
       const { code, message: msg, data } = await getApi(id);

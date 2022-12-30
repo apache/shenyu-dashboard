@@ -20,15 +20,24 @@ import React, { useEffect, useState } from "react";
 import SearchApi from "./components/SearchApi";
 import AddAndUpdateApiDoc from "./components/AddAndUpdateApiDoc";
 import ApiInfo from "./components/ApiInfo";
-import { getDocMenus, getApiDetail, addApi, updateApi, deleteApi } from "../../services/api";
+import TagInfo from "./components/TagInfo";
+import { getDocMenus, getApiDetail, addApi, updateApi, deleteApi, getTagDetail, deleteTag} from "../../services/api";
 import ApiContext from "./components/ApiContext";
 
 function ApiDoc() {
+  const [tagDetail, setTagDetail] = useState({});
   const [apiDetail, setApiDetail] = useState({});
   const [apiData, setApiData] = useState({});
   const [open, setOpen] = useState(false);
   const [flag, setflag] = useState('add');
 
+  const [initTagValue,setInitTagValue] = useState({
+    id: '',
+    name: '',
+    ext: '',
+    tagDesc: ''
+  }
+  )
   const [initialValue, setInitialValue] = useState({
     id: '',
     contextPath: '',
@@ -72,7 +81,7 @@ function ApiDoc() {
     const {
       node: {
         props: {
-          dataRef: { id, isLeaf }
+          dataRef: { id, isLeaf,isTag}
         }
       }
     } = e;
@@ -84,7 +93,16 @@ function ApiDoc() {
       handleAddApi(targetId)
       return;
     }
-    const { code, message: msg, data } = await getApiDetail(id);
+    if (isTag) {
+        console.log(12222222);
+        const { code, message: msg, data } = await getTagDetail(id);
+    if (code !== 200) {
+      message.error(msg);
+      return;
+    }
+    setTagDetail(data);
+    } else {
+      const { code, message: msg, data } = await getApiDetail(id);
     if (code !== 200) {
       message.error(msg);
       return;
@@ -93,6 +111,7 @@ function ApiDoc() {
       id
     });
     setApiDetail(data);
+    }
   };
   const handleAddApi = (targetId) => {
     setflag('add')
@@ -123,8 +142,19 @@ function ApiDoc() {
     setInitialValue(queryData.data);
     setOpen(true)
     setflag('update')
+  };
+  const handDelTag = async () => {
+    const { code, message:msg } = await deleteTag([initTagValue.id]);
+    if (code !== 200) {
+      message.error(msg);
+    } else {
+      location.reload()
+    }
   }
-
+  const handleUpdateTag = async () => {
+    let queryData = await getTagDetail(initTagValue.id)
+    setInitTagValue(queryData.data);
+  }
   useEffect(() => {
     initData();
   }, []);
@@ -133,7 +163,8 @@ function ApiDoc() {
     <ApiContext.Provider
       value={{
         apiDetail,
-        apiData
+        apiData,
+        tagDetail
       }}
     >
       <Card style={{ margin: 24 }}>
@@ -148,7 +179,11 @@ function ApiDoc() {
               <>
                 <ApiInfo handleUpdateApi={handleUpdateApi} handleDeleteApi={handleDeleteApi} />
               </>
-            ) : (
+            ) ? tagDetail.id : (
+              <>
+                <TagInfo handleUpdateTag={handleUpdateTag} handDelTag={handDelTag} />
+              </>
+            )  : (
               <Empty description={false} style={{ padding: "160px 0" }} />
             )}
           </Col>

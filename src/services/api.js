@@ -809,6 +809,22 @@ export function getParentTagId(id) {
   });
 }
 
+/* getTagDetail */
+export function getTagDetail(id) {
+  return request(
+    `${baseUrl}/tag/id/${id}`, {
+      method: `GET`
+    });
+}
+
+/** delete tag */
+export function deleteTag(params) {
+  return request(`${baseUrl}/tag/batchDelete`, {
+    method: `DELETE`,
+    body: params
+  });
+}
+
 /* queryApi */
 export function getApi(tagId) {
   return request(`${baseUrl}/api?tagId=${tagId}&currentPage=0&pageSize=100`, {
