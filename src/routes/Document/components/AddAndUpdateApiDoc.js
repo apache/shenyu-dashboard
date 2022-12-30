@@ -15,30 +15,78 @@
 	* limitations under the License.
 	*/
 
-import { Modal, Form, Input, Select } from "antd";
+/* eslint-disable no-unused-expressions */
+/* eslint-disable radix */
+import { Modal, Form, Input, Select, message } from "antd";
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { Method } from "./globalData";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import { addApi, updateApi } from "../../../services/api";
+
+const RPCTYPE = [
+  "http",
+  "dubbo",
+  "sofa",
+  "tars",
+  "websocket",
+  "springCloud",
+  "motan",
+  "grpc"
+];
+
+const API_SOURCE_TYPE = [
+  "swagger",
+  "annotation generation",
+  "create manuallym",
+  "import swagger",
+  "import yapi"
+];
 
 class AddAndUpdateApiDoc extends Component {
+  static defaultProps = {
+    form: PropTypes.object,
+    visible: PropTypes.bool,
+    formLoaded: PropTypes.func,
+    onOk: PropTypes.func,
+    onCancel: PropTypes.func
+  };
+
+  componentDidMount() {
+    const { form, formLoaded } = this.props;
+    formLoaded?.(form);
+  }
+
+  handleSubmit = () => {
+    const { form, onOk } = this.props;
+    form.validateFieldsAndScroll(async (err, values) => {
+      if (!err) {
+        const { id } = values;
+        let res = {};
+        values.state = parseInt(values.state);
+        values.apiSource = parseInt(values.apiSource);
+        values.httpMethod = parseInt(values.httpMethod);
+        if (!id) {
+          res = await addApi({
+            ...values
+          });
+        } else {
+          res = await updateApi({
+            ...values
+          });
+        }
+
+        if (res.code !== 200) {
+          message.error(res.message);
+        } else {
+          message.success(res.message);
+          onOk?.(values);
+        }
+      }
+    });
+  };
+
   render() {
-    const RPCTYPE = [
-      "http",
-      "dubbo",
-      "sofa",
-      "tars",
-      "websocket",
-      "springCloud",
-      "motan",
-      "grpc"
-    ];
-    const API_SOURCE_TYPE = [
-      "swagger",
-      "annotation generation",
-      "create manuallym",
-      "import swagger",
-      "import yapi"
-    ];
     const {
       onCancel,
       form,
@@ -54,7 +102,8 @@ class AddAndUpdateApiDoc extends Component {
       apiOwner = "",
       apiDesc = "",
       apiSource = "",
-      document = ""
+      document = "",
+      visible = false
     } = this.props;
     const { getFieldDecorator } = form;
     const formItemLayout = {
@@ -65,25 +114,16 @@ class AddAndUpdateApiDoc extends Component {
         sm: { span: 19 }
       }
     };
-    const handleSubmit = () => {
-      const { handleOk } = this.props;
-      let newValues = "";
-      form.validateFieldsAndScroll((err, values) => {
-        if (!err) {
-          // eslint-disable-next-line radix
-          values.state = parseInt(values.state);
-          // eslint-disable-next-line radix
-          values.apiSource = parseInt(values.apiSource);
-          // eslint-disable-next-line radix
-          values.httpMethod = parseInt(values.httpMethod);
-          newValues = values;
-        }
-      });
-      handleOk(newValues);
-    };
+
     return (
-      <Modal visible onCancel={onCancel} onOk={handleSubmit}>
-        <Form onSubmit={handleSubmit} className="login-form">
+      <Modal
+        visible={visible}
+        onCancel={onCancel}
+        onOk={this.handleSubmit}
+        closable={false}
+        forceRender
+      >
+        <Form className="login-form">
           <Form.Item
             label={`${getIntlContent("SHENYU.DOCUMENT.APIDOC.CONTEXTPATH")}`}
             {...formItemLayout}
@@ -338,6 +378,10 @@ class AddAndUpdateApiDoc extends Component {
               />
             )}
           </Form.Item>
+
+          <Form.Item hidden>{getFieldDecorator("tagIds")(<Input />)}</Form.Item>
+
+          <Form.Item hidden>{getFieldDecorator("id")(<Input />)}</Form.Item>
         </Form>
       </Modal>
     );

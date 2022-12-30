@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 
+/* eslint-disable no-unused-vars */
+
 import { createContext } from "react";
 
 export default createContext({
   apiDetail: {},
   apiData: {},
-  apiMock: {}
+  apiMock: {},
+  tagDetail: {}
 });
