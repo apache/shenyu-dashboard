@@ -15,20 +15,37 @@
  * limitations under the License.
  */
 
-import { Typography , Button, Card, Tabs } from "antd";
+import { Typography, Card, Form, Input} from "antd";
 import React, { useContext } from "react";
 import TagContext from "./TagContext";
+import { getIntlContent } from "../../../utils/IntlUtils";
 
-const { Title } = Typography;
-const TabPane = Tabs.TabPane;
+const {
+  onCancel,
+  form,
+  name = "",
+  tagDesc = ""
+
+} = this.props;
+const { Title, Text, Paragraph } = Typography;
+const { getFieldDecorator } = form;
+
+const formItemLayout = {
+  labelCol: {
+    sm: { span: 5 }
+  },
+  wrapperCol: {
+    sm: { span: 19 }
+  }
+};
 
 function TagInfo(props) {
   const {
     tagData: { envProps = [] },
-    tagDetail: { id , name , tagDesc , ext }
+    tagDetail
   } = useContext(TagContext);
   let documentJSON = {};
-  let {handleUpdateTag,handleDelTag} = props
+  let {handleUpdateTag,} = props
   try {
     documentJSON = JSON.parse(document);
     documentJSON.errorCode = [];
@@ -43,11 +60,33 @@ function TagInfo(props) {
     // eslint-disable-next-line no-console
     console.log(e);
   }
+
   return (
     <>
-      <Tabs defaultActiveKey='1'>
-        <TabPane tab="tab1" key="1">Content of Tab1</TabPane>
-      </Tabs>
+      {/* <Card>
+        <Form onSubmit={handleSubmit} className="login-form">
+          <Form.Item
+            label={`${getIntlContent("SHENYU.DOCUMENT.TAG.DESC")}`}
+            {...formItemLayout}
+          >
+            {getFieldDecorator("tagDesc", {
+                rules: [
+                  {
+                    required: true,
+                    message: getIntlContent("SHENYU.DOCUMENT.TAG.DESC")
+                  }
+                ],
+                initialValue: tagDesc
+              })(
+                <Input
+                  placeholder={getIntlContent(
+                    "SHENYU.DOCUMENT.TAG.DESC"
+                  )}
+                />
+              )}
+          </Form.Item>
+        </Form>
+      </Card> */}
     </>
   );
 }

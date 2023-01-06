@@ -21,17 +21,19 @@ import SearchApi from "./components/SearchApi";
 import AddAndUpdateApiDoc from "./components/AddAndUpdateApiDoc";
 import ApiInfo from "./components/ApiInfo";
 import TagInfo from "./components/TagInfo";
-import { getDocMenus, getApiDetail, addApi, updateApi, deleteApi, getTagDetail, deleteTag} from "../../services/api";
+import { getDocMenus, getApiDetail, addApi, updateApi, deleteApi, getTagDetail, deleteTag, addTag,updateTag} from "../../services/api";
 import ApiContext from "./components/ApiContext";
+import AddAndUpdateTag from "./components/AddAndUpdateTag";
 
 function ApiDoc() {
   const [tagDetail, setTagDetail] = useState({});
   const [apiDetail, setApiDetail] = useState({});
   const [apiData, setApiData] = useState({});
+  const [openTag, setOpenTag] = useState(false);
   const [open, setOpen] = useState(false);
   const [flag, setflag] = useState('add');
 
-  const [initTagValue,setInitTagValue] = useState({
+  const [initialTagValue,setInitalTagValue] = useState({
     id: '',
     name: '',
     ext: '',
@@ -77,6 +79,23 @@ function ApiDoc() {
       setApiData(data);
     }
   };
+  const handleRightSelectNode = async (_, e) => {
+    const {
+      node: {
+        props: {
+          dataRef: { id, isLeaf,isTag}
+        }
+      }
+    } = e;
+    if (isLeaf) {
+      if (!id) {
+        const targetId = _
+        if(isTag) {
+          handleAddTag(targetId)
+        }
+      }
+    }
+  };
   const handleSelectNode = async (_, e) => {
     const {
       node: {
@@ -90,11 +109,14 @@ function ApiDoc() {
     }
     if (!id) {
       const targetId = _
-      handleAddApi(targetId)
+      if(isTag) {
+        handleAddTag(targetId)
+      }else {
+        handleAddApi(targetId)
+      }
       return;
     }
     if (isTag) {
-        console.log(12222222);
         const { code, message: msg, data } = await getTagDetail(id);
     if (code !== 200) {
       message.error(msg);
@@ -113,12 +135,24 @@ function ApiDoc() {
     setApiDetail(data);
     }
   };
+  const handleAddTag = () => {
+    setOpenTag(true)
+  }
   const handleAddApi = (targetId) => {
     setflag('add')
     setInitialValue({
       tagIds: [targetId]
     });
     setOpen(true)
+  };
+  const callSaveOrUpdateTag = async (params) => {
+    let rs = (flag === 'add' ? await addTag({ ...params,parentTagId : "0"}) : await updateTag({ ...params, id: initialTagValue.id}));
+    if (rs.code !== 200) {
+      message.error(rs.msg);
+    } else {
+      setOpen(false)
+      location.reload()
+    }
   };
   const callSaveOrUpdateApi = async (params) => {
     let rs = (flag === 'add' ? await addApi({ ...params, tagIds: initialValue.tagIds[0] }) : await updateApi({ ...params, id: initialValue.id, tagIds: initialValue.tagIds }));
@@ -144,7 +178,7 @@ function ApiDoc() {
     setflag('update')
   };
   const handDelTag = async () => {
-    const { code, message:msg } = await deleteTag([initTagValue.id]);
+    const { code, message:msg } = await deleteTag([initialTagValue.id]);
     if (code !== 200) {
       message.error(msg);
     } else {
@@ -152,8 +186,8 @@ function ApiDoc() {
     }
   }
   const handleUpdateTag = async () => {
-    let queryData = await getTagDetail(initTagValue.id)
-    setInitTagValue(queryData.data);
+    let queryData = await getTagDetail(initialTagValue.id)
+    setInitalTagValue(queryData.data);
   }
   useEffect(() => {
     initData();
@@ -170,22 +204,25 @@ function ApiDoc() {
       <Card style={{ margin: 24 }}>
         {open && <AddAndUpdateApiDoc onCancel={() => setOpen(false)} handleOk={callSaveOrUpdateApi} {...initialValue} />
         }
+        {openTag && <AddAndUpdateTag onCancel={() => setOpenTag(false)} handleOk={callSaveOrUpdateTag} {...initialTagValue} />
+        }
         <Row gutter={24}>
           <Col span={6}>
-            <SearchApi onSelect={handleSelectNode} />
+            <SearchApi onSelect={handleSelectNode} onRightClick={handleRightSelectNode} />
           </Col>
           <Col span={18}>
-            {apiDetail.id ? (
-              <>
-                <ApiInfo handleUpdateApi={handleUpdateApi} handleDeleteApi={handleDeleteApi} />
-              </>
-            ) ? tagDetail.id : (
+            {tagDetail.id ? ((
               <>
                 <TagInfo handleUpdateTag={handleUpdateTag} handDelTag={handDelTag} />
               </>
-            )  : (
+            )) : apiDetail.id ? ((
+              <>
+                <ApiInfo handleUpdateApi={handleUpdateApi} handleDeleteApi={handleDeleteApi} />
+              </>
+            )) : ((
               <Empty description={false} style={{ padding: "160px 0" }} />
-            )}
+            ))
+            }
           </Col>
         </Row>
         <BackTop />

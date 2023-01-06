@@ -62,7 +62,13 @@ function SearchApi(props) {
           </TreeNode>
         );
       }
-      return <TreeNode key={item.key} {...item} dataRef={item} />;
+      return (
+        <TreeNode
+          key={item.key}
+          {...item}
+          dataRef={item}
+        />
+      );
     });
   };
 
@@ -72,16 +78,30 @@ function SearchApi(props) {
       message.error(msg);
       return;
     }
+    const arr =  data?.map((item, index) => ({
+      ...item,
+      title: item.name,
+      key: index.toString(),
+      isLeaf: !item.hasChildren,
+      isTag: true
+    })) || []
+
+    arr.push({
+      title: (
+        <>
+          <Text code>&nbsp;+&nbsp;</Text>
+        </>
+      ),
+      key: arr.length,
+      isLeaf: true,
+      isTag: true
+    })
+
     setApiTree(
-      data?.map((item, index) => ({
-        ...item,
-        title: item.name,
-        key: index.toString(),
-        isLeaf: !item.hasChildren,
-        isTag: true
-      })) || []
+      arr
     );
   };
+
 
   const onLoadData = async treeNode => {
     if (treeNode.props.children) {
@@ -145,6 +165,7 @@ function SearchApi(props) {
           "SHENYU.DOCUMENT.APIDOC.SEARCH.PLACEHOLDER"
         )}
       /> */}
+      console.log(234)
       {apiTree?.length ? (
         <Tree loadData={onLoadData} onSelect={onSelect}>
           {renderTreeNodes(apiTree)}
