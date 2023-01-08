@@ -165,7 +165,6 @@ function SearchApi(props) {
           "SHENYU.DOCUMENT.APIDOC.SEARCH.PLACEHOLDER"
         )}
       /> */}
-      console.log(234)
       {apiTree?.length ? (
         <Tree loadData={onLoadData} onSelect={onSelect}>
           {renderTreeNodes(apiTree)}

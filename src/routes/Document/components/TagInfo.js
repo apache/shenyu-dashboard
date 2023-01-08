@@ -16,20 +16,14 @@
  */
 
 import { Typography, Card, Form, Input} from "antd";
+import Paragraph from "antd/lib/skeleton/Paragraph";
 import React, { useContext } from "react";
 import TagContext from "./TagContext";
-import { getIntlContent } from "../../../utils/IntlUtils";
 
-const {
-  onCancel,
-  form,
-  name = "",
-  tagDesc = ""
 
-} = this.props;
-const { Title, Text, Paragraph } = Typography;
-const { getFieldDecorator } = form;
+const { Title, Text } = Typography;
 
+const abc = "33333";
 const formItemLayout = {
   labelCol: {
     sm: { span: 5 }
@@ -44,49 +38,17 @@ function TagInfo(props) {
     tagData: { envProps = [] },
     tagDetail
   } = useContext(TagContext);
-  let documentJSON = {};
-  let {handleUpdateTag,} = props
-  try {
-    documentJSON = JSON.parse(document);
-    documentJSON.errorCode = [];
-    Object.keys(documentJSON.responses).forEach(key => {
-      documentJSON.errorCode.push({
-        code: key,
-        description: documentJSON.responses[key].description,
-        content: documentJSON.responses[key].content
-      });
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-  }
 
   return (
     <>
-      {/* <Card>
-        <Form onSubmit={handleSubmit} className="login-form">
-          <Form.Item
-            label={`${getIntlContent("SHENYU.DOCUMENT.TAG.DESC")}`}
-            {...formItemLayout}
-          >
-            {getFieldDecorator("tagDesc", {
-                rules: [
-                  {
-                    required: true,
-                    message: getIntlContent("SHENYU.DOCUMENT.TAG.DESC")
-                  }
-                ],
-                initialValue: tagDesc
-              })(
-                <Input
-                  placeholder={getIntlContent(
-                    "SHENYU.DOCUMENT.TAG.DESC"
-                  )}
-                />
-              )}
-          </Form.Item>
-        </Form>
-      </Card> */}
+      <Form>
+        <Form.Item
+          label="Password"
+          name="password"
+          value
+          rules={[{ required: true, message: 'Please input your password!' }]}
+        />
+      </Form>
     </>
   );
 }
