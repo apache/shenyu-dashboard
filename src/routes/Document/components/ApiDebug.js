@@ -15,36 +15,23 @@
  * limitations under the License.
  */
 
-import {
-  Typography,
-  Form,
-  Input,
-  Button,
-  Radio,
-  Row,
-  Col,
-  Tree,
-  Empty,
-  Tabs
-} from "antd";
-import React, {
-  useEffect,
-  useState,
-  forwardRef,
-  useImperativeHandle,
-  createRef,
-  useContext
-} from "react";
+import {Button, Col, Empty, Form, Icon, Input, message, Row, Tabs, Typography} from "antd";
+import React, {createRef, forwardRef, useContext, useEffect, useImperativeHandle, useState} from "react";
 import ReactJson from "react-json-view";
 import fetch from "dva/fetch";
-import { sandboxProxyGateway } from "../../../services/api";
+import {
+  createOrUpdateMockRequest,
+  deleteMockRequest,
+  getApiMockRequest,
+  sandboxProxyGateway
+} from "../../../services/api";
 import ApiContext from "./ApiContext";
 import HeadersEditor from "./HeadersEditor";
-import { getIntlContent } from "../../../utils/IntlUtils";
+import {getIntlContent} from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
+import {Method} from "./globalData";
 
 const { Title, Text, Paragraph } = Typography;
-const { TreeNode } = Tree;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 
@@ -54,10 +41,62 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   }));
 
   const {
-    apiDetail: { apiPath, httpMethodList, requestHeaders, requestParameters },
-    apiData: { appKey, gatewayUrl, cookie }
+    apiDetail,
+    apiMock
   } = useContext(ApiContext);
-  const [questJson, setRequestJson] = useState({});
+  const [questJson, setRequestJson] = useState(JSON.parse(apiMock.body || '{}'));
+  const [initialValue, setInitialValue] = useState({
+    id: apiMock.id,
+    apiId: apiDetail.id,
+    host: apiMock.host,
+    port: apiMock.port,
+    url: apiMock.url,
+    pathVariable: apiMock.pathVariable,
+    query: apiMock.query,
+    header: apiMock.header,
+    body: apiMock.body
+  });
+  const [activeKey, setActiveKey] = useState("1");
+
+  useEffect(
+    () => {
+      setInitialValue({
+        id: apiMock.id,
+        apiId: apiDetail.id,
+        host: apiMock.host,
+        port: apiMock.port,
+        url: apiMock.url,
+        pathVariable: apiMock.pathVariable,
+        query: apiMock.query,
+        header: apiMock.header,
+        body: apiMock.body
+      });
+      form.resetFields("requestUrl");
+      setRequestJson(JSON.parse(apiMock.body || '{}'));
+    },
+    [apiMock.id]
+  );
+
+  useEffect(
+    () => {
+      form.setFieldsValue({httpMethod: Method?.[apiDetail.httpMethod]})
+    },
+    [apiDetail.httpMethod]
+  );
+
+  useEffect(
+    () => {
+      form.setFieldsValue({headers: initialValue.header || "{}"})
+    },
+    [initialValue.header]
+  );
+
+  useEffect(
+    () => {
+      form.setFieldsValue({querys: initialValue.query || "{}"})
+    },
+    [initialValue.query]
+  );
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -69,78 +108,80 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
         });
       }
     });
-  };
-
-  const createRequestJson = (params = []) => {
-    const exampleJSON = {};
-    const key = [];
-    const loopExample = (data, obj) => {
-      data.forEach(item => {
-        const { name, refs, example, type } = item;
-        key.push(name);
-        switch (type) {
-          case "array":
-            if (Array.isArray(refs)) {
-              obj[name] = [{}];
-              key.push(0);
-              loopExample(refs, obj[name][0]);
-              key.pop();
-            } else {
-              obj[name] = [];
-            }
-            break;
-          case "object":
-            obj[name] = {};
-            if (Array.isArray(refs)) {
-              loopExample(refs, obj[name]);
-            }
-            break;
-          default:
-            obj[name] = example;
-            break;
-        }
-        key.pop();
-      });
-    };
-
-    loopExample(params, exampleJSON);
-    setRequestJson(exampleJSON);
-  };
-
-  const renderTreeNode = (data, indexArr = []) => {
-    return data.map((item, index) => {
-      const { name, type, required, description } = item;
-      const TreeTitle = (
-        <>
-          <Text strong>{name}</Text>
-          &nbsp;<Text code>{type}</Text>
-          &nbsp;
-          {required ? (
-            <Text type="danger">required</Text>
-          ) : (
-            <Text type="warning">optional</Text>
-          )}
-          &nbsp;<Text type="secondary">{description}</Text>
-        </>
-      );
-      return (
-        <TreeNode key={[...indexArr, index].join("-")} title={TreeTitle}>
-          {item.refs && renderTreeNode(item.refs, [...indexArr, index])}
-        </TreeNode>
-      );
-    });
-  };
+  }
 
   const updateJson = obj => {
     setRequestJson(obj.updated_src);
   };
 
-  useEffect(
-    () => {
-      createRequestJson(requestParameters);
-    },
-    [requestParameters]
-  );
+  const handlerSaveOrUpdate  = async () => {
+    ref.current.form.validateFieldsAndScroll( async (errors) => {
+      if (!errors) {
+        const fields = form.getFieldsValue();
+        let requestUrl = fields.requestUrl;
+        const url = new URL(requestUrl);
+        const params = {
+          ...initialValue,
+          apiId: apiDetail.id,
+          host: url.hostname,
+          port: url.port,
+          url: requestUrl,
+          header: fields.headers,
+          query: fields.querys,
+          body: JSON.stringify(questJson),
+          pathVariable: url.search || ''
+        }
+        let rs = await createOrUpdateMockRequest(params);
+        if (rs.code !== 200) {
+          message.error(rs.msg);
+        } else {
+          const { code, message: msg, data } = await getApiMockRequest(apiDetail.id);
+          if (code !== 200) {
+            message.error(msg);
+            return;
+          }
+          message.success(rs.message);
+          setInitialValue({...initialValue, id: data.id});
+        }
+      }
+    });
+  };
+
+  const handlerDelete = async () => {
+    if (initialValue.id) {
+      let rs = await deleteMockRequest(initialValue.id);
+      if (rs.code !== 200) {
+        message.error(rs.msg);
+      } else {
+        message.success(rs.message);
+      }
+    }
+    resetContext()
+  };
+
+  const resetContext = () => {
+    setInitialValue({
+      id: null,
+      apiId: apiDetail.id,
+      host: undefined,
+      port: null,
+      url: null,
+      pathVariable: null,
+      query: null,
+      header: null,
+      body: null
+    });
+    setRequestJson({});
+    form.resetFields("requestUrl");
+  }
+
+  const changeParamTab = (key) => {
+    setActiveKey(key);
+    let header = form.getFieldsValue().headers;
+    let headerJson = {...JSON.parse(header), "Content-type": key === '1' ? "application/json" : "application/x-www-form-urlencoded"};
+    // headerJson = {...headerJson, "Content-type": key === '1' ? "application/json" : "application/x-www-form-urlencoded"}
+    setInitialValue({...initialValue, header: JSON.stringify(headerJson)})
+  }
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -149,60 +190,34 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
       </Title>
       <FormItem label={getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS")}>
         {form.getFieldDecorator("requestUrl", {
-          initialValue: gatewayUrl + apiPath,
-          rules: [{ type: "string", required: true }]
+          // initialValue: initialValue.host?`${initialValue.host}:${initialValue.port}${initialValue.url}`:'',
+          initialValue: initialValue.url || '',
+          rules: [
+            {
+              type: "string",
+              required: true,
+              pattern: /^https?:\/\/([^:]+):(\d+)(\/.+)$/
+            }
+          ]
         })(<Input allowClear />)}
-      </FormItem>
-      <FormItem label="AppKey">
-        {form.getFieldDecorator("appKey", {
-          initialValue: appKey,
-          rules: [{ type: "string" }]
-        })(
-          <Input
-            allowClear
-            placeholder=" If the current API requires signature authentication, this parameter is required"
-          />
-        )}
-      </FormItem>
-      <FormItem label="Cookie">
-        {form.getFieldDecorator("cookie", {
-          initialValue: cookie,
-          rules: [{ type: "string" }]
-        })(
-          <Input
-            allowClear
-            placeholder="Fill in the real cookie value.(signature authentication and login free API ignore this item)"
-          />
-        )}
       </FormItem>
 
       <FormItem label="Headers">
         {form.getFieldDecorator("headers", {
-          initialValue: requestHeaders || [],
-          rules: [
-            {
-              validator: (rule, value, callback) => {
-                const errorRow = value.find(
-                  item => item.required && item.example === ""
-                );
-                if (errorRow) {
-                  callback(`${errorRow.name} is required`);
-                } else {
-                  callback();
-                }
-              }
-            }
-          ]
-        })(<HeadersEditor />)}
+          initialValue: initialValue.header,
+          rules: []
+        })(<HeadersEditor buttonText={getIntlContent("SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.ADD.HEADER")} mockId={apiMock.id} />)}
       </FormItem>
 
       <FormItem label={getIntlContent("SHENYU.COMMON.HTTP.METHOD")}>
         {form.getFieldDecorator("httpMethod", {
-          initialValue: httpMethodList?.[0]?.toLocaleUpperCase(),
+          initialValue: Method?.[apiDetail.httpMethod],
           rules: [{ type: "string", required: true }]
-        })(
-          <Radio.Group
-            options={httpMethodList?.map(v => v.toLocaleUpperCase())}
+        })
+        (
+          <Input
+            allowClear
+            readOnly={true}
           />
         )}
       </FormItem>
@@ -210,40 +225,68 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
         label={getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.PARAMETERS")}
         required
       />
-      <Row gutter={16}>
-        <Col span={14}>
-          <ReactJson
-            src={questJson}
-            theme="monokai"
-            displayDataTypes={false}
-            name={false}
-            onAdd={updateJson}
-            onEdit={updateJson}
-            onDelete={updateJson}
-            style={{ borderRadius: 4, padding: 16 }}
-          />
-        </Col>
-        <Col span={10}>
-          <div
-            style={{
-              borderRadius: 4,
-              border: "1px solid #e8e8e8",
-              overflow: "auto",
-              padding: 8
-            }}
-          >
-            {requestParameters && (
-              <Tree showLine defaultExpandAll>
-                {renderTreeNode(requestParameters)}
-              </Tree>
-            )}
-          </div>
-        </Col>
-      </Row>
+
+      <Tabs
+        activeKey={activeKey}
+        onChange={key => changeParamTab(key)}
+      >
+        <Tabs.TabPane
+          tab={
+            <>
+              <Icon type="file-text" />
+              BODY
+            </>
+          }
+          key="1"
+        >
+          <Row gutter={16}>
+            <Col span={14}>
+              <ReactJson
+                src={questJson}
+                theme="monokai"
+                displayDataTypes={false}
+                name={false}
+                onAdd={updateJson}
+                onEdit={updateJson}
+                onDelete={updateJson}
+                style={{ borderRadius: 4, padding: 16 }}
+              />
+            </Col>
+          </Row>
+        </Tabs.TabPane>
+
+        <Tabs.TabPane
+          tab={
+            <>
+              <Icon type="file-text" />
+              QUERY
+            </>
+          }
+          key="2"
+        >
+
+          <FormItem>
+            {form.getFieldDecorator("querys", {
+              initialValue: initialValue.query || "{}",
+              rules: []
+            })(<HeadersEditor buttonText={getIntlContent("SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.ADD.QUERY")} mockId={apiMock.id} />)}
+          </FormItem>
+        </Tabs.TabPane>
+      </Tabs>
+
+
       <AuthButton perms="document:apirun:send">
         <FormItem label=" " colon={false}>
           <Button htmlType="submit" type="primary">
             {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.SEND.REQUEST")}
+          </Button>
+
+          <Button onClick={handlerSaveOrUpdate}>
+            {getIntlContent("SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.SAVE")}
+          </Button>
+
+          <Button onClick={handlerDelete}>
+            {getIntlContent("SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.RESET")}
           </Button>
         </FormItem>
       </AuthButton>
@@ -259,16 +302,12 @@ function ApiDebug() {
   } = useContext(ApiContext);
   const [responseInfo, setResponseInfo] = useState({});
   const [activeKey, setActiveKey] = useState("2");
-
   const formRef = createRef();
 
   const handleSubmit = async values => {
-    const { headers, ...params } = values;
-    const headersObj = {};
-    headers.forEach(item => {
-      headersObj[item.name] = item.example;
-    });
-    params.headers = headersObj;
+    const { headers, requestUrl, ...params } = values;
+    params.headers = JSON.parse(headers);
+    params.requestUrl = requestUrl;
     fetch(sandboxProxyGateway(), {
       method: "POST",
       headers: {
@@ -291,11 +330,13 @@ function ApiDebug() {
     () => {
       setResponseInfo({});
       // eslint-disable-next-line no-unused-expressions
-      formRef.current?.form.resetFields(["method", "headers"]);
+      // formRef.current?.form.resetFields(["method", "headers"]);
+      // formRef.current?.refreshData;
       setActiveKey("2");
     },
     [id]
   );
+
 
   return (
     <>
