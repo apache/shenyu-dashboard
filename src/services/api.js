@@ -823,6 +823,30 @@ export function getApiDetail(id) {
   });
 }
 
+/* queryMockRequest */
+export function getApiMockRequest(apiId) {
+  return request(`${baseUrl}/mock/${apiId}`, {
+    method: `GET`
+  });
+}
+
+/* createOrUpdateMockRequest */
+export function createOrUpdateMockRequest(params) {
+  return request(`${baseUrl}/mock/insertOrUpdate`, {
+    method: `POST`,
+    body: {
+      ...params
+    }
+  })
+}
+
+/* createOrUpdateMockRequest */
+export function deleteMockRequest(id) {
+  return request(`${baseUrl}/mock/${id}`, {
+    method: `DELETE`
+  })
+}
+
 /** addApi */
 export function addApi(params) {
   return request(`${baseUrl}/api`, {

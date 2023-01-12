@@ -20,12 +20,13 @@ import React, { useEffect, useState } from "react";
 import SearchApi from "./components/SearchApi";
 import AddAndUpdateApiDoc from "./components/AddAndUpdateApiDoc";
 import ApiInfo from "./components/ApiInfo";
-import { getDocMenus, getApiDetail, addApi, updateApi, deleteApi } from "../../services/api";
+import { getDocMenus, getApiDetail, addApi, updateApi, deleteApi, getApiMockRequest} from "../../services/api";
 import ApiContext from "./components/ApiContext";
 
 function ApiDoc() {
   const [apiDetail, setApiDetail] = useState({});
   const [apiData, setApiData] = useState({});
+  const [apiMock, setApiMock] = useState({});
   const [open, setOpen] = useState(false);
   const [flag, setflag] = useState('add');
 
@@ -93,6 +94,13 @@ function ApiDoc() {
       id
     });
     setApiDetail(data);
+
+    const { code: mockCode, message: mockMsg, data: mockData} = await getApiMockRequest(id);
+    if (mockCode !== 200) {
+      message.error(mockMsg);
+      return;
+    }
+    setApiMock(mockData);
   };
   const handleAddApi = (targetId) => {
     setflag('add')
@@ -133,7 +141,8 @@ function ApiDoc() {
     <ApiContext.Provider
       value={{
         apiDetail,
-        apiData
+        apiData,
+        apiMock
       }}
     >
       <Card style={{ margin: 24 }}>
