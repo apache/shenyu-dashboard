@@ -15,143 +15,165 @@
 	* limitations under the License.
 	*/
 
-import { Tree, Empty, message, Typography } from "antd";
-import React, { useEffect, useState } from "react";
-// import ApiContext from "./ApiContext";
-// import { getIntlContent } from "../../../utils/IntlUtils";
-import { getRootTag, getParentTagId, getApi } from "../../../services/api";
-import { Method } from "./globalData";
+  import { Tree, Empty, message, Typography } from "antd";
+  import React, { useEffect, useState } from "react";
+  // import ApiContext from "./ApiContext";
+  // import { getIntlContent } from "../../../utils/IntlUtils";
+  import { getRootTag, getParentTagId, getApi } from "../../../services/api";
+  import { Method } from "./globalData";
 
-const { Text } = Typography;
-const { TreeNode } = Tree;
-// const { Search } = Input;
+  const { Text } = Typography;
+  const { TreeNode } = Tree;
+  // const { Search } = Input;
 
-function SearchApi(props) {
-  const { onSelect } = props;
-  // const [searchValue, setSearchValue] = useState("");
+  function SearchApi(props) {
+    const { onSelect } = props;
+    // const [searchValue, setSearchValue] = useState("");
 
-  // const handleSearchChange = e => {
-  //   const { value } = e.target;
-  //   const keys = [];
-  //   const findSearchKeys = data =>
-  //     data.forEach(item => {
-  //       if (item.label.indexOf(value) > -1 || item.name?.indexOf(value) > -1) {
-  //         keys.push(item.key);
-  //       }
-  //       if (Array.isArray(item.children)) {
-  //         findSearchKeys(item.children);
-  //       }
-  //     });
-  //   setSearchValue(value);
-  // };
+    // const handleSearchChange = e => {
+    //   const { value } = e.target;
+    //   const keys = [];
+    //   const findSearchKeys = data =>
+    //     data.forEach(item => {
+    //       if (item.label.indexOf(value) > -1 || item.name?.indexOf(value) > -1) {
+    //         keys.push(item.key);
+    //       }
+    //       if (Array.isArray(item.children)) {
+    //         findSearchKeys(item.children);
+    //       }
+    //     });
+    //   setSearchValue(value);
+    // };
 
-  const [apiTree, setApiTree] = useState([]);
+    const [apiTree, setApiTree] = useState([]);
 
-  const renderTreeNodes = data => {
-    return data.map(item => {
-      if (item.children) {
+    const renderTreeNodes = data => {
+      return data.map(item => {
+        if (item.children) {
+          return (
+            <TreeNode
+              title={item.title}
+              key={item.key}
+              dataRef={item}
+              selectable={item.isLeaf}
+              isLeaf={item.isLeaf}
+            >
+              {renderTreeNodes(item.children)}
+            </TreeNode>
+          );
+        }
         return (
           <TreeNode
-            title={item.title}
             key={item.key}
+            {...item}
             dataRef={item}
-            selectable={item.isLeaf}
-            isLeaf={item.isLeaf}
-          >
-            {renderTreeNodes(item.children)}
-          </TreeNode>
+          />
         );
-      }
-      return <TreeNode key={item.key} {...item} dataRef={item} />;
-    });
-  };
+      });
+    };
 
-  const queryRootTag = async () => {
-    const { code, data = [], message: msg } = await getRootTag();
-    if (code !== 200) {
-      message.error(msg);
-      return;
-    }
-    setApiTree(
-      data?.map((item, index) => ({
+    const queryRootTag = async () => {
+      const { code, data = [], message: msg } = await getRootTag();
+      if (code !== 200) {
+        message.error(msg);
+        return;
+      }
+      const arr =  data?.map((item, index) => ({
         ...item,
         title: item.name,
         key: index.toString(),
-        isLeaf: !item.hasChildren
+        isLeaf: !item.hasChildren,
+        isTag: true
       })) || []
-    );
-  };
 
-  const onLoadData = async treeNode => {
-    if (treeNode.props.children) {
-      return Promise.resolve();
-    }
-    const { id, hasChildren } = treeNode.props.dataRef;
-    if (hasChildren) {
-      const { code, message: msg, data } = await getParentTagId(id);
-      if (code !== 200) {
-        message.error(msg);
-        return Promise.reject();
-      }
-      treeNode.props.dataRef.children = data?.map((item, index) => ({
-        ...item,
-        title: item.name,
-        key: `${treeNode.props.eventKey}-${index}`
-      }));
-    } else {
-      const { code, message: msg, data } = await getApi(id);
-      if (code !== 200) {
-        message.error(msg);
-        return Promise.reject();
-      }
-      const { dataList } = data;
-      treeNode.props.dataRef.children = dataList?.map((item, index) => ({
-        ...item,
-        title: (
-          <>
-            <Text code>{Method[item.httpMethod]}</Text> {item.apiPath}
-          </>
-        ),
-        key: `${treeNode.props.eventKey}-${index}`,
-        isLeaf: true
-      }))
-      treeNode.props.dataRef.children.push({
+      arr.push({
         title: (
           <>
             <Text code>&nbsp;+&nbsp;</Text>
           </>
         ),
-        key: treeNode.props.dataRef.id,
-        isLeaf: true
+        key: arr.length,
+        isLeaf: true,
+        isTag: true
       })
-      ;
-    }
-    setApiTree([...apiTree]);
-    return Promise.resolve();
-  };
 
-  useEffect(() => {
-    queryRootTag();
-  }, []);
+      setApiTree(
+        arr
+      );
+    };
 
-  return (
-    <div style={{ overflow: "auto" }}>
-      {/* <Search
-        allowClear
-        onChange={handleSearchChange}
-        placeholder={getIntlContent(
-          "SHENYU.DOCUMENT.APIDOC.SEARCH.PLACEHOLDER"
+
+    const onLoadData = async treeNode => {
+      if (treeNode.props.children) {
+        return Promise.resolve();
+      }
+      const { id, hasChildren } = treeNode.props.dataRef;
+      if (hasChildren) {
+        const { code, message: msg, data } = await getParentTagId(id);
+        if (code !== 200) {
+          message.error(msg);
+          return Promise.reject();
+        }
+        treeNode.props.dataRef.children = data?.map((item, index) => ({
+          ...item,
+          title: item.name,
+          key: `${treeNode.props.eventKey}-${index}`,
+          isTag: true
+        }));
+      } else {
+        const { code, message: msg, data } = await getApi(id);
+        if (code !== 200) {
+          message.error(msg);
+          return Promise.reject();
+        }
+        const { dataList } = data;
+        treeNode.props.dataRef.children = dataList?.map((item, index) => ({
+          ...item,
+          title: (
+            <>
+              <Text code>{Method[item.httpMethod]}</Text> {item.apiPath}
+            </>
+          ),
+          key: `${treeNode.props.eventKey}-${index}`,
+          isLeaf: true
+        }))
+        treeNode.props.dataRef.children.push({
+          title: (
+            <>
+              <Text code>&nbsp;+&nbsp;</Text>
+            </>
+          ),
+          key: treeNode.props.dataRef.id,
+          isLeaf: true
+        })
+        ;
+      }
+      setApiTree([...apiTree]);
+      return Promise.resolve();
+    };
+
+    useEffect(() => {
+      queryRootTag();
+    }, []);
+
+    return (
+      <div style={{ overflow: "auto" }}>
+        {/* <Search
+          allowClear
+          onChange={handleSearchChange}
+          placeholder={getIntlContent(
+            "SHENYU.DOCUMENT.APIDOC.SEARCH.PLACEHOLDER"
+          )}
+        /> */}
+        {apiTree?.length ? (
+          <Tree loadData={onLoadData} onSelect={onSelect}>
+            {renderTreeNodes(apiTree)}
+          </Tree>
+        ) : (
+          <Empty style={{ padding: "80px 0" }} description={false} />
         )}
-      /> */}
-      {apiTree?.length ? (
-        <Tree loadData={onLoadData} onSelect={onSelect}>
-          {renderTreeNodes(apiTree)}
-        </Tree>
-      ) : (
-        <Empty style={{ padding: "80px 0" }} description={false} />
-      )}
-    </div>
-  );
-}
+      </div>
+    );
+  }
 
-export default SearchApi;
+  export default SearchApi;
