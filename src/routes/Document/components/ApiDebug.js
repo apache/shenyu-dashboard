@@ -179,7 +179,6 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
     setActiveKey(key);
     let header = form.getFieldsValue().headers;
     let headerJson = {...JSON.parse(header), "Content-type": key === '1' ? "application/json" : "application/x-www-form-urlencoded"};
-    // headerJson = {...headerJson, "Content-type": key === '1' ? "application/json" : "application/x-www-form-urlencoded"}
     setInitialValue({...initialValue, header: JSON.stringify(headerJson)})
   }
 
@@ -190,7 +189,6 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
       </Title>
       <FormItem label={getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS")}>
         {form.getFieldDecorator("requestUrl", {
-          // initialValue: initialValue.host?`${initialValue.host}:${initialValue.port}${initialValue.url}`:'',
           initialValue: initialValue.url || '',
           rules: [
             {
@@ -329,9 +327,6 @@ function ApiDebug() {
   useEffect(
     () => {
       setResponseInfo({});
-      // eslint-disable-next-line no-unused-expressions
-      // formRef.current?.form.resetFields(["method", "headers"]);
-      // formRef.current?.refreshData;
       setActiveKey("2");
     },
     [id]
