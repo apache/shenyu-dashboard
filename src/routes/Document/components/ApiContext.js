@@ -19,6 +19,6 @@ import { createContext } from "react";
 
 export default createContext({
   apiDetail: {},
-  tagDetail: {},
   apiData: {},
+  tagDetail: {}
 });
