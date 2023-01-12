@@ -20,5 +20,14 @@ import { createContext } from "react";
 export default createContext({
   apiDetail: {},
   apiData: {},
+<<<<<<< HEAD
+<<<<<<< HEAD
   tagDetail: {}
+=======
+  tagDetail: {},
+  tagData: {}
+>>>>>>> 3313ba7 (feat:fix)
+=======
+  tagDetail: {}
+>>>>>>> 5e22996 (fix)
 });
