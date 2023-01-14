@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Typography, Table, Tabs, Icon, Row, Col , Button } from "antd";
+import { Typography, Table, Tabs, Icon, Row, Col, Button } from "antd";
 import React, { useContext } from "react";
 import ApiDebug from "./ApiDebug";
 import ApiContext from "./ApiContext";
@@ -30,8 +30,9 @@ function ApiInfo(props) {
     apiDetail,
     apiDetail: { document, responseParameters, requestHeaders }
   } = useContext(ApiContext);
+  const { handleUpdate, handleDelete } = props;
+
   let documentJSON = {};
-  let {handleUpdateApi,handleDeleteApi} = props
   try {
     documentJSON = JSON.parse(document);
     documentJSON.errorCode = [];
@@ -135,6 +136,7 @@ function ApiInfo(props) {
       dataIndex: "envDesc"
     }
   ];
+
   return (
     <>
       <Tabs>
@@ -147,11 +149,23 @@ function ApiInfo(props) {
           }
           key="1"
         >
-          <Title level={2}>
-            {apiDetail.tags[apiDetail.tags.length - 1].name}
-            <Button style={{float:'right'}} onClick={handleDeleteApi}>delete</Button>
-            <Button style={{float:'right'}} onClick={handleUpdateApi}>edit</Button>
-          </Title>
+          <Row gutter={24}>
+            <Col span={12}>
+              <Title level={2}>
+                {apiDetail.tags[apiDetail.tags.length - 1].name}
+              </Title>
+            </Col>
+            <Col span={12} style={{ textAlign: "right" }}>
+              <Button onClick={handleUpdate}>
+                {getIntlContent("SHENYU.BUTTON.SYSTEM.EDIT")}
+              </Button>
+              &nbsp;&nbsp;
+              <Button ghost type="danger" onClick={handleDelete}>
+                {getIntlContent("SHENYU.BUTTON.SYSTEM.DELETE")}
+              </Button>
+            </Col>
+          </Row>
+
           <Paragraph>
             <Title level={4}>
               {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.INTERFACE.ADDRESS")}

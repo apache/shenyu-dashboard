@@ -15,38 +15,30 @@
  * limitations under the License.
  */
 
+/* eslint-disable no-unused-expressions */
+
 import { Col, Row, Card, BackTop, Empty, message } from "antd";
 import React, { useEffect, useState } from "react";
 import SearchApi from "./components/SearchApi";
-import AddAndUpdateApiDoc from "./components/AddAndUpdateApiDoc";
 import ApiInfo from "./components/ApiInfo";
-import { getDocMenus, getApiDetail, addApi, updateApi, deleteApi, getApiMockRequest} from "../../services/api";
+import TagInfo from "./components/TagInfo";
+import {
+  getDocMenus,
+  getApiDetail,
+  deleteApi,
+  getTagDetail,
+  deleteTag,
+  getApiMockRequest
+} from "../../services/api";
 import ApiContext from "./components/ApiContext";
 
 function ApiDoc() {
+  const [tagDetail, setTagDetail] = useState({});
   const [apiDetail, setApiDetail] = useState({});
   const [apiData, setApiData] = useState({});
   const [apiMock, setApiMock] = useState({});
-  const [open, setOpen] = useState(false);
-  const [flag, setflag] = useState('add');
 
-  const [initialValue, setInitialValue] = useState({
-    id: '',
-    contextPath: '',
-    apiPath: '',
-    httpMethod: '',
-    consume: '',
-    produce: '',
-    version: '',
-    rpcType: '',
-    state: '',
-    ext: '',
-    apiOwner: '',
-    apiDesc: '',
-    apiSource: '',
-    document: '',
-    tagIds: []
-  })
+  const searchApiRef = React.createRef();
 
   const initData = async () => {
     const { code, data = {} } = await getDocMenus();
@@ -69,69 +61,74 @@ function ApiDoc() {
       setApiData(data);
     }
   };
+
   const handleSelectNode = async (_, e) => {
     const {
       node: {
-        props: {
-          dataRef: { id, isLeaf }
-        }
+        props: { id, isLeaf }
       }
     } = e;
-    if (!isLeaf) {
-      return;
-    }
-    if (!id) {
-      const targetId = _
-      handleAddApi(targetId)
-      return;
-    }
-    const { code, message: msg, data } = await getApiDetail(id);
-    if (code !== 200) {
-      message.error(msg);
-      return;
-    }
-    setInitialValue({
-      id
-    });
-    setApiDetail(data);
+    if (isLeaf) {
+      const { code, message: msg, data } = await getApiDetail(id);
+      if (code !== 200) {
+        message.error(msg);
+        return;
+      }
+      setApiDetail(data);
+      setTagDetail({});
 
-    const { code: mockCode, message: mockMsg, data: mockData} = await getApiMockRequest(id);
-    if (mockCode !== 200) {
-      message.error(mockMsg);
-      return;
-    }
-    setApiMock(mockData);
-  };
-  const handleAddApi = (targetId) => {
-    setflag('add')
-    setInitialValue({
-      tagIds: [targetId]
-    });
-    setOpen(true)
-  };
-  const callSaveOrUpdateApi = async (params) => {
-    let rs = (flag === 'add' ? await addApi({ ...params, tagIds: initialValue.tagIds[0] }) : await updateApi({ ...params, id: initialValue.id, tagIds: initialValue.tagIds }));
-    if (rs.code !== 200) {
-      message.error(rs.msg);
+      const {
+        code: mockCode,
+        message: mockMsg,
+        data: mockData
+      } = await getApiMockRequest(id);
+      if (mockCode !== 200) {
+        message.error(mockMsg);
+        return;
+      }
+      setApiMock(mockData);
     } else {
-      setOpen(false)
-      location.reload()
+      const { code, message: msg, data } = await getTagDetail(id);
+      if (code !== 200) {
+        message.error(msg);
+        return;
+      }
+      setTagDetail(data);
+      setApiDetail({});
     }
   };
-  const handleDeleteApi = async () => {
-    const { code, message: msg } = await deleteApi([initialValue.id]);
+
+  const handleDelete = async () => {
+    let res = {};
+    if (tagDetail.id) {
+      res = await deleteTag([tagDetail.id]);
+    }
+    if (apiDetail.id) {
+      res = await deleteApi([apiDetail.id]);
+    }
+    const { code, message: msg } = res;
     if (code !== 200) {
       message.error(msg);
     } else {
-      location.reload()
+      message.success(msg);
+      searchApiRef.current?.updateTree();
     }
   };
-  const handleUpdateApi = async () => {
-    let queryData = await getApiDetail(initialValue.id)
-    setInitialValue(queryData.data);
-    setOpen(true)
-    setflag('update')
-  }
+
+  const handleUpdate = () => {
+    if (tagDetail.id) {
+      searchApiRef.current?.addOrUpdateTag(tagDetail);
+    }
+    if (apiDetail.id) {
+      searchApiRef.current?.addOrUpdateApi(apiDetail);
+    }
+  };
+
+  // eslint-disable-next-line no-unused-vars
+  const handleAfterUpdate = data => {
+    setApiDetail({});
+    setTagDetail({});
+  };
 
   useEffect(() => {
     initData();
@@ -142,24 +139,36 @@ function ApiDoc() {
       value={{
         apiDetail,
         apiData,
-        apiMock
+        apiMock,
+        tagDetail
       }}
     >
       <Card style={{ margin: 24 }}>
-        {open && <AddAndUpdateApiDoc onCancel={() => setOpen(false)} handleOk={callSaveOrUpdateApi} {...initialValue} />
-        }
         <Row gutter={24}>
           <Col span={6}>
-            <SearchApi onSelect={handleSelectNode} />
+            <SearchApi
+              onSelect={handleSelectNode}
+              ref={searchApiRef}
+              afterUpdate={handleAfterUpdate}
+            />
           </Col>
           <Col span={18}>
+            {tagDetail.id ? (
+              <TagInfo
+                handleUpdate={handleUpdate}
+                handleDelete={handleDelete}
+              />
+            ) : null}
             {apiDetail.id ? (
-              <>
-                <ApiInfo handleUpdateApi={handleUpdateApi} handleDeleteApi={handleDeleteApi} />
-              </>
-            ) : (
-              <Empty description={false} style={{ padding: "160px 0" }} />
-            )}
+              <ApiInfo
+                handleUpdate={handleUpdate}
+                handleDelete={handleDelete}
+              />
+            ) : null}
+            {!tagDetail.id &&
+              !apiDetail.id && (
+                <Empty description={false} style={{ padding: "160px 0" }} />
+              )}
           </Col>
         </Row>
         <BackTop />
