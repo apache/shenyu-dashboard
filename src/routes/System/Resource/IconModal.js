@@ -451,9 +451,9 @@ export default class IconModal extends Component {
         />
         <Card className={styles.iconCard}>
           {
-            Object.keys(iconMap).map(groupName=>{
+            Object.keys(iconMap).map((groupName, index)=>{
                 return (
-                  <Fragment>
+                  <Fragment key={index}>
                     <h4>{getIntlContent(groupName) || groupName}</h4>
                     <div className={styles.iconList}>
                       {iconMap[groupName].map(icon => {
