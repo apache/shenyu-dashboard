@@ -178,7 +178,7 @@ class AddModal extends Component {
             })(
               <Input
                 readOnly
-                placeholder={!icon&&getIntlContent("SHENYU.SYSTEM.ICON.INPUT")}
+                placeholder={getIntlContent("SHENYU.SYSTEM.ICON.INPUT")}
                 prefix={(this.state.icon||icon)&&<Icon type={this.state.icon||icon} />}
                 suffix={
                   <Tooltip title={getIntlContent("SHENYU.SYSTEM.ICON.INPUT")}>
