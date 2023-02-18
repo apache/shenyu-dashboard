@@ -32,6 +32,7 @@ import AuthRoute, {checkMenuAuth, getAuthMenus} from "../utils/AuthRoute";
 import {getMenuData} from "../common/menu";
 import logo from "../assets/logo.svg";
 import TitleLogo from "../assets/TitleLogo.svg";
+import {getIntlContent} from "../utils/IntlUtils";
 
 const MyContext = React.createContext();
 
@@ -96,10 +97,11 @@ const query = {
   }
 };
 
-@connect(({ global, loading }) => ({
+@connect(({ global, resource, loading }) => ({
   plugins: global.plugins,
+  menuTree: resource.menuTree,
   permissions: global.permissions,
-  loading: loading.effects["global/fetchPlugins"]
+  loading: loading.effects["resource/fetchMenuTree"] || loading.effects["global/fetchPlugins"]
 }))
 class BasicLayout extends React.PureComponent {
   static childContextTypes = {
@@ -137,6 +139,9 @@ class BasicLayout extends React.PureComponent {
     dispatch({
       type: "global/fetchPlatform"
     });
+    dispatch({
+      type: "resource/fetchMenuTree"
+    })
     dispatch({
       type: "global/fetchPlugins",
       payload: {
@@ -218,12 +223,36 @@ class BasicLayout extends React.PureComponent {
       match,
       location,
       plugins,
+      menuTree,
       permissions,
       dispatch
     } = this.props;
     const { localeName, pluginsLoaded } = this.state;
     const bashRedirect = this.getBaseRedirect();
     let menus = getMenuData();
+    if (menuTree.length > 0) {
+      menus = menus.slice(0, 1);
+      menuTree.forEach(item => {
+        if (item.name !== 'plug') {
+          let title = getIntlContent(item.meta.title);
+          menus.push({
+            name : title === '' ? item.meta.title : title,
+            icon : item.meta.icon,
+            path : item.url,
+            locale : item.meta.title,
+            children: item.children.map(child => {
+              let childTitle = getIntlContent(child.meta.title);
+              return {
+                name : childTitle === '' ? child.meta.title : childTitle,
+                icon : child.meta.icon,
+                path : child.url,
+                locale : child.meta.title,
+              };
+            })
+          });
+        }
+      });
+    }
 
     const menuMap = {};
     plugins.forEach(item => {
