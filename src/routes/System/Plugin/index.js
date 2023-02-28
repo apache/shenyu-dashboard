@@ -149,7 +149,7 @@ export default class Plugin extends Component {
                   {...plugin}
                   {...pluginConfigList}
                   handleOk={values => {
-                    const { name, enabled, id, role, config, sort } = values;
+                    const { name, enabled, id, role, config, sort, file } = values;
                     const enabledStr = enabled?'1':'0';
                     dispatch({
                       type: "plugin/update",
@@ -159,7 +159,8 @@ export default class Plugin extends Component {
                         name,
                         enabled,
                         id,
-                        sort
+                        sort,
+                        file
                       },
                       fetchValue: {
                         name: pluginName,
@@ -254,7 +255,7 @@ export default class Plugin extends Component {
           disabled={false}
           handleOk={values => {
             const { dispatch } = this.props;
-            const { name, enabled, role, config, sort } = values;
+            const { name, enabled, role, config, sort, file } = values;
             dispatch({
               type: "plugin/add",
               payload: {
@@ -262,7 +263,8 @@ export default class Plugin extends Component {
                 config,
                 role,
                 enabled,
-                sort
+                sort,
+                file
               },
               fetchValue: {
                 name: pluginName,

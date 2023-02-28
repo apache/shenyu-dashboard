@@ -16,13 +16,27 @@
  */
 
 import React, { Component, Fragment } from "react";
-import { Modal, Form, Switch, Input, Select, Divider, InputNumber } from "antd";
+import { Modal, Form, Switch, Input, Select, Divider, InputNumber, Button} from "antd";
 import { connect } from "dva";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Option } = Select;
 const FormItem = Form.Item;
+const ChooseFile = ({onChange, file})=>{
+  const handleFileInput = (e) => {
+    onChange(e.target.files[0]);
+  };
 
+  return (
+    <>
+      <Button onClick={()=>{document.getElementById("file").click()}
+      }
+      >Upload
+      </Button> {file?.name}
+      <input type="file" onChange={handleFileInput} style={{display:'none'}} id="file" />
+    </>
+)
+}
 @connect(({ global }) => ({
   platform: global.platform
 }))
@@ -32,7 +46,7 @@ class AddModal extends Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        let { name, role, enabled, config, sort } = values;
+        let { name, role, enabled, config, sort, file } = values;
         if (data && data.length > 0) {
           config = {};
           data.forEach(item => {
@@ -46,7 +60,7 @@ class AddModal extends Component {
             config = "";
           }
         }
-        handleOk({ name, role, enabled, config, id, sort });
+        handleOk({ name, role, enabled, config, id, sort, file });
       }
     });
   };
@@ -61,7 +75,8 @@ class AddModal extends Component {
       role,
       id,
       data,
-      sort
+      sort,
+      file
     } = this.props;
     let disable = id !== undefined;
     const { getFieldDecorator } = form;
@@ -240,6 +255,25 @@ class AddModal extends Component {
               />
             )}
           </FormItem>
+
+          <FormItem
+            {...formItemLayout}
+            label={getIntlContent("SHENYU.MENU.PLUGIN.JAR")}
+          >
+            {getFieldDecorator("file", {
+              rules: [
+                {
+                  required: false,
+                }
+              ],
+              initialValue: file,
+              valuePropName: "file"
+            })(  <ChooseFile />)
+
+            }
+          </FormItem>
+
+
           <FormItem
             {...formItemLayout}
             label={getIntlContent("SHENYU.SYSTEM.STATUS")}
