@@ -160,6 +160,7 @@ class AddModal extends Component {
         matchMode,
         loged,
         enabled,
+        matchRestful,
         handleType,
         handleJSON
       } = values;
@@ -201,6 +202,7 @@ class AddModal extends Component {
             handle,
             loged,
             enabled,
+            matchRestful,
             sort: Number(values.sort),
             ruleConditions
           });
