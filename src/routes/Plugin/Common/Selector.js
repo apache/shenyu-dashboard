@@ -859,6 +859,7 @@ class AddModal extends Component {
       continued = true,
       loged = true,
       enabled = true,
+      matchRestful = false,
       sort
     } = this.props;
 
@@ -1096,6 +1097,17 @@ class AddModal extends Component {
             >
               {getFieldDecorator("enabled", {
                 initialValue: enabled,
+                valuePropName: "checked",
+                rules: [{ required: true }]
+              })(<Switch />)}
+            </Item>
+            <Item
+              style={{ margin: "0 30px" }}
+              {...formCheckLayout}
+              label={getIntlContent("SHENYU.SELECTOR.MATCHRESTFUL")}
+            >
+              {getFieldDecorator("matchRestful", {
+                initialValue: matchRestful,
                 valuePropName: "checked",
                 rules: [{ required: true }]
               })(<Switch />)}
