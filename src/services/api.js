@@ -164,11 +164,16 @@ export async function findUser(params) {
 
 /* addPlugin */
 export async function addPlugin(params) {
+  const formData = new FormData;
+  formData.append("name",params.name);
+  if(params.config) formData.append("config",params.config);
+  formData.append("sort",params.sort);
+  formData.append("role",params.role);
+  formData.append("enabled",params.enabled);
+  if(params.file) formData.append("file",params.file);
   return request(`${baseUrl}/plugin`, {
     method: `POST`,
-    body: {
-      ...params
-    }
+    body: formData,
   });
 }
 
@@ -182,16 +187,18 @@ export async function deletePlugin(params) {
 
 /* updatePlugin */
 export async function updatePlugin(params) {
+  const formData = new FormData;
+  formData.append("ids",params.id);
+  formData.append("name",params.name);
+  if(params.config) formData.append("config",params.config);
+  formData.append("sort",params.sort);
+  formData.append("role",params.role);
+  formData.append("enabled",params.enabled);
+  if(params.file) formData.append("file",params.file);
   return request(`${baseUrl}/plugin/${params.id}`, {
+
     method: `PUT`,
-    body: {
-      ids: [params.id],
-      name: params.name,
-      role: params.role,
-      config: params.config,
-      enabled: params.enabled,
-      sort: params.sort
-    }
+    body: formData
   });
 }
 
