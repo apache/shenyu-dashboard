@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Table, Row, Col, Button, Input, message, Popconfirm } from "antd";
+import { Table, Row, Col, Button, Input, message, Popconfirm,Switch } from "antd";
 import { connect } from "dva";
 import styles from "../index.less";
 import Selector from "./Selector";
@@ -42,7 +42,8 @@ export default class Common extends Component {
       popup: "",
       localeName: "",
       selectorName: undefined,
-      ruleName: undefined
+      ruleName: undefined,
+      alignment:"row"
     };
   }
 
@@ -61,6 +62,9 @@ export default class Common extends Component {
         }
       });
     }
+    let savedAlignment = window.localStorage.getItem("pluginScreenAlignment")
+    if(savedAlignment==null)savedAlignment="row"
+    this.setState({alignment:savedAlignment})
   }
 
   componentDidUpdate(prevProps) {
@@ -442,6 +446,12 @@ export default class Common extends Component {
     getCurrentLocale(this.state.localeName);
   }
 
+  switchAlignment= (prevAlignment="row")=>{
+    let newAlignment = prevAlignment==="row"? "row-reverse":"row"
+    this.setState({alignment:newAlignment})
+    window.localStorage.setItem("pluginScreenAlignment",newAlignment)
+  }
+
   render() {
     const { popup, selectorPage, selectorPageSize, rulePage, rulePageSize } = this.state;
     const {
@@ -624,8 +634,17 @@ export default class Common extends Component {
     ];
 
     return (
-      <div className="plug-content-wrap">
-        <Row gutter={20}>
+      <div className="plug-content-wrap"> 
+        <Row style={{marginBottom:'5px'}}>
+          <Col span={24} >
+            <div className="table-header" style={{justifyContent:'end',alignItems:'center'}}>
+            <Switch
+              checked={this.state.alignment==="row"}
+              onChange={()=> {this.switchAlignment(this.state.alignment)}}/>
+            </div>
+          </Col>
+        </Row>
+        <Row gutter={20} type="flex" style={{flexDirection:this.state.alignment}}>
           <Col span={8}>
             <div className="table-header">
               <h3 style={{ overflow: "visible" }}>{getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
