@@ -16,16 +16,17 @@
  */
 
 import React, { Component } from "react";
-import { Table, Row, Col, Button, Input, message, Popconfirm,Switch } from "antd";
+import { Table, Row, Col, Button, Input, message, Popconfirm,Switch, Typography } from "antd";
 import { connect } from "dva";
 import styles from "../index.less";
 import Selector from "./Selector";
 import Rule from "./Rule";
 import { getIntlContent, getCurrentLocale } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
+import AddModal from "../../System/Plugin/AddModal";
 
 const { Search } = Input;
-
+const { Title } = Typography;
 @connect(({ common, global, loading }) => ({
   ...global,
   ...common,
@@ -43,7 +44,7 @@ export default class Common extends Component {
       localeName: "",
       selectorName: undefined,
       ruleName: undefined,
-      alignment:"row"
+      isPluginEnabled:false
     };
   }
 
@@ -62,9 +63,6 @@ export default class Common extends Component {
         }
       });
     }
-    let savedAlignment = window.localStorage.getItem("pluginScreenAlignment")
-    if(savedAlignment==null)savedAlignment="row"
-    this.setState({alignment:savedAlignment})
   }
 
   componentDidUpdate(prevProps) {
@@ -103,8 +101,10 @@ export default class Common extends Component {
     const { dispatch } = this.props;
     const { selectorName } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
-    const tempPluginId = this.getPluginId(plugins, name);
-    this.setState({ pluginId: tempPluginId });
+    const tempPlugin = this.getPlugin(plugins,name);
+    const tempPluginId = tempPlugin?.id
+    const enabled = tempPlugin?.enabled?? false;
+    this.setState({ pluginId: tempPluginId,isPluginEnabled:enabled});
     dispatch({
       type: "common/fetchSelector",
       payload: {
@@ -250,6 +250,67 @@ export default class Common extends Component {
       message.warn(getIntlContent("SHENYU.COMMON.WARN.INPUT_SELECTOR"));
     }
   };
+
+  editClick = () => {
+    const { dispatch,plugins } = this.props;
+    const pluginName = this.props.match.params ? this.props.match.params.id : "";
+    const record = this.getPlugin(plugins, pluginName);
+
+    dispatch({
+      type: "plugin/fetchItem",
+      payload: {
+        id: record.id
+      },
+      callback: plugin => {
+        dispatch({
+          type: "plugin/fetchByPluginId",
+          payload: {
+            pluginId: record.id,
+            type: "3"
+          },
+          callback: pluginConfigList => {
+            this.setState({
+              popup: (
+                <AddModal
+                  disabled={true}
+                  {...plugin}
+                  {...pluginConfigList}
+                  handleOk={values => {
+                    const { name, enabled, id, role, config, sort, file } = values;
+                    const enabledStr = enabled?'1':'0';
+                    dispatch({
+                      type: "plugin/update",
+                      payload: {
+                        config,
+                        role,
+                        name,
+                        enabled,
+                        id,
+                        sort,
+                        file
+                      },
+                      fetchValue: {
+                        name: pluginName,
+                        enabled: enabledStr
+                      },
+                      callback: () => {
+                        this.setState({isPluginEnabled:enabled})
+                        this.closeModal();
+                      }
+                    });
+                  }}
+                  handleCancel={() => {
+                    this.closeModal();
+                  }}
+                />
+              )
+            });
+          }
+        });
+      }
+    });
+  };
+
 
   editSelector = record => {
     const { dispatch, plugins } = this.props;
@@ -446,12 +507,6 @@ export default class Common extends Component {
     getCurrentLocale(this.state.localeName);
   }
 
-  switchAlignment= (prevAlignment="row")=>{
-    let newAlignment = prevAlignment==="row"? "row-reverse":"row"
-    this.setState({alignment:newAlignment})
-    window.localStorage.setItem("pluginScreenAlignment",newAlignment)
-  }
-
   render() {
     const { popup, selectorPage, selectorPageSize, rulePage, rulePageSize } = this.state;
     const {
@@ -462,6 +517,8 @@ export default class Common extends Component {
       currentSelector
     } = this.props;
     const name = this.props.match.params ? this.props.match.params.id : "";
+    const role = this.props.match.params ? this.props.match.params.index : "";
+
     const selectColumns = [
       {
         align: "center",
@@ -635,16 +692,30 @@ export default class Common extends Component {
 
     return (
       <div className="plug-content-wrap"> 
-        <Row style={{marginBottom:'5px'}}>
-          <Col span={24} >
-            <div className="table-header" style={{justifyContent:'end',alignItems:'center'}}>
+        <Row style={{ marginBottom: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex',alignItems:'end',flex:1,margin:0 }}>
+            <Title level={2} style={{ textTransform: 'capitalize', margin: '0 20px 0 0' }}>
+              {name}
+            </Title>
+            <Title level={3} type="secondary" style={{margin:0}}>{role}</Title>
+          </div>
+          <div style={{ display: 'flex',alignItems:'end',gap:10 }}> 
             <Switch
-              checked={this.state.alignment==="row"}
-              onChange={()=> {this.switchAlignment(this.state.alignment)}}/>
-            </div>
-          </Col>
+              checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+              unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+              checked={this.state.isPluginEnabled?? false}
+            />
+            <AuthButton perms="system:plugin:edit">
+                  <div
+                    className="edit"
+                    onClick={this.editClick}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                  </div>
+            </AuthButton>
+          </div>
         </Row>
-        <Row gutter={20} type="flex" style={{flexDirection:this.state.alignment}}>
+        <Row gutter={20}>
           <Col span={8}>
             <div className="table-header">
               <h3 style={{ overflow: "visible" }}>{getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
