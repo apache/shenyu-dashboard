@@ -252,7 +252,7 @@ export default class Common extends Component {
   };
 
   editClick = () => {
-    const { dispatch,plugins } = this.props;
+    const { dispatch, plugins } = this.props;
     const pluginName = this.props.match.params ? this.props.match.params.id : "";
     const record = this.getPlugin(plugins, pluginName);
 
@@ -706,12 +706,9 @@ export default class Common extends Component {
               checked={this.state.isPluginEnabled?? false}
             />
             <AuthButton perms="system:plugin:edit">
-                  <div
-                    className="edit"
-                    onClick={this.editClick}
-                  >
-                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                  </div>
+              <div className="edit" onClick={this.editClick}>
+                {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+              </div>
             </AuthButton>
           </div>
         </Row>
