@@ -23,17 +23,15 @@ body,
 
 :global {
   .plug-content-wrap {
-    padding: 24px
+    padding: 24px;
   }
-  .open{
+
+  .open {
     color: #14c974;
   }
-  .close{
+
+  .close {
     color: #ff586d;
-  }
-  .ant-btn-danger{
-    background: #f5222d !important;
-    color: #fff !important;
   }
 }
 
@@ -57,6 +55,7 @@ ol {
 :global(.edit) {
   cursor: pointer;
   color: @primary-color;
+
   &:hover {
     color: @primary-color;
   }
@@ -64,6 +63,7 @@ ol {
 
 :global(.searchblock) {
   display: flex !important;
+
   button {
     margin-left: 30px;
   }
@@ -74,7 +74,7 @@ ol {
 }
 
 :global {
-  .ant-table-small>.ant-table-content>.ant-table-body {
+  .ant-table-small > .ant-table-content > .ant-table-body {
     margin: 0 !important;
   }
 }
@@ -84,12 +84,16 @@ ol {
   justify-content: space-between;
   line-height: 40px;
   padding: 0 20px;
+  border-radius: 5px;
+  box-shadow: 1px 2px 2px rgba(191, 189, 189, 0.5);
   height: 40px;
   background: #fff;
+
   h3 {
     font-size: 16px;
     overflow: hidden;
   }
+
   button {
     margin-top: 4px;
   }
@@ -109,7 +113,9 @@ body {
 :global {
   .ant-spin-container {
     overflow: visible !important;
+    box-shadow: 1px 2px 2px rgba(191, 189, 189, 0.5);
   }
+
   .global-spin {
     width: 100%;
     margin: 40px 0 !important;

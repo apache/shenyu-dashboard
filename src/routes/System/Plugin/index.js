@@ -23,6 +23,7 @@ import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { resetAuthMenuCache } from "../../../utils/AuthRoute";
+import styles from "./index.less";
 
 const { Text } = Typography;
 
@@ -148,7 +149,8 @@ export default class Plugin extends Component {
                   {...plugin}
                   {...pluginConfigList}
                   handleOk={values => {
-                    const { name, enabled, id, role, config, sort } = values;
+                    const { name, enabled, id, role, config, sort, file } = values;
+                    const enabledStr = enabled?'1':'0';
                     dispatch({
                       type: "plugin/update",
                       payload: {
@@ -157,10 +159,12 @@ export default class Plugin extends Component {
                         name,
                         enabled,
                         id,
-                        sort
+                        sort,
+                        file
                       },
                       fetchValue: {
                         name: pluginName,
+                        enabled: enabledStr,
                         currentPage,
                         pageSize
                       },
@@ -179,6 +183,23 @@ export default class Plugin extends Component {
           }
         });
       }
+    });
+  };
+
+  resourceClick = (record) => {
+    // code here...
+    const { dispatch } = this.props;
+    const {name, role, sort, config, id, enabled} = record;
+    dispatch({
+      type: "plugin/createPluginResource",
+      payload: {
+        name,
+        role,
+        sort,
+        config,
+        id,
+        enabled
+      },
     });
   };
 
@@ -234,7 +255,7 @@ export default class Plugin extends Component {
           disabled={false}
           handleOk={values => {
             const { dispatch } = this.props;
-            const { name, enabled, role, config, sort } = values;
+            const { name, enabled, role, config, sort, file } = values;
             dispatch({
               type: "plugin/add",
               payload: {
@@ -242,7 +263,8 @@ export default class Plugin extends Component {
                 config,
                 role,
                 enabled,
-                sort
+                sort,
+                file
               },
               fetchValue: {
                 name: pluginName,
@@ -391,7 +413,7 @@ export default class Plugin extends Component {
                 <Tag color="#3b9a9c">{record.sort}</Tag>
               </div>
             );
-            const t = JSON.stringify(JSON.parse(text !== null?text:'{}'), null, 4) ;
+            const t = JSON.stringify(JSON.parse(text !== null && text.length > 0?text:'{}'), null, 4) ;
             const content = (
               <div>
                 <Text type="secondary">{`${getIntlContent("SHENYU.SYSTEM.CREATETIME") }: ${ record.dateCreated}`}</Text>
@@ -437,20 +459,33 @@ export default class Plugin extends Component {
           dataIndex: "time",
           key: "time",
           ellipsis: true,
-          width: 80,
+          width: 160,
           fixed: "right",
           render: (text, record) => {
             return (
-              <AuthButton perms="system:plugin:edit">
-                <div
-                  className="edit"
-                  onClick={() => {
-                    this.editClick(record);
-                  }}
-                >
-                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                </div>
-              </AuthButton>
+              <div className={styles.optionParts}>
+                <AuthButton perms="system:plugin:edit">
+                  <div
+                    className="edit"
+                    onClick={() => {
+                      this.editClick(record);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                  </div>
+                </AuthButton>
+                <AuthButton perms="system:plugin:resource">
+                  <div
+                    className="edit"
+                    onClick={() => {
+                      this.resourceClick(record);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.BUTTON.SYSTEM.RESOURCE")}
+                  </div>
+                </AuthButton>
+              </div>
+
             );
           }
         }

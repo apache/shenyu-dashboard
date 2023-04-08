@@ -102,7 +102,7 @@ export default {
       }
     },
 
-    *fetchByPluginId(params, { call }) {
+    * fetchByPluginId(params, { call }) {
       const { payload } = params;
       let handle = payload.handle;
       let callback = payload.callBack;

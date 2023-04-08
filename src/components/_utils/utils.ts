@@ -15,56 +15,52 @@
  * limitations under the License.
  */
 
-.condition {
-  margin-top: 8px;
-  display: flex;
-
-  ul {
-    padding: 0 0 10px 6px;
-    margin: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: top;
-
-    // max-height: 200px;
-    // overflow: hidden;
-    li {
-      margin-right: 4px;
-
-      .title {
-        //   font-size: 14px;
-      }
-
-      .appName {
-        width: 65px;
-        //   height: 25px;
-        text-align: center;
-        //   line-height: 25px;
-        padding: 0;
-        font-size: 12px;
-      }
-
-      .appParam {
-        width: 150px;
-        //   height: 25px;
-        text-align: center;
-        //   line-height: 25px;
-        padding: 0;
-        font-size: 12px;
-      }
-    }
-  }
-
-  .btn {
-    margin-left: 10px;
-
-  }
+// 随机数字
+export function randomNum(m: number, n: number) {
+    return Math.floor(Math.random() * (n - m + 1) + m);
 }
 
-.formInput {
-  width: 175px;
+// 随机颜色
+export function randomColor() {
+    return `rgb(${randomNum(0, 255)}, ${randomNum(0, 255)}, ${randomNum(
+        0,
+        255
+    )})`;
 }
 
-.formItem {
-  margin-right: 0px !important;
-}
+export const originalCharacter = [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z"
+];

@@ -48,15 +48,15 @@ export default class Common extends Component {
 
   componentDidMount() {
     const { dispatch, plugins } = this.props;
-    const { selectorPage,selectorPageSize} = this.state;
+    const { selectorPage, selectorPageSize } = this.state;
     if (plugins && plugins.length > 0) {
-      this.getAllSelectors(selectorPage,selectorPageSize, plugins);
+      this.getAllSelectors(selectorPage, selectorPageSize, plugins);
     } else {
       dispatch({
         type: "global/fetchPlugins",
         payload: {
           callback: pluginList => {
-            this.getAllSelectors(selectorPage,selectorPageSize, pluginList);
+            this.getAllSelectors(selectorPage, selectorPageSize, pluginList);
           }
         }
       });
@@ -66,7 +66,7 @@ export default class Common extends Component {
   componentDidUpdate(prevProps) {
     const preId = prevProps.match.params.id;
     const newId = this.props.match.params.id;
-    const {selectorPage,selectorPageSize} = this.state;
+    const { selectorPage, selectorPageSize } = this.state;
     if (newId !== preId) {
       const { dispatch } = this.props;
       dispatch({
@@ -74,13 +74,13 @@ export default class Common extends Component {
       });
 
       if (prevProps.plugins && prevProps.plugins.length > 0) {
-        this.getAllSelectors(selectorPage,selectorPageSize, prevProps.plugins);
+        this.getAllSelectors(selectorPage, selectorPageSize, prevProps.plugins);
       } else {
         dispatch({
           type: "global/fetchPlugins",
           payload: {
             callback: pluginList => {
-              this.getAllSelectors(selectorPage,selectorPageSize, pluginList);
+              this.getAllSelectors(selectorPage, selectorPageSize, pluginList);
             }
           }
         });
@@ -112,7 +112,7 @@ export default class Common extends Component {
     });
   };
 
-  getAllRules = (page,pageSize) => {
+  getAllRules = (page, pageSize) => {
     const { dispatch, currentSelector } = this.props;
     const { ruleName } = this.state;
     const selectorId = currentSelector ? currentSelector.id : "";
@@ -163,12 +163,12 @@ export default class Common extends Component {
 
   searchSelector = () => {
     const { plugins } = this.props;
-    const {selectorPage,selectorPageSize} = this.state;
-    this.getAllSelectors(selectorPage,selectorPageSize, plugins);
+    const { selectorPage, selectorPageSize } = this.state;
+    this.getAllSelectors(selectorPage, selectorPageSize, plugins);
   };
 
   addSelector = () => {
-    const { selectorPage,selectorPageSize } = this.state;
+    const { selectorPage, selectorPageSize } = this.state;
     const { dispatch, plugins } = this.props;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
@@ -203,12 +203,12 @@ export default class Common extends Component {
 
   searchRule = () => {
     this.setState({ rulePage: 1 });
-    const {rulePageSize } = this.state;
-    this.getAllRules(1,rulePageSize);
+    const { rulePageSize } = this.state;
+    this.getAllRules(1, rulePageSize);
   };
 
   addRule = () => {
-    const { rulePage,rulePageSize, pluginId } = this.state;
+    const { rulePage, rulePageSize, pluginId } = this.state;
     const { dispatch, currentSelector, plugins } = this.props;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
@@ -249,7 +249,7 @@ export default class Common extends Component {
 
   editSelector = record => {
     const { dispatch, plugins } = this.props;
-    const { selectorPage,selectorPageSize } = this.state;
+    const { selectorPage, selectorPageSize } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
     const { id: pluginId, config } = plugin;
@@ -295,7 +295,7 @@ export default class Common extends Component {
 
   deleteSelector = record => {
     const { dispatch, plugins } = this.props;
-    const { selectorPage,selectorPageSize } = this.state;
+    const { selectorPage, selectorPageSize } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const pluginId = this.getPluginId(plugins, name);
     dispatch({
@@ -314,25 +314,25 @@ export default class Common extends Component {
   pageSelectorChange = page => {
     this.setState({ selectorPage: page });
     const { plugins } = this.props;
-    const {selectorPageSize} = this.state;
-    this.getAllSelectors(page,selectorPageSize, plugins);
+    const { selectorPageSize } = this.state;
+    this.getAllSelectors(page, selectorPageSize, plugins);
   };
 
-  pageSelectorChangeSize = (currentPage,pageSize) => {
+  pageSelectorChangeSize = (currentPage, pageSize) => {
     const { plugins } = this.props;
-    this.setState({ selectorPage: 1, selectorPageSize: pageSize});
+    this.setState({ selectorPage: 1, selectorPageSize: pageSize });
     this.getAllSelectors(1, pageSize, plugins);
   };
 
   pageRuleChange = page => {
-    this.setState({ rulePage: page});
+    this.setState({ rulePage: page });
     const { rulePageSize } = this.state;
-    this.getAllRules(page,rulePageSize);
+    this.getAllRules(page, rulePageSize);
   };
 
-  pageRuleChangeSize = (currentPage,pageSize) => {
-    this.setState({rulePage: 1, rulePageSize: pageSize});
-    this.getAllRules(1,pageSize);
+  pageRuleChangeSize = (currentPage, pageSize) => {
+    this.setState({ rulePage: 1, rulePageSize: pageSize });
+    this.getAllRules(1, pageSize);
   };
 
   // select
@@ -358,7 +358,7 @@ export default class Common extends Component {
 
   editRule = record => {
     const { dispatch, currentSelector, plugins } = this.props;
-    const { rulePage,rulePageSize, pluginId } = this.state;
+    const { rulePage, rulePageSize, pluginId } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
     const { config } = plugin;
@@ -407,7 +407,7 @@ export default class Common extends Component {
 
   deleteRule = record => {
     const { dispatch, currentSelector, ruleList } = this.props;
-    const { rulePage,rulePageSize } = this.state;
+    const { rulePage, rulePageSize } = this.state;
     const currentPage =
       rulePage > 1 && ruleList.length === 1 ? rulePage - 1 : rulePage;
     dispatch({
@@ -453,6 +453,12 @@ export default class Common extends Component {
     } = this.props;
     const name = this.props.match.params ? this.props.match.params.id : "";
     const selectColumns = [
+      {
+        align: "center",
+        title: getIntlContent("SHENYU.SELECTOR.EXEORDER"),
+        dataIndex: "sort",
+        key: "sort"
+      },
       {
         align: "center",
         title: getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"),
@@ -529,6 +535,12 @@ export default class Common extends Component {
     ];
 
     const rulesColumns = [
+      {
+        align: "center",
+        title: getIntlContent("SHENYU.SELECTOR.EXEORDER"),
+        dataIndex: "sort",
+        key: "sort"
+      },
       {
         align: "center",
         title: getIntlContent("SHENYU.COMMON.RULE.NAME"),
@@ -616,12 +628,12 @@ export default class Common extends Component {
         <Row gutter={20}>
           <Col span={8}>
             <div className="table-header">
-              <h3>{getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
+              <h3 style={{ overflow: "visible" }}>{getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
               <div className={styles.headerSearch}>
                 <AuthButton perms={`plugin:${name}Selector:query`}>
                   <Search
                     className={styles.search}
-                    style={{ maxWidth: "50%" }}
+                    style={{ width: "130px" }}
                     placeholder={getIntlContent(
                       "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME"
                     )}

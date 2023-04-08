@@ -164,11 +164,16 @@ export async function findUser(params) {
 
 /* addPlugin */
 export async function addPlugin(params) {
+  const formData = new FormData;
+  formData.append("name",params.name);
+  if(params.config) formData.append("config",params.config);
+  formData.append("sort",params.sort);
+  formData.append("role",params.role);
+  formData.append("enabled",params.enabled);
+  if(params.file) formData.append("file",params.file);
   return request(`${baseUrl}/plugin`, {
     method: `POST`,
-    body: {
-      ...params
-    }
+    body: formData,
   });
 }
 
@@ -182,16 +187,18 @@ export async function deletePlugin(params) {
 
 /* updatePlugin */
 export async function updatePlugin(params) {
+  const formData = new FormData;
+  formData.append("ids",params.id);
+  formData.append("name",params.name);
+  if(params.config) formData.append("config",params.config);
+  formData.append("sort",params.sort);
+  formData.append("role",params.role);
+  formData.append("enabled",params.enabled);
+  if(params.file) formData.append("file",params.file);
   return request(`${baseUrl}/plugin/${params.id}`, {
+
     method: `PUT`,
-    body: {
-      ids: [params.id],
-      name: params.name,
-      role: params.role,
-      config: params.config,
-      enabled: params.enabled,
-      sort: params.sort
-    }
+    body: formData
   });
 }
 
@@ -523,6 +530,14 @@ export function fetchPluginHandleByPluginId(params) {
   );
 }
 
+// create plugin resource
+export function addPluginResource(params) {
+  return request(`${baseUrl}/plugin/createPluginResource/${params.id}`, {
+    method: `PUT`,
+    body: params
+  });
+}
+
 // fetch dict list
 export async function fetchShenYuDicts(params) {
   return request(`${baseUrl}/shenyu-dict?${stringify(params)}`, {
@@ -787,3 +802,120 @@ export function getDocItem(params) {
 export function sandboxProxyGateway() {
   return `${baseUrl}/sandbox/proxyGateway`;
 }
+
+export function getRootTag() {
+  return request(`${baseUrl}/tag/queryRootTag`, {
+    method: `GET`
+  });
+}
+
+/* getParentTagId */
+export function getParentTagId(id) {
+  return request(`${baseUrl}/tag/parentTagId/${id}`, {
+    method: `GET`
+  });
+}
+
+/* getTagDetail */
+export function getTagDetail(id) {
+  return request(
+    `${baseUrl}/tag/id/${id}`, {
+      method: `GET`
+    });
+}
+
+/** add tag */
+export function addTag(params) {
+  return request(`${baseUrl}/tag`, {
+    method: `POST`,
+    body: {
+      ...params
+    }
+  });
+}
+
+/** delete tag */
+export function deleteTag(params) {
+  return request(`${baseUrl}/tag/batchDelete`, {
+    method: `DELETE`,
+    body: params
+  });
+}
+
+/** updateTag */
+export function updateTag(params) {
+  return request(`${baseUrl}/tag/id/${params.id}`, {
+    method: `PUT`,
+    body: {
+      ...params
+    }
+  });
+}
+
+/* queryApi */
+export function getApi(tagId) {
+  return request(`${baseUrl}/api?tagId=${tagId}&currentPage=0&pageSize=100`, {
+    method: `GET`
+  });
+}
+
+/* queryApi */
+export function getApiDetail(id) {
+  return request(`${baseUrl}/api/${id}`, {
+    method: `GET`
+  });
+}
+
+/* queryMockRequest */
+export function getApiMockRequest(apiId) {
+  return request(`${baseUrl}/mock/${apiId}`, {
+    method: `GET`
+  });
+}
+
+/* createOrUpdateMockRequest */
+export function createOrUpdateMockRequest(params) {
+  return request(`${baseUrl}/mock/insertOrUpdate`, {
+    method: `POST`,
+    body: {
+      ...params
+    }
+  })
+}
+
+/* createOrUpdateMockRequest */
+export function deleteMockRequest(id) {
+  return request(`${baseUrl}/mock/${id}`, {
+    method: `DELETE`
+  })
+}
+
+/** addApi */
+export function addApi(params) {
+  return request(`${baseUrl}/api`, {
+    method: `POST`,
+    body: {
+      ...params
+    }
+  });
+}
+
+/** addApi */
+export function updateApi(params) {
+  return request(`${baseUrl}/api/${params.id}`, {
+    method: `PUT`,
+    body: {
+      ...params
+    }
+  });
+}
+
+/** delete Api */
+export function deleteApi(params) {
+  return request(`${baseUrl}/api/batch`, {
+    method: `DELETE`,
+    body: params
+  });
+}
+
+

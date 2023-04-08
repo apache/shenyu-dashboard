@@ -32,7 +32,12 @@ export default class LoginPage extends Component {
     this.state = {
       VCode: "",
       codeError: true
-    }
+    };
+    this.ChildRef = React.createRef();
+  }
+
+  componentDidMount() {
+    this.ChildRef.current.handleChange();
   }
 
   handleSubmit = (err, values) => {
@@ -40,7 +45,8 @@ export default class LoginPage extends Component {
     const { dispatch } = this.props;
     if (!err) {
       if (values.verifyCode !== this.state.VCode) {
-        this.setState({ codeError: false })
+        this.setState({ codeError: false });
+        this.ChildRef.current.handleChange();
         return;
       }
       dispatch({
@@ -66,6 +72,8 @@ export default class LoginPage extends Component {
     return this.state.codeError ? <span /> : <span className={styles.codeError} id='codeError'>Please enter correct verify code!</span>
   }
 
+
+
   render() {
     const { submitting } = this.props;
     return (
@@ -78,7 +86,7 @@ export default class LoginPage extends Component {
               <VerifyCode name="verifyCode" placeholder="Verification Code" />
               {this.codeError()}
             </div>
-            <LoginCode ChildGetCode={(code) => this.getCode(code)} />
+            <LoginCode onRef={this.ChildRef} ChildGetCode={(code) => this.getCode(code)} />
           </div>
           <Submit loading={submitting}>Login</Submit>
         </Login>

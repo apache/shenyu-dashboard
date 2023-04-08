@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-/* eslint-disable no-unused-vars */
-
-import { createContext } from "react";
-
-export default createContext({
-  apiDetail: {},
-  apiData: {},
-  apiMock: {},
-  tagDetail: {}
-});
+export const Method = {
+  0: "GET",
+  1: "HEAD",
+  2: "POST",
+  3: "PUT",
+  4: "PATCH",
+  5: "DELETE",
+  6: "OPTIONS",
+  7: "TRACE"
+};

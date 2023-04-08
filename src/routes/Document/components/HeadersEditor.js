@@ -16,56 +16,71 @@
  */
 
 import { Col, Input, Row, Button, Icon, Typography } from "antd";
-import React, { Fragment } from "react";
+import React, {Fragment, useEffect, useState} from "react";
 
 const { Text } = Typography;
 
 function HeadersEditor(props) {
-  const { value, onChange } = props;
-  const onChangeItem = (e, key, id) => {
-    onChange(
-      value.map(
-        item => (item.id === id ? { ...item, [key]: e.target.value } : item)
-      )
+  const {value: propsValue, onChange, buttonText} = props;
+  const jsonObj = JSON.parse(propsValue || '{}');
+  const [value, onChangeValue] =useState(Object.keys(jsonObj).map((key, index) => ({index, key, value: jsonObj[key]})));
+
+  useEffect(
+    () => {
+      onChangeValue(Object.keys(jsonObj).map((key, index) => ({index, key, value: jsonObj[key]})))
+    },
+    [propsValue]
+  );
+
+  const onChangeItem = (e, key, index) => {
+    let newValue = value.map(
+      item => (item.index === index ? { ...item, [key]: e } : item)
     );
+    onChangeValue(newValue);
+    onChange(format(newValue));
   };
 
-  const onDeleteItem = id => {
-    onChange(value.filter(item => item.id !== id));
+  const onDeleteItem = key => {
+    let newValue = value.filter(item => item.key !== key);
+    onChangeValue(newValue);
+    onChange(format(newValue));
   };
 
   const onAddItem = () => {
-    onChange([
+    let newValue = [
       ...value,
-      { id: `${Date.now()}`, name: "", example: "", required: false }
-    ]);
+      {index: value.length, key: "", value: ""}
+    ];
+    onChangeValue(newValue);
+    onChange(format(newValue));
   };
+
+  const format = (param) => {
+    const newObject = param.reduce((acc, curr) => {
+      acc[curr.key] = curr.value;
+      return acc;
+    }, {});
+    return JSON.stringify(newObject);
+  }
 
   return (
     <Row gutter={16}>
       {value.map(item => (
-        <Fragment key={item.id}>
+        <Fragment key={item.index}>
           <Col span={6}>
             <Input
               allowClear
-              value={item.name}
-              readOnly={item.required}
-              onChange={e => onChangeItem(e, "name", item.id)}
+              value={item.key}
+              readOnly={false}
+              onChange={e => onChangeItem(e.target.value, "key", item.index)}
             />
           </Col>
           <Col span={16}>
             <Input
               allowClear
-              value={item.example}
-              placeholder={item.description}
-              prefix={
-                item.required && (
-                  <Text type="danger" strong>
-                    *
-                  </Text>
-                )
-              }
-              onChange={e => onChangeItem(e, "example", item.id)}
+              value={item.value}
+              readOnly={false}
+              onChange={e => onChangeItem(e.target.value, "value", item.index)}
             />
           </Col>
           <Col span={2} style={{ textAlign: "center" }}>
@@ -74,7 +89,7 @@ function HeadersEditor(props) {
                 <Icon
                   style={{ fontSize: "16px" }}
                   type="minus-circle-o"
-                  onClick={() => onDeleteItem(item.id)}
+                  onClick={() => onDeleteItem(item.key)}
                 />
               </Text>
             )}
@@ -84,7 +99,7 @@ function HeadersEditor(props) {
 
       <Col span={24}>
         <Button block type="dashed" onClick={onAddItem}>
-          <Icon type="plus" /> Add header
+          <Icon type="plus" /> {buttonText}
         </Button>
       </Col>
     </Row>

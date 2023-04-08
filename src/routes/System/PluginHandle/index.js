@@ -471,6 +471,10 @@ export default class PluginHandle extends Component {
             placeholder={getIntlContent("SHENYU.PLUGIN.SELECTNAME")}
             style={{ width: 240 }}
             allowClear
+            showSearch
+            filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
           >
             {
               pluginDropDownList && pluginDropDownList.map((item,i)=>{

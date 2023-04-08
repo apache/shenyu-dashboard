@@ -1,0 +1,40 @@
+name: dashboard Deploy
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build_and_deploy_job:
+    runs-on: ubuntu-latest
+    name: Build and Deploy Job
+    steps:
+      -
+        name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - 
+        name: Setup Node
+        uses: actions/setup-node@v2.4.0
+        with:
+          node-version: "16"
+      - 
+        name: Setup Dependencies
+        run: yarn install
+      - 
+        name: Build Site
+        run: npm run build
+      - 
+        name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          publish_branch: dist
+          publish_dir: ./dist
+          
