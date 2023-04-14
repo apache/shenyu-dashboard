@@ -17,7 +17,7 @@
 
 /* eslint-disable no-unused-expressions */
 /* eslint-disable radix */
-import { Modal, Form, Input, Select, message } from "antd";
+import { Modal, Form, Input, Select, message,Radio } from "antd";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Method } from "./globalData";
@@ -41,6 +41,11 @@ const API_SOURCE_TYPE = [
   "create manuallym",
   "import swagger",
   "import yapi"
+];
+const STATE_TYPE = [
+  "unpublished",
+  "published",
+  "offline"
 ];
 
 class AddAndUpdateApiDoc extends Component {
@@ -277,9 +282,16 @@ class AddAndUpdateApiDoc extends Component {
               ],
               initialValue: state
             })(
-              <Input
-                placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.STATE")}
-              />
+              <Radio.Group buttonStyle="solid">
+                {Object.values(STATE_TYPE).map((e, i) => {
+                  return (
+                    <Radio.Button key={`${e} ${i}`} value={i}>
+                      {e}
+                    </Radio.Button>
+                  );
+                })}
+               
+              </Radio.Group>
             )}
           </Form.Item>
           <Form.Item
