@@ -16,16 +16,17 @@
  */
 
 import React, { Component } from "react";
-import { Table, Row, Col, Button, Input, message, Popconfirm } from "antd";
+import { Table, Row, Col, Button, Input, message, Popconfirm, Switch, Typography, Tag } from "antd";
 import { connect } from "dva";
 import styles from "../index.less";
 import Selector from "./Selector";
 import Rule from "./Rule";
 import { getIntlContent, getCurrentLocale } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
+import AddModal from "../../System/Plugin/AddModal";
 
 const { Search } = Input;
-
+const { Title } = Typography;
 @connect(({ common, global, loading }) => ({
   ...global,
   ...common,
@@ -42,7 +43,8 @@ export default class Common extends Component {
       popup: "",
       localeName: "",
       selectorName: undefined,
-      ruleName: undefined
+      ruleName: undefined,
+      isPluginEnabled: false
     };
   }
 
@@ -99,8 +101,10 @@ export default class Common extends Component {
     const { dispatch } = this.props;
     const { selectorName } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
-    const tempPluginId = this.getPluginId(plugins, name);
-    this.setState({ pluginId: tempPluginId });
+    const tempPlugin = this.getPlugin(plugins, name);
+    const tempPluginId = tempPlugin?.id
+    const enabled = tempPlugin?.enabled ?? false;
+    this.setState({ pluginId: tempPluginId, isPluginEnabled: enabled });
     dispatch({
       type: "common/fetchSelector",
       payload: {
@@ -246,6 +250,87 @@ export default class Common extends Component {
       message.warn(getIntlContent("SHENYU.COMMON.WARN.INPUT_SELECTOR"));
     }
   };
+
+  togglePluginStatus = () => {
+    const { dispatch, plugins } = this.props;
+    const pluginName = this.props.match.params ? this.props.match.params.id : "";
+    const { name, id, role, config, sort, file} = this.getPlugin(plugins, pluginName);
+    const enabled = !this.state.isPluginEnabled
+    const enabledStr = enabled ? '1' : '0';
+    dispatch({
+      type: "plugin/update",
+      payload: {
+        config,
+        role,
+        name,
+        enabled,
+        id,
+        sort,
+        file
+      },
+      fetchValue: {
+        name: pluginName,
+        enabled: enabledStr
+      },
+      callback: () => {
+        this.setState({ isPluginEnabled: enabled })
+        this.closeModal();
+      }
+    });
+  }
+
+  editClick = () => {
+    const { dispatch, plugins } = this.props;
+    const pluginName = this.props.match.params ? this.props.match.params.id : "";
+    const plugin= this.getPlugin(plugins, pluginName);
+    plugin.enabled = this.state.isPluginEnabled;
+    dispatch({
+      type: "plugin/fetchByPluginId",
+      payload: {
+        pluginId: plugin.id,
+        type: "3"
+      },
+      callback: pluginConfigList => {
+        this.setState({
+          popup: (
+            <AddModal
+              disabled={true}
+              {...plugin}
+              {...pluginConfigList}
+              handleOk={values => {
+              const { name, enabled, id, role, config, sort, file } = values;
+              const enabledStr = enabled ? '1' : '0';
+                dispatch({
+                  type: "plugin/update",
+                  payload: {
+                    config,
+                    role,
+                    name,
+                    enabled,
+                    id,
+                    sort,
+                    file
+                  },
+                  fetchValue: {
+                    name: pluginName,
+                    enabled: enabledStr
+                  },
+                  callback: () => {
+                    this.setState({ isPluginEnabled: enabled })
+                    this.closeModal();
+                  }
+                });
+              }}
+              handleCancel={() => {
+                this.closeModal();
+              }}
+            />
+          )
+        });
+      }
+    });
+  };
+
 
   editSelector = record => {
     const { dispatch, plugins } = this.props;
@@ -452,6 +537,8 @@ export default class Common extends Component {
       currentSelector
     } = this.props;
     const name = this.props.match.params ? this.props.match.params.id : "";
+    const role = this.props.match.params ? this.props.match.params.index : "";
+
     const selectColumns = [
       {
         align: "center",
@@ -623,8 +710,33 @@ export default class Common extends Component {
       }
     ];
 
+    const tag = {
+      text: this.state.isPluginEnabled ? getIntlContent("SHENYU.COMMON.OPEN") : getIntlContent("SHENYU.COMMON.CLOSE"),
+      color: this.state.isPluginEnabled ? 'green' : 'red'
+    }
+
     return (
       <div className="plug-content-wrap">
+        <Row style={{ marginBottom: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'end', flex: 1, margin: 0 }}>
+            <Title level={2} style={{ textTransform: 'capitalize', margin: '0 20px 0 0' }}>
+              {name}
+            </Title>
+            <Title level={3} type="secondary" style={{ margin: '0 20px 0 0' }}>{role}</Title>
+            <Tag color={tag.color}>{tag.text}</Tag>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'end', gap: 10 }}>
+            <Switch
+              checked={this.state.isPluginEnabled ?? false}
+              onChange={this.togglePluginStatus}
+            />
+            <AuthButton perms="system:plugin:edit">
+              <div className="edit" onClick={this.editClick}>
+                {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+              </div>
+            </AuthButton>
+          </div>
+        </Row>
         <Row gutter={20}>
           <Col span={8}>
             <div className="table-header">
