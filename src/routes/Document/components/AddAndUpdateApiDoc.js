@@ -259,7 +259,7 @@ class AddAndUpdateApiDoc extends Component {
               initialValue: rpcType
             })(
               <Select>
-                {Object.values(RPCTYPE).map((e, i) => {
+                {RPCTYPE.map((e, i) => {
                   return (
                     <Select.Option key={`${e} ${i}`} value={e}>
                       {e}
@@ -283,7 +283,7 @@ class AddAndUpdateApiDoc extends Component {
               initialValue: state
             })(
               <Radio.Group buttonStyle="solid">
-                {Object.values(STATE_TYPE).map((e, i) => {
+                {STATE_TYPE.map((e, i) => {
                   return (
                     <Radio.Button key={`${e} ${i}`} value={i}>
                       {e}
@@ -362,7 +362,7 @@ class AddAndUpdateApiDoc extends Component {
               initialValue: apiSource
             })(
               <Select>
-                {Object.values(API_SOURCE_TYPE).map((e, i) => {
+                {API_SOURCE_TYPE.map((e, i) => {
                   return (
                     <Select.Option key={`${e} ${i}`} value={i}>
                       {e}
