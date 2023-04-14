@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Table, Row, Col, Button, Input, message, Popconfirm,Switch, Typography } from "antd";
+import { Table, Row, Col, Button, Input, message, Popconfirm, Switch, Typography, Tag } from "antd";
 import { connect } from "dva";
 import styles from "../index.less";
 import Selector from "./Selector";
@@ -44,7 +44,7 @@ export default class Common extends Component {
       localeName: "",
       selectorName: undefined,
       ruleName: undefined,
-      isPluginEnabled:false
+      isPluginEnabled: false
     };
   }
 
@@ -101,10 +101,10 @@ export default class Common extends Component {
     const { dispatch } = this.props;
     const { selectorName } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
-    const tempPlugin = this.getPlugin(plugins,name);
+    const tempPlugin = this.getPlugin(plugins, name);
     const tempPluginId = tempPlugin?.id
-    const enabled = tempPlugin?.enabled?? false;
-    this.setState({ pluginId: tempPluginId,isPluginEnabled:enabled});
+    const enabled = tempPlugin?.enabled ?? false;
+    this.setState({ pluginId: tempPluginId, isPluginEnabled: enabled });
     dispatch({
       type: "common/fetchSelector",
       payload: {
@@ -251,61 +251,81 @@ export default class Common extends Component {
     }
   };
 
+  togglePluginStatus = () => {
+    const { dispatch, plugins } = this.props;
+    const pluginName = this.props.match.params ? this.props.match.params.id : "";
+    const { name, id, role, config, sort, file} = this.getPlugin(plugins, pluginName);
+    const enabled = !this.state.isPluginEnabled
+    const enabledStr = enabled ? '1' : '0';
+    dispatch({
+      type: "plugin/update",
+      payload: {
+        config,
+        role,
+        name,
+        enabled,
+        id,
+        sort,
+        file
+      },
+      fetchValue: {
+        name: pluginName,
+        enabled: enabledStr
+      },
+      callback: () => {
+        this.setState({ isPluginEnabled: enabled })
+        this.closeModal();
+      }
+    });
+  }
+
   editClick = () => {
     const { dispatch, plugins } = this.props;
     const pluginName = this.props.match.params ? this.props.match.params.id : "";
-    const record = this.getPlugin(plugins, pluginName);
-
+    const plugin= this.getPlugin(plugins, pluginName);
+    plugin.enabled = this.state.isPluginEnabled;
     dispatch({
-      type: "plugin/fetchItem",
+      type: "plugin/fetchByPluginId",
       payload: {
-        id: record.id
+        pluginId: plugin.id,
+        type: "3"
       },
-      callback: plugin => {
-        dispatch({
-          type: "plugin/fetchByPluginId",
-          payload: {
-            pluginId: record.id,
-            type: "3"
-          },
-          callback: pluginConfigList => {
-            this.setState({
-              popup: (
-                <AddModal
-                  disabled={true}
-                  {...plugin}
-                  {...pluginConfigList}
-                  handleOk={values => {
-                    const { name, enabled, id, role, config, sort, file } = values;
-                    const enabledStr = enabled?'1':'0';
-                    dispatch({
-                      type: "plugin/update",
-                      payload: {
-                        config,
-                        role,
-                        name,
-                        enabled,
-                        id,
-                        sort,
-                        file
-                      },
-                      fetchValue: {
-                        name: pluginName,
-                        enabled: enabledStr
-                      },
-                      callback: () => {
-                        this.setState({isPluginEnabled:enabled})
-                        this.closeModal();
-                      }
-                    });
-                  }}
-                  handleCancel={() => {
+      callback: pluginConfigList => {
+        this.setState({
+          popup: (
+            <AddModal
+              disabled={true}
+              {...plugin}
+              {...pluginConfigList}
+              handleOk={values => {
+              const { name, enabled, id, role, config, sort, file } = values;
+              const enabledStr = enabled ? '1' : '0';
+                dispatch({
+                  type: "plugin/update",
+                  payload: {
+                    config,
+                    role,
+                    name,
+                    enabled,
+                    id,
+                    sort,
+                    file
+                  },
+                  fetchValue: {
+                    name: pluginName,
+                    enabled: enabledStr
+                  },
+                  callback: () => {
+                    this.setState({ isPluginEnabled: enabled })
                     this.closeModal();
-                  }}
-                />
-              )
-            });
-          }
+                  }
+                });
+              }}
+              handleCancel={() => {
+                this.closeModal();
+              }}
+            />
+          )
         });
       }
     });
@@ -690,20 +710,25 @@ export default class Common extends Component {
       }
     ];
 
+    const tag = {
+      text: this.state.isPluginEnabled ? getIntlContent("SHENYU.COMMON.OPEN") : getIntlContent("SHENYU.COMMON.CLOSE"),
+      color: this.state.isPluginEnabled ? 'green' : 'red'
+    }
+
     return (
-      <div className="plug-content-wrap"> 
+      <div className="plug-content-wrap">
         <Row style={{ marginBottom: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex',alignItems:'end',flex:1,margin:0 }}>
+          <div style={{ display: 'flex', alignItems: 'end', flex: 1, margin: 0 }}>
             <Title level={2} style={{ textTransform: 'capitalize', margin: '0 20px 0 0' }}>
               {name}
             </Title>
-            <Title level={3} type="secondary" style={{margin:0}}>{role}</Title>
+            <Title level={3} type="secondary" style={{ margin: '0 20px 0 0' }}>{role}</Title>
+            <Tag color={tag.color}>{tag.text}</Tag>
           </div>
-          <div style={{ display: 'flex',alignItems:'end',gap:10 }}> 
+          <div style={{ display: 'flex', alignItems: 'end', gap: 10 }}>
             <Switch
-              checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-              unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-              checked={this.state.isPluginEnabled?? false}
+              checked={this.state.isPluginEnabled ?? false}
+              onChange={this.togglePluginStatus}
             />
             <AuthButton perms="system:plugin:edit">
               <div className="edit" onClick={this.editClick}>
