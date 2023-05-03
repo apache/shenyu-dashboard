@@ -16,14 +16,16 @@
  */
 
 import React, { Component } from "react";
-import { Row, Col, Table, Tree, Button, message, Popconfirm, Icon } from "antd";
+import { Button, Col, Icon, Input, message, Popconfirm, Row, Table, Tree } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
 import { getIntlContent } from "../../../utils/IntlUtils";
-import AuthButton from '../../../utils/AuthButton';
-import {resetAuthMenuCache} from '../../../utils/AuthRoute';
+import AuthButton from "../../../utils/AuthButton";
+import { resetAuthMenuCache } from "../../../utils/AuthRoute";
+import styles from "./index.less";
 
 const { TreeNode } = Tree;
+const { Search } = Input;
 
 @connect(({ resource, role, global, loading }) => ({
   resource,
@@ -39,6 +41,7 @@ export default class Resource extends Component {
       popup: "",
       buttons: [],
       currentMenu: null,
+      menuName: ""
     };
   }
 
@@ -145,6 +148,10 @@ export default class Resource extends Component {
     });
   };
 
+  searchMenu = (menuName) => {
+    this.setState({ menuName });
+  };
+
   addClick = (resourceType) => {
     const { resource: { menuTree } } = this.props;
     const { currentMenu }  = this.state;
@@ -222,9 +229,21 @@ export default class Resource extends Component {
     }
   }
 
+  filterTreeNode = (item) => {
+    const { menuName } = this.state;
+    let title = item.title || item.meta.title;
+    if (title.startsWith("SHENYU.")) {
+      title = getIntlContent(item.meta.title);
+    }
+    if (title?.toUpperCase().includes(menuName?.toUpperCase())) {
+      return true;
+    }
+    return item.children?.some(this.filterTreeNode);
+  };
+
   renderTreeNodes = (data) => {
     data = data.sort((a,b)=>(a.sort||0)-(b.sort||0));
-    return data.map(item => {
+    return data.filter(this.filterTreeNode).map(item => {
       const { currentMenu } = this.state;
       item.title =  item.meta.title;
       if (item.title.startsWith("SHENYU.")) {
@@ -400,6 +419,20 @@ export default class Resource extends Component {
           <Col span={6} style={{minWidth:280}}>
             <div className="table-header">
               <h3>{getIntlContent("SHENYU.SYSTEM.RESOURCE.MENULIST.TITLE")}</h3>
+              <div className={styles.headerSearch}>
+                <AuthButton perms="system:resource:list">
+                  <Search
+                    className={styles.search}
+                    style={{ width: "130px" }}
+                    placeholder={getIntlContent(
+                      "SHENYU.SYSTEM.RESOURCE.MENU.INPUT.NAME"
+                    )}
+                    enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                    size="default"
+                    onSearch={this.searchMenu}
+                  />
+                </AuthButton>
+              </div>
               <AuthButton perms="system:resource:addMenu">
                 <Button type="primary" onClick={() => this.addClick(1)}>
                   {getIntlContent("SHENYU.BUTTON.RESOURCE.MENU.ADD")}
