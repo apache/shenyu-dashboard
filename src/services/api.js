@@ -59,7 +59,8 @@ export async function updatePassword(params) {
     method: `PUT`,
     body: {
       userName: params.userName,
-      password: params.password
+      password: params.password,
+      oldPassword: params.oldPassword
     }
   });
 }
