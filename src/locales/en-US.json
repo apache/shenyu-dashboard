@@ -1,9 +1,11 @@
 {
   "SHENYU.GLOBALHEADER.LOGOUT": "Logout",
+  "SHENYU.GLOBALHEADER.NOTNULL": "not null",
   "SHENYU.GLOBALHEADER.CHANGE.PASSWORD": "Change Password",
   "SHENYU.GLOBALHEADER.NEW.PASSWORD": "New Password",
+  "SHENYU.GLOBALHEADER.OLD.PASSWORD": "Old Password",
   "SHENYU.GLOBALHEADER.PASSWORD.EXTRA":
-    "The password is 8 ~ 16 characters long and must contain uppercase letters, lowercase letters, numbers and special characters",
+    "Minimum length of 8, including upper and lower case letters, numbers and special characters",
   "SHENYU.GLOBALHEADER.PASSWORD.REQUIRED": "Please enter a new password",
   "SHENYU.GLOBALHEADER.PASSWORD.LENGTH":
     "The password length is 8 ~ 16 characters",
@@ -221,6 +223,8 @@
   "SHENYU.AUTH.PARAMS": "Params",
   "SHENYU.AUTH.PHONE": "TelPhone",
   "SHENYU.AUTH.APPNAME": "AppName",
+  "SHENYU.AUTH.SERVER": "Service",
+  "SHENYU.AUTH.SERVERNAME": "ServiceName",
   "SHENYU.AUTH.RESOUCE.PATH": "ResourcePath",
   "SHENYU.AUTH.PATH.DESCRIBE": "PathDescribe",
   "SHENYU.AUTH.OPERATPATH": "PathOperation",

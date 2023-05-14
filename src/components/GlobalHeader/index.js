@@ -150,7 +150,8 @@ class GlobalHeader extends PureComponent {
                   payload: {
                     id: window.sessionStorage.getItem("userId"),
                     userName: window.sessionStorage.getItem("userName"),
-                    password: values.password
+                    password: values.password,
+                    oldPassword: values.oldPassword
                   },
                   callback: () => {
                     this.setState({ visible: false });
@@ -163,6 +164,28 @@ class GlobalHeader extends PureComponent {
           }}
         >
           <Form labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
+            <Form.Item
+              required
+              label={getIntlContent("SHENYU.GLOBALHEADER.OLD.PASSWORD")}
+            >
+              {getFieldDecorator("oldPassword", {
+                rules: [
+                  {
+                    validator(rule, value, callback) {
+                      if (!value || value.length === 0) {
+                        callback(
+                          getIntlContent(
+                            "SHENYU.GLOBALHEADER.NOTNULL"
+                          )
+                        );
+                        return;
+                      }
+                      callback();
+                    }
+                  }
+                ]
+              })(<Input.Password />)}
+            </Form.Item>
             <Form.Item
               required
               label={getIntlContent("SHENYU.GLOBALHEADER.NEW.PASSWORD")}
@@ -187,11 +210,7 @@ class GlobalHeader extends PureComponent {
                         );
                         return;
                       }
-                      if (
-                        !/(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^a-zA-Z0-9])/.test(
-                          value
-                        )
-                      ) {
+                      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value)) {
                         callback(
                           getIntlContent("SHENYU.GLOBALHEADER.PASSWORD.RULE")
                         );
