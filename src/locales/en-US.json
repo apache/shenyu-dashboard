@@ -3,7 +3,7 @@
   "SHENYU.GLOBALHEADER.NOTNULL": "not null",
   "SHENYU.GLOBALHEADER.CHANGE.PASSWORD": "Change Password",
   "SHENYU.GLOBALHEADER.NEW.PASSWORD": "New Password",
-  "SHENYU.GLOBALHEADER.OLD.PASSWORD": "Lod Password",
+  "SHENYU.GLOBALHEADER.OLD.PASSWORD": "Old Password",
   "SHENYU.GLOBALHEADER.PASSWORD.EXTRA":
     "Minimum length of 8, including upper and lower case letters, numbers and special characters",
   "SHENYU.GLOBALHEADER.PASSWORD.REQUIRED": "Please enter a new password",
