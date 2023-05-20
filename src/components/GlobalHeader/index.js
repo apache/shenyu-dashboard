@@ -152,7 +152,7 @@ class GlobalHeader extends PureComponent {
             loading
           }}
           onCancel={() => {
-            this.setState({ visible: false });
+            this.setState({ visible: false, display: "none"});
             resetFields();
           }}
           onOk={() => {
@@ -167,7 +167,7 @@ class GlobalHeader extends PureComponent {
                     oldPassword: values.oldPassword
                   },
                   callback: () => {
-                    this.setState({ visible: false });
+                    this.setState({ visible: false, display: "none" });
                     resetFields();
                     onLogout();
                   }
