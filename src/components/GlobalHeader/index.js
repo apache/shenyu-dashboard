@@ -176,9 +176,9 @@ class GlobalHeader extends PureComponent {
             });
           }}
         >
-        <div className={styles.warning} style={{display: this.state.display}}>
-          {getIntlContent("SHENYU.SYSTEM.USER.CHANGEPASSWORD")}
-        </div>
+          <div className={styles.warning} style={{display: this.state.display}}>
+            {getIntlContent("SHENYU.SYSTEM.USER.CHANGEPASSWORD")}
+          </div>
  
          
           <Form labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
