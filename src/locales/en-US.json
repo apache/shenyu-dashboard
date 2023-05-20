@@ -125,6 +125,7 @@
   "SHENYU.SYSTEM.ROLENAME": "RoleName",
   "SHENYU.SYSTEM.USER.NAME": "UserName",
   "SHENYU.SYSTEM.USER.PASSWORD": "InputPassword",
+  "SHENYU.SYSTEM.USER.CHANGEPASSWORD": "The password is the default password and you must complete the change once",
   "SHENYU.SYSTEM.USER": "User",
   "SHENYU.SYSTEM.DATA.PERMISSION.CONFIG": "Configure Data Permission",
   "SHENYU.SYSTEM.DATA.PERMISSION.CHECKED": "Checked",

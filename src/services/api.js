@@ -53,6 +53,13 @@ export async function updateUser(params) {
   });
 }
 
+/* check user password */
+export async function checkUserPassword() {
+  return request(`${baseUrl}/dashboardUser/check/password`, {
+      method: `GET`
+  });
+}
+
 /* update password */
 export async function updatePassword(params) {
   return request(`${baseUrl}/dashboardUser/modify-password/${params.id}`, {
