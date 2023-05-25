@@ -355,7 +355,7 @@ class AddModal extends Component {
         >
           <Card>
             <div style={{ display: "flex", alignItems: "center" }}>
-              <Form>
+              <div>
                 <Row gutter={30}>
                   <Col span={10}>
                     <Item label="protocol" {...{labelCol: { span: 8 }, wrapperCol: { span: 10 }}}>
@@ -459,7 +459,7 @@ class AddModal extends Component {
                     </Item>
                   </Col>
                 </Row> 
-              </Form>
+              </div>
               <div style={{ width: 64, textAlign: "right" }}>
                 <Icon
                   onClick={() => {
