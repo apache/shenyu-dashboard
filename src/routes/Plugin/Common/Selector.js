@@ -357,8 +357,8 @@ class AddModal extends Component {
             <div style={{ display: "flex", alignItems: "center" }}>
               <Form>
                 <Row gutter={30}>
-                  <Col span={12}>
-                    <Item label="protocol" {...{labelCol: { span: 8 }, wrapperCol: { span: 15 }}}>
+                  <Col span={10}>
+                    <Item label="protocol" {...{labelCol: { span: 8 }, wrapperCol: { span: 10 }}}>
                       {getFieldDecorator(`divideUpstreams[${key}].protocol`, {
                         initialValue: divideUpstreams[key]
                           ? divideUpstreams[key].protocol
@@ -372,8 +372,8 @@ class AddModal extends Component {
                       })(<Input />)}
                     </Item>
                   </Col>
-                  <Col span={12}>
-                    <Item label="upstreamUrl" {...{labelCol: { span: 10 }, wrapperCol: { span: 15 }}}>
+                  <Col span={14} style={{marginLeft:"-20px"}}>
+                    <Item label="upstreamUrl" {...{labelCol: { span: 9 }, wrapperCol: { span: 15 }}}>
                       {getFieldDecorator(`divideUpstreams[${key}].upstreamUrl`, {
                         initialValue: divideUpstreams[key]
                           ? divideUpstreams[key].upstreamUrl
@@ -389,8 +389,8 @@ class AddModal extends Component {
                   </Col>
                 </Row>
                 <Row gutter={30}>
-                  <Col span={12}>
-                    <Item label="weight" {...{labelCol: { span: 8 }, wrapperCol: { span: 15 }}}>
+                  <Col span={10}>
+                    <Item label="weight" {...{labelCol: { span: 8 }, wrapperCol: { span: 10 }}}>
                       {getFieldDecorator(`divideUpstreams[${key}].weight`, {
                           initialValue: divideUpstreams[key]
                             ? divideUpstreams[key].weight
@@ -410,8 +410,24 @@ class AddModal extends Component {
                         )}
                     </Item>
                   </Col>
-
-                  <Col span={12}>
+                  <Col span={14} style={{marginLeft:"-20px"}}>
+                    <Item label="timestamp" {...{labelCol: { span: 9 }, wrapperCol: { span: 15 }}}>
+                      {getFieldDecorator(`divideUpstreams[${key}].timestamp`, {
+                          initialValue: divideUpstreams[key]
+                            ? divideUpstreams[key].timestamp
+                            : "",
+                          rules: [
+                            {
+                              required: true,
+                              message: "timestamp is required"
+                            }
+                          ]
+                        })(<InputNumber style={{ width: "100%" }} />)}
+                    </Item>
+                  </Col>
+                </Row>
+                <Row gutter={30}>
+                <Col span={10}>
                     <Item label="status" {...{labelCol: { span: 8 }, wrapperCol: { span: 4 }}}>
                       {getFieldDecorator(`divideUpstreams[${key}].status`, {
                         initialValue: divideUpstreams[key]
@@ -427,26 +443,8 @@ class AddModal extends Component {
                       })(<Switch />)}
                     </Item>
                   </Col>
-                </Row>
-                <Row gutter={30}>
-                  <Col span={12}>
-                    <Item label="timestamp" {...{labelCol: { span: 8 }, wrapperCol: { span: 15 }}}>
-                      {getFieldDecorator(`divideUpstreams[${key}].timestamp`, {
-                          initialValue: divideUpstreams[key]
-                            ? divideUpstreams[key].timestamp
-                            : "",
-                          rules: [
-                            {
-                              required: true,
-                              message: "timestamp is required"
-                            }
-                          ]
-                        })(<InputNumber style={{ width: "100%" }} />)}
-                    </Item>
-                  </Col>
-
-                  <Col span={12}>
-                    <Item label="warmup" {...{labelCol: { span: 8 }, wrapperCol: { span: 15 }}}>
+                  <Col span={14} style={{marginLeft:"-20px"}}>
+                    <Item label="warmup" {...{labelCol: { span: 9 }, wrapperCol: { span: 15 }}}>
                       {getFieldDecorator(`divideUpstreams[${key}].warmup`, {
                         initialValue: divideUpstreams[key]
                           ? divideUpstreams[key].warmup
@@ -511,7 +509,7 @@ class AddModal extends Component {
               </Item>
             </Col>
           </Row>
-          <Row gutter={24} key="8">
+          <Row gutter={24} key="9">
             <Col span={24}>
               {Rule}
               <Item>
