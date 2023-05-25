@@ -349,114 +349,119 @@ class AddModal extends Component {
           required
           key={key}
           {...(index === 0
-            ? { labelCol: { span: 3 }, wrapperCol: { span: 21 } }
-            : { wrapperCol: { span: 21, offset: 3 } })}
+            ? { labelCol: { span: 4 }, wrapperCol: { span: 20 } }
+            : { wrapperCol: { span: 20, offset: 4 } })}
           label={index === 0 ? "divideUpstreams" : ""}
         >
           <Card>
             <div style={{ display: "flex", alignItems: "center" }}>
-              <Row gutter={8}>
-                <Col span={8}>
-                  <Item label="protocol" wrapperCol={{ span: 16 }}>
-                    {getFieldDecorator(`divideUpstreams[${key}].protocol`, {
-                      initialValue: divideUpstreams[key]
-                        ? divideUpstreams[key].protocol
-                        : "",
-                      rules: [
-                        {
-                          required: true,
-                          message: "protocol is required"
-                        }
-                      ]
-                    })(<Input />)}
-                  </Item>
-                </Col>
-                <Col span={16}>
-                  <Item label="upstreamUrl" wrapperCol={{ span: 19 }}>
-                    {getFieldDecorator(`divideUpstreams[${key}].upstreamUrl`, {
-                      initialValue: divideUpstreams[key]
-                        ? divideUpstreams[key].upstreamUrl
-                        : "",
-                      rules: [
-                        {
-                          required: true,
-                          message: "upstreamUrl is required"
-                        }
-                      ]
-                    })(<Input />)}
-                  </Item>
-                </Col>
-                <Col span={6}>
-                  <Item label="weight" wrapperCol={{ span: 15 }}>
-                    {getFieldDecorator(`divideUpstreams[${key}].weight`, {
-                      initialValue: divideUpstreams[key]
-                        ? divideUpstreams[key].weight
-                        : "",
-                      rules: [
-                        {
-                          required: true,
-                          message: "weight is required"
-                        }
-                      ]
-                    })(
-                      <InputNumber
-                        min={0}
-                        max={100}
-                        style={{ width: "100%" }}
-                      />
-                    )}
-                  </Item>
-                </Col>
+              <Form>
+                <Row gutter={30}>
+                  <Col span={12}>
+                    <Item label="protocol" {...{labelCol: { span: 8 }, wrapperCol: { span: 15 }}}>
+                      {getFieldDecorator(`divideUpstreams[${key}].protocol`, {
+                        initialValue: divideUpstreams[key]
+                          ? divideUpstreams[key].protocol
+                          : "",
+                        rules: [
+                          {
+                            required: true,
+                            message: "protocol is required"
+                          }
+                        ]
+                      })(<Input />)}
+                    </Item>
+                  </Col>
+                  <Col span={12}>
+                    <Item label="upstreamUrl" {...{labelCol: { span: 10 }, wrapperCol: { span: 15 }}}>
+                      {getFieldDecorator(`divideUpstreams[${key}].upstreamUrl`, {
+                        initialValue: divideUpstreams[key]
+                          ? divideUpstreams[key].upstreamUrl
+                          : "",
+                        rules: [
+                          {
+                            required: true,
+                            message: "upstreamUrl is required"
+                          }
+                        ]
+                      })(<Input />)}
+                    </Item>
+                  </Col>
+                </Row>
+                <Row gutter={30}>
+                  <Col span={12}>
+                    <Item label="weight" {...{labelCol: { span: 8 }, wrapperCol: { span: 15 }}}>
+                      {getFieldDecorator(`divideUpstreams[${key}].weight`, {
+                          initialValue: divideUpstreams[key]
+                            ? divideUpstreams[key].weight
+                            : "",
+                          rules: [
+                            {
+                              required: true,
+                              message: "weight is required"
+                            }
+                          ]
+                        })(
+                          <InputNumber
+                            min={0}
+                            max={100}
+                            style={{ width: "100%" }}
+                          />
+                        )}
+                    </Item>
+                  </Col>
 
-                <Col span={4}>
-                  <Item label="status" wrapperCol={{ span: 11 }}>
-                    {getFieldDecorator(`divideUpstreams[${key}].status`, {
-                      initialValue: divideUpstreams[key]
-                        ? divideUpstreams[key].status
-                        : false,
-                      valuePropName: "checked",
-                      rules: [
-                        {
-                          required: true,
-                          message: "status is required"
-                        }
-                      ]
-                    })(<Switch />)}
-                  </Item>
-                </Col>
+                  <Col span={12}>
+                    <Item label="status" {...{labelCol: { span: 8 }, wrapperCol: { span: 4 }}}>
+                      {getFieldDecorator(`divideUpstreams[${key}].status`, {
+                        initialValue: divideUpstreams[key]
+                          ? divideUpstreams[key].status
+                          : false,
+                        valuePropName: "checked",
+                        rules: [
+                          {
+                            required: true,
+                            message: "status is required"
+                          }
+                        ]
+                      })(<Switch />)}
+                    </Item>
+                  </Col>
+                </Row>
+                <Row gutter={30}>
+                  <Col span={12}>
+                    <Item label="timestamp" {...{labelCol: { span: 8 }, wrapperCol: { span: 15 }}}>
+                      {getFieldDecorator(`divideUpstreams[${key}].timestamp`, {
+                          initialValue: divideUpstreams[key]
+                            ? divideUpstreams[key].timestamp
+                            : "",
+                          rules: [
+                            {
+                              required: true,
+                              message: "timestamp is required"
+                            }
+                          ]
+                        })(<InputNumber style={{ width: "100%" }} />)}
+                    </Item>
+                  </Col>
 
-                <Col span={8}>
-                  <Item label="timestamp" wrapperCol={{ span: 15 }}>
-                    {getFieldDecorator(`divideUpstreams[${key}].timestamp`, {
-                      initialValue: divideUpstreams[key]
-                        ? divideUpstreams[key].timestamp
-                        : "",
-                      rules: [
-                        {
-                          required: true,
-                          message: "timestamp is required"
-                        }
-                      ]
-                    })(<InputNumber style={{ width: "100%" }} />)}
-                  </Item>
-                </Col>
-
-                <Col span={6}>
-                  <Item label="warmup" wrapperCol={{ span: 14 }}>
-                    {getFieldDecorator(`divideUpstreams[${key}].warmup`, {
-                      initialValue: divideUpstreams[key]
-                        ? divideUpstreams[key].warmup
-                        : "",
-                      rules: [
-                        {
-                          required: true,
-                          message: "warmup is required"
-                        }
-                      ]
-                    })(<InputNumber style={{ width: "100%" }} />)}
-                  </Item>
-                </Col>
-              </Row>
+                  <Col span={12}>
+                    <Item label="warmup" {...{labelCol: { span: 8 }, wrapperCol: { span: 15 }}}>
+                      {getFieldDecorator(`divideUpstreams[${key}].warmup`, {
+                        initialValue: divideUpstreams[key]
+                          ? divideUpstreams[key].warmup
+                          : "",
+                        rules: [
+                          {
+                            required: true,
+                            message: "warmup is required"
+                          }
+                        ]
+                      })(<InputNumber style={{ width: "100%" }} />)}
+                    </Item>
+                  </Col>
+                </Row> 
+              </Form>
               <div style={{ width: 64, textAlign: "right" }}>
                 <Icon
                   onClick={() => {
@@ -478,22 +483,23 @@ class AddModal extends Component {
       ));
 
       return (
-        <Row gutter={16} key="8">
-          <Col span={10}>
-            <Item label="serviceId" wrapperCol={{ span: 16 }}>
-              {getFieldDecorator("serviceId", {
+        <div style={{padding:"10px"}}>
+          <Row gutter={16} key="8">
+            <Col span={10}>
+              <Item label="serviceId" {...{labelCol: { span: 6 }, wrapperCol: { span: 18 }}}>
+                {getFieldDecorator("serviceId", {
                 initialValue: serviceId,
                 rules: [
                   {
                     required: true
                   }
                 ]
-              })(<Input placeholder="serviceId" />)}
-            </Item>
-          </Col>
-          <Col span={8}>
-            <Item label="gray" wrapperCol={{ span: 16 }}>
-              {getFieldDecorator("gray", {
+              })(<Input placeholder="serviceId" /> )}
+              </Item>
+            </Col>
+            <Col span={3}>
+              <Item label="gray" {...formCheckLayout}>
+                {getFieldDecorator("gray", {
                 valuePropName: "checked",
                 initialValue: gray,
                 rules: [
@@ -502,14 +508,16 @@ class AddModal extends Component {
                   }
                 ]
               })(<Switch />)}
-            </Item>
-          </Col>
-          <Col span={24}>
-            {Rule}
-            <Item wrapperCol={{ span: 16, offset: 3 }}>
-              <Button
-                type="dashed"
-                onClick={() => {
+              </Item>
+            </Col>
+          </Row>
+          <Row gutter={24} key="8">
+            <Col span={24}>
+              {Rule}
+              <Item>
+                <Button
+                  type="dashed"
+                  onClick={() => {
                   const keysData = getFieldValue("keys");
                   // eslint-disable-next-line no-plusplus
                   const nextKeys = keysData.concat(id++);
@@ -517,12 +525,13 @@ class AddModal extends Component {
                     keys: nextKeys
                   });
                 }}
-              >
-                <Icon type="plus" /> Add divide upstream
-              </Button>
-            </Item>
-          </Col>
-        </Row>
+                >
+                  <Icon type="plus" /> Add divide upstream
+                </Button>
+              </Item>
+            </Col>
+          </Row>
+        </div>
       );
     }
 
