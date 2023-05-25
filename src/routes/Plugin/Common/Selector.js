@@ -427,7 +427,7 @@ class AddModal extends Component {
                   </Col>
                 </Row>
                 <Row gutter={30}>
-                <Col span={10}>
+                  <Col span={10}>
                     <Item label="status" {...{labelCol: { span: 8 }, wrapperCol: { span: 4 }}}>
                       {getFieldDecorator(`divideUpstreams[${key}].status`, {
                         initialValue: divideUpstreams[key]
