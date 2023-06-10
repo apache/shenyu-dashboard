@@ -62,15 +62,29 @@ class AddAndUpdateApiDoc extends Component {
     formLoaded?.(form);
   }
 
+
   handleSubmit = () => {
     const { form, onOk } = this.props;
     form.validateFieldsAndScroll(async (err, values) => {
+      function isJsonStr(str) {
+        try {
+          let obj = JSON.parse(str);
+          return !!(typeof obj === 'object' && obj);
+        } catch(e) {
+          return false;
+        }
+      }
       if (!err) {
         const { id } = values;
         let res = {};
         values.state = parseInt(values.state);
         values.apiSource = parseInt(values.apiSource);
         values.httpMethod = parseInt(values.httpMethod);
+        // validate ext
+        if (!isJsonStr(values.ext)) {
+          message.error(getIntlContent("SHENYU.DOCUMENT.APIDOC.EXT.INFO"));
+          return;
+        }
         if (!id) {
           res = await addApi({
             ...values
@@ -103,7 +117,7 @@ class AddAndUpdateApiDoc extends Component {
       version = "",
       rpcType = "",
       state = "",
-      ext = "",
+      ext = "{}",
       apiOwner = "",
       apiDesc = "",
       apiSource = "",
@@ -113,10 +127,10 @@ class AddAndUpdateApiDoc extends Component {
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 5 }
+        sm: { span: 6 }
       },
       wrapperCol: {
-        sm: { span: 19 }
+        sm: { span: 18 }
       }
     };
 
@@ -290,7 +304,7 @@ class AddAndUpdateApiDoc extends Component {
                     </Radio.Button>
                   );
                 })}
-               
+
               </Radio.Group>
             )}
           </Form.Item>
@@ -302,13 +316,14 @@ class AddAndUpdateApiDoc extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.EXT")
+                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.EXT.INFO")
                 }
               ],
               initialValue: ext
             })(
               <Input
-                placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.EXT")}
+                size="large"
+                placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.EXT.INFO")}
               />
             )}
           </Form.Item>
