@@ -78,8 +78,12 @@ class GlobalHeader extends PureComponent {
         if (res && res.code !== 200) {
           this.setState({ visible: true ,display :"block"})
         }
-      });
+      })
     }
+  }
+
+  componentWillUnmount() {
+    this.setState = () => false;
   }
 
   handleLocalesValueChange = value => {
@@ -145,6 +149,7 @@ class GlobalHeader extends PureComponent {
           </div>
         </div>
         <Modal
+          width="35%"
           title={getIntlContent("SHENYU.GLOBALHEADER.CHANGE.PASSWORD")}
           visible={visible}
           forceRender
@@ -176,11 +181,11 @@ class GlobalHeader extends PureComponent {
             });
           }}
         >
-          <div className={styles.warning} style={{display: this.state.display}}>
+          <div className={styles.warning} style={{display: this.state.display, textAlign: 'center', marginBottom: 16}}>
             {getIntlContent("SHENYU.SYSTEM.USER.CHANGEPASSWORD")}
           </div>
- 
-         
+
+
           <Form labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
             <Form.Item
               required
