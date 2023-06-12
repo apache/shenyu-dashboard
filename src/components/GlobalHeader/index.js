@@ -233,7 +233,7 @@ class GlobalHeader extends PureComponent {
                         );
                         return;
                       }
-                      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value)) {
+                      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&=_+-])[A-Za-z\d@$!%*?&=_+-]{8,}$/.test(value)) {
                         callback(
                           getIntlContent("SHENYU.GLOBALHEADER.PASSWORD.RULE")
                         );
