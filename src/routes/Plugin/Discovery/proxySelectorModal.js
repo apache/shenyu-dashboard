@@ -53,7 +53,6 @@ class ProxySelectorModal extends Component {
   handleTableChange = (newData) => {
     const {discoveryUpstreams} = this.state;
     this.setState({ Upstreams: newData });
-    console.log("discoveryUpstreams:", discoveryUpstreams);
   };
 
   handleCountChange = (newCount) => {

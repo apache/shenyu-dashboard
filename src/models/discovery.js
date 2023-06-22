@@ -41,10 +41,8 @@ export default {
 
   effects: {
     * fetchSelector(params, {call, put}) {
-      // console.log(params);
       const {payload, callback} = params;
       const json = yield call(fetchProxySelector, payload);
-      // console.log(json);
       if (json.code === 200) {
         const {page, dataList} = json.data;
         if (callback) {
@@ -106,7 +104,6 @@ export default {
       }
     },
     * reload(params, {put}) {
-      // console.log(params);
       const {fetchValue} = params;
       const {name = '', currentPage, pageSize} = fetchValue;
       const payload = {name, currentPage, pageSize};
@@ -120,8 +117,6 @@ export default {
       if (json.code === 200) {
         message.success(getIntlContent('SHENYU.COMMON.RESPONSE.CONFIGURATION.SUCCESS'));
         const { data } = json;
-        console.log("json", json)
-        console.log("data", data)
         if (callback) {
           callback(data);
         }
@@ -132,13 +127,10 @@ export default {
 
 
     * fetchDiscovery(params, {call, put}) {
-      console.log("here");
       const {payload, callback} = params;
       const json = yield call(getDiscovery, payload);
-      console.log("discovery", json);
       if (json.code === 200) {
         const {data} = json;
-        console.log("didata", data)
         if (callback) {
           callback(data);
         }
@@ -153,7 +145,6 @@ export default {
 
   reducers: {
     saveProxySelectors(state, {payload}) {
-      console.log("totalcount", payload.total)
       return {
         ...state,
         selectorList: payload.dataList,
