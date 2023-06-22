@@ -157,7 +157,7 @@ class ProxySelectorModal extends Component {
                 </FormItem>
 
                 {
-                  isSetConfig !== true && (
+                  isSetConfig !== true ? (
                     <>
                       <Divider />
                       <FormItem label="ServerList">
@@ -179,11 +179,11 @@ class ProxySelectorModal extends Component {
                       </FormItem>
 
                     </>
-                  )
+                  ) : null
                 }
 
                 {
-                  isAdd !== true && (
+                  isAdd !== true ? (
                     <>
                       <Divider />
                       <EditableTable
@@ -193,7 +193,7 @@ class ProxySelectorModal extends Component {
                         onCountChange={this.handleCountChange}
                       />
                     </>
-                  )
+                  ):null
                 }
               </>
             ) : (
