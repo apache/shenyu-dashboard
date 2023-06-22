@@ -34,7 +34,7 @@ class ProxySelectorModal extends Component {
     super(props);
     this.state = {
       recordCount: this.props.recordCount,
-      Upstreams: this.props.discoveryUpstreams,
+      upstreams: this.props.discoveryUpstreams,
     };
   }
 
@@ -44,15 +44,14 @@ class ProxySelectorModal extends Component {
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         let {name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, discoveryType} = values;
-        const {Upstreams} = this.state
-        handleOk({name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, discoveryType, Upstreams});
+        const {upstreams} = this.state
+        handleOk({name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, discoveryType, upstreams});
       }
     });
   };
 
   handleTableChange = (newData) => {
-    const {discoveryUpstreams} = this.state;
-    this.setState({ Upstreams: newData });
+    this.setState({ upstreams: newData });
   };
 
   handleCountChange = (newCount) => {
@@ -74,7 +73,7 @@ class ProxySelectorModal extends Component {
 
   render() {
     const { tcpType, form, handleCancel, isSetConfig, isAdd, chosenType} = this.props;
-    const {recordCount, Upstreams } = this.state;
+    const {recordCount, upstreams } = this.state;
     const {getFieldDecorator} = form;
     const { name, forwardPort, props, listenerNode, handler, discovery} = this.props.data || {};
     return (
@@ -188,7 +187,7 @@ class ProxySelectorModal extends Component {
                     <>
                       <Divider />
                       <EditableTable
-                        dataSource={Upstreams}
+                        dataSource={upstreams}
                         recordCount={recordCount}
                         onTableChange={this.handleTableChange}
                         onCountChange={this.handleCountChange}
@@ -200,9 +199,8 @@ class ProxySelectorModal extends Component {
             ) : (
               <>
                 <Divider />
-                {/* {this.renderDiscoveryUpstreams(discoveryUpstreams)} */}
                 <EditableTable
-                  dataSource={Upstreams}
+                  dataSource={upstreams}
                   recordCount={recordCount}
                   onTableChange={this.handleTableChange}
                   onCountChange={this.handleCountChange}

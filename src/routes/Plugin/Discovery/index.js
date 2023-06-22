@@ -322,7 +322,7 @@ export default class TCPProxy extends Component {
               isAdd={true}
               isSetConfig={isSetConfig}
               handleOk={values => {
-                const {name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, discoveryType, Upstreams} = values;
+                const {name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, discoveryType, upstreams} = values;
                 dispatch({
                   type: 'discovery/add',
                   payload: {
@@ -339,7 +339,7 @@ export default class TCPProxy extends Component {
                       serverList,
                       props: discoveryProps
                     },
-                    discoveryUpstreams: Upstreams
+                    discoveryUpstreams: upstreams
                   },
                   callback: () => {
                     this.closeModal();
@@ -384,7 +384,7 @@ export default class TCPProxy extends Component {
           isSetConfig={isSetConfig}
           data={data}
           handleOk={values => {
-            const {name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, Upstreams} = values;
+            const {name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, upstreams} = values;
             dispatch({
               type: 'discovery/update',
               payload: {
@@ -400,7 +400,7 @@ export default class TCPProxy extends Component {
                   serverList,
                   props: discoveryProps
                 },
-                discoveryUpstreams: Upstreams
+                discoveryUpstreams: upstreams
               },
               callback: () => {
                 this.closeUpdateModal();
