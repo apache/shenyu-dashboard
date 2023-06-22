@@ -51,7 +51,15 @@ export default class TCPProxy extends Component {
           serverList: '',
           props: ''
         },
-        discoveryUpstreams: []
+        discoveryUpstreams: [
+          // {
+          //   protocol: '1',
+          //   url: '1',
+          //   status:'1',
+          //   weight: '1',
+          //   key: '1'
+          // }
+        ]
       },
       isPluginEnabled: false,
       popup: "",
@@ -171,7 +179,15 @@ export default class TCPProxy extends Component {
           serverList: '',
           props: ''
         },
-        discoveryUpstreams: []
+        discoveryUpstreams: [
+          // {
+          //   protocol: '1',
+          //   url: '1',
+          //   status:'1',
+          //   weight: '1',
+          //   key: '1'
+          // }
+        ]
       }
     });
   };

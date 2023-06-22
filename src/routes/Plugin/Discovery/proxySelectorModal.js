@@ -17,7 +17,7 @@
 
 import React, {Component} from "react";
 import {connect} from "dva";
-import {Divider, Form, Input, Modal, Select} from "antd";
+import {Divider, Form, Input, Modal, Select, Table} from "antd";
 import {getIntlContent} from "../../../utils/IntlUtils";
 import EditableTable from './upstreamTable';
 
@@ -76,6 +76,28 @@ class ProxySelectorModal extends Component {
     const {recordCount, upstreams } = this.state;
     const {getFieldDecorator} = form;
     const { name, forwardPort, props, listenerNode, handler, discovery} = this.props.data || {};
+    const columns = [
+      {
+        title: 'protocol',
+        dataIndex: 'protocol',
+        key: 'protocol',
+      },
+      {
+        title: 'url',
+        dataIndex: 'url',
+        key: 'url',
+      },
+      {
+        title: 'status',
+        dataIndex: 'status',
+        key: 'status',
+      },
+      {
+        title: 'weight',
+        dataIndex: 'weight',
+        key: 'weight',
+      },
+    ];
     return (
       <Modal
         destroyOnClose
@@ -159,7 +181,7 @@ class ProxySelectorModal extends Component {
                 {
                   isSetConfig !== true ? (
                     <>
-                      <Divider />
+                      <Divider>Discovery Configuration</Divider>
                       <FormItem label="ServerList">
                         {getFieldDecorator('serverList', {
                           rules: [{required: true, message: 'Please input the discovery server list!'}],
@@ -185,20 +207,15 @@ class ProxySelectorModal extends Component {
                 {
                   isAdd !== true ? (
                     <>
-                      <Divider />
-                      <EditableTable
-                        dataSource={upstreams}
-                        recordCount={recordCount}
-                        onTableChange={this.handleTableChange}
-                        onCountChange={this.handleCountChange}
-                      />
+                      <Divider>Discovery Upstreams</Divider>
+                      <Table dataSource={upstreams} columns={columns} />;
                     </>
                   ):null
                 }
               </>
             ) : (
               <>
-                <Divider />
+                <Divider>Discovery Upstreams</Divider>
                 <EditableTable
                   dataSource={upstreams}
                   recordCount={recordCount}
