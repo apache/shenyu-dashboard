@@ -313,7 +313,9 @@ export default class Common extends Component {
                   },
                   fetchValue: {
                     name: pluginName,
-                    enabled: enabledStr
+                    enabled: enabledStr,
+                    currentPage: 1,
+                    pageSize: 50
                   },
                   callback: () => {
                     this.setState({ isPluginEnabled: enabled })

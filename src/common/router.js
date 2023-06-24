@@ -96,6 +96,11 @@ export const getRouterData = app => {
     "/home": {
       component: dynamicWrapper(app, [], () => import("../routes/Home"))
     },
+    "/plug/Proxy/tcp":{
+      component: dynamicWrapper(app, ["discovery"], () =>
+        import("../routes/Plugin/Discovery")
+      )
+    },
     "/plug/:index/:id": {
       component: dynamicWrapper(app, ["common"], () =>
         import("../routes/Plugin/Common")
