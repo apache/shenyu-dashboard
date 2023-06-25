@@ -28,12 +28,10 @@ class ConfigModal extends Component {
 
   handleSubmit = e => {
     const { form, handleOk } = this.props;
-    // console.log("I'm submit");
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         let { name, serverList, props, tcpType } = values;
-        // console.log("id", id);
         handleOk({ name, serverList, props, tcpType});
       }
     });
@@ -51,6 +49,14 @@ class ConfigModal extends Component {
     const { handleCancel, form, data } = this.props
     const { getFieldDecorator } = form;
     const { name, serverList, props, type: tcpType} = data || {};
+    const formItemLayout = {
+      labelCol: {
+        sm: { span: 6 }
+      },
+      wrapperCol: {
+        sm: { span: 17 }
+      }
+    };
     return (
       <Modal
         visible
@@ -63,42 +69,42 @@ class ConfigModal extends Component {
         destroyOnClose
       >
         <Form onSubmit={this.handleSubmit}>
-          <Form.Item label="Type">
+          <Form.Item label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE")} {...formItemLayout}>
             {getFieldDecorator('tcpType', {
-              rules: [{ required: true, message: 'Please select the discovery type!' }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT") }],
               initialValue: tcpType !== "" ? tcpType : undefined
             })(
               <Select
-                placeholder="Please select the discovery type"
+                placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}
               >
                 {this.handleOptions()}
               </Select>,
             )}
           </Form.Item>
-          <FormItem label="Name">
+          <FormItem label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.NAME")} {...formItemLayout}>
             {getFieldDecorator('name', {
-              rules: [{ required: true, message: 'Please input the discovery name!' }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.NAME.INPUT") }],
               initialValue: name
             })(<Input
-              placeholder="the discovery name"
+              placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.NAME.INPUT")}
             />)}
           </FormItem>
 
-          <FormItem label="ServerList">
+          <FormItem label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST")} {...formItemLayout}>
             {getFieldDecorator('serverList', {
-              rules: [{ required: true, message: 'Please input the register server url!' }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT") }],
               initialValue: serverList
             })(<Input
-              placeholder="register server url"
+              placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT")}
             />)}
           </FormItem>
 
-          <FormItem label="Props">
+          <FormItem label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS")} {...formItemLayout}>
             {getFieldDecorator('props', {
-              rules: [{ required: true, message: 'Please input the props!' }],
+              rules: [{ required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS.INPUT") }],
               initialValue: props
             })(<Input.TextArea
-              placeholder="the discovery props"
+              placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS.INPUT")}
             />)}
           </FormItem>
 

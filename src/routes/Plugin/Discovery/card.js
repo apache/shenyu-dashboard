@@ -33,15 +33,15 @@ export class TcpCard extends Component {
     return (
       <div style={{display: 'flex', flexDirection: 'column'}}>
         <div className={tcpStyles.cardItem}>
-          <div style={{ fontSize: '15px', marginLeft: '30px' }}>ForwardPort</div>
+          <div style={{ fontSize: '18px', marginLeft: '30px' }}>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.FORWARDPORT")}</div>
           <div className={tcpStyles.cardTag}>{forwardPort}</div>
         </div>
         <div className={tcpStyles.cardItem}>
-          <div style={{ fontSize: '15px', marginLeft: '30px' }}>DateCreated</div>
+          <div style={{ fontSize: '18px', marginLeft: '30px' }}>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.DateCreated")}</div>
           <div className={tcpStyles.cardTag}>{formatTimestamp(createTime)}</div>
         </div>
         <div className={tcpStyles.cardItem}>
-          <div style={{ fontSize: '15px', marginLeft: '30px'  }}>DateUpdated</div>
+          <div style={{ fontSize: '18px', marginLeft: '30px'  }}>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.DateUpdated")}</div>
           <div className={tcpStyles.cardTag}>{formatTimestamp(updateTime)}</div>
         </div>
       </div>

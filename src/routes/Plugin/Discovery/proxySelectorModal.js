@@ -76,6 +76,23 @@ class ProxySelectorModal extends Component {
     const {recordCount, upstreams } = this.state;
     const {getFieldDecorator} = form;
     const { name, forwardPort, props, listenerNode, handler, discovery} = this.props.data || {};
+    const formItemLayout = {
+      labelCol: {
+        sm: { span: 6 }
+      },
+      wrapperCol: {
+        sm: { span: 17 }
+      }
+    };
+    if (!isAdd || isSetConfig) {
+      this.props.dispatch({
+        type: 'discovery/saveGlobalType',
+        payload: {
+          chosenType: tcpType
+        }
+      })
+    }
+
     const columns = [
       {
         title: 'protocol',
@@ -110,14 +127,14 @@ class ProxySelectorModal extends Component {
         cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
       >
         <Form onSubmit={this.handleSubmit}>
-          <FormItem label="Type">
+          <FormItem label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE")} {...formItemLayout}>
             {getFieldDecorator('discoveryType', {
-              rules: [{required: true, message: 'Please select the discovery type!'}],
+              rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}],
               initialValue: tcpType !== '' ? tcpType : undefined
             })(
               <Select
-                placeholder="Please select the discovery type"
-                disabled={isSetConfig}
+                placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}
+                disabled={isSetConfig||!isAdd}
                 onChange={value => this.props.dispatch({
                   type: 'discovery/saveGlobalType',
                   payload: {
@@ -130,73 +147,73 @@ class ProxySelectorModal extends Component {
             )}
           </FormItem>
 
-          <FormItem label="Name">
+          <FormItem label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.NAME")} {...formItemLayout}>
             {getFieldDecorator('name', {
-              rules: [{required: true, message: 'Please input the proxy selector name!'}],
+              rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.SELECTOR.NAME.INPUT")}],
               initialValue: name
             })(<Input
-              placeholder="the proxy selector name"
+              placeholder={getIntlContent("SHENYU.DISCOVERY.SELECTOR.NAME.INPUT")}
             />)}
           </FormItem>
 
-          <FormItem label="ForwardPort">
+          <FormItem label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.FORWARDPORT")} {...formItemLayout}>
             {getFieldDecorator('forwardPort', {
-              rules: [{required: true, message: 'Please input the forwardPort!'}],
+              rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.SELECTOR.FORWARDPORT.INPUT")}],
               initialValue: forwardPort
             })(<Input
-              placeholder="the forwardPort"
+              placeholder={getIntlContent("SHENYU.DISCOVERY.SELECTOR.FORWARDPORT.INPUT")}
             />)}
           </FormItem>
 
-          <FormItem label="Props">
+          <FormItem label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.PROPS")} {...formItemLayout}>
             {getFieldDecorator('props', {
-              rules: [{required: true, message: 'Please input the proxy selector props!'}],
+              rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.SELECTOR.PROPS.INPUT")}],
               initialValue: props
             })(<Input.TextArea
-              placeholder="the proxy selector props"
+              placeholder={getIntlContent("SHENYU.DISCOVERY.SELECTOR.PROPS.INPUT")}
             />)}
           </FormItem>
 
           {
             chosenType !== 'local' ? (
               <>
-                <FormItem label="ListenerNode">
+                <FormItem label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.LISTENERNODE")} {...formItemLayout}>
                   {getFieldDecorator('listenerNode', {
-                    rules: [{required: true, message: 'Please input the listenerNode!'}],
+                    rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.SELECTOR.LISTENERNODE.INPUT")}],
                     initialValue: listenerNode
                   })(<Input
-                    placeholder="the listenerNode"
+                    placeholder={getIntlContent("SHENYU.DISCOVERY.SELECTOR.LISTENERNODE.INPUT")}
                   />)}
                 </FormItem>
 
-                <FormItem label="Handler">
+                <FormItem label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.HANDLER")} {...formItemLayout}>
                   {getFieldDecorator('handler', {
-                    rules: [{required: true, message: 'Please input the handler!'}],
+                    rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.SELECTOR.HANDLER.INPUT")}],
                     initialValue: handler
                   })(<Input.TextArea
-                    placeholder="the handler"
+                    placeholder={getIntlContent("SHENYU.DISCOVERY.SELECTOR.HANDLER.INPUT")}
                   />)}
                 </FormItem>
 
                 {
                   isSetConfig !== true ? (
                     <>
-                      <Divider>Discovery Configuration</Divider>
-                      <FormItem label="ServerList">
+                      <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIGURATION")}</Divider>
+                      <FormItem label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST")} {...formItemLayout}>
                         {getFieldDecorator('serverList', {
-                          rules: [{required: true, message: 'Please input the discovery server list!'}],
+                          rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT")}],
                           initialValue: discovery.serverList
                         })(<Input
-                          placeholder="the discovery server list"
+                          placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT")}
                         />)}
                       </FormItem>
 
-                      <FormItem label="Props">
+                      <FormItem label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS")} {...formItemLayout}>
                         {getFieldDecorator('discoveryProps', {
-                          rules: [{required: true, message: 'Please input the discovery props!'}],
+                          rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS.INPUT")}],
                           initialValue: discovery.props
                         })(<Input.TextArea
-                          placeholder="the discovery props"
+                          placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS.INPUT")}
                         />)}
                       </FormItem>
 
@@ -207,7 +224,7 @@ class ProxySelectorModal extends Component {
                 {
                   isAdd !== true ? (
                     <>
-                      <Divider>Discovery Upstreams</Divider>
+                      <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}</Divider>
                       <Table dataSource={upstreams} columns={columns} />;
                     </>
                   ):null
@@ -215,7 +232,7 @@ class ProxySelectorModal extends Component {
               </>
             ) : (
               <>
-                <Divider>Discovery Upstreams</Divider>
+                <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}</Divider>
                 <EditableTable
                   dataSource={upstreams}
                   recordCount={recordCount}

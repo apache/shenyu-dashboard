@@ -1,10 +1,7 @@
 import React, {Component, createContext} from "react";
 import { Table, Input, Button, Popconfirm, Form } from 'antd';
-
-// import {getIntlContent} from "../../../utils/IntlUtils";
-// import tcpStyles from "./tcp.less";
-
-
+import AuthButton from "../../../utils/AuthButton";
+import {getIntlContent} from "../../../utils/IntlUtils";
 
 
 const EditableContext = createContext();
@@ -119,12 +116,12 @@ export default class EditableTable extends Component {
         editable: true,
       },
       {
-        title: 'operation',
+        title: getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.OPERATION"),
         dataIndex: 'operation',
         render: (text, record) =>
           this.props.dataSource.length >= 1 ? (
-            <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.key)}>
-              <a>Delete</a>
+            <Popconfirm title={getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.DELETE")} onConfirm={() => this.handleDelete(record.key)}>
+              <a>{getIntlContent("SHENYU.BUTTON.SYSTEM.DELETE")}</a>
             </Popconfirm>
           ) : null,
       },
@@ -133,11 +130,8 @@ export default class EditableTable extends Component {
   }
 
   handleDelete = key => {
-    // console.log("Deleting key:", key);
     const { dataSource } = this.props;
-    // console.log("Current dataSource:", dataSource);
     const newData = dataSource.filter(item => item.key !== key);
-    // console.log("Updated dataSource:", newData);
     this.props.onTableChange(newData);
   };
 
@@ -191,9 +185,11 @@ export default class EditableTable extends Component {
     });
     return (
       <div>
-        <Button onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
-          Add Discovery Upstream
-        </Button>
+        <AuthButton perms="plugin:tcpSelector:add">
+          <Button onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
+            {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.ADD")}
+          </Button>
+        </AuthButton>
         <Table
           components={components}
           rowClassName={() => 'editable-row'}
