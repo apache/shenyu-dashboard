@@ -383,7 +383,7 @@ export default class TCPProxy extends Component {
     this.setState({
       cardData: data
     })
-    if (data.discovery.serverList === null){
+    if (data.discovery.serverList === null && data.type!=='local'){
       isSetConfig = true
     }
     const updateArray = data.discoveryUpstreams.map((item) => {
