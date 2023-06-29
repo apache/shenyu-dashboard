@@ -322,11 +322,11 @@ export default class TCPProxy extends Component {
       },
       callback: discoveryConfigList => {
         let tcpType = '';
-        let discoveryId = '';
+        let id = null;
         let isSetConfig = false;
         if (discoveryConfigList !== null) {
           tcpType = discoveryConfigList.type;
-          discoveryId = discoveryConfigList.id
+          id = discoveryConfigList.id
           isSetConfig = true;
         }
         this.setState({
@@ -344,7 +344,6 @@ export default class TCPProxy extends Component {
                 dispatch({
                   type: 'discovery/add',
                   payload: {
-                    discoveryId,
                     name,
                     forwardPort,
                     type: "tcp",
@@ -352,6 +351,7 @@ export default class TCPProxy extends Component {
                     listenerNode,
                     handler,
                     discovery: {
+                      id,
                       level: "0", // 0 selector
                       pluginName: "tcp",
                       discoveryType,
