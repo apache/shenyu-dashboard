@@ -322,9 +322,11 @@ export default class TCPProxy extends Component {
       },
       callback: discoveryConfigList => {
         let tcpType = '';
+        let id = null;
         let isSetConfig = false;
         if (discoveryConfigList !== null) {
           tcpType = discoveryConfigList.type;
+          id = discoveryConfigList.id
           isSetConfig = true;
         }
         this.setState({
@@ -349,6 +351,7 @@ export default class TCPProxy extends Component {
                     listenerNode,
                     handler,
                     discovery: {
+                      id,
                       level: "0", // 0 selector
                       pluginName: "tcp",
                       discoveryType,
@@ -484,42 +487,48 @@ export default class TCPProxy extends Component {
             </div>
           </Row>
 
-          <Row className={tcpStyles.bar}>
-            <h3 style={{overflow: "visible", margin: 0}}>
-              {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}
-            </h3>
-            <AuthButton perms="plugin:tcpSelector:add">
-              <Button
-                type="primary"
-                onClick={this.addConfiguration}
+          <Row>
+            <div className={tcpStyles["header-bar"]}>
+              <h3 style={{overflow: "visible", margin: 0}}>
+                {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}
+              </h3>
+              <AuthButton perms="plugin:tcpSelector:add">
+                <Button
+                  type="primary"
+                  onClick={this.addConfiguration}
+                >
+                  {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.CONFIGURATION")}
+                </Button>
+              </AuthButton>
+              {/* <div className={styles.headerSearch}> */}
+              <div>
+                <AuthButton perms="plugin:tcpSelector:query">
+                  <Search
+                    placeholder={getIntlContent(
+                      "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME"
+                    )}
+                    enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                    size="default"
+                    onChange={this.searchSelectorOnchange}
+                    onSearch={this.searchSelector}
+                    style={{
+                      marginRight: '20px',
+                      display: 'flex',
+                      alignItems: 'center'}}
+                  />
+                </AuthButton>
+              </div>
+
+              <AuthButton
+                perms="plugin:tcpSelector:add"
               >
-                {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.CONFIGURATION")}
-              </Button>
-            </AuthButton>
-            {/* <div className={styles.headerSearch}> */}
-            <div>
-              <AuthButton perms="plugin:tcpSelector:query">
-                <Search
-                  className={tcpStyles.search}
-                  placeholder={getIntlContent(
-                    "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME"
-                  )}
-                  enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
-                  size="default"
-                  onChange={this.searchSelectorOnchange}
-                  onSearch={this.searchSelector}
-                />
+                <Button type="primary" onClick={this.addSelector} style={{ marginRight: '20px' }}>
+                  {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.ADD")}
+                </Button>
               </AuthButton>
             </div>
-
-            <AuthButton
-              perms="plugin:tcpSelector:add"
-            >
-              <Button type="primary" onClick={this.addSelector}>
-                {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.ADD")}
-              </Button>
-            </AuthButton>
           </Row>
+
 
           <Row>
             <div style={{
