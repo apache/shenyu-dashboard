@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-import { parse, stringify } from "qs";
+import {parse, stringify} from "qs";
+import moment from 'moment';
 
 export function fixedZero(val) {
   return val * 1 < 10 ? `0${val}` : val;
@@ -183,4 +184,9 @@ export function guid() {
     return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
   }
   return `${S4() + S4()}-${S4()}-${S4()}-${S4()}-${S4()}${S4()}${S4()}`;
+}
+
+export function  formatTimestamp(timestamp) {
+  const date = moment(timestamp);
+  return date.format('YYYY-MM-DD HH:mm:ss');
 }

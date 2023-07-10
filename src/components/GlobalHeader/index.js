@@ -20,6 +20,7 @@ import { Dropdown, Form, Icon, Input, Menu, Modal, Button } from "antd";
 import { connect } from "dva";
 import styles from "./index.less";
 import { getIntlContent, getCurrentLocale } from "../../utils/IntlUtils";
+import { checkUserPassword } from "../../services/api";
 import { emit } from "../../utils/emit";
 
 const TranslationOutlinedSvg = () => (
@@ -65,8 +66,24 @@ class GlobalHeader extends PureComponent {
         ? window.sessionStorage.getItem("locale")
         : "en-US",
       userName: window.sessionStorage.getItem("userName"),
-      visible: false
+      visible: false,
+      display: "none"
     };
+  }
+
+  componentDidMount(){
+    const token = window.sessionStorage.getItem("token");
+    if (token) {
+      checkUserPassword().then(res => {
+        if (res && res.code !== 200) {
+          this.setState({ visible: true ,display :"block"})
+        }
+      })
+    }
+  }
+
+  componentWillUnmount() {
+    this.setState = () => false;
   }
 
   handleLocalesValueChange = value => {
@@ -132,6 +149,7 @@ class GlobalHeader extends PureComponent {
           </div>
         </div>
         <Modal
+          width="35%"
           title={getIntlContent("SHENYU.GLOBALHEADER.CHANGE.PASSWORD")}
           visible={visible}
           forceRender
@@ -139,7 +157,7 @@ class GlobalHeader extends PureComponent {
             loading
           }}
           onCancel={() => {
-            this.setState({ visible: false });
+            this.setState({ visible: false, display: "none"});
             resetFields();
           }}
           onOk={() => {
@@ -150,10 +168,11 @@ class GlobalHeader extends PureComponent {
                   payload: {
                     id: window.sessionStorage.getItem("userId"),
                     userName: window.sessionStorage.getItem("userName"),
-                    password: values.password
+                    password: values.password,
+                    oldPassword: values.oldPassword
                   },
                   callback: () => {
-                    this.setState({ visible: false });
+                    this.setState({ visible: false, display: "none" });
                     resetFields();
                     onLogout();
                   }
@@ -162,7 +181,34 @@ class GlobalHeader extends PureComponent {
             });
           }}
         >
+          <div className={styles.warning} style={{display: this.state.display, textAlign: 'center', marginBottom: 16}}>
+            {getIntlContent("SHENYU.SYSTEM.USER.CHANGEPASSWORD")}
+          </div>
+
+
           <Form labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
+            <Form.Item
+              required
+              label={getIntlContent("SHENYU.GLOBALHEADER.OLD.PASSWORD")}
+            >
+              {getFieldDecorator("oldPassword", {
+                rules: [
+                  {
+                    validator(rule, value, callback) {
+                      if (!value || value.length === 0) {
+                        callback(
+                          getIntlContent(
+                            "SHENYU.GLOBALHEADER.NOTNULL"
+                          )
+                        );
+                        return;
+                      }
+                      callback();
+                    }
+                  }
+                ]
+              })(<Input.Password />)}
+            </Form.Item>
             <Form.Item
               required
               label={getIntlContent("SHENYU.GLOBALHEADER.NEW.PASSWORD")}
@@ -187,11 +233,7 @@ class GlobalHeader extends PureComponent {
                         );
                         return;
                       }
-                      if (
-                        !/(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^a-zA-Z0-9])/.test(
-                          value
-                        )
-                      ) {
+                      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&=_+-])[A-Za-z\d@$!%*?&=_+-]{8,}$/.test(value)) {
                         callback(
                           getIntlContent("SHENYU.GLOBALHEADER.PASSWORD.RULE")
                         );

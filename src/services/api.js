@@ -53,13 +53,21 @@ export async function updateUser(params) {
   });
 }
 
+/* check user password */
+export async function checkUserPassword() {
+  return request(`${baseUrl}/dashboardUser/check/password`, {
+      method: `GET`
+  });
+}
+
 /* update password */
 export async function updatePassword(params) {
   return request(`${baseUrl}/dashboardUser/modify-password/${params.id}`, {
     method: `PUT`,
     body: {
       userName: params.userName,
-      password: params.password
+      password: params.password,
+      oldPassword: params.oldPassword
     }
   });
 }
@@ -918,4 +926,57 @@ export function deleteApi(params) {
   });
 }
 
+export function fetchProxySelector(params) {
+  return request(`${baseUrl}/proxy-selector?${stringify(params)}`,
+    {
+      method: `GET`
+    });
+}
 
+export function addProxySelector(params) {
+  return request(`${baseUrl}/proxy-selector/addProxySelector`,
+    {
+      method: `POST`,
+      body: params
+    });
+}
+
+export function deleteProxySelector(params) {
+  return request(`${baseUrl}/proxy-selector/batch`,
+    {
+      method: `DELETE`,
+      body: [...params.list]
+    });
+}
+
+export function updateProxySelector(params) {
+  return request(`${baseUrl}/proxy-selector/${params.id}`,
+    {
+      method: `PUT`,
+      body: {
+        ...params
+      }
+    });
+}
+
+export function getDiscoveryTypeEnums() {
+  return request(`${baseUrl}/discovery/typeEnums`,
+    {
+      method: `GET`
+    });
+}
+
+export function postDiscoveryInsertOrUpdate(params) {
+  return request(`${baseUrl}/discovery/insertOrUpdate`,
+    {
+      method: `POST`,
+      body: params
+    });
+}
+
+export function getDiscovery(params) {
+  return request(`${baseUrl}/discovery?${stringify(params)}`,
+    {
+      method: `GET`
+    });
+}

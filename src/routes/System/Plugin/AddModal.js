@@ -15,28 +15,25 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment } from "react";
+import React, { Component, forwardRef, Fragment } from "react";
 import { Modal, Form, Switch, Input, Select, Divider, InputNumber, Button} from "antd";
 import { connect } from "dva";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Option } = Select;
 const FormItem = Form.Item;
-const ChooseFile = ({onChange, file})=>{
+const ChooseFile = forwardRef(({ onChange, file }, ref) => {
   const handleFileInput = (e) => {
     onChange(e.target.files[0]);
   };
 
   return (
     <>
-      <Button onClick={()=>{document.getElementById("file").click()}
-      }
-      >Upload
-      </Button> {file?.name}
-      <input type="file" onChange={handleFileInput} style={{display:'none'}} id="file" />
+      <Button onClick={() => { document.getElementById("file").click(); }}>Upload</Button> {file?.name}
+      <input ref={ref} type="file" onChange={handleFileInput} style={{ display: 'none' }} id="file" />
     </>
-)
-}
+  );
+});
 @connect(({ global }) => ({
   platform: global.platform
 }))
