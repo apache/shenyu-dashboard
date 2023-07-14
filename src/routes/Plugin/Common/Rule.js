@@ -54,6 +54,7 @@ class AddModal extends Component {
       multiRuleHandle,
       form: { setFieldsValue }
     } = this.props;
+    console.log("handle", handle)
     this.setState({ pluginHandleList: [] });
     let type = 2;
     dispatch({
@@ -64,6 +65,7 @@ class AddModal extends Component {
         handle,
         isHandleArray: multiRuleHandle,
         callBack: (pluginHandles, useJSON) => {
+          // console.log("useJSON", useJSON)
           this.setState({ pluginHandleList: pluginHandles }, () => {
             if (useJSON) {
               setFieldsValue({
@@ -164,6 +166,8 @@ class AddModal extends Component {
         handleType,
         handleJSON
       } = values;
+      console.log("handleType", handleType) // handleType为1
+      console.log("handleJSON", handleJSON) // handleType为undefined
       if (!err) {
         const submit = this.checkConditions();
         if (submit) {
@@ -193,6 +197,7 @@ class AddModal extends Component {
           }
           if (this.handleComponentRef) {
             // customizationRule
+            console.log("here")
             handle = this.handleComponentRef.getData(values);
           }
 
@@ -429,6 +434,7 @@ class AddModal extends Component {
     if (customRulePage) {
       RuleHandleComponent = PluginRuleHandle[pluginName];
     } else if (pluginHandleList) {
+      console.log("I'm here")
       RuleHandleComponent = CommonRuleHandle;
     }
 

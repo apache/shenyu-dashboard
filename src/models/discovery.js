@@ -19,10 +19,13 @@ import {message} from "antd";
 import {
   addProxySelector,
   deleteProxySelector,
-  fetchProxySelector,  getDiscoveryTypeEnums,
+  fetchProxySelector,
+  getDiscoveryTypeEnums,
   postDiscoveryInsertOrUpdate,
   updateProxySelector,
-  getDiscovery
+  getDiscovery,
+  refreshProxySelector,
+  deleteDiscovery
 
 } from "../services/api";
 import {getIntlContent} from "../utils/IntlUtils";
@@ -34,20 +37,17 @@ export default {
     typeEnums: [],
     selectorList: [],
     chosenType: '',
-    total: 0,
+    totalPage: 0,
     currentPage: 1,
     pageSize: 4
   },
 
   effects: {
     * fetchSelector(params, {call, put}) {
-      const {payload, callback} = params;
+      const {payload} = params;
       const json = yield call(fetchProxySelector, payload);
       if (json.code === 200) {
         const {page, dataList} = json.data;
-        if (callback) {
-          callback(dataList, page.totalCount);
-        }
         yield put({
           type: "saveProxySelectors",
           payload: {total: page.totalCount, dataList}
@@ -141,14 +141,35 @@ export default {
       }
     },
 
+    * refresh(params, {call}) {
+      const {payload} = params;
+      const json = yield call(refreshProxySelector, payload);
+      if (json.code === 200) {
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.REFRESH.SUCCESS'));
+        // callback();
+      } else {
+        message.warn(json.message);
+      }
+    },
+
+    * deleteConfig(params, {call}) {
+      const {payload} = params;
+      const json = yield call(deleteDiscovery, payload);
+      if (json.code === 200) {
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
+      } else {
+        message.warn(json.message);
+      }
+    },
+
   },
 
   reducers: {
     saveProxySelectors(state, {payload}) {
       return {
         ...state,
+        totalPage: payload.total,
         selectorList: payload.dataList,
-        total: payload.total
       };
     },
 

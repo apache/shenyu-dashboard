@@ -49,13 +49,24 @@ export class TcpCard extends Component {
   }
 
   render() {
-    const {updateSelector, data, handleDelete} = this.props
+    const {updateSelector, data, handleDelete, handleRefresh} = this.props
     return (
       <Card
         title={<div style={{ marginLeft: '30px', fontSize: '20px' }}>{data.name}</div>}
         style={{  borderRadius: '5px' , boxShadow: '1px 2px 2px rgba(191, 189, 189, 0.5)' }}
         extra={(
           <div>
+            <AuthButton perms="plugin:tcp:modify">
+              <Button
+                type="primary"
+                onClick={() => {
+                  handleRefresh(data.discoveryHandlerId)
+                }}
+                style={{ marginRight: '20px' }}
+              >
+                {getIntlContent("SHENYU.COMMON.REFRESH")}
+              </Button>
+            </AuthButton>
             <AuthButton perms="plugin:tcp:modify">
               <Button
                 type="primary"

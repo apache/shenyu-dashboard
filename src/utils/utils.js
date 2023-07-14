@@ -186,7 +186,11 @@ export function guid() {
   return `${S4() + S4()}-${S4()}-${S4()}-${S4()}-${S4()}${S4()}${S4()}`;
 }
 
-export function  formatTimestamp(timestamp) {
+export function formatTimestamp(timestamp) {
   const date = moment(timestamp);
   return date.format('YYYY-MM-DD HH:mm:ss');
+}
+
+export function findKeyByValue(obj, value) {
+  return Object.keys(obj).find(key => obj[key] === value);
 }

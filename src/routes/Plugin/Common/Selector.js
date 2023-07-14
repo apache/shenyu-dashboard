@@ -82,7 +82,6 @@ class AddModal extends Component {
 
     this.state = {
       selectValue,
-
       gray,
       serviceId,
       divideUpstreams,
@@ -458,7 +457,7 @@ class AddModal extends Component {
                       })(<InputNumber style={{ width: "100%" }} />)}
                     </Item>
                   </Col>
-                </Row> 
+                </Row>
               </div>
               <div style={{ width: 64, textAlign: "right" }}>
                 <Icon

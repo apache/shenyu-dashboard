@@ -149,7 +149,7 @@ class GlobalHeader extends PureComponent {
           </div>
         </div>
         <Modal
-          width="35%"
+          width="40%"
           title={getIntlContent("SHENYU.GLOBALHEADER.CHANGE.PASSWORD")}
           visible={visible}
           forceRender
