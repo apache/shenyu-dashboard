@@ -46,12 +46,12 @@ export default class TCPProxy extends Component {
         name: '',
         forwardPort: '',
         type: 'tcp',
-        props: '',
+        props: {},
         listenerNode: '',
         handler: {},
         discovery: {
           serverList: '',
-          props: ''
+          props: {}
         },
         discoveryUpstreams: [
           // {
@@ -349,6 +349,7 @@ export default class TCPProxy extends Component {
               tcpType={tcpType}
               isAdd={true}
               isSetConfig={isSetConfig}
+              discoveryDicts={discoveryDics}
               zkProps={discoveryDics[0].dictValue}
               selectorProps={selectorProps}
               handlerProps={handlerProps}
@@ -505,7 +506,6 @@ export default class TCPProxy extends Component {
       text: this.state.isPluginEnabled ? getIntlContent("SHENYU.COMMON.OPEN") : getIntlContent("SHENYU.COMMON.CLOSE"),
       color: this.state.isPluginEnabled ? 'green' : 'red'
     }
-
     return (
       <>
         <div className={tcpStyles.main}>

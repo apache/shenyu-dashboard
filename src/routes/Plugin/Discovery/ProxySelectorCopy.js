@@ -76,7 +76,7 @@ class ProxySelectorCopy extends Component {
   handleOptions() {
     const {Option} = Select;
     return this.state.selectorList
-      .map(selector => <Option key={selector.id} value={selector.name}>{selector.name}</Option>)
+      .map(selector => <Option key={selector.id} value={selector.id}>{selector.name}</Option>)
   }
 
   render() {
@@ -91,11 +91,15 @@ class ProxySelectorCopy extends Component {
         onOk={this.handleOk}
         confirmLoading={loading}
       >
+
         <Select
           style={{ width: "100%" }}
           showSearch
           onChange={this.handleChangeSelect}
           placeholder={getIntlContent("SHENYU.SELECTOR.SOURCE.PLACEHOLDER")}
+          filterOption={(inputValue, option) =>
+            option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+          }
         >
           {this.handleOptions()}
         </Select>

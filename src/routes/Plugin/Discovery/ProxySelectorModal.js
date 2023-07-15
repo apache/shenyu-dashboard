@@ -23,7 +23,7 @@ import {getIntlContent} from "../../../utils/IntlUtils";
 import EditableTable from './UpstreamTable';
 import styles from "../index.less";
 import ProxySelectorCopy from "./ProxySelectorCopy.js";
-import { findKeyByValue } from "../../../utils/utils";
+import {findKeyByValue} from "../../../utils/utils";
 
 
 const FormItem = Form.Item;
@@ -43,7 +43,8 @@ class ProxySelectorModal extends Component {
     this.state = {
       recordCount: this.props.recordCount,
       upstreams: this.props.discoveryUpstreams,
-      zkjson: JSON.parse(this.props.zkProps),
+      discoveryDicts: this.props.discoveryDicts,
+      configPropsJson: {},
       pluginHandleList: [],
       visible: false,
       discoveryHandler: null,
@@ -55,7 +56,7 @@ class ProxySelectorModal extends Component {
     const { isAdd, isSetConfig, tcpType, data, pluginId, dispatch } = this.props;
     const { props } = this.props.data || {};
     if (!isAdd || isSetConfig) {
-      this.setState({zkjson: JSON.parse(data.discovery.props)})
+      this.setState({configPropsJson: JSON.parse(data.discovery.props)})
       dispatch({
         type: 'discovery/saveGlobalType',
         payload: {
@@ -66,7 +67,7 @@ class ProxySelectorModal extends Component {
       dispatch({
         type: 'discovery/saveGlobalType',
         payload: {
-          chosenType: null
+          chosenType: ''
         }
       });
     }
@@ -93,13 +94,13 @@ class ProxySelectorModal extends Component {
 
   handleSubmit = e => {
     const {form, handleOk} = this.props;
-    const { zkjson, upstreams, pluginHandleList, defaultValueList } = this.state;
+    const { configPropsJson, upstreams, pluginHandleList, defaultValueList } = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         let {name, forwardPort, listenerNode, serverList, discoveryType} = values;
         const discoveryPropsJson = {};
-        Object.entries(zkjson).forEach(([key]) => {
+        Object.entries(configPropsJson).forEach(([key]) => {
           discoveryPropsJson[key] = form.getFieldValue(key);
         });
         const discoveryProps = JSON.stringify(discoveryPropsJson); // 将字段值转换为JSON字符串
@@ -172,8 +173,8 @@ class ProxySelectorModal extends Component {
 
 
   render() {
-    const { tcpType, form, handleCancel, isSetConfig, isAdd, chosenType } = this.props;
-    const {recordCount, upstreams, zkjson, pluginHandleList, visible, discoveryHandler, defaultValueList } = this.state;
+    const { tcpType, form, handleCancel, isSetConfig, isAdd, chosenType, dispatch } = this.props;
+    const {recordCount, upstreams, pluginHandleList, visible, discoveryHandler, defaultValueList, discoveryDicts, configPropsJson } = this.state;
     const {getFieldDecorator} = form;
     const { name, forwardPort, listenerNode, discovery, handler } = this.props.data || {};
     const labelWidth = 200;
@@ -185,7 +186,6 @@ class ProxySelectorModal extends Component {
         sm: { span: 19 }
       }
     };
-    console.log("handlerhere", handler)
     const columns = [
       {
         title: 'protocol',
@@ -212,6 +212,13 @@ class ProxySelectorModal extends Component {
         align: 'center'
       },
     ];
+
+    // let propsEntries = propsJson;
+    // if(isAdd){
+    //   let configProps = discoveryDicts.filter(item => item.dictName === chosenType);
+    //   propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
+    //   console.log("propsEntries", propsEntries)
+    // }
 
     if (discoveryHandler === null) {
       return <div>Loading...</div>;
@@ -495,41 +502,7 @@ class ProxySelectorModal extends Component {
                               </li>
                             ));
                           }
-
-                          // if (Object.keys(hh).length !== 0) {
-                          //   Object.entries(hh).forEach(([key]) => {
-                          //     let value = hh[key];
-                          //     let field = { [value]: key }; // 使用动态键来设置字段值
-                          //     form.setFieldsValue(field);
-                          //   });
-                          // }
-
-                          // else if(defaultValueJson !== null) {
-                          //   return Object.keys(defaultValueJson).map(key => (
-                          //     <li key={defaultValueJson[key]}>
-                          //       <FormItem>
-                          //         {getFieldDecorator(defaultValueJson[key], {
-                          //           rules,
-                          //           initialValue: key
-                          //         })(
-                          //           <Input
-                          //             addonAfter={
-                          //               <div style={{ width: '50px' }}>
-                          //                 {defaultValueJson[key]}
-                          //               </div>
-                          //             }
-                          //             placeholder={`Your ${defaultValueJson[key]}`}
-                          //             key={defaultValueJson[key]}
-                          //           />
-                          //         )}
-                          //       </FormItem>
-                          //     </li>
-                          //   ));
-                          // }
-                          // 默认情况下，以<li>展示整个defaultValue对象
-                          // return <li>{JSON.stringify(defaultValue)}</li>;
                         }
-                        // let required = discoveryHandler.required;
                       })()}
                     </ul>
                   </div>
@@ -546,12 +519,26 @@ class ProxySelectorModal extends Component {
                   <Select
                     placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}
                     disabled={isSetConfig||!isAdd}
-                    onChange={value => this.props.dispatch({
-                      type: 'discovery/saveGlobalType',
-                      payload: {
-                        chosenType: value
-                      }
-                    })}
+                    onChange={value => {
+                      dispatch({
+                        type: 'discovery/saveGlobalType',
+                        payload: {
+                          chosenType: value
+                        }
+                      });
+
+                      let configProps = discoveryDicts.filter(item => item.dictName === value);
+                      let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
+                      console.log("propsEntries", propsEntries)
+                      this.setState({configPropsJson: propsEntries})
+
+                      // let tmp = discoveryDicts.filter(item => item.dictName === value);
+                      // let tmpEntries = JSON.parse(tmp[0]?.dictValue || "{}");
+                      //
+                      // console.log("tmpEntries", tmpEntries)
+                      // this.setState({propsJson: tmpEntries})
+                    }
+                  }
                   >
                     {this.handleOptions()}
                   </Select>,
@@ -602,6 +589,7 @@ class ProxySelectorModal extends Component {
                           {/*     style={{ height: '100px' }} */}
                           {/*   />)} */}
                           {/* </FormItem> */}
+
                           <div style={{ marginLeft: '50px', marginTop: '15px', marginBottom: '15px', fontWeight: '500', }}>
                             {getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS")}
                             <span style={{ marginLeft: '2px', fontWeight: '500' }}>:</span>
@@ -609,7 +597,7 @@ class ProxySelectorModal extends Component {
                           <div style={{ marginLeft: '35px', display: 'flex', alignItems: 'baseline' }}>
                             <div style={{ marginLeft: '8px' }}>
                               <Row gutter={[16, 4]} justify="center">
-                                {Object.entries(zkjson).map(([key, value]) => (
+                                {Object.entries(configPropsJson).map(([key, value]) => (
                                   <Col span={12} key={key}>
                                     <FormItem>
                                       {getFieldDecorator(key, {
