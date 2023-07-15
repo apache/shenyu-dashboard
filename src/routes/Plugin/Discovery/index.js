@@ -29,11 +29,10 @@ import AuthButton from "../../../utils/AuthButton";
 const {Search} = Input;
 const {Title} = Typography;
 
-@connect(({global, discovery, loading, shenyuDict, pluginHandle}) => ({
+@connect(({global, discovery, loading, shenyuDict}) => ({
   ...global,
   ...discovery,
   ...shenyuDict,
-  ...pluginHandle,
   loading: loading.effects["global/fetchPlatform"]
 }))
 export default class TCPProxy extends Component {
@@ -128,7 +127,6 @@ export default class TCPProxy extends Component {
     return plugin && plugin.length > 0 ? plugin[0] : null;
   };
 
-
   togglePluginStatus = () => {
     const {dispatch, plugins} = this.props;
     const {pluginName} = this.state
@@ -158,7 +156,6 @@ export default class TCPProxy extends Component {
     });
   }
 
-
   closeModal = () => {
     this.setState({popup: ""});
   };
@@ -171,12 +168,12 @@ export default class TCPProxy extends Component {
         name: '',
         forwardPort: '',
         type: 'tcp',
-        props: '',
+        props: {},
         listenerNode: '',
         handler: {},
         discovery: {
           serverList: '',
-          props: ''
+          props: {}
         },
         discoveryUpstreams: [
           // {
@@ -192,9 +189,8 @@ export default class TCPProxy extends Component {
   };
 
   addConfiguration = () => {
-    const {dispatch} = this.props;
+    const {dispatch, typeEnums} = this.props;
     const {discoveryDics, pluginName} = this.state;
-    console.log("discoverydict", discoveryDics)
     dispatch({
       type: "discovery/fetchDiscovery",
       payload: {
@@ -212,10 +208,9 @@ export default class TCPProxy extends Component {
           popup: (
             <DiscoveryConfigModal
               data={discoveryConfigList}
-              typeEnums={this.props.typeEnums}
+              typeEnums={typeEnums}
               isSetConfig={isSetConfig}
               discoveryDicts={discoveryDics}
-              zkProps={discoveryDics[0].dictValue}
               handleConfigDelete={this.handleConfigDelete}
               handleOk={values => {
                 const {name, serverList, props, tcpType} = values;
@@ -320,8 +315,8 @@ export default class TCPProxy extends Component {
 
 
   addSelector = () => {
-    const {dispatch, currentPage, pageSize, plugins} = this.props;
-    const {cardData, selectorProps, handlerProps, discoveryDics, pluginName} = this.state;
+    const {dispatch, currentPage, pageSize, plugins, typeEnums} = this.props;
+    const {cardData, discoveryDics, pluginName} = this.state;
     const plugin = this.getPlugin(plugins, pluginName);
     dispatch({
       type: "discovery/fetchDiscovery",
@@ -343,16 +338,13 @@ export default class TCPProxy extends Component {
             <ProxySelectorModal
               pluginId={plugin.id}
               recordCount={cardData.discoveryUpstreams.length}
-              typeEnums={this.props.typeEnums}
+              typeEnums={typeEnums}
               data={cardData}
               discoveryUpstreams={cardData.discoveryUpstreams}
               tcpType={tcpType}
               isAdd={true}
               isSetConfig={isSetConfig}
               discoveryDicts={discoveryDics}
-              zkProps={discoveryDics[0].dictValue}
-              selectorProps={selectorProps}
-              handlerProps={handlerProps}
               handleOk={values => {
                 const {name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, discoveryType, upstreams} = values;
                 dispatch({
@@ -395,7 +387,7 @@ export default class TCPProxy extends Component {
   }
 
   updateSelector = (id) => {
-    const {dispatch, selectorList, tcpType: discoveryType, currentPage, pageSize, plugins} = this.props;
+    const {dispatch, selectorList, tcpType: discoveryType, currentPage, pageSize, plugins, typeEnums} = this.props;
     const { discoveryDics, pluginName } = this.state;
     const data = selectorList.find(value => value.id === id)
     const plugin = this.getPlugin(plugins, pluginName);
@@ -415,12 +407,12 @@ export default class TCPProxy extends Component {
           recordCount={updateArray.length}
           discoveryUpstreams={updateArray}
           tcpType={data.discovery.type}
-          typeEnums={this.props.typeEnums}
+          typeEnums={typeEnums}
           isAdd={false}
           isSetConfig={isSetConfig}
           data={data}
           pluginId={plugin.id}
-          zkProps={discoveryDics[0].dictValue}
+          discoveryDicts={discoveryDics}
           handleOk={values => {
             const {name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, upstreams} = values;
             dispatch({

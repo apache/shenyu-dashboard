@@ -23,8 +23,6 @@ import tcpStyles from "./tcp.less";
 import { formatTimestamp } from "../../../utils/utils";
 import AuthButton from "../../../utils/AuthButton";
 
-
-
 export class TcpCard extends Component {
 
   renderCardItems = () => {
@@ -49,7 +47,7 @@ export class TcpCard extends Component {
   }
 
   render() {
-    const {updateSelector, data, handleDelete, handleRefresh} = this.props
+    const { updateSelector, data, handleDelete, handleRefresh } = this.props
     return (
       <Card
         title={<div style={{ marginLeft: '30px', fontSize: '20px' }}>{data.name}</div>}

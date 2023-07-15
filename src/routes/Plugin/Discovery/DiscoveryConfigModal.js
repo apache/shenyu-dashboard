@@ -30,37 +30,41 @@ const FormItem = Form.Item;
 class DiscoveryConfigModal extends Component {
 
   state = {
-    zkjson: JSON.parse(this.props.zkProps)
+    discoveryDicts: this.props.discoveryDicts,
+    configPropsJson: {},
   };
 
   componentDidMount() {
-    const { isSetConfig, data } = this.props;
+    const { isSetConfig, data, dispatch } = this.props;
+    const { discoveryDicts } = this.state;
     if (!isSetConfig) {
-      this.props.dispatch({
+      let configProps = discoveryDicts.filter(item => item.dictName === 'zookeeper');
+      let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
+      this.setState({configPropsJson: propsEntries})
+      dispatch({
         type: 'discovery/saveGlobalType',
         payload: {
           chosenType: null
         }
       });
     }else{
-      this.setState({zkjson: JSON.parse(data.props)})
+      this.setState({configPropsJson: JSON.parse(data.props)})
     }
   }
 
 
   handleSubmit = e => {
     const { form, handleOk } = this.props;
-    const { zkjson } = this.state;
+    const { configPropsJson } = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         let { name, serverList, tcpType } = values;
         const propsjson = {};
-        Object.entries(zkjson).forEach(([key]) => {
+        Object.entries(configPropsJson).forEach(([key]) => {
           propsjson[key] = form.getFieldValue(key);
         });
-        const props = JSON.stringify(propsjson); // 将字段值转换为JSON字符串
-        console.log("props", props); // 打印JSON字符串，或根据您的需求进行处理
+        const props = JSON.stringify(propsjson);
         handleOk({ name, serverList, props, tcpType});
       }
     });
@@ -76,10 +80,10 @@ class DiscoveryConfigModal extends Component {
 
 
   render() {
-    const { handleCancel, form, data, isSetConfig, handleConfigDelete } = this.props
+    const { handleCancel, form, data, isSetConfig, handleConfigDelete, dispatch } = this.props
     const { getFieldDecorator } = form;
     const { name, serverList, type: tcpType, id} = data || {};
-    const { zkjson } = this.state;
+    const { configPropsJson, discoveryDicts } = this.state;
     const formItemLayout = {
       labelCol: {
         sm: { span: 4 }
@@ -131,12 +135,18 @@ class DiscoveryConfigModal extends Component {
             })(
               <Select
                 placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}
-                onChange={value => this.props.dispatch({
-                  type: 'discovery/saveGlobalType',
-                  payload: {
-                    chosenType: value
+                onChange={value => {
+                  dispatch({
+                    type: 'discovery/saveGlobalType',
+                    payload: {
+                      chosenType: value
+                    }
+                  });
+                  let configProps = discoveryDicts.filter(item => item.dictName === value);
+                  let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
+                  this.setState({configPropsJson: propsEntries})
                   }
-                })}
+                }
               >
                 {this.handleOptions()}
               </Select>,
@@ -160,15 +170,6 @@ class DiscoveryConfigModal extends Component {
             />)}
           </FormItem>
 
-          {/* <FormItem label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS")} {...formItemLayout}> */}
-          {/*   {getFieldDecorator('props', { */}
-          {/*     initialValue: chosenType === 'zookeeper' && isSetConfig === false ? zkProps : props */}
-          {/*   })(<Input.TextArea */}
-          {/*     placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS.INPUT")} */}
-          {/*     style={{ height: '120px' }} */}
-          {/*   />)} */}
-          {/* </FormItem> */}
-
           <div style={{ marginLeft: '50px', marginTop: '15px', marginBottom: '15px', fontWeight: '500', }}>
             {getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS")}
             <span style={{ marginLeft: '2px', fontWeight: '500' }}>:</span>
@@ -176,7 +177,7 @@ class DiscoveryConfigModal extends Component {
           <div style={{ marginLeft: '35px', display: 'flex', alignItems: 'baseline' }}>
             <div style={{ marginLeft: '8px' }}>
               <Row gutter={[16, 4]} justify="center">
-                {Object.entries(zkjson).map(([key, value]) => (
+                {Object.entries(configPropsJson).map(([key, value]) => (
                   <Col span={12} key={key}>
                     <FormItem>
                       {getFieldDecorator(key, {

@@ -211,4 +211,3 @@ export default class EditableTable extends Component {
   }
 }
 
-// export default EditableTable;

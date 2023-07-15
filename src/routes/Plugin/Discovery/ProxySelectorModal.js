@@ -54,7 +54,9 @@ class ProxySelectorModal extends Component {
 
   componentDidMount() {
     const { isAdd, isSetConfig, tcpType, data, pluginId, dispatch } = this.props;
+    const { discoveryDicts } = this.state;
     const { props } = this.props.data || {};
+
     if (!isAdd || isSetConfig) {
       this.setState({configPropsJson: JSON.parse(data.discovery.props)})
       dispatch({
@@ -64,6 +66,9 @@ class ProxySelectorModal extends Component {
         }
       });
     }else{
+      let configProps = discoveryDicts.filter(item => item.dictName === 'zookeeper');
+      let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
+      this.setState({configPropsJson: propsEntries})
       dispatch({
         type: 'discovery/saveGlobalType',
         payload: {
@@ -71,13 +76,14 @@ class ProxySelectorModal extends Component {
         }
       });
     }
+
     let type = 1;
     dispatch({
       type: "pluginHandle/fetchByPluginId",
       payload: {
         pluginId,
         type,
-        handle: props,
+        handle: Object.keys(props).length === 0 ? '' : props,
         isHandleArray: false,
         callBack: (pluginHandles) => {
           const filteredArray = pluginHandles[0].filter(item => item.field !== 'discoveryHandler');
@@ -103,9 +109,7 @@ class ProxySelectorModal extends Component {
         Object.entries(configPropsJson).forEach(([key]) => {
           discoveryPropsJson[key] = form.getFieldValue(key);
         });
-        const discoveryProps = JSON.stringify(discoveryPropsJson); // 将字段值转换为JSON字符串
-        console.log("discoveryProps", discoveryProps); // 打印JSON字符串，或根据您的需求进行处理
-
+        const discoveryProps = JSON.stringify(discoveryPropsJson);
         let handler = {};
         if ( defaultValueList !== null) {
           defaultValueList.forEach(item => {
@@ -114,18 +118,13 @@ class ProxySelectorModal extends Component {
             }
           });
         }
-
         let handleResult = [];
         handleResult[0] = {};
         pluginHandleList[0].forEach(item => {
           handleResult[0][item.field] = values[item.field + 0];
         });
-
         handler = JSON.stringify(handler);
         let props = JSON.stringify(handleResult[0]);
-
-        console.log("props", props)
-        console.log("handler", handler)
         handleOk({name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, discoveryType, upstreams});
       }
     });
@@ -174,8 +173,8 @@ class ProxySelectorModal extends Component {
 
   render() {
     const { tcpType, form, handleCancel, isSetConfig, isAdd, chosenType, dispatch } = this.props;
-    const {recordCount, upstreams, pluginHandleList, visible, discoveryHandler, defaultValueList, discoveryDicts, configPropsJson } = this.state;
-    const {getFieldDecorator} = form;
+    const { recordCount, upstreams, pluginHandleList, visible, discoveryHandler, defaultValueList, discoveryDicts, configPropsJson } = this.state;
+    const { getFieldDecorator } = form;
     const { name, forwardPort, listenerNode, discovery, handler } = this.props.data || {};
     const labelWidth = 200;
     const formItemLayout = {
@@ -212,13 +211,6 @@ class ProxySelectorModal extends Component {
         align: 'center'
       },
     ];
-
-    // let propsEntries = propsJson;
-    // if(isAdd){
-    //   let configProps = discoveryDicts.filter(item => item.dictName === chosenType);
-    //   propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
-    //   console.log("propsEntries", propsEntries)
-    // }
 
     if (discoveryHandler === null) {
       return <div>Loading...</div>;
@@ -274,15 +266,6 @@ class ProxySelectorModal extends Component {
                   placeholder={getIntlContent("SHENYU.DISCOVERY.SELECTOR.FORWARDPORT.INPUT")}
                 />)}
               </FormItem>
-
-              {/* <FormItem label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.PROPS")} {...formItemLayout}> */}
-              {/*   {getFieldDecorator('props', { */}
-              {/*     initialValue: isAdd === true ? selectorProps : props */}
-              {/*   })(<Input.TextArea */}
-              {/*     placeholder={getIntlContent("SHENYU.DISCOVERY.SELECTOR.PROPS.INPUT")} */}
-              {/*     style={{ height: '100px' }} */}
-              {/*   />)} */}
-              {/* </FormItem> */}
 
               <FormItem
                 label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.PROPS")}
@@ -436,79 +419,6 @@ class ProxySelectorModal extends Component {
                 </div>
               </FormItem>
 
-              <FormItem label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.HANDLER")} {...formItemLayout}>
-                <div
-                  className={styles.handleWrap}
-                  style={{
-                    display: "flex"
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      flexDirection: "row"
-                    }}
-                  >
-                    <ul
-                      className={classnames({
-                        [styles.handleUl]: true,
-                        [styles.springUl]: true
-                      })}
-                      style={{ width: "100%" }}
-                    >
-                      {(() => {
-                        if(discoveryHandler != null ){
-                          let item = discoveryHandler[0];
-                          let checkRule = item.checkRule;
-                          let required = item.required === "1";
-                          let rules = [];
-                          if (required) {
-                            rules.push({
-                              required: { required },
-                              message:
-                                getIntlContent("SHENYU.COMMON.PLEASEINPUT") +
-                                item.label
-                            });
-                          }
-                          if (checkRule) {
-                            rules.push({
-                              // eslint-disable-next-line no-eval
-                              pattern: eval(checkRule),
-                              message: `${getIntlContent(
-                                "SHENYU.PLUGIN.RULE.INVALID"
-                              )}:(${checkRule})`
-                            });
-                          }
-                          if (defaultValueList != null) {
-                            return defaultValueList.map((value, index) => (
-                              <li key={index}>
-                                <FormItem>
-                                  {getFieldDecorator(value, {
-                                    initialValue: isAdd === true ? findKeyByValue(handler, value): findKeyByValue(JSON.parse(handler), value),
-                                    rules
-                                  })(
-                                    <Input
-                                      addonAfter={
-                                        <div style={{ width: '50px' }}>
-                                          {value}
-                                        </div>
-                                      }
-                                      placeholder={`Your ${value}`}
-                                      key={value}
-                                    />
-                                  )}
-                                </FormItem>
-                              </li>
-                            ));
-                          }
-                        }
-                      })()}
-                    </ul>
-                  </div>
-                </div>
-              </FormItem>
-
             </TabPane>
             <TabPane tab={getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.DISCOVERY")} key="2">
               <FormItem label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE")} {...formItemLayout}>
@@ -529,16 +439,9 @@ class ProxySelectorModal extends Component {
 
                       let configProps = discoveryDicts.filter(item => item.dictName === value);
                       let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
-                      console.log("propsEntries", propsEntries)
                       this.setState({configPropsJson: propsEntries})
-
-                      // let tmp = discoveryDicts.filter(item => item.dictName === value);
-                      // let tmpEntries = JSON.parse(tmp[0]?.dictValue || "{}");
-                      //
-                      // console.log("tmpEntries", tmpEntries)
-                      // this.setState({propsJson: tmpEntries})
+                      }
                     }
-                  }
                   >
                     {this.handleOptions()}
                   </Select>,
@@ -557,17 +460,78 @@ class ProxySelectorModal extends Component {
                       />)}
                     </FormItem>
 
-                    {/* <FormItem label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.HANDLER")} {...formItemLayout}> */}
-                    {/*   {getFieldDecorator('handler', { */}
-                    {/*     rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.SELECTOR.HANDLER.INPUT")}], */}
-                    {/*     initialValue: isAdd === true ? handlerProps : handler */}
-                    {/*   })(<Input.TextArea */}
-                    {/*     placeholder={getIntlContent("SHENYU.DISCOVERY.SELECTOR.HANDLER.INPUT")} */}
-                    {/*     style={{ height: '100px' }} */}
-                    {/*   />)} */}
-                    {/* </FormItem> */}
-
-
+                    <FormItem label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.HANDLER")} {...formItemLayout}>
+                      <div
+                        className={styles.handleWrap}
+                        style={{
+                          display: "flex"
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            flexDirection: "row"
+                          }}
+                        >
+                          <ul
+                            className={classnames({
+                              [styles.handleUl]: true,
+                              [styles.springUl]: true
+                            })}
+                            style={{ width: "100%" }}
+                          >
+                            {(() => {
+                              if(discoveryHandler != null ){
+                                let item = discoveryHandler[0];
+                                let checkRule = item.checkRule;
+                                let required = item.required === "1";
+                                let rules = [];
+                                if (required) {
+                                  rules.push({
+                                    required: { required },
+                                    message:
+                                      getIntlContent("SHENYU.COMMON.PLEASEINPUT") +
+                                      item.label
+                                  });
+                                }
+                                if (checkRule) {
+                                  rules.push({
+                                    // eslint-disable-next-line no-eval
+                                    pattern: eval(checkRule),
+                                    message: `${getIntlContent(
+                                      "SHENYU.PLUGIN.RULE.INVALID"
+                                    )}:(${checkRule})`
+                                  });
+                                }
+                                if (defaultValueList != null) {
+                                  return defaultValueList.map((value, index) => (
+                                    <li key={index}>
+                                      <FormItem>
+                                        {getFieldDecorator(value, {
+                                          initialValue: isAdd === true ? findKeyByValue(handler, value): findKeyByValue(JSON.parse(handler), value),
+                                          rules
+                                        })(
+                                          <Input
+                                            addonAfter={
+                                              <div style={{ width: '50px' }}>
+                                                {value}
+                                              </div>
+                                            }
+                                            placeholder={`Your ${value}`}
+                                            key={value}
+                                          />
+                                        )}
+                                      </FormItem>
+                                    </li>
+                                  ));
+                                }
+                              }
+                            })()}
+                          </ul>
+                        </div>
+                      </div>
+                    </FormItem>
 
                     {
                       isSetConfig !== true ? (
@@ -580,15 +544,6 @@ class ProxySelectorModal extends Component {
                               placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT")}
                             />)}
                           </FormItem>
-
-                          {/* <FormItem label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS")} {...formItemLayout}> */}
-                          {/*   {getFieldDecorator('discoveryProps', { */}
-                          {/*     initialValue: chosenType === 'zookeeper' && isAdd === true ? zkProps : discovery.props */}
-                          {/*   })(<Input.TextArea */}
-                          {/*     placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS.INPUT")} */}
-                          {/*     style={{ height: '100px' }} */}
-                          {/*   />)} */}
-                          {/* </FormItem> */}
 
                           <div style={{ marginLeft: '50px', marginTop: '15px', marginBottom: '15px', fontWeight: '500', }}>
                             {getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS")}
@@ -614,7 +569,6 @@ class ProxySelectorModal extends Component {
                               </Row>
                             </div>
                           </div>
-
                         </>
                       ) : null
                     }
