@@ -58,7 +58,7 @@ class ProxySelectorModal extends Component {
     const { props } = this.props.data || {};
 
     if (!isAdd || isSetConfig) {
-      this.setState({configPropsJson: JSON.parse(data.discovery.props)})
+      this.setState({configPropsJson: isSetConfig === true? {} : JSON.parse(data.discovery.props)})
       dispatch({
         type: 'discovery/saveGlobalType',
         payload: {
