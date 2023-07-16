@@ -235,6 +235,7 @@ class ProxySelectorModal extends Component {
                   rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.SELECTOR.NAME.INPUT")}],
                   initialValue: name
                 })(<Input
+                  disabled={!isAdd}
                   placeholder={getIntlContent("SHENYU.DISCOVERY.SELECTOR.NAME.INPUT")}
                   addonAfter={
                     <Button
@@ -251,6 +252,7 @@ class ProxySelectorModal extends Component {
               </FormItem>
 
               <ProxySelectorCopy
+                disabled={!isAdd}
                 visible={visible}
                 onOk={this.handleCopyData}
                 onCancel={() => {
@@ -263,6 +265,7 @@ class ProxySelectorModal extends Component {
                   rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.SELECTOR.FORWARDPORT.INPUT")}],
                   initialValue: forwardPort
                 })(<Input
+                  disabled={!isAdd}
                   placeholder={getIntlContent("SHENYU.DISCOVERY.SELECTOR.FORWARDPORT.INPUT")}
                 />)}
               </FormItem>
@@ -337,6 +340,7 @@ class ProxySelectorModal extends Component {
                                           initialValue: defaultValue
                                         })(
                                           <Input
+                                            disabled={!isAdd}
                                             addonBefore={
                                               <div style={{ width: labelWidth }}>
                                                 {item.label}
@@ -361,6 +365,7 @@ class ProxySelectorModal extends Component {
                                           initialValue: defaultValue
                                         })(
                                           <Select
+                                            disabled={!isAdd}
                                             placeholder={placeholder}
                                             style={{ width: 260 }}
                                           >
@@ -396,6 +401,7 @@ class ProxySelectorModal extends Component {
                                           initialValue: defaultValue
                                         })(
                                           <Input
+                                            disabled={!isAdd}
                                             addonBefore={
                                               <div style={{ width: labelWidth }}>
                                                 {item.label}
@@ -456,6 +462,7 @@ class ProxySelectorModal extends Component {
                         rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.SELECTOR.LISTENERNODE.INPUT")}],
                         initialValue: listenerNode
                       })(<Input
+                        disabled={!isAdd}
                         placeholder={getIntlContent("SHENYU.DISCOVERY.SELECTOR.LISTENERNODE.INPUT")}
                       />)}
                     </FormItem>
@@ -513,6 +520,7 @@ class ProxySelectorModal extends Component {
                                           rules
                                         })(
                                           <Input
+                                            disabled={!isAdd}
                                             addonAfter={
                                               <div style={{ width: '50px' }}>
                                                 {value}
@@ -541,6 +549,7 @@ class ProxySelectorModal extends Component {
                               rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT")}],
                               initialValue: discovery.serverList
                             })(<Input
+                              disabled={!isAdd}
                               placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT")}
                             />)}
                           </FormItem>
@@ -559,6 +568,7 @@ class ProxySelectorModal extends Component {
                                         initialValue: value
                                       })(
                                         <Input
+                                          disabled={!isAdd}
                                           placeholder={`Enter ${key}`}
                                           addonBefore={key}
                                         />

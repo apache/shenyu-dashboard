@@ -135,6 +135,7 @@ class DiscoveryConfigModal extends Component {
             })(
               <Select
                 placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}
+                disabled={isSetConfig}
                 onChange={value => {
                   dispatch({
                     type: 'discovery/saveGlobalType',
@@ -166,6 +167,7 @@ class DiscoveryConfigModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT") }],
               initialValue: serverList
             })(<Input
+              disabled={isSetConfig}
               placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT")}
             />)}
           </FormItem>
@@ -184,6 +186,7 @@ class DiscoveryConfigModal extends Component {
                         initialValue: value
                       })(
                         <Input
+                          disabled={isSetConfig}
                           placeholder={`Enter ${key}`}
                           addonBefore={key}
                         />

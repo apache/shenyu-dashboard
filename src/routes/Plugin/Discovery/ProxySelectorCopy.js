@@ -80,7 +80,7 @@ class ProxySelectorCopy extends Component {
   }
 
   render() {
-    const { visible = false } = this.props;
+    const { visible = false, disabled } = this.props;
     const { loading } = this.state;
     return (
       <Modal
@@ -93,6 +93,7 @@ class ProxySelectorCopy extends Component {
       >
 
         <Select
+          disabled={disabled}
           style={{ width: "100%" }}
           showSearch
           onChange={this.handleChangeSelect}
