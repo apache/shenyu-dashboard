@@ -326,9 +326,11 @@ export default class TCPProxy extends Component {
       },
       callback: discoveryConfigList => {
         let tcpType = '';
+        let id = null;
         let isSetConfig = false;
         if (discoveryConfigList !== null) {
           tcpType = discoveryConfigList.type;
+          id = discoveryConfigList.id;
           isSetConfig = true;
         }
         this.setState({
@@ -356,6 +358,7 @@ export default class TCPProxy extends Component {
                     handler,
                     pluginName,
                     discovery: {
+                      id,
                       level: "0", // 0 selector
                       pluginName,
                       discoveryType,
