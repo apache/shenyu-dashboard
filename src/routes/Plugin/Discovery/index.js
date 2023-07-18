@@ -330,7 +330,7 @@ export default class TCPProxy extends Component {
         let isSetConfig = false;
         if (discoveryConfigList !== null) {
           tcpType = discoveryConfigList.type;
-          id = discoveryConfigList.id;
+          id = discoveryConfigList.id
           isSetConfig = true;
         }
         this.setState({
