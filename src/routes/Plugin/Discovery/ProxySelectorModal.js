@@ -86,13 +86,15 @@ class ProxySelectorModal extends Component {
         handle: Object.keys(props).length === 0 ? '' : props,
         isHandleArray: false,
         callBack: (pluginHandles) => {
-          const filteredArray = pluginHandles[0].filter(item => item.field !== 'discoveryHandler');
-          const handlerArray = pluginHandles[0].filter(item => item.field === 'discoveryHandler');
-          pluginHandles[0] = filteredArray;
-          this.setState({discoveryHandler: handlerArray});
-          this.setState({ pluginHandleList: pluginHandles });
-          let defaultValue = handlerArray[0].defaultValue;
-          this.setState({ defaultValueList: defaultValue.split(",")  });
+          if  (Object.keys(pluginHandles).length > 0) {
+            const filteredArray = pluginHandles[0].filter(item => item.field !== 'discoveryHandler');
+            const handlerArray = pluginHandles[0].filter(item => item.field === 'discoveryHandler');
+            pluginHandles[0] = filteredArray;
+            this.setState({discoveryHandler: handlerArray});
+            this.setState({ pluginHandleList: pluginHandles });
+            let defaultValue = handlerArray[0].defaultValue;
+            this.setState({ defaultValueList: defaultValue.split(",")  });
+          }
         }
       }
     });
@@ -120,9 +122,11 @@ class ProxySelectorModal extends Component {
         }
         let handleResult = [];
         handleResult[0] = {};
-        pluginHandleList[0].forEach(item => {
-          handleResult[0][item.field] = values[item.field + 0];
-        });
+        if(Object.keys(pluginHandleList).length > 0){
+          pluginHandleList[0].forEach(item => {
+            handleResult[0][item.field] = values[item.field + 0];
+          });
+        }
         handler = JSON.stringify(handler);
         let props = JSON.stringify(handleResult[0]);
         handleOk({name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, discoveryType, upstreams});
