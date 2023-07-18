@@ -212,9 +212,6 @@ class ProxySelectorModal extends Component {
       },
     ];
 
-    if (discoveryHandler === null) {
-      return <div>Loading...</div>;
-    }
     return (
       <Modal
         destroyOnClose
