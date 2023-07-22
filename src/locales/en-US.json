@@ -25,7 +25,7 @@
   "SHENYU.COMMON.CLOSE": "Close",
   "SHENYU.COMMON.OPERAT": "Operation",
   "SHENYU.COMMON.CHANGE": "Modify",
-  "SHENYU.COMMON.DELETE": "Are You Sure Delete?",
+  "SHENYU.COMMON.DELETE": "Are You Sure to Delete?",
   "SHENYU.COMMON.DELETE.NAME": "Delete",
   "SHENYU.COMMON.SURE": "Sure",
   "SHENYU.COMMON.CALCEL": "Cancel",
@@ -52,6 +52,7 @@
   "SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS": "Update Success",
   "SHENYU.COMMON.RESPONSE.DELETE.SUCCESS": "Delete Success",
   "SHENYU.COMMON.RESPONSE.SYNC.SUCCESS": "Sync Success",
+  "SHENYU.COMMON.RESPONSE.REFRESH.SUCCESS": "Refresh Success",
   "SHENYU.COMMON.WARN.INPUT_SELECTOR": "Please add selector first",
   "SHENYU.COMMON.WARN.INPUT_NUMBER": "Please enter number",
   "SHENYU.COMMON.PLEASEINPUT": "Please enter ",
@@ -296,7 +297,7 @@
   "SHENYU.PLUGIN.PARAM.PATH": "Parameter Path",
   "SHENYU.PLUGIN.PARAM.VALUE": "Parameter Value",
   "SHENYU.MENU.DOCUMENT": "Document",
-  "SHENYU.MENU.DOCUMENT.APIDOC": "API Doc",
+  "SHENYU.MENU.DOCUMENT.APIDOC": "API Document",
   "SHENYU.DOCUMENT.APIDOC.SEARCH.PLACEHOLDER":
     "Support interface address and document title",
   "SHENYU.DOCUMENT.APIDOC.SEARCH.ADD_MODULE": "+ Module",
@@ -366,9 +367,11 @@
   "SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT": "Please input the register server url(,)",
   "SHENYU.DISCOVERY.CONFIGURATION.PROPS": "Props",
   "SHENYU.DISCOVERY.CONFIGURATION.PROPS.INPUT": "Please input the discovery props",
+  "SHENYU.DISCOVERY.CONFIGURATION.DELETE": "Are you sure to delete the plugin-level discovery configuration?",
+  "SHENYU.DISCOVERY.CONFIGURATION.DELETE.ERROR": "Discovery config is empty, deletion failed",
   "SHENYU.DISCOVERY.SELECTOR.NAME": "Name",
   "SHENYU.DISCOVERY.SELECTOR.NAME.INPUT": "Please input the name of the selector",
-  "SHENYU.DISCOVERY.SELECTOR.FORWARDPORT": "ForwardProt",
+  "SHENYU.DISCOVERY.SELECTOR.FORWARDPORT": "ForwardPort",
   "SHENYU.DISCOVERY.SELECTOR.FORWARDPORT.INPUT": "Please input the ForwardPort",
   "SHENYU.DISCOVERY.SELECTOR.PROPS": "Props",
   "SHENYU.DISCOVERY.SELECTOR.PROPS.INPUT": "Please input the proxy selector props",
@@ -382,5 +385,8 @@
   "SHENYU.DISCOVERY.SELECTOR.UPSTREAM.DELETE": "Sure to delete?",
   "SHENYU.DISCOVERY.SELECTOR.UPSTREAM.OPERATION": "operation",
   "SHENYU.DISCOVERY.SELECTOR.UPSTREAM.DateCreated": "DateCreated",
-  "SHENYU.DISCOVERY.SELECTOR.UPSTREAM.DateUpdated": "DateUpdated"
+  "SHENYU.DISCOVERY.SELECTOR.UPSTREAM.DateUpdated": "DateUpdated",
+  "SHENYU.DISCOVERY.SELECTOR.CONFIG.BASIC": "Basic Config",
+  "SHENYU.DISCOVERY.SELECTOR.CONFIG.DISCOVERY": "Discovery Config",
+  "SHENYU.COMMON.REFRESH": "Refresh"
 }

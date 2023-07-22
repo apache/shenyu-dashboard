@@ -99,25 +99,34 @@ export default class EditableTable extends Component {
         title: 'protocol',
         dataIndex: 'protocol',
         editable: true,
+        // width: '20%',
+        align: 'center'
       },
       {
         title: 'url',
         dataIndex: 'url',
         editable: true,
+        width: '33%',
+        align: 'center'
       },
       {
         title: 'status',
         dataIndex: 'status',
         editable: true,
+        // width: '19%',
+        align: 'center'
       },
       {
         title: 'weight',
         dataIndex: 'weight',
         editable: true,
+        // width: '19%',
+        align: 'center'
       },
       {
         title: getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.OPERATION"),
         dataIndex: 'operation',
+        align: 'center',
         render: (text, record) =>
           this.props.dataSource.length >= 1 ? (
             <Popconfirm title={getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.DELETE")} onConfirm={() => this.handleDelete(record.key)}>
@@ -202,4 +211,3 @@ export default class EditableTable extends Component {
   }
 }
 
-// export default EditableTable;

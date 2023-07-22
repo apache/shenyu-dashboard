@@ -980,3 +980,23 @@ export function getDiscovery(params) {
       method: `GET`
     });
 }
+
+export function refreshProxySelector(params) {
+  return request(`${baseUrl}/proxy-selector/fetch/${params.discoveryHandlerId}`,
+    {
+      method: `PUT`,
+      body: {
+        ...params
+      }
+    });
+}
+
+export function deleteDiscovery(params) {
+  return request(`${baseUrl}/discovery/${params.discoveryId}`,
+    {
+      method: `DELETE`,
+      body: {
+        ...params
+      }
+    });
+}
