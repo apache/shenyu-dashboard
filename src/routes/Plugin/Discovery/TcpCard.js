@@ -32,11 +32,11 @@ export class TcpCard extends Component {
     return (
       <div style={{display: 'flex', flexDirection: 'column'}}>
         <div className={tcpStyles.cardItem}>
-          <div style={{ fontSize: '17px', marginLeft: '30px' }}>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.FORWARDPORT")}</div>
+          <div style={{ fontSize: '18px', marginLeft: '30px' }}>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.FORWARDPORT")}</div>
           <div className={tcpStyles.cardTag}>{forwardPort}</div>
         </div>
         <div className={tcpStyles.cardItem}>
-          <div style={{ fontSize: '17px', marginLeft: '30px' }}>{getIntlContent("SHENYU.COMMON.TYPE")}</div>
+          <div style={{ fontSize: '18px', marginLeft: '30px' }}>{getIntlContent("SHENYU.COMMON.TYPE")}</div>
           <div className={tcpStyles.cardTag}>{discovery.type}</div>
         </div>
       </div>
