@@ -144,7 +144,7 @@ class AddAndUpdateApiDoc extends Component {
       >
         <Form className="login-form">
           <Form.Item
-            label={`${getIntlContent("SHENYU.DOCUMENT.APIDOC.CONTEXTPATH")}`}
+            label={getIntlContent("SHENYU.DOCUMENT.APIDOC.CONTEXTPATH")}
             {...formItemLayout}
           >
             {getFieldDecorator("contextPath", {
@@ -164,7 +164,7 @@ class AddAndUpdateApiDoc extends Component {
             )}
           </Form.Item>
           <Form.Item
-            label={`${getIntlContent("SHENYU.DOCUMENT.APIDOC.APIPATH")}`}
+            label={getIntlContent("SHENYU.DOCUMENT.APIDOC.APIPATH")}
             {...formItemLayout}
           >
             {getFieldDecorator("apiPath", {
@@ -182,7 +182,7 @@ class AddAndUpdateApiDoc extends Component {
             )}
           </Form.Item>
           <Form.Item
-            label={`${getIntlContent("SHENYU.DOCUMENT.APIDOC.HTTPMETHOD")}`}
+            label={getIntlContent("SHENYU.DOCUMENT.APIDOC.HTTPMETHOD")}
             {...formItemLayout}
           >
             {getFieldDecorator("httpMethod", {
@@ -206,7 +206,7 @@ class AddAndUpdateApiDoc extends Component {
             )}
           </Form.Item>
           <Form.Item
-            label={`${getIntlContent("SHENYU.DOCUMENT.APIDOC.CONSUME")}`}
+            label={getIntlContent("SHENYU.DOCUMENT.APIDOC.CONSUME")}
             {...formItemLayout}
           >
             {getFieldDecorator("consume", {
@@ -224,7 +224,7 @@ class AddAndUpdateApiDoc extends Component {
             )}
           </Form.Item>
           <Form.Item
-            label={`${getIntlContent("SHENYU.DOCUMENT.APIDOC.PRODUCE")}`}
+            label={getIntlContent("SHENYU.DOCUMENT.APIDOC.PRODUCE")}
             {...formItemLayout}
           >
             {getFieldDecorator("produce", {
@@ -242,7 +242,7 @@ class AddAndUpdateApiDoc extends Component {
             )}
           </Form.Item>
           <Form.Item
-            label={`${getIntlContent("SHENYU.DOCUMENT.APIDOC.VERSION")}`}
+            label={getIntlContent("SHENYU.DOCUMENT.APIDOC.VERSION")}
             {...formItemLayout}
           >
             {getFieldDecorator("version", {
@@ -260,7 +260,7 @@ class AddAndUpdateApiDoc extends Component {
             )}
           </Form.Item>
           <Form.Item
-            label={`${getIntlContent("SHENYU.DOCUMENT.APIDOC.RPCTYPE")}`}
+            label={getIntlContent("SHENYU.DOCUMENT.APIDOC.RPCTYPE")}
             {...formItemLayout}
           >
             {getFieldDecorator("rpcType", {
@@ -284,7 +284,7 @@ class AddAndUpdateApiDoc extends Component {
             )}
           </Form.Item>
           <Form.Item
-            label={`${getIntlContent("SHENYU.DOCUMENT.APIDOC.STATE")}`}
+            label={getIntlContent("SHENYU.DOCUMENT.APIDOC.STATE")}
             {...formItemLayout}
           >
             {getFieldDecorator("state", {
@@ -309,7 +309,7 @@ class AddAndUpdateApiDoc extends Component {
             )}
           </Form.Item>
           <Form.Item
-            label={`${getIntlContent("SHENYU.DOCUMENT.APIDOC.EXT")}`}
+            label={getIntlContent("SHENYU.DOCUMENT.APIDOC.EXT")}
             {...formItemLayout}
           >
             {getFieldDecorator("ext", {
@@ -328,7 +328,7 @@ class AddAndUpdateApiDoc extends Component {
             )}
           </Form.Item>
           <Form.Item
-            label={`${getIntlContent("SHENYU.DOCUMENT.APIDOC.APIOWNER")}`}
+            label={getIntlContent("SHENYU.DOCUMENT.APIDOC.APIOWNER")}
             {...formItemLayout}
           >
             {getFieldDecorator("apiOwner", {
@@ -346,7 +346,7 @@ class AddAndUpdateApiDoc extends Component {
             )}
           </Form.Item>
           <Form.Item
-            label={`${getIntlContent("SHENYU.DOCUMENT.APIDOC.APIDESC")}`}
+            label={getIntlContent("SHENYU.DOCUMENT.APIDOC.APIDESC")}
             {...formItemLayout}
           >
             {getFieldDecorator("apiDesc", {
@@ -364,7 +364,7 @@ class AddAndUpdateApiDoc extends Component {
             )}
           </Form.Item>
           <Form.Item
-            label={`${getIntlContent("SHENYU.DOCUMENT.APIDOC.APISOURCE")}`}
+            label={getIntlContent("SHENYU.DOCUMENT.APIDOC.APISOURCE")}
             {...formItemLayout}
           >
             {getFieldDecorator("apiSource", {
@@ -388,7 +388,7 @@ class AddAndUpdateApiDoc extends Component {
             )}
           </Form.Item>
           <Form.Item
-            label={`${getIntlContent("SHENYU.DOCUMENT.APIDOC.DOCUMENT")}`}
+            label={getIntlContent("SHENYU.DOCUMENT.APIDOC.DOCUMENT")}
             {...formItemLayout}
           >
             {getFieldDecorator("document", {

@@ -83,7 +83,7 @@ class AddAndUpdateTag extends Component {
         forceRender
       >
         <Form className="login-form" {...formItemLayout}>
-          <Form.Item label={`${getIntlContent("SHENYU.DOCUMENT.TAG.NAME")}`}>
+          <Form.Item label={getIntlContent("SHENYU.DOCUMENT.TAG.NAME")}>
             {getFieldDecorator("name", {
               rules: [
                 {
@@ -97,7 +97,7 @@ class AddAndUpdateTag extends Component {
             )}
           </Form.Item>
 
-          <Form.Item label={`${getIntlContent("SHENYU.DOCUMENT.TAG.DESC")}`}>
+          <Form.Item label={getIntlContent("SHENYU.DOCUMENT.TAG.DESC")}>
             {getFieldDecorator("tagDesc", {
               rules: [
                 {
