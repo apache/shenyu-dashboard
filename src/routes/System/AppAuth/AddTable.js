@@ -220,7 +220,7 @@ class AddTable extends Component {
                 >
                   {appNameGroup.map((item, index) => {
                     return (
-                      <Option key={index} value={`${item}`}>
+                      <Option key={index} value={item}>
                         {item}
                       </Option>
                     )

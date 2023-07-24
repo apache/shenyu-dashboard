@@ -133,9 +133,9 @@ export default class GeneralContextRuleHandle extends Component {
                         }
                       )(
                         <Select
-                          placeholder={`${titleCase(
+                          placeholder={titleCase(
                             `Select ${handler} Context Type`
-                          )}`}
+                          )}
                         >
                           {contextType.map(v => (
                             <Option value={v} key={v} title={v}>
@@ -156,9 +156,9 @@ export default class GeneralContextRuleHandle extends Component {
                         }
                       )(
                         <Input
-                          placeholder={`${titleCase(
+                          placeholder={titleCase(
                             `Set ${handler} Context Key`
-                          )}`}
+                          )}
                         />
                       )}
                     </FormItem>
@@ -173,9 +173,9 @@ export default class GeneralContextRuleHandle extends Component {
                         }
                       )(
                         <Input
-                          placeholder={`${titleCase(
+                          placeholder={titleCase(
                             `Set ${handler} Context Value`
-                          )}`}
+                          )}
                         />
                       )}
                     </FormItem>
