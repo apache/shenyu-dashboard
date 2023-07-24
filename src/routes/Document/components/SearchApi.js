@@ -23,6 +23,7 @@ import { getRootTag, getParentTagId, getApi } from "../../../services/api";
 import { Method } from "./globalData";
 import AddAndUpdateTag from "./AddAndUpdateTag";
 import AddAndUpdateApiDoc from "./AddAndUpdateApiDoc";
+import {getIntlContent} from "../../../utils/IntlUtils";
 
 const { Text } = Typography;
 
@@ -122,7 +123,7 @@ const SearchApi = React.forwardRef((props, ref) => {
                   })
                 }
               >
-                + Tag
+                {getIntlContent("SHENYU.DOCUMENT.APIDOC.SEARCH.ADD_MODULE")}
               </Button>
             </Col>
           )}
@@ -224,7 +225,7 @@ const SearchApi = React.forwardRef((props, ref) => {
         type="dashed"
         onClick={() => addOrUpdateTag({ parentTagId: "0" })}
       >
-        Add Root Tag
+        {getIntlContent("SHENYU.DOCUMENT.APIDOC.SEARCH.ADD_ROOT_MODULE")}
       </Button>
       <AddAndUpdateTag
         visible={openTag}

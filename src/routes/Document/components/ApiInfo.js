@@ -28,7 +28,7 @@ function ApiInfo(props) {
   const {
     apiData: { envProps = [] },
     apiDetail,
-    apiDetail: { document, responseParameters, requestHeaders }
+    apiDetail: { document, requestParameters, responseParameters, requestHeaders }
   } = useContext(ApiContext);
   const { handleUpdate, handleDelete } = props;
 
@@ -55,8 +55,7 @@ function ApiInfo(props) {
     },
     {
       title: getIntlContent("SHENYU.COMMON.TYPE"),
-      dataIndex: "type",
-      render: (_, record) => record?.schema?.type
+      dataIndex: "type"
     },
     {
       title: getIntlContent("SHENYU.COMMON.REQUIRED"),
@@ -239,7 +238,7 @@ function ApiInfo(props) {
               size="small"
               rowKey="id"
               bordered
-              dataSource={documentJSON.parameters || []}
+              dataSource={requestParameters || []}
               pagination={false}
               childrenColumnName="refs"
               columns={columns}

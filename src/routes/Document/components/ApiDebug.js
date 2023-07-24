@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {Button, Col, Empty, Form, Icon, Input, message, Row, Tabs, Typography} from "antd";
+import {Button, Col, Empty, Form, Icon, Input, message, Row, Select, Tabs, Typography} from "antd";
 import React, {createRef, forwardRef, useContext, useEffect, useImperativeHandle, useState} from "react";
 import ReactJson from "react-json-view";
 import fetch from "dva/fetch";
@@ -34,6 +34,7 @@ import {Method} from "./globalData";
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
+const InputGroup = Input.Group
 
 const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   useImperativeHandle(ref, () => ({
@@ -42,7 +43,8 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
 
   const {
     apiDetail,
-    apiMock
+    apiMock,
+    apiData: {envProps = []}
   } = useContext(ApiContext);
   const [questJson, setRequestJson] = useState(JSON.parse(apiMock.body || '{}'));
   const [initialValue, setInitialValue] = useState({
@@ -197,7 +199,38 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
               pattern: /^https?:\/\/([^:]+):(\d+)(\/.+)$/
             }
           ]
-        })(<Input allowClear />)}
+        })(
+          <InputGroup compact>
+            <Select
+              style={{width: '40%'}}
+              onChange={host => {
+                const url = new URL(host);
+                host = `${url.protocol}//${url.hostname}:${url.port || '80'}`;
+                setInitialValue({...initialValue, host})
+                const requestUrl = `${host}${initialValue.url ?? ""}`
+                form.setFieldsValue({requestUrl})
+              }}
+              value={initialValue.host}
+            >
+              {Object.values(envProps).map((e, i) => {
+                return (
+                  <Select.Option key={`${e.addressUrl} ${i}`} value={e.addressUrl}>
+                    {`${e.envLabel}  ${e.addressUrl}`}
+                  </Select.Option>
+                );
+              })}
+            </Select>
+            <Input
+              style={{width: '60%'}}
+              value={initialValue.url}
+              onChange={e => {
+                setInitialValue({...initialValue, url: e.target.value})
+                const requestUrl = `${initialValue.host ?? ""}${e.target.value}`
+                form.setFieldsValue({requestUrl})
+              }}
+            />
+          </InputGroup>
+        )}
       </FormItem>
 
       <FormItem label="Headers">
