@@ -67,7 +67,6 @@ export class TcpCard extends Component {
         <Card
           title={<div style={{ fontSize: '17px', lineHeight: '1.5'}}>{data.name}</div>}
           bordered={false}
-          // style={{  borderRadius: '5px' , boxShadow: '1px 2px 2px rgba(191, 189, 189, 0.5)' }}
           className={tcpStyles.tcpCard}
           actions={[
             <AuthButton perms="plugin:tcp:modify">
