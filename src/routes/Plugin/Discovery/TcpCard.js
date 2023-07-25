@@ -16,7 +16,7 @@
  */
 
 import React, {Component} from "react";
-import {Card, Popover, Typography, Skeleton, Icon} from "antd";
+import {Card, Popover, Typography, Skeleton, Icon, Popconfirm} from "antd";
 
 import {getIntlContent} from "../../../utils/IntlUtils";
 import tcpStyles from "./tcp.less";
@@ -75,9 +75,18 @@ export class TcpCard extends Component {
             <AuthButton perms="plugin:tcp:modify">
               <Icon type="edit" key="edit" style={{color: "#1352A2", fontSize: "17px"}} onClick={() => updateSelector(data.id)} />
             </AuthButton>,
-            <AuthButton perms="plugin:tcpSelector:delete">
-              <Icon type="delete" key="delete" style={{color: "#CC0000", fontSize: "17px"}} onClick={() => handleDelete(data.id)} />
-            </AuthButton>
+            <Popconfirm
+              title={getIntlContent("SHENYU.DISCOVERY.SELECTOR.DELETE.CONFIRM")}
+              icon={<Icon type="question-circle-o" style={{ color: "#CC0000" }} />}
+              onConfirm={() => handleDelete(data.id)}
+              okText={getIntlContent("SHENYU.COMMON.YES")}
+              cancelText={getIntlContent("SHENYU.COMMON.NO")}
+              key="popconfirm"
+            >
+              <AuthButton perms="plugin:tcpSelector:delete">
+                <Icon type="delete" key="delete" style={{color: "#CC0000", fontSize: "17px"}} />
+              </AuthButton>,
+            </Popconfirm>
           ]}
           extra={<div style={{ fontSize: '15px', lineHeight: '1.5', marginRight: '14px'}}>{formatTimestamp(createTime)}</div>}
         >
