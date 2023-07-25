@@ -39,7 +39,7 @@ export default {
     chosenType: '',
     totalPage: 0,
     currentPage: 1,
-    pageSize: 4
+    pageSize: 6
   },
 
   effects: {

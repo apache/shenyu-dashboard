@@ -15,21 +15,7 @@
  * limitations under the License.
  */
 
-.cardTag {
-  min-width: 231px;
-  height: 32px;
-  border: rgba(112, 109, 109, 0.4) 1px solid;
-  border-radius: 5px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 30px;
-  font-size: 18px
-}
 
-.cardInput {
-  max-width: 50%;
-}
 
 .main {
   width: 100%;
@@ -76,11 +62,6 @@
   justify-content: space-around;
 }
 
-.cardItem {
-  display: flex;
-  justify-content: space-between;
-  margin: 5px 0;
-}
 
 .editable-cell {
   position: relative;
@@ -96,4 +77,21 @@
   border-radius: 4px;
   padding: 4px 11px;
 }
+
+
+.tcpCard {
+  :global {
+    .ant-card-body {
+      padding: 10px
+    }
+
+    .ant-card-actions {
+      background-color: white;
+    }
+  }
+  border-radius: 5px ;
+  box-shadow: 1px 2px 2px rgba(191, 189, 189, 0.5)
+}
+
+
 
