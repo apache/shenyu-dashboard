@@ -569,7 +569,7 @@ export default class TCPProxy extends Component {
             <div style={{
               margin: '0px 0',
               display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
+              gridTemplateColumns: '1fr 1fr 1fr',
               gridAutoFlow: 'row',
               gridGap: '20px',
               justifyContent: 'stretch',
