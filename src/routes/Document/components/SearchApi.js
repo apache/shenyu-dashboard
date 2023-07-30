@@ -49,7 +49,18 @@ const SearchApi = React.forwardRef((props, ref) => {
         key: index.toString(),
         isLeaf: false
       })) || [];
+    if(data?.length) {
+      const { code: apiCode, message: apiMsg, data: apiDataRecords } = await getApi(data[0].id);
+      if (apiCode !== 200) {
+        message.error(apiMsg);
+        return;
+      }
+      const { dataList: apiDataList } = apiDataRecords;
+      data[0].apiDataList = apiDataList;
+    }
     setTreeData(arr);
+    // 默认选中第一个
+    onSelect(["0"], { node: { props: arr[0] } })
   };
 
   const onExpand = async (keys, { expanded, node }) => {
@@ -217,6 +228,7 @@ const SearchApi = React.forwardRef((props, ref) => {
             treeData={treeData}
             onExpand={onExpand}
             expandedKeys={expandedKeys}
+            defaultSelectedKeys={["0"]}
           />
         </Spin>
       ) : (
