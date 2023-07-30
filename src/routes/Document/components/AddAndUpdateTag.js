@@ -67,10 +67,10 @@ class AddAndUpdateTag extends Component {
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 5 }
+        sm: { span: 8 }
       },
       wrapperCol: {
-        sm: { span: 19 }
+        sm: { span: 16 }
       }
     };
 

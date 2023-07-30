@@ -88,6 +88,13 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
 
   useEffect(
     () => {
+      setInitialValue({url:apiDetail.apiPath})
+    },
+    [apiDetail.apiPath]
+  )
+
+  useEffect(
+    () => {
       form.setFieldsValue({headers: initialValue.header || "{}"})
     },
     [initialValue.header]

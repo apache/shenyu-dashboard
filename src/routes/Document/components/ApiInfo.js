@@ -263,19 +263,6 @@ function ApiInfo(props) {
             />
           </Paragraph>
           <Title level={4}>
-            {getIntlContent("SHENYU.DOCUMENT.APIDOC.ERROR.CODE.DETAILS")}
-          </Title>
-          <Paragraph>
-            <Table
-              size="small"
-              rowKey="code"
-              bordered
-              dataSource={documentJSON.errorCode || []}
-              pagination={false}
-              columns={errorCodeColumns}
-            />
-          </Paragraph>
-          <Title level={4}>
             {getIntlContent(
               "SHENYU.DOCUMENT.APIDOC.INFO.BUSINESS.RESPONSE.PARAMETERS"
             )}
@@ -289,6 +276,19 @@ function ApiInfo(props) {
               pagination={false}
               childrenColumnName="refs"
               columns={columns}
+            />
+          </Paragraph>
+          <Title level={4}>
+            {getIntlContent("SHENYU.DOCUMENT.APIDOC.ERROR.CODE.DETAILS")}
+          </Title>
+          <Paragraph>
+            <Table
+              size="small"
+              rowKey="code"
+              bordered
+              dataSource={documentJSON.errorCode || []}
+              pagination={false}
+              columns={errorCodeColumns}
             />
           </Paragraph>
         </Tabs.TabPane>

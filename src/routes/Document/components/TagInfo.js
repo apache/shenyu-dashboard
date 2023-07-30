@@ -44,8 +44,8 @@ function TagInfo(props) {
         <Paragraph>
           <Title level={4}>{getIntlContent("SHENYU.DOCUMENT.TAG.DESC")}</Title>
           <Text>{tagDetail.tagDesc}</Text>
-          <Title level={4}>{getIntlContent("SHENYU.DOCUMENT.TAG.EXT")}</Title>
-          <Text code>{tagDetail.ext}</Text>
+          <Title level={4}>{getIntlContent("SHENYU.DOCUMENT.TAG.MODIFYTIME")}</Title>
+          <Text>{tagDetail.dateUpdated}</Text>
         </Paragraph>
       </Col>
     </Row>
