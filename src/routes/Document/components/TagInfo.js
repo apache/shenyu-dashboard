@@ -15,23 +15,67 @@
  * limitations under the License.
  */
 
-import { Typography, Button, Row, Col } from "antd";
+import { Typography, Button, Row, Col, Table } from "antd";
 import React, { useContext } from "react";
+import dayjs from "dayjs";
 import ApiContext from "./ApiContext";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import { Method, API_SOURCE_TYPE, STATE_TYPE } from "./globalData";
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
 function TagInfo(props) {
   const { handleDelete, handleUpdate } = props;
   const { tagDetail } = useContext(ApiContext);
+  const { apiDataList } = tagDetail
+
+  const apiColumns = [
+    {
+      title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.PATH"),
+      dataIndex: "apiPath",
+      render: (_, record) =>(
+        <>
+          <Text code>{Method?.[record.httpMethod]}</Text>
+          <Text>{record.apiPath}</Text>
+        </>
+)
+    },
+    {
+      title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.TYPE"),
+      dataIndex: "module"
+    },
+    {
+      title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.VERSION"),
+      dataIndex: "version"
+    },
+    {
+      title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.STATE"),
+      dataIndex: "state",
+      render: v => STATE_TYPE[v]
+    },
+    {
+      title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.SOURCE"),
+      dataIndex: "apiSource",
+      render: v => API_SOURCE_TYPE[v]
+    },
+    {
+      title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.CREATETIME"),
+      dataIndex: "dateCreated",
+      render: v => dayjs(v).format('YYYY-MM-DD HH:mm:ss')
+    },
+    {
+      title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.MODIFYTIME"),
+      dataIndex: "dateUpdated",
+      render: v => dayjs(v).format('YYYY-MM-DD HH:mm:ss')
+    }
+  ];
 
   return (
     <Row gutter={24}>
       <Col span={12}>
         <Title level={2}>{tagDetail.name}</Title>
       </Col>
-      <Col span={12} style={{ textAlign: "right" }}>
+      <Col span={12} style={{ textAlign: "right", minHeight: "56px" }}>
         <Button onClick={handleUpdate}>
           {getIntlContent("SHENYU.BUTTON.SYSTEM.EDIT")}
         </Button>
@@ -40,13 +84,25 @@ function TagInfo(props) {
           {getIntlContent("SHENYU.BUTTON.SYSTEM.DELETE")}
         </Button>
       </Col>
-      <Col span={24}>
-        <Paragraph>
-          <Title level={4}>{getIntlContent("SHENYU.DOCUMENT.TAG.DESC")}</Title>
-          <Text>{tagDetail.tagDesc}</Text>
-          <Title level={4}>{getIntlContent("SHENYU.DOCUMENT.TAG.EXT")}</Title>
-          <Text code>{tagDetail.ext}</Text>
-        </Paragraph>
+      <Col span={12}>
+        <Text>
+          {getIntlContent("SHENYU.DOCUMENT.TAG.DESC")}: {tagDetail.tagDesc}
+        </Text>
+      </Col>
+      <Col span={12}>
+        <Text>
+          {getIntlContent("SHENYU.DOCUMENT.TAG.MODIFYTIME")}: {tagDetail.dateUpdated}
+        </Text>
+      </Col>
+      <Col span={24} style={{ marginTop: '20px' }}>
+        <Table
+          size="small"
+          rowKey="id"
+          bordered
+          dataSource={apiDataList}
+          pagination={false}
+          columns={apiColumns}
+        />
       </Col>
     </Row>
   );

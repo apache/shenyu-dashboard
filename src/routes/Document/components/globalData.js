@@ -25,3 +25,28 @@ export const Method = {
   6: "OPTIONS",
   7: "TRACE"
 };
+
+export const RPCTYPE = [
+  "http",
+  "dubbo",
+  "sofa",
+  "tars",
+  "websocket",
+  "springCloud",
+  "motan",
+  "grpc"
+];
+
+export const API_SOURCE_TYPE = [
+  "swagger",
+  "annotation generation",
+  "create manuallym",
+  "import swagger",
+  "import yapi"
+];
+
+export const STATE_TYPE = [
+  "unpublished",
+  "published",
+  "offline"
+];

@@ -20,33 +20,9 @@
 import { Modal, Form, Input, Select, message,Radio } from "antd";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Method } from "./globalData";
+import { Method, RPCTYPE, API_SOURCE_TYPE, STATE_TYPE } from "./globalData";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { addApi, updateApi } from "../../../services/api";
-
-const RPCTYPE = [
-  "http",
-  "dubbo",
-  "sofa",
-  "tars",
-  "websocket",
-  "springCloud",
-  "motan",
-  "grpc"
-];
-
-const API_SOURCE_TYPE = [
-  "swagger",
-  "annotation generation",
-  "create manuallym",
-  "import swagger",
-  "import yapi"
-];
-const STATE_TYPE = [
-  "unpublished",
-  "published",
-  "offline"
-];
 
 class AddAndUpdateApiDoc extends Component {
   static defaultProps = {
