@@ -26,7 +26,6 @@ import AddAndUpdateApiDoc from "./AddAndUpdateApiDoc";
 import {getIntlContent} from "../../../utils/IntlUtils";
 
 const { Text } = Typography;
-const { TreeNode } = Tree;
 
 const SearchApi = React.forwardRef((props, ref) => {
   const { onSelect, afterUpdate } = props;

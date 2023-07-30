@@ -19,11 +19,7 @@
 
 import { Col, Row, Card, BackTop, Empty, message } from "antd";
 import React, { useEffect, useState } from "react";
-import { getApi } from "../../services/api";
-import SearchApi from "./components/SearchApi";
-import ApiInfo from "./components/ApiInfo";
-import TagInfo from "./components/TagInfo";
-import {
+import { getApi ,
   getDocMenus,
   getApiDetail,
   deleteApi,
@@ -31,6 +27,9 @@ import {
   deleteTag,
   getApiMockRequest
 } from "../../services/api";
+import SearchApi from "./components/SearchApi";
+import ApiInfo from "./components/ApiInfo";
+import TagInfo from "./components/TagInfo";
 import ApiContext from "./components/ApiContext";
 
 function ApiDoc() {

@@ -22,7 +22,7 @@ import ApiContext from "./ApiContext";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { Method, API_SOURCE_TYPE, STATE_TYPE } from "./globalData";
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
 function TagInfo(props) {
   const { handleDelete, handleUpdate } = props;
@@ -33,10 +33,12 @@ function TagInfo(props) {
     {
       title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.PATH"),
       dataIndex: "apiPath",
-      render: (_, record) =>(<>
-        <Text code>{Method?.[record.httpMethod]}</Text>
-        <Text>{record.apiPath}</Text>
-      </>)
+      render: (_, record) =>(
+        <>
+          <Text code>{Method?.[record.httpMethod]}</Text>
+          <Text>{record.apiPath}</Text>
+        </>
+)
     },
     {
       title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.TYPE"),
@@ -94,13 +96,13 @@ function TagInfo(props) {
       </Col>
       <Col span={24} style={{ marginTop: '20px' }}>
         <Table
-           size="small"
-           rowKey="id"
-           bordered
-           dataSource={apiDataList}
-           pagination={false}
-           columns={apiColumns}
-         />
+          size="small"
+          rowKey="id"
+          bordered
+          dataSource={apiDataList}
+          pagination={false}
+          columns={apiColumns}
+        />
       </Col>
     </Row>
   );
