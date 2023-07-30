@@ -16,83 +16,97 @@
  */
 
 import React, {Component} from "react";
-import {Button, Card} from "antd";
+import {Card, Popover, Typography, Skeleton, Icon, Popconfirm} from "antd";
+
 import {getIntlContent} from "../../../utils/IntlUtils";
 import tcpStyles from "./tcp.less";
 
 import { formatTimestamp } from "../../../utils/utils";
+import {ConsulIcon, EtcdIcon, LocalIcon, NacosIcon, ZkIcon} from "./DiscoveryIcon";
 import AuthButton from "../../../utils/AuthButton";
+
+const { Text } = Typography;
+const { Meta } = Card;
 
 export class TcpCard extends Component {
 
-  renderCardItems = () => {
-    const {forwardPort, createTime, updateTime} = this.props.data
-
-    return (
-      <div style={{display: 'flex', flexDirection: 'column'}}>
-        <div className={tcpStyles.cardItem}>
-          <div style={{ fontSize: '18px', marginLeft: '30px' }}>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.FORWARDPORT")}</div>
-          <div className={tcpStyles.cardTag}>{forwardPort}</div>
-        </div>
-        <div className={tcpStyles.cardItem}>
-          <div style={{ fontSize: '18px', marginLeft: '30px' }}>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.DateCreated")}</div>
-          <div className={tcpStyles.cardTag}>{formatTimestamp(createTime)}</div>
-        </div>
-        <div className={tcpStyles.cardItem}>
-          <div style={{ fontSize: '18px', marginLeft: '30px'  }}>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.DateUpdated")}</div>
-          <div className={tcpStyles.cardTag}>{formatTimestamp(updateTime)}</div>
-        </div>
-      </div>
-    )
-  }
-
   render() {
     const { updateSelector, data, handleDelete, handleRefresh } = this.props
-    return (
-      <Card
-        title={<div style={{ marginLeft: '30px', fontSize: '20px' }}>{data.name}</div>}
-        style={{  borderRadius: '5px' , boxShadow: '1px 2px 2px rgba(191, 189, 189, 0.5)' }}
-        extra={(
-          <div>
-            <AuthButton perms="plugin:tcp:modify">
-              <Button
-                type="primary"
-                onClick={() => {
-                  handleRefresh(data.discoveryHandlerId)
-                }}
-                style={{ marginRight: '20px' }}
-              >
-                {getIntlContent("SHENYU.COMMON.REFRESH")}
-              </Button>
-            </AuthButton>
-            <AuthButton perms="plugin:tcp:modify">
-              <Button
-                type="primary"
-                onClick={() => {
-                  updateSelector(data.id)
-                }}
-                style={{ marginRight: '20px' }}
-              >
-                {getIntlContent("SHENYU.COMMON.CHANGE")}
-              </Button>
-            </AuthButton>
-            <AuthButton perms="plugin:tcpSelector:delete">
-              <Button
-                type="primary"
-                onClick={() => {
-                  handleDelete(data.id)
-                }}
-                style={{ marginRight: '30px' }}
-              >
-                {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
-              </Button>
-            </AuthButton>
-          </div>
-        )}
-      >
-        {this.renderCardItems()}
-      </Card>
+    const { createTime, updateTime, props: selectorProps, forwardPort, discovery} = this.props.data
+    const propsJson = JSON.stringify(JSON.parse(selectorProps!== null && selectorProps.length > 0? selectorProps:'{}'), null, 4) ;
+    const content = (
+      <div>
+        <Text>{`${getIntlContent("SHENYU.SYSTEM.CREATETIME") }: ${formatTimestamp(createTime)}`}</Text>
+        <br />
+        <Text>{`${getIntlContent("SHENYU.SYSTEM.UPDATETIME") }: ${formatTimestamp(updateTime)}`}</Text>
+        <hr />
+        <div>
+          {getIntlContent("SHENYU.DISCOVERY.SELECTOR.PROPS")}
+          <span style={{ marginLeft: '2px', fontWeight: '500' }}>:</span>
+        </div>
+        <div>
+          <pre><code>{propsJson}</code></pre>
+        </div>
+      </div>
+    );
 
+    const typeIconMap = {
+      local: <LocalIcon style={{ fontSize: '40px', color: '#354458' }} />,
+      zookeeper: <ZkIcon style={{ fontSize: '40px', color: '#354458' }} />,
+      nacos: <NacosIcon style={{ fontSize: '40px', color: '#354458' }} />,
+      consul: <ConsulIcon style={{ fontSize: '40px', color: '#354458' }} />,
+      etcd: <EtcdIcon style={{ fontSize: '40px', color: '#354458' }} />,
+    };
+
+    const getAvatarIcon = () => {
+      return typeIconMap[discovery.type] || null;
+    };
+
+    return (
+      <Popover placement="leftTop" content={content}>
+        <Card
+          title={<div style={{ fontSize: '17px', lineHeight: '1.5'}}>{data.name}</div>}
+          bordered={false}
+          className={tcpStyles.tcpCard}
+          actions={[
+            <AuthButton perms="plugin:tcp:modify">
+              <Icon type="reload" key="reload" style={{color: '#2E496E', fontSize: "17px"}} onClick={() => handleRefresh(data.discoveryHandlerId)} />
+            </AuthButton>,
+            <AuthButton perms="plugin:tcp:modify">
+              <Icon type="edit" key="edit" style={{color: "#1352A2", fontSize: "17px"}} onClick={() => updateSelector(data.id)} />
+            </AuthButton>,
+            <Popconfirm
+              title={getIntlContent("SHENYU.DISCOVERY.SELECTOR.DELETE.CONFIRM")}
+              icon={<Icon type="question-circle-o" style={{ color: "#CC0000" }} />}
+              onConfirm={() => handleDelete(data.id)}
+              okText={getIntlContent("SHENYU.COMMON.YES")}
+              cancelText={getIntlContent("SHENYU.COMMON.NO")}
+              key="popconfirm"
+            >
+              <AuthButton perms="plugin:tcpSelector:delete">
+                <Icon type="delete" key="delete" style={{color: "#CC0000", fontSize: "17px"}} />
+              </AuthButton>,
+            </Popconfirm>
+          ]}
+          extra={<div style={{ fontSize: '15px', lineHeight: '1.5', marginRight: '14px'}}>{formatTimestamp(createTime)}</div>}
+        >
+          <Skeleton loading={false} avatar active>
+            <Meta
+              avatar={
+                <div style={{marginLeft: '20px', marginTop: '10px'}}>
+                  {getAvatarIcon()}
+                </div>
+              }
+              title={
+                <div style={{marginLeft: '40px', fontSize: '15px', lineHeight: '30px'}}>
+                  {`${getIntlContent("SHENYU.DISCOVERY.SELECTOR.FORWARDPORT")}: ${forwardPort}`}
+                  <br />
+                  {`${getIntlContent("SHENYU.COMMON.TYPE") }: ${discovery.type}`}
+                </div>}
+            />
+          </Skeleton>
+        </Card>
+      </Popover>
     )
   }
 }

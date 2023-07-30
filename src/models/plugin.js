@@ -152,7 +152,7 @@ export default {
         message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
         callback(json)
       } else {
-        message.warn(json.message.split(":")[1]);
+        message.warn(json.message);
       }
     }
 

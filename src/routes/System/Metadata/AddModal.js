@@ -158,7 +158,7 @@ class AddModal extends Component {
               <Select>
                 {rpcTypeEnums.map(item => {
                   return (
-                    <Option key={item.name} value={`${item.name}`}>
+                    <Option key={item.name} value={item.name}>
                       {item.name}
                     </Option>
                   );
