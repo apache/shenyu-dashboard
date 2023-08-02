@@ -19,7 +19,8 @@
 
 import { Col, Row, Card, BackTop, Empty, message } from "antd";
 import React, { useEffect, useState } from "react";
-import { getApi ,
+import {
+  getApi,
   getDocMenus,
   getApiDetail,
   deleteApi,
@@ -118,7 +119,12 @@ function ApiDoc() {
       message.error(msg);
     } else {
       message.success(msg);
-      searchApiRef.current?.updateTree();
+      if (tagDetail.id) {
+        searchApiRef.current?.updateTree(null, 'tag');
+      }
+      if (apiDetail.id) {
+        searchApiRef.current?.updateTree(null, 'api');
+      }
     }
   };
 
@@ -132,9 +138,12 @@ function ApiDoc() {
   };
 
   // eslint-disable-next-line no-unused-vars
-  const handleAfterUpdate = data => {
-    setApiDetail({});
-    setTagDetail({});
+  const handleAfterUpdate = (data, refType) => {
+    if (refType === 'tag') {
+      setTagDetail({ ...tagDetail, ...data });
+    } else if (refType === 'api') {
+      setApiDetail({ ...apiDetail, ...data });
+    }
   };
 
   useEffect(() => {
