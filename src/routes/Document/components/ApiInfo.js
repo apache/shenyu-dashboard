@@ -102,21 +102,21 @@ function ApiInfo(props) {
       id: 1,
       name: "code",
       type: "integer",
-      description: "返回码",
+      description: getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.COMMON.RESPONSE.CODE"),
       example: "200"
     },
     {
       id: 2,
       name: "message",
       type: "string",
-      description: "错误描述信息",
-      example: "非法的参数"
+      description: getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.COMMON.RESPONSE.DESCRIPTION"),
+      example: getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.COMMON.RESPONSE.DESCRIPTION_EXAMPLE")
     },
     {
       id: 3,
       name: "data",
       type: "object",
-      description: "响应的业务结果",
+      description: getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.COMMON.RESPONSE.RESULTS"),
       example: '{"id":"1988771289091030"}'
     }
   ];
