@@ -254,7 +254,8 @@ export default class Common extends Component {
   togglePluginStatus = () => {
     const { dispatch, plugins } = this.props;
     const pluginName = this.props.match.params ? this.props.match.params.id : "";
-    const { name, id, role, config, sort, file} = this.getPlugin(plugins, pluginName);
+    const plugin = this.getPlugin(plugins, pluginName)
+    const { name, id, role, config, sort, file} = plugin;
     const enabled = !this.state.isPluginEnabled
     const enabledStr = enabled ? '1' : '0';
     dispatch({
@@ -273,6 +274,7 @@ export default class Common extends Component {
         enabled: enabledStr
       },
       callback: () => {
+        plugin.enabled = enabled;
         this.setState({ isPluginEnabled: enabled })
         this.closeModal();
       }
