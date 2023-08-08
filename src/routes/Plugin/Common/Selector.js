@@ -730,6 +730,7 @@ class AddModal extends Component {
       enabled,
       sort
     } = copyData;
+
     const formData = {
       name,
       type: type.toString(),
@@ -739,7 +740,7 @@ class AddModal extends Component {
       sort
     };
 
-    if (type === 1) {
+    if (formData.type === "1") {
       formData.matchMode = matchMode.toString();
       this.initSelectorCondition({
         selectorConditions: selectorConditions.map(v => {
@@ -755,7 +756,7 @@ class AddModal extends Component {
       });
     }
     form.setFieldsValue(formData);
-    this.setState({ visible: false, selectValue: type.toString() });
+    this.setState({ visible: false, selectValue: formData.type });
   };
 
   onDealChange = (value, item) => {
@@ -878,7 +879,7 @@ class AddModal extends Component {
       visible
     } = this.state;
 
-    type = `${type}`;
+    type = `${type.toString()}` || "1";
     let { selectorTypeEnums } = platform;
 
     const { getFieldDecorator } = form;
@@ -944,7 +945,7 @@ class AddModal extends Component {
                   message: getIntlContent("SHENYU.COMMON.INPUTTYPE")
                 }
               ],
-              initialValue: type || "1"
+              initialValue: type
             })(
               <Select
                 placeholder={getIntlContent("SHENYU.COMMON.TYPE")}
