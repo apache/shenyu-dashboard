@@ -952,7 +952,7 @@ class AddModal extends Component {
               >
                 {selectorTypeEnums.map(item => {
                   return (
-                    <Option key={item.code} value={item.code}>
+                    <Option key={item.code} value={item.code.toString()}>
                       {getIntlContent(
                         `SHENYU.COMMON.SELECTOR.TYPE.${item.name.toUpperCase()}`,
                         item.name
