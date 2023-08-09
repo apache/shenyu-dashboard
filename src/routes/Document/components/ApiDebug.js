@@ -61,7 +61,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   const [activeKey, setActiveKey] = useState("1");
 
   const getDefaultHeaderByKey = (key) => {
-    return {"Content-type": key === '1' ? "application/json" : "application/x-www-form-urlencoded"}
+    return {"Content-Type": key === '1' ? "application/json" : "application/x-www-form-urlencoded"}
   }
 
   useEffect(
