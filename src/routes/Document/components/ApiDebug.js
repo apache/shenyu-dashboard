@@ -60,6 +60,10 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   });
   const [activeKey, setActiveKey] = useState("1");
 
+  const getDefaultHeaderByKey = (key) => {
+    return {"Content-type": key === '1' ? "application/json" : "application/x-www-form-urlencoded"}
+  }
+
   useEffect(
     () => {
       setInitialValue({
@@ -95,7 +99,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
 
   useEffect(
     () => {
-      form.setFieldsValue({headers: initialValue.header || "{}"})
+      form.setFieldsValue({headers: initialValue.header || JSON.stringify(getDefaultHeaderByKey(activeKey))})
     },
     [initialValue.header]
   );
@@ -187,8 +191,8 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   const changeParamTab = (key) => {
     setActiveKey(key);
     let header = form.getFieldsValue().headers;
-    let headerJson = {...JSON.parse(header), "Content-type": key === '1' ? "application/json" : "application/x-www-form-urlencoded"};
-    setInitialValue({...initialValue, header: JSON.stringify(headerJson)})
+    let headerJson = {...JSON.parse(header), ...getDefaultHeaderByKey(key)};
+    setInitialValue({...initialValue, header: JSON.stringify(headerJson)});
   }
 
   return (
