@@ -161,7 +161,7 @@ class AddModal extends Component {
     if (selectorConditions) {
       selectorConditions.forEach((item, index) => {
         const { paramType, operator, paramName, paramValue } = item;
-        if (!paramType || !operator || !paramValue) {
+        if (!paramType || !operator || (operator !== "isBlank" && !paramValue)) {
           message.destroy();
           message.error(`Line ${index + 1} condition is incomplete`);
           result = false;
@@ -777,6 +777,11 @@ class AddModal extends Component {
           return operate.key !== "pathPattern" ? operate : ""
         })
       }
+      if (paramType !== "post" && paramType !== "query" && paramType !== "header" && paramType !== "cookie") {
+        operatorsFil = operatorsFil.filter(operate => {
+          return operate.key !== "isBlank" ? operate : ""
+        })
+      }
       if (paramType === "uri" || paramType === "host" || paramType === "ip" || paramType === "cookie" || paramType === "domain") {
         operatorsFil = operatorsFil.filter(operate => {
           return operate.key !== "TimeBefore" && operate.key !== "TimeAfter" ? operate : ""
@@ -1042,7 +1047,14 @@ class AddModal extends Component {
                           </Select>
                         </Col>
 
-                        <Col span={7}>
+                        <Col
+                          span={7}
+                          style={{
+                            display: item.operator === "isBlank"
+                              ? "none"
+                              : "block"
+                          }}
+                        >
                           <Tooltip title={item.paramValue}>
                             {this.getParamValueInput(item, index)}
                           </Tooltip>
