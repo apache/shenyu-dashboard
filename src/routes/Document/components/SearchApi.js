@@ -58,11 +58,11 @@ const SearchApi = React.forwardRef((props, ref) => {
       }
       const { dataList: apiDataList } = apiDataRecords;
       data[0].apiDataList = apiDataList;
+      setTreeData(arr);
+      // 默认选中第一个
+      setSelectedKeys(["0"]);
+      onSelect(["0"], { node: { props: arr[0] } })
     }
-    setTreeData(arr);
-    // 默认选中第一个
-    setSelectedKeys(["0"]);
-    onSelect(["0"], { node: { props: arr[0] } })
   };
 
   const onExpand = async (keys, { expanded, node }) => {
