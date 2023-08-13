@@ -81,23 +81,28 @@ export default class Plugin extends Component {
     this.setState({ selectedRowKeys }, this.query);
   };
 
+  currentQueryPayload = (override) => {
+    const { name, enabled, currentPage, pageSize } = this.state;
+    return {
+      name,
+      enabled,
+      currentPage,
+      pageSize,
+      ...override
+    };
+  };
+
   query = () => {
     const { dispatch } = this.props;
-    const { name, enabled, currentPage, pageSize } = this.state;
     dispatch({
       type: "plugin/fetch",
-      payload: {
-        name,
-        enabled,
-        currentPage,
-        pageSize
-      }
+      payload: this.currentQueryPayload()
     });
   }
 
   getAllPlugins = page => {
     const { dispatch } = this.props;
-    const { name, enabled,pageSize } = this.state;
+    const { name, enabled, pageSize } = this.state;
     dispatch({
       type: "plugin/fetch",
       payload: {
@@ -113,22 +118,20 @@ export default class Plugin extends Component {
     this.setState({ currentPage: page }, this.query);
   };
 
-  onShowSizeChange = (currentPage,pageSize) => {
+  onShowSizeChange = (currentPage, pageSize) => {
     this.setState({ currentPage: 1, pageSize}, this.query);
   };
 
   closeModal = (refresh = false) => {
     if (refresh) {
-      this.setState({ popup: "", currentPage:1 }, this.query);
+      this.setState({ popup: "", currentPage: 1 }, this.query);
       return
     }
-    this.setState({ popup: "", currentPage:1 });
+    this.setState({ popup: "", currentPage: 1 });
   };
 
   editClick = record => {
     const { dispatch } = this.props;
-    const { currentPage,pageSize } = this.state;
-    const pluginName = this.state.name;
     dispatch({
       type: "plugin/fetchItem",
       payload: {
@@ -150,7 +153,6 @@ export default class Plugin extends Component {
                   {...pluginConfigList}
                   handleOk={values => {
                     const { name, enabled, id, role, config, sort, file } = values;
-                    const enabledStr = enabled?'1':'0';
                     dispatch({
                       type: "plugin/update",
                       payload: {
@@ -162,12 +164,7 @@ export default class Plugin extends Component {
                         sort,
                         file
                       },
-                      fetchValue: {
-                        name: pluginName,
-                        enabled: enabledStr,
-                        currentPage,
-                        pageSize
-                      },
+                      fetchValue: this.currentQueryPayload(),
                       callback: () => {
                         this.setState({ selectedRowKeys: [] });
                         this.closeModal(true);
@@ -204,11 +201,11 @@ export default class Plugin extends Component {
   };
 
   searchOnchange = e => {
-    this.setState({ name:e.target.value}, this.query);
+    this.setState({ name: e.target.value }, this.query);
   };
 
   enabledOnchange = e => {
-    this.setState({ enabled:e }, this.query);
+    this.setState({ enabled: e }, this.query);
   };
 
   searchClick = () => {
@@ -217,18 +214,16 @@ export default class Plugin extends Component {
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { name, currentPage, selectedRowKeys } = this.state;
+    const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "plugin/delete",
         payload: {
           list: selectedRowKeys
         },
-        fetchValue: {
-          name,
-          currentPage,
+        fetchValue: this.currentQueryPayload({
           pageSize: 12
-        },
+        }),
         callback: () => {
           this.setState({ selectedRowKeys: [] });
           dispatch({
@@ -247,8 +242,6 @@ export default class Plugin extends Component {
   };
 
   addClick = () => {
-    const { currentPage,pageSize } = this.state;
-    const pluginName = this.state.name;
     this.setState({
       popup: (
         <AddModal
@@ -266,11 +259,7 @@ export default class Plugin extends Component {
                 sort,
                 file
               },
-              fetchValue: {
-                name: pluginName,
-                currentPage,
-                pageSize
-              },
+              fetchValue: this.currentQueryPayload(),
               callback: () => {
                 this.closeModal(true);
                 dispatch({
@@ -306,7 +295,7 @@ export default class Plugin extends Component {
   // 批量启用或禁用
   enableClick = () => {
     const { dispatch } = this.props;
-    const { selectedRowKeys, currentPage, pageSize, name } = this.state;
+    const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "plugin/fetchItem",
@@ -320,11 +309,7 @@ export default class Plugin extends Component {
               list: selectedRowKeys,
               enabled: !user.enabled
             },
-            fetchValue: {
-              name,
-              currentPage,
-              pageSize
-            },
+            fetchValue: this.currentQueryPayload(),
             callback: () => {
               this.setState({ selectedRowKeys: [] });
             }
