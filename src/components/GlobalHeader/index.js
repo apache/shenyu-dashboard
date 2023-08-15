@@ -52,6 +52,16 @@ class GlobalHeader extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      help: (
+        <Menu>
+          <Menu.Item>
+            <span><a href="https://shenyu.apache.org" target="_blank" rel="noreferrer">Website</a></span>
+          </Menu.Item>
+          <Menu.Item>
+            <span><a href="https://github.com/apache/shenyu" target="_blank" rel="noreferrer">Github</a></span>
+          </Menu.Item>
+        </Menu>
+      ),
       menu: (
         <Menu onClick={this.handleLocalesValueChange}>
           <Menu.Item key="0">
@@ -134,13 +144,23 @@ class GlobalHeader extends PureComponent {
       <div className={styles.header}>
         <span className={styles.text}>Apache ShenYu Gateway Management System</span>
         <div>
-          <Dropdown
-            placement="bottomCenter"
-            overlay={this.state.menu}
-          >
-            <Button><TranslationOutlined /></Button>
-          </Dropdown>
-          <div className={styles.right}>
+          <div className={styles.item}>
+            <Dropdown
+              placement="bottomCenter"
+              overlay={this.state.help}
+            >
+              <Button><Icon type="question-circle" /></Button>
+            </Dropdown>
+          </div>
+          <div className={styles.item}>
+            <Dropdown
+              placement="bottomCenter"
+              overlay={this.state.menu}
+            >
+              <Button><TranslationOutlined /></Button>
+            </Dropdown>
+          </div>
+          <div className={`${styles.item} ${styles.right}`}>
             <Dropdown.Button overlay={menu} icon={<Icon type="user" />}>
               <span>
                 {userName}
