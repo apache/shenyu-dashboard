@@ -152,7 +152,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.SYSTEM.ROLE.INPUT.NAME") }],
               initialValue: roleName,
             })(
-              <Input placeholder={getIntlContent("SHENYU.SYSTEM.ROLE.INPUT.NAME")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.SYSTEM.ROLE.INPUT.NAME")} />
             )}
           </FormItem>
           <FormItem

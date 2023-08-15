@@ -39,6 +39,7 @@ class InlineSearch extends React.Component {
             initialValue: null
           })(
             <Input
+              allowClear
               placeholder={getIntlContent("SHENYU.AUTH.INPUTAPPKEY")}
             />,
           )}
@@ -48,6 +49,7 @@ class InlineSearch extends React.Component {
             initialValue: null
           })(
             <Input
+              allowClear
               type="phone"
               placeholder={getIntlContent("SHENYU.AUTH.TELPHONE")}
             />,

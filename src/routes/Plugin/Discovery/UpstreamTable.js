@@ -53,7 +53,7 @@ class EditableCell extends Component {
             },
           ],
           initialValue: record[dataIndex],
-        })(<Input ref={node => { this.input = node }} onPressEnter={this.save} onBlur={this.save} />
+        })(<Input allowClear ref={node => { this.input = node }} onPressEnter={this.save} onBlur={this.save} />
         )}
       </Form.Item>
     ) : (

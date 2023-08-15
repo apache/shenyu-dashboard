@@ -158,6 +158,7 @@ class DiscoveryConfigModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.NAME.INPUT") }],
               initialValue: name
             })(<Input
+              allowClear
               placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.NAME.INPUT")}
             />)}
           </FormItem>
@@ -167,6 +168,7 @@ class DiscoveryConfigModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT") }],
               initialValue: serverList
             })(<Input
+              allowClear
               disabled={isSetConfig}
               placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT")}
             />)}
@@ -186,6 +188,7 @@ class DiscoveryConfigModal extends Component {
                         initialValue: value
                       })(
                         <Input
+                          allowClear
                           disabled={isSetConfig}
                           placeholder={`Enter ${key}`}
                           addonBefore={key}

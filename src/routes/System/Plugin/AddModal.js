@@ -111,6 +111,7 @@ class AddModal extends Component {
               initialValue: name
             })(
               <Input
+                allowClear
                 placeholder={getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME")}
                 disabled={disable}
               />
@@ -169,7 +170,7 @@ class AddModal extends Component {
                           rules,
                           initialValue: fieldInitialValue
                         })(
-                          <Input placeholder={eachField.label} type="number" />
+                          <Input allowClear placeholder={eachField.label} type="number" />
                         )}
                       </FormItem>
                     );
@@ -211,7 +212,7 @@ class AddModal extends Component {
                         {getFieldDecorator(fieldName, {
                           rules,
                           initialValue: fieldInitialValue
-                        })(<Input placeholder={eachField.label} />)}
+                        })(<Input allowClear placeholder={eachField.label} />)}
                       </FormItem>
                     );
                   }
@@ -231,7 +232,7 @@ class AddModal extends Component {
                 }
               ],
               initialValue: role
-            })(<Input maxLength={50} />)}
+            })(<Input allowClear maxLength={50} />)}
           </FormItem>
           <FormItem
             label={getIntlContent("SHENYU.PLUGIN.SORT")}

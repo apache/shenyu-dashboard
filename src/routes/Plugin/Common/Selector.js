@@ -368,7 +368,7 @@ class AddModal extends Component {
                             message: "protocol is required"
                           }
                         ]
-                      })(<Input />)}
+                      })(<Input allowClear />)}
                     </Item>
                   </Col>
                   <Col span={14} style={{marginLeft:"-20px"}}>
@@ -383,7 +383,7 @@ class AddModal extends Component {
                             message: "upstreamUrl is required"
                           }
                         ]
-                      })(<Input />)}
+                      })(<Input allowClear />)}
                     </Item>
                   </Col>
                 </Row>
@@ -491,7 +491,7 @@ class AddModal extends Component {
                     required: true
                   }
                 ]
-              })(<Input placeholder="serviceId" /> )}
+              })(<Input allowClear placeholder="serviceId" /> )}
               </Item>
             </Col>
             <Col span={3}>
@@ -602,6 +602,7 @@ class AddModal extends Component {
                                     initialValue: defaultValue
                                   })(
                                     <Input
+                                      allowClear
                                       addonBefore={
                                         <div style={{ width: labelWidth }}>
                                           {item.label}
@@ -661,6 +662,7 @@ class AddModal extends Component {
                                     initialValue: defaultValue
                                   })(
                                     <Input
+                                      allowClear
                                       addonBefore={
                                         <div style={{ width: labelWidth }}>
                                           {item.label}
@@ -841,6 +843,7 @@ class AddModal extends Component {
     else {
       return (
         <Input
+          allowClear
           onChange={e => {
             this.conditionChange(
               index,
@@ -910,6 +913,7 @@ class AddModal extends Component {
               initialValue: name
             })(
               <Input
+                allowClear
                 placeholder={getIntlContent(
                   "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"
                 )}
@@ -1021,6 +1025,7 @@ class AddModal extends Component {
                           }}
                         >
                           <Input
+                            allowClear
                             onChange={e => {
                               this.conditionChange(
                                 index,
@@ -1139,6 +1144,7 @@ class AddModal extends Component {
               ]
             })(
               <Input
+                allowClear
                 placeholder={getIntlContent("SHENYU.SELECTOR.INPUTORDER")}
               />
             )}

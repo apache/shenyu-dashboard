@@ -485,6 +485,7 @@ export default class PluginHandle extends Component {
             }
           </Select>
           <Input
+            allowClear
             value={field}
             onChange={this.fieldOnchange}
             placeholder={getIntlContent("SHENYU.PLUGIN.FIELDNAME")}

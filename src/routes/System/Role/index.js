@@ -253,6 +253,7 @@ export default class Role extends Component {
       <div className="plug-content-wrap">
         <div style={{ display: "flex" }}>
           <Input
+            allowClear
             value={roleName}
             onChange={this.searchOnchange}
             placeholder={getIntlContent("SHENYU.SYSTEM.ROLE.INPUT.NAME")}

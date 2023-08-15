@@ -111,7 +111,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.SYSTEM.RESOURCENAME.INPUT") }],
               initialValue: (title && getIntlContent(title)) || title,
             })(
-              <Input disabled={!!id} placeholder={getIntlContent("SHENYU.SYSTEM.RESOURCENAME.INPUT")} />
+              <Input allowClear disabled={!!id} placeholder={getIntlContent("SHENYU.SYSTEM.RESOURCENAME.INPUT")} />
             )}
           </FormItem>
           {resourceType !== 2 && menuTree && menuTree.length > 0 && (
@@ -138,7 +138,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.SYSTEM.ROUTER.INPUT") }],
               initialValue: url,
             })(
-              <Input disabled={!!id} placeholder={getIntlContent("SHENYU.SYSTEM.ROUTER.INPUT")} />
+              <Input allowClear disabled={!!id} placeholder={getIntlContent("SHENYU.SYSTEM.ROUTER.INPUT")} />
             )}
           </FormItem>
           )}
@@ -164,7 +164,7 @@ class AddModal extends Component {
               rules: [{ message: getIntlContent("SHENYU.SYSTEM.RESOURCE.PERMS.INPUT") }],
               initialValue: perms
             })(
-              <Input disabled={!!id} placeholder={getIntlContent("SHENYU.SYSTEM.RESOURCE.PERMS.INPUT")} />
+              <Input allowClear disabled={!!id} placeholder={getIntlContent("SHENYU.SYSTEM.RESOURCE.PERMS.INPUT")} />
             )}
           </FormItem>
           )}
@@ -177,6 +177,7 @@ class AddModal extends Component {
               initialValue: icon,
             })(
               <Input
+                allowClear
                 readOnly
                 placeholder={getIntlContent("SHENYU.SYSTEM.ICON.INPUT")}
                 prefix={(this.state.icon||icon)&&<Icon type={this.state.icon||icon} />}

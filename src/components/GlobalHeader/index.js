@@ -207,7 +207,7 @@ class GlobalHeader extends PureComponent {
                     }
                   }
                 ]
-              })(<Input.Password />)}
+              })(<Input.Password allowClear />)}
             </Form.Item>
             <Form.Item
               required
@@ -246,7 +246,7 @@ class GlobalHeader extends PureComponent {
                     }
                   }
                 ]
-              })(<Input.Password />)}
+              })(<Input.Password allowClear />)}
             </Form.Item>
             <Form.Item
               label={getIntlContent("SHENYU.GLOBALHEADER.CONFIRM.PASSWORD")}
@@ -277,7 +277,7 @@ class GlobalHeader extends PureComponent {
                     }
                   }
                 ]
-              })(<Input.Password />)}
+              })(<Input.Password allowClear />)}
             </Form.Item>
           </Form>
         </Modal>

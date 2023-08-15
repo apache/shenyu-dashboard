@@ -331,6 +331,7 @@ export default class Manage extends Component {
       <div className="plug-content-wrap">
         <div style={{ display: "flex" }}>
           <Input
+            allowClear
             value={userName}
             onChange={this.searchOnchange}
             placeholder={getIntlContent("SHENYU.SYSTEM.USER.NAME")}

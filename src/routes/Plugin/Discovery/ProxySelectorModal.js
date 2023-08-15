@@ -236,6 +236,7 @@ class ProxySelectorModal extends Component {
                   rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.SELECTOR.NAME.INPUT")}],
                   initialValue: name
                 })(<Input
+                  allowClear
                   disabled={!isAdd}
                   placeholder={getIntlContent("SHENYU.DISCOVERY.SELECTOR.NAME.INPUT")}
                   addonAfter={
@@ -266,6 +267,7 @@ class ProxySelectorModal extends Component {
                   rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.SELECTOR.FORWARDPORT.INPUT")}],
                   initialValue: forwardPort
                 })(<Input
+                  allowClear
                   disabled={!isAdd}
                   placeholder={getIntlContent("SHENYU.DISCOVERY.SELECTOR.FORWARDPORT.INPUT")}
                 />)}
@@ -341,6 +343,7 @@ class ProxySelectorModal extends Component {
                                           initialValue: defaultValue
                                         })(
                                           <Input
+                                            allowClear
                                             disabled={!isAdd}
                                             addonBefore={
                                               <div style={{ width: labelWidth }}>
@@ -402,6 +405,7 @@ class ProxySelectorModal extends Component {
                                           initialValue: defaultValue
                                         })(
                                           <Input
+                                            allowClear
                                             disabled={!isAdd}
                                             addonBefore={
                                               <div style={{ width: labelWidth }}>
@@ -463,6 +467,7 @@ class ProxySelectorModal extends Component {
                         rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.SELECTOR.LISTENERNODE.INPUT")}],
                         initialValue: listenerNode
                       })(<Input
+                        allowClear
                         disabled={!isAdd}
                         placeholder={getIntlContent("SHENYU.DISCOVERY.SELECTOR.LISTENERNODE.INPUT")}
                       />)}
@@ -521,6 +526,7 @@ class ProxySelectorModal extends Component {
                                           rules
                                         })(
                                           <Input
+                                            allowClear
                                             disabled={!isAdd}
                                             addonAfter={
                                               <div style={{ width: '50px' }}>
@@ -550,6 +556,7 @@ class ProxySelectorModal extends Component {
                               rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT")}],
                               initialValue: discovery.serverList
                             })(<Input
+                              allowClear
                               disabled={!isAdd}
                               placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT")}
                             />)}
@@ -569,6 +576,7 @@ class ProxySelectorModal extends Component {
                                         initialValue: value
                                       })(
                                         <Input
+                                          allowClear
                                           disabled={!isAdd}
                                           placeholder={`Enter ${key}`}
                                           addonBefore={key}

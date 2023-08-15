@@ -133,6 +133,7 @@ class AddAndUpdateApiDoc extends Component {
               initialValue: contextPath
             })(
               <Input
+                allowClear
                 placeholder={getIntlContent(
                   "SHENYU.DOCUMENT.APIDOC.CONTEXTPATH"
                 )}
@@ -153,6 +154,7 @@ class AddAndUpdateApiDoc extends Component {
               initialValue: apiPath
             })(
               <Input
+                allowClear
                 placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.APIPATH")}
               />
             )}
@@ -195,6 +197,7 @@ class AddAndUpdateApiDoc extends Component {
               initialValue: consume
             })(
               <Input
+                allowClear
                 placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.CONSUME")}
               />
             )}
@@ -213,6 +216,7 @@ class AddAndUpdateApiDoc extends Component {
               initialValue: produce
             })(
               <Input
+                allowClear
                 placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.PRODUCE")}
               />
             )}
@@ -231,6 +235,7 @@ class AddAndUpdateApiDoc extends Component {
               initialValue: version
             })(
               <Input
+                allowClear
                 placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.VERSION")}
               />
             )}
@@ -298,6 +303,7 @@ class AddAndUpdateApiDoc extends Component {
               initialValue: ext
             })(
               <Input
+                allowClear
                 size="large"
                 placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.EXT.INFO")}
               />
@@ -317,6 +323,7 @@ class AddAndUpdateApiDoc extends Component {
               initialValue: apiOwner
             })(
               <Input
+                allowClear
                 placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.APIOWNER")}
               />
             )}
@@ -335,6 +342,7 @@ class AddAndUpdateApiDoc extends Component {
               initialValue: apiDesc
             })(
               <Input
+                allowClear
                 placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.APIDESC")}
               />
             )}
@@ -377,14 +385,15 @@ class AddAndUpdateApiDoc extends Component {
               initialValue: document
             })(
               <Input
+                allowClear
                 placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.DOCUMENT")}
               />
             )}
           </Form.Item>
 
-          <Form.Item hidden>{getFieldDecorator("tagIds")(<Input />)}</Form.Item>
+          <Form.Item hidden>{getFieldDecorator("tagIds")(<Input allowClear />)}</Form.Item>
 
-          <Form.Item hidden>{getFieldDecorator("id")(<Input />)}</Form.Item>
+          <Form.Item hidden>{getFieldDecorator("id")(<Input allowClear />)}</Form.Item>
         </Form>
       </Modal>
     );

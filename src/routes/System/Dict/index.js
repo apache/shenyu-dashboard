@@ -445,18 +445,21 @@ export default class ShenYuDict extends Component {
       <div className="plug-content-wrap">
         <div style={{ display: "flex" }}>
           <Input
+            allowClear
             value={type}
             placeholder={getIntlContent("SHENYU.DIC.INPUTTYPE")}
             onChange={this.searchTypeOnchange}
             style={{ width: 240 }}
           />&nbsp;&nbsp;
           <Input
+            allowClear
             value={dictCode}
             placeholder={getIntlContent("SHENYU.DIC.INPUTCODE")}
             onChange={this.searchDictCodeOnchange}
             style={{ width: 240 }}
           />&nbsp;&nbsp;
           <Input
+            allowClear
             value={dictName}
             placeholder={getIntlContent("SHENYU.DIC.INPUTNAME")}
             onChange={this.searchDictNameOnchange}

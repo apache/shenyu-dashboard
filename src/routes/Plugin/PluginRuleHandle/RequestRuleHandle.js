@@ -325,6 +325,7 @@ export default class RequestRuleHandle extends Component {
                                     initialValue: field.fieldValue,
                                   })(
                                     <Input
+                                      allowClear
                                       // addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
                                       placeholder={placeholder}
                                       key={field.fieldName}
@@ -395,6 +396,7 @@ export default class RequestRuleHandle extends Component {
                                     initialValue: field.fieldValue,
                                   })(
                                     <Input
+                                      allowClear
                                       // addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
                                       placeholder={placeholder}
                                       key={field.fieldName}
@@ -465,6 +467,7 @@ export default class RequestRuleHandle extends Component {
                                     initialValue: field.fieldValue,
                                   })(
                                     <Input
+                                      allowClear
                                       // addonBefore={<div style={{width: labelWidth}}>{item.label}</div>}
                                       placeholder={placeholder}
                                       key={field.fieldName}
