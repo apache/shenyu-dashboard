@@ -32,6 +32,7 @@ class AddTable extends Component {
         editable: 'true',
         render: (text, record) => (
           <Input
+            allowClear
             placeholder="/"
             value={text}
             onChange={(e) => this.handleTableInput({ path: e.target.value }, record)}
@@ -237,13 +238,13 @@ class AddTable extends Component {
                 message: `${getIntlContent("SHENYU.AUTH.INPUT")}Phone`
               }],
             })(
-              <Input placeholder="Phone" />
+              <Input allowClear placeholder="Phone" />
             )}
           </FormItem>
           <FormItem label={`App${getIntlContent("SHENYU.AUTH.PARAMS")}`} {...formItemLayout}>
             {getFieldDecorator("appParam", {
             })(
-              <Input placeholder="AppParams" />
+              <Input allowClear placeholder="AppParams" />
             )}
           </FormItem>
           <FormItem label={`${getIntlContent("SHENYU.SYSTEM.USER")}Id`} {...formItemLayout}>
@@ -252,12 +253,12 @@ class AddTable extends Component {
                 required: true,
                 message: `${getIntlContent("SHENYU.AUTH.INPUT")}UserId`
               }],
-            })(<Input placeholder="UserId" />)}
+            })(<Input allowClear placeholder="UserId" />)}
           </FormItem>
           <FormItem label={getIntlContent("SHENYU.AUTH.EXPANDINFO")} {...formItemLayout}>
             {getFieldDecorator("extInfo", {
             })(
-              <Input placeholder="ExpandInfo" />
+              <Input allowClear placeholder="ExpandInfo" />
             )}
           </FormItem>
           <FormItem label={getIntlContent("SHENYU.AUTH.OPENPATH")} {...formItemLayout}>

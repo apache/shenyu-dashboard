@@ -188,6 +188,7 @@ export default class HystrixRuleHandle extends Component {
           >
             <li>
               <Input
+                allowClear
                 addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.TRIPPING.REQUEST.NUMBER")}</div>}
                 value={requestVolumeThreshold}
                 placeholder="requestVolumeThreshold"
@@ -199,6 +200,7 @@ export default class HystrixRuleHandle extends Component {
             </li>
             <li>
               <Input
+                allowClear
                 addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.ERROR.PERCENT")}</div>}
                 value={errorThresholdPercentage}
                 placeholder="errorThresholdPercentage"
@@ -215,6 +217,7 @@ export default class HystrixRuleHandle extends Component {
               this.state.executionIsolationStrategy === 1&&(
               <li>
                 <Input
+                  allowClear
                   addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.MAX.CONCURRENCY")}</div>}
                   value={maxConcurrentRequests}
                   placeholder="maxConcurrentRequests"
@@ -228,6 +231,7 @@ export default class HystrixRuleHandle extends Component {
             }
             <li>
               <Input
+                allowClear
                 addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.TRIPPING.SLEEPTIME")}</div>}
                 value={sleepWindowInMilliseconds}
                 placeholder="sleepWindowInMilliseconds"
@@ -242,6 +246,7 @@ export default class HystrixRuleHandle extends Component {
             </li>
             <li>
               <Input
+                allowClear
                 addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.GROUPKEY")}</div>}
                 value={groupKey}
                 placeholder="GroupKey"
@@ -253,6 +258,7 @@ export default class HystrixRuleHandle extends Component {
             </li>
             <li>
               <Input
+                allowClear
                 addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.FAILEDDEMOTION")}</div>}
                 value={callBackUri}
                 placeholder={getIntlContent("SHENYU.HYSTRIX.FAILEDCALLBACK")}
@@ -264,6 +270,7 @@ export default class HystrixRuleHandle extends Component {
             </li>
             <li>
               <Input
+                allowClear
                 addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.COMMANDKEY")}</div>}
                 value={commandKey}
                 placeholder="CommandKey"
@@ -277,6 +284,7 @@ export default class HystrixRuleHandle extends Component {
                 this.state.executionIsolationStrategy === 0 && (
                 <li>
                   <Input
+                    allowClear
                     addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.CORETHREADSIZE")}</div>}
                     value={hystrixThreadPoolConfig.coreSize}
                     placeholder={getIntlContent("SHENYU.HYSTRIX.CORENUM")}
@@ -293,6 +301,7 @@ export default class HystrixRuleHandle extends Component {
               this.state.executionIsolationStrategy === 0 && (
               <li>
                 <Input
+                  allowClear
                   addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.MAXSIZE")}</div>}
                   value={hystrixThreadPoolConfig.maximumSize}
                   placeholder={getIntlContent("SHENYU.HYSTRIX.MAXTHREADNUM")}
@@ -308,6 +317,7 @@ export default class HystrixRuleHandle extends Component {
               this.state.executionIsolationStrategy === 0&& (
               <li>
                 <Input
+                  allowClear
                   addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.MAXTHREADQUEUE")}</div>}
                   value={hystrixThreadPoolConfig.maxQueueSize}
                   placeholder={getIntlContent("SHENYU.HYSTRIX.MAXTHREAD")}

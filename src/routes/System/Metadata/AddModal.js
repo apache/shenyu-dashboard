@@ -76,7 +76,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.AUTH.APPNAME") }],
               initialValue: appName,
             })(
-              <Input placeholder={getIntlContent("SHENYU.AUTH.APPNAME")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.AUTH.APPNAME")} />
             )}
           </FormItem>
 
@@ -88,7 +88,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.META.FUNC.NAME") }],
               initialValue: methodName,
             })(
-              <Input placeholder={getIntlContent("SHENYU.META.FUNC.NAME")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.META.FUNC.NAME")} />
             )}
           </FormItem>
           <FormItem
@@ -99,7 +99,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.META.PATH") }],
               initialValue: path,
             })(
-              <Input placeholder={getIntlContent("SHENYU.META.PATH")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.META.PATH")} />
             )}
           </FormItem>
           <FormItem
@@ -110,7 +110,7 @@ class AddModal extends Component {
               rules: [{ required: false, message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.AUTH.PATH.DESCRIBE")}],
               initialValue: pathDesc,
             })(
-              <Input placeholder={getIntlContent("SHENYU.AUTH.PATH.DESCRIBE")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.AUTH.PATH.DESCRIBE")} />
             )}
           </FormItem>
           <FormItem
@@ -121,7 +121,7 @@ class AddModal extends Component {
               rules: [{ required: false, message: `${getIntlContent("SHENYU.AUTH.INPUT")}${getIntlContent("SHENYU.AUTH.PARAMS")}${getIntlContent("SHENYU.COMMON.TYPE")}` }],
               initialValue: parameterTypes,
             })(
-              <Input placeholder={`${getIntlContent("SHENYU.AUTH.PARAMS")}${getIntlContent("SHENYU.COMMON.TYPE")}`} />
+              <Input allowClear placeholder={`${getIntlContent("SHENYU.AUTH.PARAMS")}${getIntlContent("SHENYU.COMMON.TYPE")}`} />
             )}
           </FormItem>
           <FormItem
@@ -143,7 +143,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.META.INPUTSERVICEINTERFACE") }],
               initialValue: serviceName,
             })(
-              <Input placeholder={getIntlContent("SHENYU.META.SERVER.INTER")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.META.SERVER.INTER")} />
             )}
           </FormItem>
           {/* select */}

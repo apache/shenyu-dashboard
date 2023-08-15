@@ -93,7 +93,7 @@ class AddAndUpdateTag extends Component {
               ],
               initialValue: name
             })(
-              <Input placeholder={getIntlContent("SHENYU.DOCUMENT.TAG.NAME")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.DOCUMENT.TAG.NAME")} />
             )}
           </Form.Item>
 
@@ -107,15 +107,15 @@ class AddAndUpdateTag extends Component {
               ],
               initialValue: tagDesc
             })(
-              <Input placeholder={getIntlContent("SHENYU.DOCUMENT.TAG.DESC")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.DOCUMENT.TAG.DESC")} />
             )}
           </Form.Item>
 
           <Form.Item hidden>
-            {getFieldDecorator("parentTagId")(<Input />)}
+            {getFieldDecorator("parentTagId")(<Input allowClear />)}
           </Form.Item>
 
-          <Form.Item hidden>{getFieldDecorator("id")(<Input />)}</Form.Item>
+          <Form.Item hidden>{getFieldDecorator("id")(<Input allowClear />)}</Form.Item>
         </Form>
       </Modal>
     );

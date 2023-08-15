@@ -387,6 +387,7 @@ class AddModal extends Component {
     else {
       return (
         <Input
+          allowClear
           onChange={e => {
             this.conditionChange(
               index,
@@ -475,6 +476,7 @@ class AddModal extends Component {
               initialValue: name
             })(
               <Input
+                allowClear
                 placeholder={getIntlContent(
                   "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"
                 )}
@@ -562,6 +564,7 @@ class AddModal extends Component {
                       }}
                     >
                       <Input
+                        allowClear
                         onChange={e => {
                           this.conditionChange(
                             index,
@@ -674,6 +677,7 @@ class AddModal extends Component {
               ]
             })(
               <Input
+                allowClear
                 placeholder={getIntlContent("SHENYU.SELECTOR.INPUTORDER")}
               />
             )}

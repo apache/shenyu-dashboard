@@ -91,7 +91,7 @@ class AddPluginHandle extends Component {
               rules: [{required: true, message: getIntlContent("SHENYU.PLUGIN.FIELD")}],
               initialValue: field,
             })(
-              <Input placeholder={getIntlContent("SHENYU.PLUGIN.FIELD")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.PLUGIN.FIELD")} />
             )}
           </FormItem>
           <FormItem label={getIntlContent("SHENYU.PLUGIN.DESCRIBE")} {...formItemLayout}>
@@ -99,7 +99,7 @@ class AddPluginHandle extends Component {
               rules: [{required: true, message: getIntlContent("SHENYU.PLUGIN.DESCRIBE")}],
               initialValue: label,
             })(
-              <Input placeholder={getIntlContent("SHENYU.PLUGIN.DESCRIBE")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.PLUGIN.DESCRIBE")} />
             )}
           </FormItem>
           <FormItem label={getIntlContent("SHENYU.PLUGIN.DATATYPE")} {...formItemLayout}>
@@ -131,7 +131,7 @@ class AddPluginHandle extends Component {
               rules: [{required: true, message: getIntlContent("SHENYU.PLUGIN.INPUTSORT")}],
               initialValue: sort,
             })(
-              <Input placeholder={getIntlContent("SHENYU.PLUGIN.SORT")} type="number" />
+              <Input allowClear placeholder={getIntlContent("SHENYU.PLUGIN.SORT")} type="number" />
             )}
           </FormItem>
           <FormItem label={getIntlContent("SHENYU.PLUGIN.REQUIRED")} {...formItemLayout}>
@@ -150,7 +150,7 @@ class AddPluginHandle extends Component {
               rules: [{required: false}],
               initialValue: defaultValue,
             })(
-              <Input placeholder={getIntlContent("SHENYU.PLUGIN.DEFAULTVALUE")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.PLUGIN.DEFAULTVALUE")} />
             )}
           </FormItem>
           <FormItem label={getIntlContent("SHENYU.PLUGIN.PLACEHOLDER")} {...formItemLayout}>
@@ -158,7 +158,7 @@ class AddPluginHandle extends Component {
               rules: [{required: false}],
               initialValue: placeholder,
             })(
-              <Input placeholder={getIntlContent("SHENYU.PLUGIN.PLACEHOLDER")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.PLUGIN.PLACEHOLDER")} />
             )}
           </FormItem>
           <FormItem
@@ -176,7 +176,7 @@ class AddPluginHandle extends Component {
               rules: [{required: false}],
               initialValue: rule,
             })(
-              <Input placeholder={getIntlContent("SHENYU.PLUGIN.RULE")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.PLUGIN.RULE")} />
             )}
           </FormItem>
         </Form>

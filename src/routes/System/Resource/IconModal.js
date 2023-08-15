@@ -445,6 +445,7 @@ export default class IconModal extends Component {
         ]}
       >
         <Input.Search
+          allowClear
           placeholder={getIntlContent("SHENYU.SYSTEM.ICON.SEARCH")}
           style={{marginBottom:20}}
           onChange={this.handleSearchTextChange}

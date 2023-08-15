@@ -413,6 +413,7 @@ export default class Metadata extends Component {
       <div className="plug-content-wrap">
         <div style={{ display: "flex" }}>
           <Input
+            allowClear
             value={path}
             onChange={this.searchOnchange}
             placeholder={getIntlContent("SHENYU.META.INPUTPATH")}

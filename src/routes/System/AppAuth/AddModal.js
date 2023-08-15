@@ -40,6 +40,7 @@ class AddModal extends Component {
        editable: 'true',
        render: (text,record,index) => (
          <Input
+           allowClear
            placeholder="/"
            value={text}
            onChange={(e) => this.handleTableInput(e.target.value , index)}
@@ -180,25 +181,25 @@ class AddModal extends Component {
             {getFieldDecorator("appKey", {
               rules: [{ required: true, message: `${getIntlContent("SHENYU.AUTH.INPUT")}AppKey` }],
               initialValue: appKey
-            })(<Input disabled placeholder={`${getIntlContent("SHENYU.AUTH.INPUT")}AppKey`} />)}
+            })(<Input allowClear disabled placeholder={`${getIntlContent("SHENYU.AUTH.INPUT")}AppKey`} />)}
           </FormItem>
           <FormItem label={getIntlContent("SHENYU.AUTH.APPPASSWORD")} {...formItemLayout}>
             {getFieldDecorator("appSecret", {
               rules: [{ required: true, message: `${getIntlContent("SHENYU.AUTH.INPUT")}AppSecret` }],
               initialValue: appSecret
-            })(<Input disabled placeholder={`${getIntlContent("SHENYU.AUTH.INPUT")}AppSecret`} />)}
+            })(<Input allowClear disabled placeholder={`${getIntlContent("SHENYU.AUTH.INPUT")}AppSecret`} />)}
           </FormItem>
           <FormItem label={`${getIntlContent("SHENYU.SYSTEM.USER")}Id`} {...formItemLayout}>
             {getFieldDecorator("userId", {
               rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUTUSERID")}],
               initialValue: userId
-            })(<Input placeholder={getIntlContent("SHENYU.AUTH.INPUTUSERID")} />)}
+            })(<Input allowClear placeholder={getIntlContent("SHENYU.AUTH.INPUTUSERID")} />)}
           </FormItem>
           <FormItem label={getIntlContent("SHENYU.AUTH.TEL")} {...formItemLayout}>
             {getFieldDecorator("phone", {
               rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.TELPHONE")}],
               initialValue: phone
-            })(<Input placeholder={getIntlContent("SHENYU.AUTH.TELPHONE")} />)}
+            })(<Input allowClear placeholder={getIntlContent("SHENYU.AUTH.TELPHONE")} />)}
           </FormItem>
           <FormItem label={getIntlContent("SHENYU.AUTH.EXPANDINFO")} {...formItemLayout}>
             {getFieldDecorator("extInfo", {
@@ -231,6 +232,7 @@ class AddModal extends Component {
                       </li>
                       <li>
                         <Input
+                          allowClear
                           onChange={e => { this.conditionChange(index,"appName",e.target.value)}}
                           value={item.appName}
                           className={styles.appName}

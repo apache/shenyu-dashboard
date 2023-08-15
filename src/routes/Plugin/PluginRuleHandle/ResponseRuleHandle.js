@@ -48,6 +48,7 @@ function ConfigInput(cfProps) {
   const { code, data, onChange } = cfProps;
   return (
     <Input
+      allowClear
       value={data[code]}
       placeholder={`please enter ${code}`}
       addonBefore={code}

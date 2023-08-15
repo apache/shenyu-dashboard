@@ -66,7 +66,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.SYSTEM.USER.NAME") }],
               initialValue: userName,
             })(
-              <Input readOnly={userName === "admin"} placeholder={getIntlContent("SHENYU.SYSTEM.USERNAME")} />
+              <Input allowClear readOnly={userName === "admin"} placeholder={getIntlContent("SHENYU.SYSTEM.USERNAME")} />
             )}
           </FormItem>
           <FormItem
@@ -77,7 +77,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.SYSTEM.USER.PASSWORD") }],
               initialValue: password,
             })(
-              <Input placeholder={getIntlContent("SHENYU.SYSTEM.PASSWORD")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.SYSTEM.PASSWORD")} />
             )}
           </FormItem>
           <FormItem

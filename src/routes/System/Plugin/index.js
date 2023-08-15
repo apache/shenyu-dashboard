@@ -498,6 +498,7 @@ export default class Plugin extends Component {
       <div className="plug-content-wrap">
         <div style={{ display: "flex" }}>
           <Input
+            allowClear
             value={name}
             onChange={this.searchOnchange}
             placeholder={getIntlContent("SHENYU.PLUGIN.INPUTNAME")}

@@ -232,6 +232,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
               })}
             </Select>
             <Input
+              allowClear
               style={{width: '60%'}}
               value={initialValue.url}
               onChange={e => {

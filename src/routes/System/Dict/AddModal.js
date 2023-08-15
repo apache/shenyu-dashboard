@@ -71,7 +71,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.DIC.TYPE") }],
               initialValue: type,
             })(
-              <Input placeholder={getIntlContent("SHENYU.DIC.TYPE")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.DIC.TYPE")} />
             )}
           </FormItem>
 
@@ -83,7 +83,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.DIC.CODE") }],
               initialValue: dictCode,
             })(
-              <Input placeholder={getIntlContent("SHENYU.DIC.CODE")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.DIC.CODE")} />
             )}
           </FormItem>
           <FormItem
@@ -94,7 +94,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.DIC.NAME") }],
               initialValue: dictName,
             })(
-              <Input placeholder={getIntlContent("SHENYU.DIC.NAME")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.DIC.NAME")} />
             )}
           </FormItem>
           <FormItem
@@ -105,7 +105,7 @@ class AddModal extends Component {
               rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUT") + getIntlContent("SHENYU.DIC.VALUE") }],
               initialValue: dictValue,
             })(
-              <Input placeholder={getIntlContent("SHENYU.DIC.VALUE")} />
+              <Input allowClear placeholder={getIntlContent("SHENYU.DIC.VALUE")} />
             )}
           </FormItem>
           <FormItem
@@ -131,7 +131,7 @@ class AddModal extends Component {
               ],
               initialValue: sort,
             })(
-              <Input placeholder={getIntlContent("SHENYU.PLUGIN.SORT")} type="number" />
+              <Input allowClear placeholder={getIntlContent("SHENYU.PLUGIN.SORT")} type="number" />
             )}
           </FormItem>
           {/* status */}

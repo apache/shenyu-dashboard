@@ -156,6 +156,7 @@ export default class GeneralContextRuleHandle extends Component {
                         }
                       )(
                         <Input
+                          allowClear
                           placeholder={titleCase(
                             `Set ${handler} Context Key`
                           )}
@@ -173,6 +174,7 @@ export default class GeneralContextRuleHandle extends Component {
                         }
                       )(
                         <Input
+                          allowClear
                           placeholder={titleCase(
                             `Set ${handler} Context Value`
                           )}
