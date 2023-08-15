@@ -124,7 +124,7 @@ class AddModal extends Component {
     if (ruleConditions) {
       ruleConditions.forEach((item, index) => {
         const { paramType, operator, paramName, paramValue } = item;
-        if (!paramType || !operator || !paramValue) {
+        if (!paramType || !operator || (operator !== "isBlank" && !paramValue)) {
           message.destroy();
           message.error(`Line ${index + 1} condition is incomplete`);
           result = false;
@@ -338,6 +338,11 @@ class AddModal extends Component {
           return operate.key !== "pathPattern" ? operate : ""
         })
       }
+      if (paramType !== "post" && paramType !== "query" && paramType !== "header" && paramType !== "cookie") {
+        operatorsFil = operatorsFil.filter(operate => {
+          return operate.key !== "isBlank" ? operate : ""
+        })
+      }
       if (paramType === "uri" || paramType === "host" || paramType === "ip" || paramType === "cookie" || paramType === "domain") {
         operatorsFil = operatorsFil.filter(operate => {
           return operate.key !== "TimeBefore" && operate.key !== "TimeAfter" ? operate : ""
@@ -396,7 +401,12 @@ class AddModal extends Component {
             );
           }}
           value={item.paramValue}
-          style={{ width: 160 }}
+          style={{
+            width: 160,
+            display: item.operator === "isBlank"
+              ? "none"
+              : "block"
+          }}
         />
       )
     }
