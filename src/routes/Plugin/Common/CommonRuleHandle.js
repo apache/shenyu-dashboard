@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Form, Select, Input, Button, Tooltip, Popconfirm } from "antd";
+import { Form, Select, Input, InputNumber, Button, Tooltip, Popconfirm } from "antd";
 import classnames from "classnames";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
@@ -113,8 +113,8 @@ export default class CommonRuleHandle extends Component {
                                   rules,
                                   initialValue: defaultValue
                                 })(
-                                  <Input
-                                    allowClear
+                                  <InputNumber
+                                    precision={0}
                                     addonBefore={
                                       <div style={{ width: labelWidth }}>
                                         {item.label}
@@ -122,7 +122,6 @@ export default class CommonRuleHandle extends Component {
                                     }
                                     placeholder={placeholder}
                                     key={fieldName}
-                                    type="number"
                                   />
                                 )}
                               </FormItem>

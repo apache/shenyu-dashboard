@@ -16,7 +16,7 @@
  */
 
 import React, {Component} from "react";
-import {Modal, Form, Input, Select, Tooltip, Icon, message} from "antd";
+import {Modal, Form, Input, InputNumber, Select, Tooltip, Icon, message} from "antd";
 import {connect} from "dva";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
@@ -131,7 +131,7 @@ class AddPluginHandle extends Component {
               rules: [{required: true, message: getIntlContent("SHENYU.PLUGIN.INPUTSORT")}],
               initialValue: sort,
             })(
-              <Input allowClear placeholder={getIntlContent("SHENYU.PLUGIN.SORT")} type="number" />
+              <InputNumber precision={0} placeholder={getIntlContent("SHENYU.PLUGIN.SORT")} />
             )}
           </FormItem>
           <FormItem label={getIntlContent("SHENYU.PLUGIN.REQUIRED")} {...formItemLayout}>
