@@ -33,6 +33,7 @@ export default {
   state: {
     resourceList: [],
     menuTree: [],
+    authMenu: [],
     total: 0
   },
 
@@ -113,6 +114,15 @@ export default {
         });
       }
     },
+    *authorizedMenuTree(params, { put }) {
+      const { payload } = params;
+      yield put({
+        type: "saveAuthMenu",
+        payload: {
+          authMenu: payload.authMenu
+        }
+      });
+    },
   },
 
   reducers: {
@@ -127,6 +137,12 @@ export default {
       return {
         ...state,
         menuTree: payload.menuTree
+      };
+    },
+    saveAuthMenu(state, { payload }) {
+      return {
+        ...state,
+        authMenu: payload.authMenu
       };
     }
   }

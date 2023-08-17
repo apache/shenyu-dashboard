@@ -301,6 +301,13 @@ class BasicLayout extends React.PureComponent {
       removeEmptyMenu(menus);
     }
 
+    dispatch({
+      type: "resource/authorizedMenuTree",
+      payload: {
+        authMenu: menus
+      }
+    });
+
     const layout = (
       <Layout>
         <SiderMenu
