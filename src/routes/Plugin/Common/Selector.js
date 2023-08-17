@@ -601,8 +601,8 @@ class AddModal extends Component {
                                     rules,
                                     initialValue: defaultValue
                                   })(
-                                    <Input
-                                      allowClear
+                                    <InputNumber
+                                      precision={0}
                                       addonBefore={
                                         <div style={{ width: labelWidth }}>
                                           {item.label}
@@ -610,7 +610,6 @@ class AddModal extends Component {
                                       }
                                       placeholder={placeholder}
                                       key={fieldName}
-                                      type="number"
                                     />
                                   )}
                                 </Item>

@@ -170,7 +170,7 @@ class AddModal extends Component {
                           rules,
                           initialValue: fieldInitialValue
                         })(
-                          <Input allowClear placeholder={eachField.label} type="number" />
+                          <InputNumber precision={0} placeholder={eachField.label} />
                         )}
                       </FormItem>
                     );

@@ -17,7 +17,7 @@
 
 import React, {Component} from "react";
 import {connect} from "dva";
-import {Button, Col, Divider, Form, Input, Modal, Row, Select, Table, Tabs, Tooltip} from "antd";
+import {Button, Col, Divider, Form, Input, InputNumber, Modal, Row, Select, Table, Tabs, Tooltip} from "antd";
 import classnames from "classnames";
 import {getIntlContent} from "../../../utils/IntlUtils";
 import EditableTable from './UpstreamTable';
@@ -342,8 +342,8 @@ class ProxySelectorModal extends Component {
                                           rules,
                                           initialValue: defaultValue
                                         })(
-                                          <Input
-                                            allowClear
+                                          <InputNumber
+                                            precision={0}
                                             disabled={!isAdd}
                                             addonBefore={
                                               <div style={{ width: labelWidth }}>
@@ -352,7 +352,6 @@ class ProxySelectorModal extends Component {
                                             }
                                             placeholder={placeholder}
                                             key={fieldName}
-                                            type="number"
                                           />
                                         )}
                                       </FormItem>

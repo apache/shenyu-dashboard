@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from 'react';
-import { Modal, Form, Input, Switch } from 'antd';
+import { Modal, Form, Input, InputNumber, Switch } from 'antd';
 
 import { connect } from "dva";
 import { getIntlContent } from '../../../utils/IntlUtils';
@@ -131,7 +131,7 @@ class AddModal extends Component {
               ],
               initialValue: sort,
             })(
-              <Input allowClear placeholder={getIntlContent("SHENYU.PLUGIN.SORT")} type="number" />
+              <InputNumber precision={0} placeholder={getIntlContent("SHENYU.PLUGIN.SORT")} />
             )}
           </FormItem>
           {/* status */}
