@@ -243,7 +243,7 @@ const SearchApi = React.forwardRef((props, ref) => {
   }, []);
 
   return (
-    <div style={{ overflow: "auto" }}>
+    <div>
       {treeData?.length ? (
         <Spin spinning={loading}>
           <Tree
