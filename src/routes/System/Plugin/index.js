@@ -313,7 +313,14 @@ export default class Plugin extends Component {
             },
             fetchValue: this.currentQueryPayload(),
             callback: () => {
-              this.setState({ selectedRowKeys: [] });
+              this.setState({ selectedRowKeys: [] }, () => {
+                dispatch({
+                  type: "global/fetchPlugins",
+                  payload: {
+                    callback: () => {}
+                  }
+                });
+              });
             }
           });
         }
