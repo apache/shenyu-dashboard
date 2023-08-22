@@ -18,6 +18,7 @@
 import {Button, Col, Empty, Form, Icon, Input, message, Row, Select, Tabs, Typography} from "antd";
 import React, {createRef, forwardRef, useContext, useEffect, useImperativeHandle, useState} from "react";
 import ReactJson from "react-json-view";
+import ReactHtmlParser from "react-html-parser";
 import fetch from "dva/fetch";
 import {
   createOrUpdateMockRequest,
@@ -359,12 +360,22 @@ function ApiDebug() {
       },
       body: JSON.stringify(params)
     }).then(async response => {
-      const data = await response.json();
+      const textData = await response.text();
+      let jsonData = null;
+      let type = 'text';
+      try {
+        jsonData = JSON.parse(textData);
+        type = 'json';
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
+      }
       setResponseInfo({
         "sandbox-params": response.headers.get("sandbox-params"),
         "sandbox-beforesign": response.headers.get("sandbox-beforesign"),
         "sandbox-sign": response.headers.get("sandbox-sign"),
-        body: data
+        body: type === 'json' ? jsonData : textData,
+        bodyType: type
       });
     });
   };
@@ -421,9 +432,9 @@ function ApiDebug() {
           tab={getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.RESULTS")}
           key="2"
         >
-          {Object.keys(responseInfo).length ? (
+          {responseInfo.bodyType === 'json' && Object.keys(responseInfo).length ? (
             <ReactJson src={responseInfo.body} name={false} />
-          ) : (
+          ) : responseInfo.body ? ReactHtmlParser(responseInfo.body) : (
             <Empty description={false} />
           )}
         </TabPane>
