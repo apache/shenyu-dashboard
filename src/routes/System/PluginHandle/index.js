@@ -121,7 +121,7 @@ export default class PluginHandle extends Component {
     this.setState({ currentPage: 1}, this.query);
   };
 
-  editClick = (record, copy) => {
+  editClick = record => {
     const { dispatch } = this.props;
     const { currentPage,pageSize } = this.state;
     this.loadPluginDict()
@@ -154,25 +154,21 @@ export default class PluginHandle extends Component {
                     'rule':rule || ""
                   })
                 }
-                let payload = {
-                  field,
-                  label,
-                  id,
-                  pluginId,
-                  dataType,
-                  type,
-                  sort,
-                  defaultValue,
-                  placeholder,
-                  rule,
-                  extObj
-                };
-                if (copy) {
-                  delete payload.id;
-                }
                 dispatch({
-                  type: `pluginHandle/${copy ? 'add' : 'update'}`,
-                  payload,
+                  type: "pluginHandle/update",
+                  payload: {
+                    field,
+                    label,
+                    id,
+                    pluginId,
+                    dataType,
+                    type,
+                    sort,
+                    defaultValue,
+                    placeholder,
+                    rule,
+                    extObj
+                  },
                   fetchValue: {
                     currentPage,
                     pageSize
@@ -429,28 +425,16 @@ export default class PluginHandle extends Component {
         width: 100,
         render: (text, record) => {
           return (
-            <div className="optionParts">
-              <AuthButton perms="system:pluginHandler:edit">
-                <div
-                  className="edit"
-                  onClick={() => {
-                    this.editClick(record);
-                  }}
-                >
-                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                </div>
-              </AuthButton>
-              <AuthButton perms="system:pluginHandler:add">
-                <div
-                  className="edit"
-                  onClick={() => {
-                    this.editClick(record, true);
-                  }}
-                >
-                  {getIntlContent("SHENYU.COMMON.COPY")}
-                </div>
-              </AuthButton>
-            </div>
+            <AuthButton perms="system:pluginHandler:edit">
+              <div
+                className="edit"
+                onClick={() => {
+                  this.editClick(record);
+                }}
+              >
+                {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+              </div>
+            </AuthButton>
           );
         }
       }
