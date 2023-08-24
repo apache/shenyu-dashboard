@@ -57,7 +57,8 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
     pathVariable: apiMock.pathVariable,
     query: apiMock.query,
     header: apiMock.header,
-    body: apiMock.body
+    body: apiMock.body,
+    envId: undefined
   });
   const [activeKey, setActiveKey] = useState("1");
 
@@ -76,7 +77,8 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
         pathVariable: apiMock.pathVariable,
         query: apiMock.query,
         header: apiMock.header,
-        body: apiMock.body
+        body: apiMock.body,
+        envId: undefined
       });
       form.resetFields("requestUrl");
       setRequestJson(JSON.parse(apiMock.body || '{}'));
@@ -183,7 +185,8 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
       pathVariable: null,
       query: null,
       header: null,
-      body: null
+      body: null,
+      envId: null
     });
     setRequestJson({});
     form.resetFields("requestUrl");
@@ -215,19 +218,20 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
           <InputGroup compact>
             <Select
               style={{width: '40%'}}
-              onChange={host => {
-                const url = new URL(host);
-                host = `${url.protocol}//${url.hostname}:${url.port || '80'}`;
-                setInitialValue({...initialValue, host})
-                const requestUrl = `${host}${initialValue.url ?? ""}`
-                form.setFieldsValue({requestUrl})
+              onChange={envId => {
+                const env = Object.values(envProps)[envId];
+                const url = new URL(env.addressUrl);
+                const host = `${url.protocol}//${url.hostname}:${url.port || '80'}`;
+                setInitialValue({...initialValue, host, envId});
+                const requestUrl = `${host}${initialValue.url ?? ""}`;
+                form.setFieldsValue({requestUrl});
               }}
-              value={initialValue.host}
+              defaultValue={initialValue.envId}
             >
               {Object.values(envProps).map((e, i) => {
                 return (
-                  <Select.Option key={`${e.addressUrl} ${i}`} value={e.addressUrl}>
-                    {`${e.envLabel}  ${e.addressUrl}`}
+                  <Select.Option key={i} value={i}>
+                    {`${e.envLabel} - ${e.addressUrl}`}
                   </Select.Option>
                 );
               })}
