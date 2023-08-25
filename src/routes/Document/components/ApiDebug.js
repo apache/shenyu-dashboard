@@ -35,7 +35,20 @@ import {Method} from "./globalData";
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
-const InputGroup = Input.Group
+const InputGroup = Input.Group;
+
+const objectToArray = (obj) => {
+  return Object.keys(obj ?? {}).map((key, index) => ({index, key, value: obj[key]}));
+}
+
+const arrayToObject = (arr) => {
+  return (arr ?? []).reduce((acc, curr) => {
+    if (curr.key) {
+      acc[curr.key] = curr.value;
+    }
+    return acc;
+  }, {});
+}
 
 const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   useImperativeHandle(ref, () => ({
@@ -56,13 +69,13 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
     url: apiMock.url,
     pathVariable: apiMock.pathVariable,
     query: apiMock.query,
-    header: apiMock.header,
+    header: JSON.stringify(objectToArray(apiMock.header)),
     body: apiMock.body
   });
   const [activeKey, setActiveKey] = useState("1");
 
   const getDefaultHeaderByKey = (key) => {
-    return {"Content-Type": key === '1' ? "application/json" : "application/x-www-form-urlencoded"}
+    return objectToArray({"Content-Type": key === '1' ? "application/json" : "application/x-www-form-urlencoded"});
   }
 
   useEffect(
@@ -75,7 +88,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
         url: apiMock.url,
         pathVariable: apiMock.pathVariable,
         query: apiMock.query,
-        header: apiMock.header,
+        header: JSON.stringify(objectToArray(apiMock.header)),
         body: apiMock.body
       });
       form.resetFields("requestUrl");
@@ -192,7 +205,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   const changeParamTab = (key) => {
     setActiveKey(key);
     let header = form.getFieldsValue().headers;
-    let headerJson = {...JSON.parse(header), ...getDefaultHeaderByKey(key)};
+    let headerJson = [...JSON.parse(header), ...getDefaultHeaderByKey(key)];
     setInitialValue({...initialValue, header: JSON.stringify(headerJson)});
   }
 
@@ -350,7 +363,7 @@ function ApiDebug() {
 
   const handleSubmit = async values => {
     const { headers, requestUrl, ...params } = values;
-    params.headers = JSON.parse(headers);
+    params.headers = arrayToObject(JSON.parse(headers));
     params.requestUrl = requestUrl;
     fetch(sandboxProxyGateway(), {
       method: "POST",
