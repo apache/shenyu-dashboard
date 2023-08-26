@@ -101,7 +101,7 @@ export default class ShenYuDict extends Component {
     this.setState({ popup: "" });
   };
 
-  editClick = record => {
+  editClick = (record, copy) => {
     const { dispatch } = this.props;
     const { currentPage,pageSize } = this.state;
     const currentType = this.state.type;
@@ -120,19 +120,22 @@ export default class ShenYuDict extends Component {
               {...user}
               handleOk={values => {
                 const { type, dictCode, id, dictName, dictValue, desc, sort, enabled } = values;
-
+                let payload = {
+                  type,
+                  dictCode,
+                  dictName,
+                  dictValue,
+                  id,
+                  desc,
+                  sort,
+                  enabled
+                };
+                if (copy) {
+                  delete payload.id;
+                }
                 dispatch({
-                  type: "shenyuDict/update",
-                  payload: {
-                    type,
-                    dictCode,
-                    dictName,
-                    dictValue,
-                    id,
-                    desc,
-                    sort,
-                    enabled
-                  },
+                  type: `shenyuDict/${copy ? 'add' : 'update'}`,
+                  payload,
                   fetchValue: {
                     type: currentType,
                     dictCode: currentDictCode,
@@ -407,16 +410,28 @@ export default class ShenYuDict extends Component {
           fixed: "right",
           render: (text, record) => {
             return (
-              <AuthButton perms="system:dict:edit">
-                <div
-                  className="edit"
-                  onClick={() => {
-                    this.editClick(record);
-                  }}
-                >
-                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                </div>
-              </AuthButton>
+              <div className="optionParts">
+                <AuthButton perms="system:dict:edit">
+                  <div
+                    className="edit"
+                    onClick={() => {
+                      this.editClick(record);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                  </div>
+                </AuthButton>
+                <AuthButton perms="system:dict:add">
+                  <div
+                    className="edit"
+                    onClick={() => {
+                      this.editClick(record, true);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.COMMON.COPY")}
+                  </div>
+                </AuthButton>
+              </div>
             );
           }
         }

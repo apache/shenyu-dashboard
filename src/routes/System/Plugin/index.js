@@ -24,7 +24,6 @@ import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { resetAuthMenuCache } from "../../../utils/AuthRoute";
-import styles from "./index.less";
 
 const { Text } = Typography;
 
@@ -452,7 +451,7 @@ export default class Plugin extends Component {
           fixed: "right",
           render: (text, record) => {
             return (
-              <div className={styles.optionParts}>
+              <div className="optionParts">
                 <AuthButton perms="system:plugin:edit">
                   <div
                     className="edit"
