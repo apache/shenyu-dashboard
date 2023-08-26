@@ -120,7 +120,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
 
   useEffect(
     () => {
-      form.setFieldsValue({querys: initialValue.query || "{}"})
+      form.setFieldsValue({querys: initialValue.query || "[]"})
     },
     [initialValue.query]
   );
