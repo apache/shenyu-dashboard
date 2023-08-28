@@ -28,10 +28,10 @@ function ApiInfo(props) {
   const {
     apiData: { envProps = [] },
     apiDetail,
-    apiDetail: { document, requestParameters, responseParameters, requestHeaders }
+    apiDetail: { document, responseParameters, requestHeaders }
   } = useContext(ApiContext);
   const { handleUpdate, handleDelete } = props;
-
+  let requestParameters = apiDetail.requestParameters;
   let documentJSON = {};
   try {
     documentJSON = JSON.parse(document);
@@ -43,6 +43,7 @@ function ApiInfo(props) {
         content: documentJSON.responses[key].content
       });
     });
+    requestParameters = requestParameters??documentJSON.parameters
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
