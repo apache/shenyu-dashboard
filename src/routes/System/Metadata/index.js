@@ -98,7 +98,7 @@ export default class Metadata extends Component {
     this.setState({ popup: "" });
   };
 
-  editClick = record => {
+  editClick = (record, copy) => {
     const { dispatch } = this.props;
     const { currentPage,pageSize } = this.state;
     const name = this.state.appName;
@@ -115,20 +115,24 @@ export default class Metadata extends Component {
               {...user}
               handleOk={values => {
                 const { appName,enabled, methodName,id, parameterTypes,path,pathDesc, rpcExt, rpcType, serviceName } = values;
+                let payload = {
+                  appName,
+                  methodName,
+                  parameterTypes,
+                  enabled,
+                  pathDesc,
+                  id,
+                  path,
+                  rpcExt,
+                  rpcType,
+                  serviceName
+                };
+                if (copy) {
+                  delete payload.id;
+                }
                 dispatch({
-                  type: "metadata/update",
-                  payload: {
-                    appName,
-                    methodName,
-                    parameterTypes,
-                    enabled,
-                    pathDesc,
-                    id,
-                    path,
-                    rpcExt,
-                    rpcType,
-                    serviceName
-                  },
+                  type: `metadata/${copy ? 'add' : 'update'}`,
+                  payload,
                   fetchValue: {
                     appName: name,
                     currentPage,
@@ -375,16 +379,28 @@ export default class Metadata extends Component {
           fixed: "right",
           render: (text, record) => {
             return (
-              <AuthButton perms="system:meta:edit">
-                <div
-                  className="edit"
-                  onClick={() => {
-                    this.editClick(record);
-                  }}
-                >
-                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                </div>
-              </AuthButton>
+              <div className="optionParts">
+                <AuthButton perms="system:meta:edit">
+                  <div
+                    className="edit"
+                    onClick={() => {
+                      this.editClick(record);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                  </div>
+                </AuthButton>
+                <AuthButton perms="system:meta:add">
+                  <div
+                    className="edit"
+                    onClick={() => {
+                      this.editClick(record, true);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.COMMON.COPY")}
+                  </div>
+                </AuthButton>
+              </div>
             );
           }
         }

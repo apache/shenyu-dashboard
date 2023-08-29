@@ -35,7 +35,20 @@ import {Method} from "./globalData";
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
-const InputGroup = Input.Group
+const InputGroup = Input.Group;
+
+const objectToArray = (obj) => {
+  return Object.keys(obj ?? {}).map((key, index) => ({index, key, value: obj[key]}));
+}
+
+const arrayToObject = (arr) => {
+  return (arr ?? []).reduce((acc, curr) => {
+    if (curr.key) {
+      acc[curr.key] = curr.value;
+    }
+    return acc;
+  }, {});
+}
 
 const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   useImperativeHandle(ref, () => ({
@@ -56,13 +69,14 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
     url: apiMock.url,
     pathVariable: apiMock.pathVariable,
     query: apiMock.query,
-    header: apiMock.header,
-    body: apiMock.body
+    header: JSON.stringify(objectToArray(apiMock.header)),
+    body: apiMock.body,
+    envId: undefined
   });
   const [activeKey, setActiveKey] = useState("1");
 
   const getDefaultHeaderByKey = (key) => {
-    return {"Content-Type": key === '1' ? "application/json" : "application/x-www-form-urlencoded"}
+    return objectToArray({"Content-Type": key === '1' ? "application/json" : "application/x-www-form-urlencoded"});
   }
 
   useEffect(
@@ -75,8 +89,9 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
         url: apiMock.url,
         pathVariable: apiMock.pathVariable,
         query: apiMock.query,
-        header: apiMock.header,
-        body: apiMock.body
+        header: JSON.stringify(objectToArray(apiMock.header)),
+        body: apiMock.body,
+        envId: undefined
       });
       form.resetFields("requestUrl");
       setRequestJson(JSON.parse(apiMock.body || '{}'));
@@ -107,7 +122,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
 
   useEffect(
     () => {
-      form.setFieldsValue({querys: initialValue.query || "{}"})
+      form.setFieldsValue({querys: initialValue.query || "[]"})
     },
     [initialValue.query]
   );
@@ -183,7 +198,8 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
       pathVariable: null,
       query: null,
       header: null,
-      body: null
+      body: null,
+      envId: null
     });
     setRequestJson({});
     form.resetFields("requestUrl");
@@ -192,7 +208,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   const changeParamTab = (key) => {
     setActiveKey(key);
     let header = form.getFieldsValue().headers;
-    let headerJson = {...JSON.parse(header), ...getDefaultHeaderByKey(key)};
+    let headerJson = [...JSON.parse(header), ...getDefaultHeaderByKey(key)];
     setInitialValue({...initialValue, header: JSON.stringify(headerJson)});
   }
 
@@ -215,19 +231,20 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
           <InputGroup compact>
             <Select
               style={{width: '40%'}}
-              onChange={host => {
-                const url = new URL(host);
-                host = `${url.protocol}//${url.hostname}:${url.port || '80'}`;
-                setInitialValue({...initialValue, host})
-                const requestUrl = `${host}${initialValue.url ?? ""}`
-                form.setFieldsValue({requestUrl})
+              onChange={envId => {
+                const env = Object.values(envProps)[envId];
+                const url = new URL(env.addressUrl);
+                const host = `${url.protocol}//${url.hostname}:${url.port || '80'}`;
+                setInitialValue({...initialValue, host, envId});
+                const requestUrl = `${host}${initialValue.url ?? ""}`;
+                form.setFieldsValue({requestUrl});
               }}
-              value={initialValue.host}
+              defaultValue={initialValue.envId}
             >
               {Object.values(envProps).map((e, i) => {
                 return (
-                  <Select.Option key={`${e.addressUrl} ${i}`} value={e.addressUrl}>
-                    {`${e.envLabel}  ${e.addressUrl}`}
+                  <Select.Option key={i} value={i}>
+                    {`${e.envLabel} - ${e.addressUrl}`}
                   </Select.Option>
                 );
               })}
@@ -350,7 +367,7 @@ function ApiDebug() {
 
   const handleSubmit = async values => {
     const { headers, requestUrl, ...params } = values;
-    params.headers = JSON.parse(headers);
+    params.headers = arrayToObject(JSON.parse(headers));
     params.requestUrl = requestUrl;
     fetch(sandboxProxyGateway(), {
       method: "POST",

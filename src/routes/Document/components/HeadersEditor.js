@@ -22,45 +22,36 @@ const { Text } = Typography;
 
 function HeadersEditor(props) {
   const {value: propsValue, onChange, buttonText} = props;
-  const jsonObj = JSON.parse(propsValue || '{}');
-  const [value, onChangeValue] =useState(Object.keys(jsonObj).map((key, index) => ({index, key, value: jsonObj[key]})));
+  const jsonObj = JSON.parse(propsValue || '[]');
+  const [value, setValue] = useState(jsonObj);
 
   useEffect(
     () => {
-      onChangeValue(Object.keys(jsonObj).map((key, index) => ({index, key, value: jsonObj[key]})))
+      setValue(jsonObj)
     },
     [propsValue]
   );
 
   const onChangeItem = (e, key, index) => {
-    let newValue = value.map(
+    changeValue(value.map(
       item => (item.index === index ? { ...item, [key]: e } : item)
-    );
-    onChangeValue(newValue);
-    onChange(format(newValue));
+    ));
   };
 
   const onDeleteItem = key => {
-    let newValue = value.filter(item => item.key !== key);
-    onChangeValue(newValue);
-    onChange(format(newValue));
+    changeValue(value.filter(item => item.key !== key));
   };
 
   const onAddItem = () => {
-    let newValue = [
+    changeValue([
       ...value,
       {index: value.length, key: "", value: ""}
-    ];
-    onChangeValue(newValue);
-    onChange(format(newValue));
+    ]);
   };
 
-  const format = (param) => {
-    const newObject = param.reduce((acc, curr) => {
-      acc[curr.key] = curr.value;
-      return acc;
-    }, {});
-    return JSON.stringify(newObject);
+  const changeValue = (newValue) => {
+    setValue(newValue);
+    onChange(JSON.stringify(newValue));
   }
 
   return (
