@@ -124,6 +124,12 @@ export const getRouterData = app => {
         import("../routes/System/Resource")
       )
     },
+    "/system/alert": {
+      // 告警管理
+      component: dynamicWrapper(app, ["alert"], () =>
+        import("../routes/System/Alert")
+      )
+    },
     "/config/metadata": {
       // 元数据管理
       component: dynamicWrapper(app, ["metadata"], () =>
