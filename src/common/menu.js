@@ -46,6 +46,11 @@ export const menuData = [
         name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.RESOURCE"),
         path: "resource",
         locale: "SHENYU.MENU.SYSTEM.MANAGMENT.RESOURCE"
+      },
+      {
+        name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.ALERT"),
+        path: "alert",
+        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.ALERT"
       }
     ]
   },

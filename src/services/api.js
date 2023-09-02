@@ -1000,3 +1000,51 @@ export function deleteDiscovery(params) {
       }
     });
 }
+
+export function getAlertReceivers(params) {
+  return request(`${baseUrl}/alert/receiver?${stringify(params)}`,
+    {
+      method: `GET`
+    });
+}
+
+export function getAlertReceiverDetail(params) {
+  return request(`${baseUrl}/alert/receiver/${params.id}`,
+    {
+      method: `GET`
+    });
+}
+
+export function updateAlertReceiver(params) {
+  return request(`${baseUrl}/alert/receiver`, {
+    method: `PUT`,
+    body: {
+      ...params
+    }
+  });
+}
+
+export function addAlertReceiver(params) {
+  return request(`${baseUrl}/alert/receiver`, {
+    method: `POST`,
+    body: {
+      ...params
+    }
+  });
+}
+
+export function deleteAlertReceivers(params) {
+  return request(`${baseUrl}/alert/receiver/batch`, {
+    method: `DELETE`,
+    body: [...params.list]
+  });
+}
+
+export function fetchAlertReport(params) {
+  return request(`${baseUrl}/alert/report`, {
+    method: `POST`,
+    body: {
+      ...params
+    }
+  });
+}
