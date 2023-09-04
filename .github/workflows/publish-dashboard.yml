@@ -47,6 +47,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
+          path: shenyu
           commit-message: Update Dashboard
           committer: GitHub <noreply@github.com>
           author: github-actions[bot]
