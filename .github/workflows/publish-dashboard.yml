@@ -27,6 +27,8 @@ jobs:
       -
         name: Build Site
         run: npm run build
+      - name: Setup gh cli
+        uses: ksivamuthu/actions-setup-gh-cli@v2
       -
         name: Build Pull Request
         run: |
@@ -43,16 +45,17 @@ jobs:
           git config user.email "hefengen@apache.org"
           git add .
           git commit -m "Update Dashboard"
+          gh pr create --title "[type:admin] Update Dashboard" --body "Update Dashboard" --label "admin" --label "automated pr" --repo apache/shenyu --base master --head shenyu_dashboard
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          path: shenyu
-          commit-message: Update Dashboard
-          committer: GitHub <noreply@github.com>
-          branch: shenyu_dashboard
-          base: master
-          title: '[type:admin] Update Dashboard'
-          labels: |
-            admin
-            automated pr
+#      - name: Create Pull Request
+#        uses: peter-evans/create-pull-request@v5
+#        with:
+#          path: shenyu
+#          commit-message: Update Dashboard
+#          committer: GitHub <noreply@github.com>
+#          branch: shenyu_dashboard
+#          base: master
+#          title: '[type:admin] Update Dashboard'
+#          labels: |
+#            admin
+#            automated pr
