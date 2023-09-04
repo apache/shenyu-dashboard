@@ -37,8 +37,8 @@ jobs:
           user_email: 'github-actions[bot]@users.noreply.github.com'
           publish_branch: dist
           publish_dir: ./dist
-
-      - name: Create Pull Request
+      -
+        name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         run: |
           git clone https://github.com/apache/shenyu.git shenyu
@@ -57,9 +57,6 @@ jobs:
           commit-message: Update Dashboard
           committer: GitHub <noreply@github.com>
           author: github-actions[bot]
-          signoff: false
-          branch: example-patches
-          delete-branch: true
           title: '[type:admin] Update Dashboard'
           labels: |
             admin
