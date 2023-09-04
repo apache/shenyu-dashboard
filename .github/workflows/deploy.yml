@@ -37,21 +37,30 @@ jobs:
           user_email: 'github-actions[bot]@users.noreply.github.com'
           publish_branch: dist
           publish_dir: ./dist
-      -
-        name: Publish To ShenYu
-        run: |
-            git clone https://github.com/apache/shenyu.git shenyu
-            pwd
-            ls -a
-            cd shenyu
-            ls -a
-            pwd
-            git checkout -b shenyu_dashboard
-            rm -rf shenyu-admin/src/main/resources/static/*
-            cp -r ../dist/* shenyu-admin/src/main/resources/static/
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add .
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
+        run: |
+          git clone https://github.com/apache/shenyu.git shenyu
+          pwd
+          ls -a
+          cd shenyu
+          ls -a
+          pwd
+          git checkout -b shenyu_dashboard
+          rm -rf shenyu-admin/src/main/resources/static/*
+          cp -r ../dist/* shenyu-admin/src/main/resources/static/
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+        with:
+          commit-message: Update Dashboard
+          committer: GitHub <noreply@github.com>
+          author: github-actions[bot]
+          signoff: false
+          branch: example-patches
+          delete-branch: true
+          title: '[type:admin] Update Dashboard'
+          labels: |
+            admin
+            automated pr
