@@ -47,7 +47,6 @@ jobs:
             ls -a
             pwd
             git checkout -b shenyu_dashboard
-#            git pull origin master
             rm -rf shenyu-admin/src/main/resources/static/*
             cp -r ./dist/* shenyu-admin/src/main/resources/static/
             git config user.name "github-actions[bot]"
