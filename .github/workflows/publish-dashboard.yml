@@ -52,7 +52,6 @@ jobs:
           commit-message: Update Dashboard
           committer: GitHub <noreply@github.com>
           branch: shenyu_dashboard
-          push-to-fork: apache/shenyu
           base: master
           title: '[type:admin] Update Dashboard'
           labels: |
