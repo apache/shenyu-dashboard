@@ -46,7 +46,7 @@ jobs:
             cd shenyu
             ls -a
             pwd
-            git checkout shenyu_dashboard
+            git checkout -b shenyu_dashboard
 #            git pull origin master
             rm -rf shenyu-admin/src/main/resources/static/*
             cp -r ./dist/* shenyu-admin/src/main/resources/static/
