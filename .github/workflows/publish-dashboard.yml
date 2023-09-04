@@ -50,7 +50,7 @@ jobs:
           path: shenyu
           commit-message: Update Dashboard
           committer: GitHub <noreply@github.com>
-          branch: shenyu_dashboard
+          base: shenyu_dashboard
           title: '[type:admin] Update Dashboard'
           labels: |
             admin
