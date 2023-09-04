@@ -27,11 +27,13 @@ jobs:
       -
         name: Build Site
         run: npm run build
-      -
-        name: Build Pull Request
+
+      - name: Install gh cli
         uses: ksivamuthu/actions-setup-gh-cli@v2
         with:
           version: 2.24.3
+      -
+        name: Build Pull Request
         run: |
           git clone https://github.com/apache/shenyu.git shenyu
           pwd
