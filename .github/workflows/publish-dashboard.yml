@@ -27,8 +27,8 @@ jobs:
       -
         name: Build Site
         run: npm run build
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+      -
+        name: Build Pull Request
         run: |
           git clone https://github.com/apache/shenyu.git shenyu
           pwd
@@ -42,6 +42,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
+          git commit -m "Update Dashboard"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
         with:
           commit-message: Update Dashboard
           committer: GitHub <noreply@github.com>
