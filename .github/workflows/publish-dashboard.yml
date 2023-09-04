@@ -39,8 +39,8 @@ jobs:
           git checkout -b shenyu_dashboard
           rm -rf shenyu-admin/src/main/resources/static/*
           cp -r ../dist/* shenyu-admin/src/main/resources/static/
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "moremind"
+          git config user.email "hefengen@apache.org"
           git add .
           git commit -m "Update Dashboard"
           git push origin shenyu_dashboard
