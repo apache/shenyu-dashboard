@@ -44,8 +44,10 @@ jobs:
             pwd
             ls -a
             cd shenyu
-            git checkout shenyu-dashboard-test
-            git pull origin master
+            ls -a
+            pwd
+            git checkout shenyu_dashboard
+#            git pull origin master
             rm -rf shenyu-admin/src/main/resources/static/*
             cp -r ./dist/* shenyu-admin/src/main/resources/static/
             git config user.name "github-actions[bot]"
