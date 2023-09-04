@@ -46,10 +46,13 @@ jobs:
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
+        run: |
+          cd shenyu
+          pwd
         with:
-          path: shenyu
           commit-message: Update Dashboard
           committer: GitHub <noreply@github.com>
+          branch: shenyu_dashboard
           title: '[type:admin] Update Dashboard'
           labels: |
             admin
