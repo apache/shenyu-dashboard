@@ -30,6 +30,8 @@ jobs:
       -
         name: Build Pull Request
         uses: ksivamuthu/actions-setup-gh-cli@v2
+        with:
+          version: 2.24.3
         run: |
           git clone https://github.com/apache/shenyu.git shenyu
           pwd
