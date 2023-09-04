@@ -29,9 +29,8 @@ jobs:
         run: npm run build
 
       - name: Install gh cli
-        uses: ksivamuthu/actions-setup-gh-cli@v2
-        with:
-          version: 2.24.3
+        run:
+          npm install -g gh
       -
         name: Build Pull Request
         run: |
