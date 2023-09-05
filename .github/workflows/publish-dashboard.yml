@@ -45,7 +45,6 @@ jobs:
           cp -r ../dist/* shenyu-admin/src/main/resources/static/
           git config user.name "moremind"
           git config user.email "hefengen@apache.org"
-          git remote set-url origin shenyu_dashboard
           git push origin shenyu_dashboard -f
           git add .
           git commit -m "Update Dashboard"
