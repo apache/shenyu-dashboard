@@ -6,6 +6,9 @@ on:
     branches:
       - master
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   build_and_publish_job:
     runs-on: ubuntu-latest
