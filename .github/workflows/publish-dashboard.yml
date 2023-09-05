@@ -47,6 +47,5 @@ jobs:
           git commit -m "Update Dashboard"
           cp -r ../mytoken.txt ../shenyu/
           gh config set -h github.com git_protocol ssh
-#          gh auth login --with-token < mytoken.txt
           gh pr create --title "[type:admin] Update Dashboard" --body "Update Dashboard" --label "admin" --repo apache/shenyu --base master --head shenyu_dashboard
 
