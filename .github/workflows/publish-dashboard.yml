@@ -30,7 +30,7 @@ jobs:
       -
         name: Build Pull Request
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: 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
         run: |
           git clone https://github.com/apache/shenyu.git shenyu
           pwd
