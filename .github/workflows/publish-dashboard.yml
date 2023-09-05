@@ -38,7 +38,7 @@ jobs:
       -
         name: Build Pull Request
         run: |
-          git clone https://github.com/apache/shenyu.git shenyu
+          git clone git@github.com:apache/shenyu.git
           cd shenyu
           git checkout -b shenyu_dashboard
           rm -rf shenyu-admin/src/main/resources/static/*
