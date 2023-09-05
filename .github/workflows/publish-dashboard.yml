@@ -47,6 +47,6 @@ jobs:
           git config user.email "hefengen@apache.org"
           git add .
           git commit -m "Update Dashboard"
-          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+          gh auth login --with-token
           gh pr create --title "[type:admin] Update Dashboard" --body "Update Dashboard" --label "admin" --label "automated pr" --repo apache/shenyu --base master --head shenyu_dashboard
 
