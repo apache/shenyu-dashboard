@@ -6,6 +6,11 @@ on:
     branches:
       - master
 
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
 jobs:
   build_and_publish_job:
     runs-on: ubuntu-latest
