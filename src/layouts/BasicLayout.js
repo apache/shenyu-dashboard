@@ -115,7 +115,8 @@ class BasicLayout extends React.PureComponent {
       localeName: window.sessionStorage.getItem("locale")
         ? window.sessionStorage.getItem("locale")
         : "en-US",
-      pluginsLoaded: false
+      pluginsLoaded: false,
+      processedMenus: []
     };
   }
 
@@ -135,6 +136,7 @@ class BasicLayout extends React.PureComponent {
       });
       return;
     }
+    this.processMenus()
     const { dispatch } = this.props;
     dispatch({
       type: "global/fetchPlatform"
@@ -216,19 +218,9 @@ class BasicLayout extends React.PureComponent {
     });
   };
 
-  render() {
-    const {
-      collapsed,
-      routerData,
-      match,
-      location,
-      plugins,
-      menuTree,
-      permissions,
-      dispatch
-    } = this.props;
-    const { localeName, pluginsLoaded } = this.state;
-    const bashRedirect = this.getBaseRedirect();
+  processMenus() {
+    const { plugins, menuTree, permissions, dispatch } = this.props
+    const { pluginsLoaded } = this.state
     let menus = getMenuData();
     if (menuTree.length > 0) {
       menus = menus.slice(0, 1);
@@ -308,13 +300,27 @@ class BasicLayout extends React.PureComponent {
       }
     });
 
+    this.setState({processedMenus: menus})
+  }
+
+  render() {
+    const {
+      collapsed,
+      routerData,
+      match,
+      location,
+      dispatch
+    } = this.props;
+    const { localeName, processedMenus } = this.state;
+    const bashRedirect = this.getBaseRedirect();
+
     const layout = (
       <Layout>
         <SiderMenu
           logo={logo}
           TitleLogo={TitleLogo}
           dispatch={dispatch}
-          menuData={menus}
+          menuData={processedMenus}
           collapsed={collapsed}
           location={location}
           onCollapse={this.handleMenuCollapse}
