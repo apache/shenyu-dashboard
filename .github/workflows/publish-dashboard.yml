@@ -29,8 +29,8 @@ jobs:
         run: npm run build
       -
         name: Build Pull Request
-        env:
-          GH_TOKEN: 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
+#        env:
+#          GH_TOKEN: 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
         run: |
           git clone https://github.com/apache/shenyu.git shenyu
           pwd
@@ -46,6 +46,7 @@ jobs:
           git add .
           git commit -m "Update Dashboard"
           cp -r ../mytoken.txt ../shenyu/
+          gh extension install jongio/gh-setup-git-credential-helper
           gh auth login --with-token < mytoken.txt
           gh pr create --title "[type:admin] Update Dashboard" --body "Update Dashboard" --label "admin" --repo apache/shenyu --base master --head shenyu_dashboard
 
