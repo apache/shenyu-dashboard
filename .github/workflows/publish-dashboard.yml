@@ -29,15 +29,9 @@ jobs:
         run: npm run build
       -
         name: Build Pull Request
-        env:
-          GH_TOKEN: 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
         run: |
           git clone https://github.com/apache/shenyu.git shenyu
-          pwd
-          ls -a
           cd shenyu
-          ls -a
-          pwd
           git checkout -b shenyu_dashboard
           rm -rf shenyu-admin/src/main/resources/static/*
           cp -r ../dist/* shenyu-admin/src/main/resources/static/
@@ -48,4 +42,6 @@ jobs:
           cp -r ../mytoken.txt ../shenyu/
           gh config set -h github.com git_protocol ssh
           gh pr create --title "[type:admin] Update Dashboard" --body "Update Dashboard" --label "admin" --repo apache/shenyu --base master --head shenyu_dashboard
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
