@@ -49,5 +49,5 @@ jobs:
           git commit -m "Update Dashboard"
           echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
           gh config set -h github.com git_protocol https
-          gh pr create --title "[type:admin] Update Dashboard" --body "Update Dashboard" --label "admin" --repo apache/shenyu --base master --head shenyu_dashboard
+          gh pr create --title "[type:admin] Update Dashboard" --body "Update Dashboard" --label "admin" --repo apache/shenyu
 
