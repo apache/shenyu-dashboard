@@ -45,7 +45,7 @@ jobs:
           git config user.email "hefengen@apache.org"
           git add .
           git commit -m "Update Dashboard"
-          cp -r ../mytoken.txt ./shenyu/
+          cp -r ../mytoken.txt ../shenyu/
           gh auth login --with-token < mytoken.txt
           gh pr create --title "[type:admin] Update Dashboard" --body "Update Dashboard" --label "admin" --repo apache/shenyu --base master --head shenyu_dashboard
 
