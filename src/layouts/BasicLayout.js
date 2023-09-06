@@ -216,6 +216,7 @@ class BasicLayout extends React.PureComponent {
       type: "global/changeLanguage",
       payload: value
     });
+    this.processMenus()
   };
 
   processMenus() {
