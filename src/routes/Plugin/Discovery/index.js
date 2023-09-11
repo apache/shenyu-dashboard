@@ -25,6 +25,7 @@ import ProxySelectorModal from "./ProxySelectorModal";
 import {TcpCard} from "./TcpCard";
 import AddModal from "../../System/Plugin/AddModal";
 import AuthButton from "../../../utils/AuthButton";
+import { refreshOnPluginUpdated } from "../../../utils/cache";
 
 const {Search} = Input;
 const {Title} = Typography;
@@ -151,7 +152,8 @@ export default class TCPProxy extends Component {
         pageSize: 50
       },
       callback: () => {
-        this.setState({isPluginEnabled: enabled})
+        this.setState({isPluginEnabled: enabled});
+        refreshOnPluginUpdated({ dispatch });
       }
     });
   }
@@ -280,8 +282,9 @@ export default class TCPProxy extends Component {
                     pageSize: 50
                   },
                   callback: () => {
-                    this.setState({isPluginEnabled: enabled})
+                    this.setState({isPluginEnabled: enabled});
                     this.closeModal();
+                    refreshOnPluginUpdated({ dispatch });
                   }
                 });
               }}

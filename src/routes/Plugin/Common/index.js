@@ -24,6 +24,7 @@ import Rule from "./Rule";
 import { getIntlContent, getCurrentLocale } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import AddModal from "../../System/Plugin/AddModal";
+import { refreshOnPluginUpdated } from "../../../utils/cache";
 
 const { Search } = Input;
 const { Title } = Typography;
@@ -277,6 +278,7 @@ export default class Common extends Component {
         plugin.enabled = enabled;
         this.setState({ isPluginEnabled: enabled })
         this.closeModal();
+        refreshOnPluginUpdated({ dispatch });
       }
     });
   }
@@ -322,6 +324,7 @@ export default class Common extends Component {
                   callback: () => {
                     this.setState({ isPluginEnabled: enabled })
                     this.closeModal();
+                    refreshOnPluginUpdated({ dispatch });
                   }
                 });
               }}

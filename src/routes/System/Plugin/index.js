@@ -23,7 +23,7 @@ import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
-import { resetAuthMenuCache } from "../../../utils/AuthRoute";
+import { refreshOnPluginUpdated } from "../../../utils/cache";
 
 const { Text } = Typography;
 
@@ -101,20 +101,6 @@ export default class Plugin extends Component {
     });
   }
 
-  getAllPlugins = page => {
-    const { dispatch } = this.props;
-    const { name, enabled, pageSize } = this.state;
-    dispatch({
-      type: "plugin/fetch",
-      payload: {
-        name,
-        enabled,
-        currentPage: page,
-        pageSize
-      }
-    });
-  };
-
   pageOnchange = page => {
     this.setState({ currentPage: page }, this.query);
   };
@@ -169,6 +155,7 @@ export default class Plugin extends Component {
                       callback: () => {
                         this.setState({ selectedRowKeys: [] });
                         this.closeModal(true);
+                        refreshOnPluginUpdated({ dispatch });
                       }
                     });
                   }}
@@ -227,13 +214,7 @@ export default class Plugin extends Component {
         }),
         callback: () => {
           this.setState({ selectedRowKeys: [] });
-          dispatch({
-            type: "global/fetchPlugins",
-            payload: {
-              callback: () => {}
-            }
-          });
-          this.fetchPermissions();
+          refreshOnPluginUpdated({ dispatch });
         }
       });
     } else {
@@ -263,13 +244,7 @@ export default class Plugin extends Component {
               fetchValue: this.currentQueryPayload(),
               callback: () => {
                 this.closeModal(true);
-                dispatch({
-                  type: "global/fetchPlugins",
-                  payload: {
-                    callback: () => {}
-                  }
-                });
-                this.fetchPermissions();
+                refreshOnPluginUpdated({ dispatch });
               }
             });
           }}
@@ -278,18 +253,6 @@ export default class Plugin extends Component {
           }}
         />
       )
-    });
-  };
-
-  fetchPermissions = () => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "global/refreshPermission",
-      payload: {
-        callback: () => {
-          resetAuthMenuCache();
-        }
-      }
     });
   };
 
@@ -312,14 +275,8 @@ export default class Plugin extends Component {
             },
             fetchValue: this.currentQueryPayload(),
             callback: () => {
-              this.setState({ selectedRowKeys: [] }, () => {
-                dispatch({
-                  type: "global/fetchPlugins",
-                  payload: {
-                    callback: () => {}
-                  }
-                });
-              });
+              this.setState({ selectedRowKeys: [] });
+              refreshOnPluginUpdated({ dispatch });
             }
           });
         }
@@ -335,15 +292,6 @@ export default class Plugin extends Component {
     const { dispatch } = this.props;
     dispatch({
       type: "plugin/asyncAll"
-    });
-  };
-
-  operateChange = (checked, record) => {
-    const { dispatch } = this.props;
-    const { id } = record;
-    dispatch({
-      type: "plugin/changeStatus",
-      payload: { id, enabled: checked }
     });
   };
 
