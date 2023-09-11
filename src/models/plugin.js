@@ -104,7 +104,9 @@ export default {
       if (json.code === 200) {
         message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
-        yield put({ type: "reload", fetchValue });
+        if (fetchValue) {
+          yield put({ type: "reload", fetchValue });
+        }
       } else {
         message.warn(json.message);
       }
@@ -115,7 +117,9 @@ export default {
       if(json.code===200){
         message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
-        yield put({type: "reload", fetchValue});
+        if (fetchValue) {
+          yield put({ type: "reload", fetchValue });
+        }
       } else {
         message.warn(json.message)
       }

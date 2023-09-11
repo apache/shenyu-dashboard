@@ -23,7 +23,7 @@ import Selector from "./Selector";
 import Rule from "./Rule";
 import { getIntlContent, getCurrentLocale } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
-import AddModal from "../../System/Plugin/AddModal";
+import { getUpdateModal, updatePluginsEnabled } from "../../../utils/plugin";
 
 const { Search } = Input;
 const { Title } = Typography;
@@ -254,25 +254,12 @@ export default class Common extends Component {
   togglePluginStatus = () => {
     const { dispatch, plugins } = this.props;
     const pluginName = this.props.match.params ? this.props.match.params.id : "";
-    const plugin = this.getPlugin(plugins, pluginName)
-    const { name, id, role, config, sort, file} = plugin;
-    const enabled = !this.state.isPluginEnabled
-    const enabledStr = enabled ? '1' : '0';
-    dispatch({
-      type: "plugin/update",
-      payload: {
-        config,
-        role,
-        name,
-        enabled,
-        id,
-        sort,
-        file
-      },
-      fetchValue: {
-        name: pluginName,
-        enabled: enabledStr
-      },
+    const plugin = this.getPlugin(plugins, pluginName);
+    const enabled = !this.state.isPluginEnabled;
+    updatePluginsEnabled({
+      list: [ plugin.id ],
+      enabled,
+      dispatch,
       callback: () => {
         plugin.enabled = enabled;
         this.setState({ isPluginEnabled: enabled })
@@ -285,53 +272,19 @@ export default class Common extends Component {
     const { dispatch, plugins } = this.props;
     const pluginName = this.props.match.params ? this.props.match.params.id : "";
     const plugin= this.getPlugin(plugins, pluginName);
-    plugin.enabled = this.state.isPluginEnabled;
-    dispatch({
-      type: "plugin/fetchByPluginId",
-      payload: {
-        pluginId: plugin.id,
-        type: "3"
+    getUpdateModal({
+      pluginId: plugin.id,
+      dispatch,
+      callback: (popup) => {
+        this.setState({ popup });
       },
-      callback: pluginConfigList => {
-        this.setState({
-          popup: (
-            <AddModal
-              disabled={true}
-              {...plugin}
-              {...pluginConfigList}
-              handleOk={values => {
-              const { name, enabled, id, role, config, sort, file } = values;
-              const enabledStr = enabled ? '1' : '0';
-                dispatch({
-                  type: "plugin/update",
-                  payload: {
-                    config,
-                    role,
-                    name,
-                    enabled,
-                    id,
-                    sort,
-                    file
-                  },
-                  fetchValue: {
-                    name: pluginName,
-                    enabled: enabledStr,
-                    currentPage: 1,
-                    pageSize: 50
-                  },
-                  callback: () => {
-                    this.setState({ isPluginEnabled: enabled })
-                    this.closeModal();
-                  }
-                });
-              }}
-              handleCancel={() => {
-                this.closeModal();
-              }}
-            />
-          )
-        });
-      }
+      updatedCallback: ({ enabled }) => {
+        this.setState({ isPluginEnabled: enabled });
+        this.closeModal();
+      },
+      canceledCallback: () => {
+        this.closeModal();
+      },
     });
   };
 
