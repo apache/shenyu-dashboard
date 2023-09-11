@@ -276,7 +276,7 @@ export default class Plugin extends Component {
           width: 120,
           render: (text, record) => {
             return record.url
-              ? <Link to={record.url}><div style={{color: "#1890ff", "fontWeight": "bold", "text-decoration-line": "underline"}}>{text || "----"}</div></Link>
+              ? <Link to={record.url}><div style={{color: "#1890ff", "fontWeight": "bold", "textDecorationLine": "underline"}}>{text || "----"}</div></Link>
               : <div style={{color: "#260033", "fontWeight": "bold"}}>{text || "----"}</div>;
           }
         },
