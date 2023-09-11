@@ -23,9 +23,8 @@ import tcpStyles from './tcp.less'
 import DiscoveryConfigModal from "./DiscoveryConfigModal";
 import ProxySelectorModal from "./ProxySelectorModal";
 import {TcpCard} from "./TcpCard";
-import AddModal from "../../System/Plugin/AddModal";
 import AuthButton from "../../../utils/AuthButton";
-import { refreshOnPluginUpdated } from "../../../utils/cache";
+import { getUpdateModal, updatePluginsEnabled } from "../../../utils/plugin";
 
 const {Search} = Input;
 const {Title} = Typography;
@@ -131,29 +130,16 @@ export default class TCPProxy extends Component {
   togglePluginStatus = () => {
     const {dispatch, plugins} = this.props;
     const {pluginName} = this.state
-    const {name, id, role, config, sort, file} = this.getPlugin(plugins, pluginName);
-    const enabled = !this.state.isPluginEnabled
-    const enabledStr = enabled ? '1' : '0';
-    dispatch({
-      type: "plugin/update",
-      payload: {
-        config,
-        role,
-        name,
-        enabled,
-        id,
-        sort,
-        file
-      },
-      fetchValue: {
-        name: pluginName,
-        enabled: enabledStr,
-        currentPage: 1,
-        pageSize: 50
-      },
+    const plugin = this.getPlugin(plugins, pluginName);
+    const enabled = !this.state.isPluginEnabled;
+    updatePluginsEnabled({
+      list: [ plugin.id ],
+      enabled,
+      dispatch,
       callback: () => {
-        this.setState({isPluginEnabled: enabled});
-        refreshOnPluginUpdated({ dispatch });
+        plugin.enabled = enabled;
+        this.setState({ isPluginEnabled: enabled })
+        this.closeModal();
       }
     });
   }
@@ -246,55 +232,19 @@ export default class TCPProxy extends Component {
     const {dispatch, plugins} = this.props;
     const {pluginName} = this.props;
     const plugin = this.getPlugin(plugins, pluginName);
-    plugin.enabled = this.state.isPluginEnabled;
-    dispatch({
-      type: "plugin/fetchByPluginId",
-      payload: {
-        pluginId: plugin.id,
-        type: "3"
+    getUpdateModal({
+      pluginId: plugin.id,
+      dispatch,
+      callback: (popup) => {
+        this.setState({ popup });
       },
-
-      callback: pluginConfigList => {
-        this.setState({
-          popup: (
-            <AddModal
-              disabled={true}
-              {...plugin}
-              {...pluginConfigList}
-              handleOk={values => {
-                const {name, enabled, id, role, config, sort, file} = values;
-                const enabledStr = enabled ? '1' : '0';
-                dispatch({
-                  type: "plugin/update",
-                  payload: {
-                    config,
-                    role,
-                    name,
-                    enabled,
-                    id,
-                    sort,
-                    file
-                  },
-                  fetchValue: {
-                    name: pluginName,
-                    enabled: enabledStr,
-                    currentPage: 1,
-                    pageSize: 50
-                  },
-                  callback: () => {
-                    this.setState({isPluginEnabled: enabled});
-                    this.closeModal();
-                    refreshOnPluginUpdated({ dispatch });
-                  }
-                });
-              }}
-              handleCancel={() => {
-                this.closeModal();
-              }}
-            />
-          )
-        });
-      }
+      updatedCallback: ({ enabled }) => {
+        this.setState({ isPluginEnabled: enabled });
+        this.closeModal();
+      },
+      canceledCallback: () => {
+        this.closeModal();
+      },
     });
   };
 

@@ -23,7 +23,7 @@ import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
-import { refreshOnPluginUpdated } from "../../../utils/cache";
+import { getUpdateModal, updatePluginsEnabled, refreshGlobalCacheOnUpdated } from "../../../utils/plugin";
 
 const { Text } = Typography;
 
@@ -119,55 +119,20 @@ export default class Plugin extends Component {
 
   editClick = record => {
     const { dispatch } = this.props;
-    dispatch({
-      type: "plugin/fetchItem",
-      payload: {
-        id: record.id
+    getUpdateModal({
+      pluginId: record.id,
+      dispatch,
+      fetchValue: this.currentQueryPayload(),
+      callback: (popup) => {
+        this.setState({ popup });
       },
-      callback: plugin => {
-        dispatch({
-          type: "plugin/fetchByPluginId",
-          payload: {
-            pluginId: record.id,
-            type: "3"
-          },
-          callback: pluginConfigList => {
-            this.setState({
-              popup: (
-                <AddModal
-                  disabled={true}
-                  {...plugin}
-                  {...pluginConfigList}
-                  handleOk={values => {
-                    const { name, enabled, id, role, config, sort, file } = values;
-                    dispatch({
-                      type: "plugin/update",
-                      payload: {
-                        config,
-                        role,
-                        name,
-                        enabled,
-                        id,
-                        sort,
-                        file
-                      },
-                      fetchValue: this.currentQueryPayload(),
-                      callback: () => {
-                        this.setState({ selectedRowKeys: [] });
-                        this.closeModal(true);
-                        refreshOnPluginUpdated({ dispatch });
-                      }
-                    });
-                  }}
-                  handleCancel={() => {
-                    this.closeModal();
-                  }}
-                />
-              )
-            });
-          }
-        });
-      }
+      updatedCallback: () => {
+        this.setState({ selectedRowKeys: [] });
+        this.closeModal(true);
+      },
+      canceledCallback: () => {
+        this.closeModal();
+      },
     });
   };
 
@@ -214,7 +179,7 @@ export default class Plugin extends Component {
         }),
         callback: () => {
           this.setState({ selectedRowKeys: [] });
-          refreshOnPluginUpdated({ dispatch });
+          refreshGlobalCacheOnUpdated({ dispatch });
         }
       });
     } else {
@@ -244,7 +209,7 @@ export default class Plugin extends Component {
               fetchValue: this.currentQueryPayload(),
               callback: () => {
                 this.closeModal(true);
-                refreshOnPluginUpdated({ dispatch });
+                refreshGlobalCacheOnUpdated({ dispatch });
               }
             });
           }}
@@ -267,16 +232,13 @@ export default class Plugin extends Component {
           id: selectedRowKeys[0]
         },
         callback: user => {
-          dispatch({
-            type: "plugin/updateEn",
-            payload: {
-              list: selectedRowKeys,
-              enabled: !user.enabled
-            },
+          updatePluginsEnabled({
+            list: selectedRowKeys,
+            enabled: !user.enabled,
+            dispatch,
             fetchValue: this.currentQueryPayload(),
             callback: () => {
               this.setState({ selectedRowKeys: [] });
-              refreshOnPluginUpdated({ dispatch });
             }
           });
         }
