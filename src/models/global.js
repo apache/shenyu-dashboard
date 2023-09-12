@@ -43,7 +43,7 @@ export default {
       }
     },
     *fetchPlugins({ payload }, { call, put }) {
-      const { callback } = payload;
+      const { callback } = payload ?? {};
       const params = {
         currentPage: 1,
         pageSize: 50
@@ -52,7 +52,9 @@ export default {
       if (json.code === 200) {
         let { dataList } = json.data;
 
-        callback(dataList)
+        if (callback) {
+          callback(dataList);
+        }
         yield put({
           type: "savePlugins",
           payload: {
@@ -97,7 +99,7 @@ export default {
       callback(permissions);
     },
     *refreshPermission({ payload }, { call, put }) {
-      const { callback } = payload;
+      const { callback } = payload ?? {};
       let permissions = { menu: [], button: [] };
       const token = window.sessionStorage.getItem("token");
       if(token){
@@ -113,7 +115,9 @@ export default {
         type: "savePermissions",
         payload: { permissions }
       });
-      callback(permissions);
+      if (callback) {
+        callback(permissions);
+      }
     },
 
     *resetPermission(_, { put }) {
