@@ -21,6 +21,8 @@ import { Redirect } from "react-router-dom";
 import { Route } from "dva/router";
 import { Spin } from "antd";
 import { filterTree } from "./utils";
+import { getIntlContent } from "./IntlUtils";
+import { getMenuData } from "../common/menu";
 
 // not check route url
 const notCheckRouteUrl = ["/", "/home"];
@@ -85,12 +87,13 @@ export function checkMenuAuth(routeUrl, permissions) {
  *  if authMenusCache is not empty,return from cache,
  *  else return from building
  *
- * @param {Array} menus
+ * @param {Array} plugins
+ * @param {Array} menuTree
  * @param {Array} permissions
  * @param {Boolean} beginCache
  */
-export function getAuthMenus(menus, permissions, beginCache) {
-  let authMenus = [];
+export function getAuthMenus(plugins, menuTree, permissions, beginCache) {
+
   if (beginCache && authMenusCache && Object.keys(authMenusCache).length > 0) {
     let locale = window.sessionStorage.getItem("locale");
     let authCacheMenus = authMenusCache[locale];
@@ -98,6 +101,60 @@ export function getAuthMenus(menus, permissions, beginCache) {
       return authCacheMenus;
     }
   }
+
+  let menus = getMenuData();
+  if (menuTree.length > 0) {
+    menus = menus.slice(0, 1);
+    menuTree.forEach(item => {
+      if (item.name !== 'plug') {
+        let title = getIntlContent(item.meta.title);
+        menus.push({
+          name : title === '' ? item.meta.title : title,
+          icon : item.meta.icon,
+          path : item.url,
+          locale : item.meta.title,
+          children: item.children.map(child => {
+            let childTitle = getIntlContent(child.meta.title);
+            return {
+              name : childTitle === '' ? child.meta.title : childTitle,
+              icon : child.meta.icon,
+              path : child.url,
+              locale : child.meta.title,
+            };
+          })
+        });
+      }
+    });
+  }
+
+  const menuMap = {};
+  plugins.forEach(item => {
+    if (menuMap[item.role] === undefined) {
+      menuMap[item.role] = [];
+    }
+    menuMap[item.role].push(item);
+  });
+  Object.keys(menuMap).forEach((key) => {
+    menus[0].children.push({
+      name: key,
+      path: `/plug/${menuMap[key][0].role}`,
+      authority: undefined,
+      icon: "unordered-list",
+      children: menuMap[key].map(item => {
+        const { name } = item;
+        return {
+          name: name.replace(name[0], name[0].toUpperCase()),
+          path: `/plug/${item.role}/${item.name}`,
+          authority: undefined,
+          id: item.id,
+          locale: `SHENYU.MENU.PLUGIN.${item.name.toUpperCase()}`,
+          exact: true
+        };
+      })
+    });
+  });
+
+  let authMenus = [];
   if (menus && menus.length > 0) {
     setMenuIconAndSort(menus, permissions);
     authMenus = JSON.parse(JSON.stringify(menus));
@@ -120,11 +177,53 @@ export function getAuthMenus(menus, permissions, beginCache) {
     });
     authMenus = authMenus.filter(e => !e.deleted);
   }
+
+  // Filter empty menu
+  function removeEmptyMenu(menuArr) {
+    return menuArr.filter(menu => {
+      if (Array.isArray(menu.children)) {
+        if (menu.children.length === 0) {
+          return false;
+        } else {
+          menu.children = removeEmptyMenu(menu.children);
+        }
+      }
+      return true;
+    });
+  }
+
+  if (Array.isArray(authMenus) && authMenus.length) {
+    removeEmptyMenu(authMenus);
+  }
+
   if (beginCache) {
     let locale = window.sessionStorage.getItem("locale");
     authMenusCache[locale] = authMenus;
   }
+
   return authMenus;
+
+}
+
+export function refreshAuthMenus({ dispatch }) {
+  dispatch({
+    type: "global/refreshPermission",
+    payload: {
+      callback: () => {
+        dispatch({
+          type: "global/fetchPlugins",
+          payload: {
+            callback: () => {
+              resetAuthMenuCache();
+              dispatch({
+                type: "resource/fetchMenuTree"
+              });
+            }
+          }
+        });
+      }
+    }
+  });
 }
 
 const setMenuIconAndSort = (menus, permissions) => {

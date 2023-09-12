@@ -16,26 +16,8 @@
  */
 
 import React from 'react';
-import { resetAuthMenuCache } from "./AuthRoute";
+import { refreshAuthMenus } from "./AuthRoute";
 import AddModal from "../routes/System/Plugin/AddModal";
-
-export function refreshGlobalCacheOnUpdated({ dispatch }) {
-  dispatch({
-    type: "global/fetchPlugins",
-    payload: {
-      callback: () => {}
-    }
-  });
-
-  dispatch({
-    type: "global/refreshPermission",
-    payload: {
-      callback: () => {
-        resetAuthMenuCache();
-      }
-    }
-  });
-}
 
 export function getUpdateModal({ pluginId, dispatch, fetchValue, callback, updatedCallback, canceledCallback }) {
   dispatch({
@@ -74,7 +56,7 @@ export function getUpdateModal({ pluginId, dispatch, fetchValue, callback, updat
                       if (updatedCallback) {
                         updatedCallback(values);
                       }
-                      refreshGlobalCacheOnUpdated({ dispatch });
+                      refreshAuthMenus({ dispatch });
                     }
                   });
                 }}
@@ -99,7 +81,7 @@ export function updatePluginsEnabled({ list, enabled, dispatch, fetchValue, call
       if (callback) {
         callback();
       }
-      refreshGlobalCacheOnUpdated({ dispatch });
+      refreshAuthMenus({ dispatch });
     }
   });
 }

@@ -32,7 +32,6 @@ import AuthRoute, {checkMenuAuth, getAuthMenus} from "../utils/AuthRoute";
 import {getMenuData} from "../common/menu";
 import logo from "../assets/logo.svg";
 import TitleLogo from "../assets/TitleLogo.svg";
-import {getIntlContent} from "../utils/IntlUtils";
 
 const MyContext = React.createContext();
 
@@ -116,7 +115,6 @@ class BasicLayout extends React.PureComponent {
         ? window.sessionStorage.getItem("locale")
         : "en-US",
       pluginsLoaded: false,
-      processedMenus: []
     };
   }
 
@@ -136,7 +134,6 @@ class BasicLayout extends React.PureComponent {
       });
       return;
     }
-    this.processMenus()
     const { dispatch } = this.props;
     dispatch({
       type: "global/fetchPlatform"
@@ -152,6 +149,16 @@ class BasicLayout extends React.PureComponent {
             pluginsLoaded: true
           });
         }
+      }
+    });
+  }
+
+  componentDidUpdate() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "resource/authorizedMenuTree",
+      payload: {
+        authMenu: this.processMenus()
       }
     });
   }
@@ -216,92 +223,13 @@ class BasicLayout extends React.PureComponent {
       type: "global/changeLanguage",
       payload: value
     });
-    this.processMenus()
   };
 
   processMenus() {
-    const { plugins, menuTree, permissions, dispatch } = this.props
-    const { pluginsLoaded } = this.state
-    let menus = getMenuData();
-    if (menuTree.length > 0) {
-      menus = menus.slice(0, 1);
-      menuTree.forEach(item => {
-        if (item.name !== 'plug') {
-          let title = getIntlContent(item.meta.title);
-          menus.push({
-            name : title === '' ? item.meta.title : title,
-            icon : item.meta.icon,
-            path : item.url,
-            locale : item.meta.title,
-            children: item.children.map(child => {
-              let childTitle = getIntlContent(child.meta.title);
-              return {
-                name : childTitle === '' ? child.meta.title : childTitle,
-                icon : child.meta.icon,
-                path : child.url,
-                locale : child.meta.title,
-              };
-            })
-          });
-        }
-      });
-    }
+    const { plugins, menuTree, permissions } = this.props;
+    const { pluginsLoaded } = this.state;
 
-    const menuMap = {};
-    plugins.forEach(item => {
-      if (menuMap[item.role] === undefined) {
-        menuMap[item.role] = [];
-      }
-      menuMap[item.role].push(item);
-    });
-    Object.keys(menuMap).forEach((key) => {
-      menus[0].children.push({
-        name: key,
-        path: `/plug/${menuMap[key][0].role}`,
-        authority: undefined,
-        icon: "unordered-list",
-        children: menuMap[key].map(item => {
-          const { name } = item;
-          return {
-            name: name.replace(name[0], name[0].toUpperCase()),
-            path: `/plug/${item.role}/${item.name}`,
-            authority: undefined,
-            id: item.id,
-            locale: `SHENYU.MENU.PLUGIN.${item.name.toUpperCase()}`,
-            exact: true
-          };
-        })
-      });
-    });
-
-    menus = getAuthMenus(menus, permissions, pluginsLoaded);
-
-    // Filter empty menu
-    function removeEmptyMenu(menuArr) {
-      return menuArr.filter(menu => {
-        if (Array.isArray(menu.children)) {
-          if (menu.children.length === 0) {
-            return false;
-          } else {
-            menu.children = removeEmptyMenu(menu.children);
-          }
-        }
-        return true;
-      });
-    }
-
-    if (Array.isArray(menus) && menus.length) {
-      removeEmptyMenu(menus);
-    }
-
-    dispatch({
-      type: "resource/authorizedMenuTree",
-      payload: {
-        authMenu: menus
-      }
-    });
-
-    this.setState({processedMenus: menus})
+    return getAuthMenus(plugins, menuTree, permissions, pluginsLoaded);
   }
 
   render() {
@@ -312,7 +240,8 @@ class BasicLayout extends React.PureComponent {
       location,
       dispatch
     } = this.props;
-    const { localeName, processedMenus } = this.state;
+    const { localeName } = this.state;
+    const processedMenus = this.processMenus();
     const bashRedirect = this.getBaseRedirect();
 
     const layout = (

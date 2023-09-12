@@ -23,7 +23,8 @@ import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
-import { getUpdateModal, updatePluginsEnabled, refreshGlobalCacheOnUpdated } from "../../../utils/plugin";
+import { refreshAuthMenus } from "../../../utils/AuthRoute";
+import { getUpdateModal, updatePluginsEnabled } from "../../../utils/plugin";
 
 const { Text } = Typography;
 
@@ -179,7 +180,7 @@ export default class Plugin extends Component {
         }),
         callback: () => {
           this.setState({ selectedRowKeys: [] });
-          refreshGlobalCacheOnUpdated({ dispatch });
+          refreshAuthMenus({ dispatch });
         }
       });
     } else {
@@ -209,7 +210,7 @@ export default class Plugin extends Component {
               fetchValue: this.currentQueryPayload(),
               callback: () => {
                 this.closeModal(true);
-                refreshGlobalCacheOnUpdated({ dispatch });
+                refreshAuthMenus({ dispatch });
               }
             });
           }}

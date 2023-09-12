@@ -67,10 +67,7 @@ export default class DataPermModal extends Component {
       type: "resource/fetchMenuTree"
     });
     dispatch({
-      type: "global/fetchPlugins",
-      payload: {
-        callback: () => {}
-      }
+      type: "global/fetchPlugins"
     });
   };
 
