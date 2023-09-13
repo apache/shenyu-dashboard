@@ -258,8 +258,11 @@ export default class SiderMenu extends PureComponent {
   };
 
   handleOpenChange = openKeys => {
+    const lastOpenKey = openKeys[openKeys.length - 1];
+    const moreThanOne =
+      openKeys.filter(openKey => this.isMainMenu(openKey)).length > 1;
     this.setState({
-      openKeys: [...openKeys]
+      openKeys: moreThanOne ? [lastOpenKey] : [...openKeys]
     });
   };
 
@@ -310,6 +313,11 @@ export default class SiderMenu extends PureComponent {
     const { menuData, collapsed, onCollapse, TitleLogo } = this.props;
     const { openKeys } = this.state;
     // Don't show popup menu when it is been collapsed
+    const menuProps = collapsed
+      ? {}
+      : {
+        openKeys
+      };
     // if pathname can't match, use the nearest parent's key
     let selectedKeys = this.getSelectedMenuKeys();
     if (!selectedKeys.length) {
@@ -341,6 +349,9 @@ export default class SiderMenu extends PureComponent {
           key="Menu"
           theme={this.state.theme}
           mode={this.state.mode}
+          {...menuProps}
+          onOpenChange={this.handleOpenChange}
+          selectedKeys={selectedKeys}
           style={{ padding: "16px 0", width: "100%" }}
         >
           {this.getNavMenuItems(menuData)}
