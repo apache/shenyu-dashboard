@@ -25,6 +25,7 @@ const map = {
     component: Input,
     props: {
       size: 'large',
+      allowClear: true,
       prefix: <Icon type="home" className={styles.prefixIcon} />,
     },
     rules: [
@@ -39,6 +40,7 @@ const map = {
     component: Input,
     props: {
       size: 'large',
+      allowClear: true,
       prefix: <Icon type="user" className={styles.prefixIcon} />,
       placeholder: 'admin',
     },
@@ -53,6 +55,7 @@ const map = {
     component: Input,
     props: {
       size: 'large',
+      allowClear: true,
       prefix: <Icon type="lock" className={styles.prefixIcon} />,
       type: 'password',
       placeholder: '888888',
@@ -68,6 +71,7 @@ const map = {
     component: Input,
     props: {
       size: 'large',
+      allowClear: true,
       prefix: <Icon type="mobile" className={styles.prefixIcon} />,
       placeholder: 'mobile number',
     },
@@ -86,6 +90,7 @@ const map = {
     component: Input,
     props: {
       size: 'large',
+      allowClear: true,
       prefix: <Icon type="mail" className={styles.prefixIcon} />,
       placeholder: 'captcha',
     },
