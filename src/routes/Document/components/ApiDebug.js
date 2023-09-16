@@ -50,6 +50,21 @@ const arrayToObject = (arr) => {
   }, {});
 }
 
+const mergeArrays = (arr1, arr2) => {
+  let mergedArray = [...arr1];
+
+  arr2.forEach(item2 => {
+    let item1 = mergedArray.find(item => item.key === item2.key);
+    if (item1) {
+      item1.value = item2.value;
+    } else {
+      mergedArray.push(item2);
+    }
+  });
+
+  return mergedArray;
+}
+
 const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   useImperativeHandle(ref, () => ({
     form
@@ -208,7 +223,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   const changeParamTab = (key) => {
     setActiveKey(key);
     let header = form.getFieldsValue().headers;
-    let headerJson = [...JSON.parse(header), ...getDefaultHeaderByKey(key)];
+    let headerJson = mergeArrays(JSON.parse(header), getDefaultHeaderByKey(key));
     setInitialValue({...initialValue, header: JSON.stringify(headerJson)});
   }
 
