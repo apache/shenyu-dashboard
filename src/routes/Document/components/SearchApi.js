@@ -116,7 +116,7 @@ const SearchApi = React.forwardRef((props, ref) => {
       ) : (
         <>
           <Text code>{Method[item.httpMethod]}</Text>
-          <Tooltip title={item.apiPath}>{item.apiPath}</Tooltip>
+          <Tooltip placement="topLeft" arrowPointAtCenter title={item.apiPath}>{item.apiPath}</Tooltip>
         </>
       ),
       key: `${eventKey}-${index}`,
@@ -222,7 +222,7 @@ const SearchApi = React.forwardRef((props, ref) => {
       allNodes[curNodeIdx].title = (
         <>
           <Text code>{Method[data.httpMethod]}</Text>
-          <Tooltip title={data.apiPath}>{data.apiPath}</Tooltip>
+          <Tooltip placement="topLeft" arrowPointAtCenter title={data.apiPath}>{data.apiPath}</Tooltip>
         </>
       )
     }
