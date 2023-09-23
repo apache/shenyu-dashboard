@@ -107,7 +107,7 @@ class AddModal extends Component {
 
     return (
       <Modal
-        width={550}
+        width={600}
         centered
         title={getIntlContent("SHENYU.SYSTEM.ALERT")}
         visible
