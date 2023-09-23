@@ -46,7 +46,7 @@ class AddModal extends Component {
     });
   }
 
-  handleSendTest = (e) => {
+  sendTest = (e) => {
     const { form, handleSendTest, id = '' } = this.props;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
@@ -259,7 +259,7 @@ class AddModal extends Component {
             {...formItemLayout}
             wrapperCol={{ offset: 5 }}
           >
-            <Button onClick={this.handleSendTest} type="primary">{getIntlContent("SHENYU.SYSTEM.ALERT.BUTTON.SEND_TEST")}</Button>
+            <Button onClick={this.sendTest} type="primary">{getIntlContent("SHENYU.SYSTEM.ALERT.BUTTON.SEND_TEST")}</Button>
           </FormItem>
         </Form>
       </Modal>
