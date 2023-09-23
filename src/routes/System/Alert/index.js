@@ -38,7 +38,7 @@ export default class Alert extends Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.getAllAlerts();
   }
 
