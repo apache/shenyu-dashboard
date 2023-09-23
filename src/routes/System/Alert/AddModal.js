@@ -46,7 +46,7 @@ class AddModal extends Component {
     });
   }
 
-  handleSendTest = (e) => {
+  sendTest = (e) => {
     const { form, handleSendTest, id = '' } = this.props;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
@@ -107,7 +107,7 @@ class AddModal extends Component {
 
     return (
       <Modal
-        width={550}
+        width={600}
         centered
         title={getIntlContent("SHENYU.SYSTEM.ALERT")}
         visible
@@ -177,68 +177,72 @@ class AddModal extends Component {
               <Switch checked={form.getFieldValue('matchAll')} onChange={v => form.setFieldsValue({ matchAll: v })} />
             )}
           </FormItem>
-          <FormItem
-            label={getIntlContent("SHENYU.SYSTEM.ALERT.LABELS")}
-            {...formItemLayout}
-          >
-            {labelList.map(label => (
-              <Row key={label.key} type='flex' style={{ flexFlow: 'initial' }}>
-                <Col>
-                  <Input
-                    allowClear
-                    value={label.name}
-                    placeholder={getIntlContent("SHENYU.SYSTEM.ALERT.LABELS.NAME")}
-                    onChange={e => {
+          {
+            form.getFieldValue('matchAll') || 
+            (
+            <>
+              <FormItem
+                label={getIntlContent("SHENYU.SYSTEM.ALERT.LABELS")}
+                {...formItemLayout}
+              >
+                {labelList.map(label => (
+                  <Row key={label.key} type='flex' style={{ flexFlow: 'initial' }}>
+                    <Col>
+                      <Input
+                        allowClear
+                        value={label.name}
+                        placeholder={getIntlContent("SHENYU.SYSTEM.ALERT.LABELS.NAME")}
+                        onChange={e => {
                       const index = labelList.findIndex(l => l.key === label.key)
                       labelList.splice(index, 1, { ...label, name: e.target.value })
                       this.setState({ labelList })
                     }}
-                  />
-                </Col>
-                <Col style={{ marginLeft: 10 }}>
-                  <Input
-                    allowClear
-                    value={label.value}
-                    placeholder={getIntlContent("SHENYU.SYSTEM.ALERT.LABELS.VALUE")}
-                    onChange={e => {
+                      />
+                    </Col>
+                    <Col style={{ marginLeft: 10 }}>
+                      <Input
+                        allowClear
+                        value={label.value}
+                        placeholder={getIntlContent("SHENYU.SYSTEM.ALERT.LABELS.VALUE")}
+                        onChange={e => {
                       const index = labelList.findIndex(l => l.key === label.key)
                       labelList.splice(index, 1, { ...label, value: e.target.value })
                       this.setState({ labelList })
                     }}
-                  />
-                </Col>
-                <Col style={{ display: 'flex', justifyContent: 'space-between', marginLeft: 10, whiteSpace: 'nowrap' }}>
-                  <div
-                    className="edit"
-                    onClick={() => {
+                      />
+                    </Col>
+                    <Col style={{ display: 'flex', justifyContent: 'space-between', marginLeft: 10, whiteSpace: 'nowrap' }}>
+                      <div
+                        className="edit"
+                        onClick={() => {
                       const index = labelList.findIndex(l => l.key === label.key)
                       let key = labelList.reduce((max, l) => Math.max(max, l.key), 0) + 1
                       labelList.splice(index + 1, 0, { key, name: '', value: '' })
                       this.setState({ labelList })
                     }}
-                  >
-                    {getIntlContent("SHENYU.SYSTEM.ALERT.LABELS.ADD")}
-                  </div>
-                  <span
-                    className="edit"
-                    style={{ marginLeft: 10 }}
-                    onClick={() => {
+                      >
+                        {getIntlContent("SHENYU.SYSTEM.ALERT.LABELS.ADD")}
+                      </div>
+                      <span
+                        className="edit"
+                        style={{ marginLeft: 10 }}
+                        onClick={() => {
                       const index = labelList.findIndex(l => l.key === label.key)
                       labelList.splice(index, 1)
                       this.setState({ labelList })
                     }}
-                  >
-                    {getIntlContent("SHENYU.SYSTEM.ALERT.LABELS.DELETE")}
-                  </span>
-                </Col>
-              </Row>
+                      >
+                        {getIntlContent("SHENYU.SYSTEM.ALERT.LABELS.DELETE")}
+                      </span>
+                    </Col>
+                  </Row>
             ))}
-          </FormItem>
-          <FormItem
-            label={getIntlContent("SHENYU.SYSTEM.ALERT.LEVELS")}
-            {...formItemLayout}
-          >
-            {getFieldDecorator('levels', {
+              </FormItem>
+              <FormItem
+                label={getIntlContent("SHENYU.SYSTEM.ALERT.LEVELS")}
+                {...formItemLayout}
+              >
+                {getFieldDecorator('levels', {
               initialValue: levels.map(i => i.toString()),
             })(
               <Select
@@ -254,12 +258,14 @@ class AddModal extends Component {
                 <Option value="2">{getIntlContent("SHENYU.SYSTEM.ALERT.LEVELS.LOW")}</Option>
               </Select>
             )}
-          </FormItem>
+              </FormItem>
+            </>
+          )}
           <FormItem
             {...formItemLayout}
             wrapperCol={{ offset: 5 }}
           >
-            <Button onClick={this.handleSendTest} type="primary">{getIntlContent("SHENYU.SYSTEM.ALERT.BUTTON.SEND_TEST")}</Button>
+            <Button onClick={this.sendTest} type="primary">{getIntlContent("SHENYU.SYSTEM.ALERT.BUTTON.SEND_TEST")}</Button>
           </FormItem>
         </Form>
       </Modal>

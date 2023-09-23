@@ -163,6 +163,12 @@ export default class Alert extends Component {
           handleCancel={() => {
             this.closeModal();
           }}
+          handleSendTest={values => {
+            this.props.dispatch({
+              type: "alert/sendTest",
+              payload: values
+            });
+          }}
         />
       )
     });

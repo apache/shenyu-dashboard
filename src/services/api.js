@@ -1041,7 +1041,7 @@ export function deleteAlertReceivers(params) {
 }
 
 export function fetchAlertReport(params) {
-  return request(`${baseUrl}/alert/report`, {
+  return request(`${baseUrl}/alert/receiver/test`, {
     method: `POST`,
     body: {
       ...params
