@@ -45,7 +45,7 @@ export default class Resource extends Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.getMenuTree();
   }
 
