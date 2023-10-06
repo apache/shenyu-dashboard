@@ -21,15 +21,26 @@ import { Spin } from 'antd';
 export default class PromiseRender extends React.PureComponent {
   state = {
     component: null,
+    prevPropsPromise: null,
   };
 
   componentDidMount() {
     this.setRenderComponent(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
-    // new Props enter
-    this.setRenderComponent(nextProps);
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.promise !== prevState.prevPropsPromise) {
+      return {
+        prevPropsPromise: nextProps.promise,
+      };
+    }
+    return null;
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.promise !== prevProps.promise) {
+      this.setRenderComponent(this.props);
+    }
   }
 
   // set render Component : ok or error
