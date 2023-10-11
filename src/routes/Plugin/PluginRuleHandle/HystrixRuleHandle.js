@@ -37,6 +37,7 @@ export default class HystrixRuleHandle extends Component {
         errorThresholdPercentage = "50",
         maxConcurrentRequests = "100",
         sleepWindowInMilliseconds = "5000",
+        timeout = "3000",
         groupKey = "",
         commandKey = "",
         callBackUri="",
@@ -52,6 +53,7 @@ export default class HystrixRuleHandle extends Component {
         errorThresholdPercentage = myHandle.errorThresholdPercentage;
         maxConcurrentRequests = myHandle.maxConcurrentRequests;
         sleepWindowInMilliseconds = myHandle.sleepWindowInMilliseconds;
+        timeout = myHandle.timeout
         groupKey = myHandle.groupKey;
         commandKey = myHandle.commandKey;
         if (typeof(myHandle.executionIsolationStrategy) !== 'undefined' ) {
@@ -67,6 +69,7 @@ export default class HystrixRuleHandle extends Component {
         errorThresholdPercentage,
         maxConcurrentRequests,
         sleepWindowInMilliseconds,
+        timeout,
         groupKey,
         commandKey,
         executionIsolationStrategy,
@@ -81,6 +84,7 @@ export default class HystrixRuleHandle extends Component {
         errorThresholdPercentage,
         maxConcurrentRequests,
         sleepWindowInMilliseconds,
+        timeout,
         groupKey,
         commandKey,
         executionIsolationStrategy,
@@ -95,6 +99,7 @@ export default class HystrixRuleHandle extends Component {
       maxConcurrentRequests > 0 ? maxConcurrentRequests : "0";
     const mySleepWindowInMilliseconds =
       sleepWindowInMilliseconds > 0 ? sleepWindowInMilliseconds : "0";
+    const myTimeout = timeout>0?timeout:"3000"
     const myCoreSize = hystrixThreadPoolConfig.coreSize > 0 ? hystrixThreadPoolConfig.coreSize : "0";
     const myMaximumSize = hystrixThreadPoolConfig.maximumSize > 0 ? hystrixThreadPoolConfig.maximumSize : "0";
     const myMaxQueueSize = hystrixThreadPoolConfig.maxQueueSize > 0 ? hystrixThreadPoolConfig.maxQueueSize : "0";
@@ -102,6 +107,7 @@ export default class HystrixRuleHandle extends Component {
         requestVolumeThreshold: myRequestVolumeThreshold,
         errorThresholdPercentage: myErrorThresholdPercentage,
         sleepWindowInMilliseconds: mySleepWindowInMilliseconds,
+        timeout:myTimeout,
         executionIsolationStrategy,
         callBackUri,
         groupKey,
@@ -139,6 +145,7 @@ export default class HystrixRuleHandle extends Component {
         errorThresholdPercentage,
         maxConcurrentRequests,
         sleepWindowInMilliseconds,
+        timeout,
         groupKey,
         commandKey,
         executionIsolationStrategy,
@@ -208,6 +215,21 @@ export default class HystrixRuleHandle extends Component {
                   const value = e.target.value;
                   this.onHandleNumberChange(
                   "errorThresholdPercentage",
+                  value
+                  );
+                }}
+              />
+            </li>
+            <li>
+              <Input
+                allowClear
+                addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.TIMEOUT")}</div>}
+                value={timeout}
+                placeholder="timeout"
+                onChange={e => {
+                  const value = e.target.value;
+                  this.onHandleNumberChange(
+                  "timeout",
                   value
                   );
                 }}
