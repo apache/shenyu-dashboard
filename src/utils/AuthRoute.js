@@ -276,13 +276,12 @@ const setMenuIconAndSort = (menus, permissions) => {
   loading: loading.effects["global/fetchPermission"]
 }))
 export default class AuthRoute extends Component {
-  constructor(props) {
-    super(props);
+  componentDidMount() {
     const {
       global: { permissions },
       loading,
       path
-    } = props;
+    } = this.props;
     if (
       (!permissions || !permissions.menu || permissions.menu.length === 0) &&
       !loading &&
@@ -313,7 +312,7 @@ export default class AuthRoute extends Component {
       redirectPath,
       location: { pathname }
     } = this.props;
-    if (loading) {
+    if (loading || Object.keys(permissions).length === 0) {
       return (
         <Spin
           tip="Loading..."
