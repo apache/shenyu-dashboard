@@ -312,7 +312,7 @@ export default class AuthRoute extends Component {
       redirectPath,
       location: { pathname }
     } = this.props;
-    if (loading) {
+    if (loading || Object.keys(permissions).length === 0) {
       return (
         <Spin
           tip="Loading..."
