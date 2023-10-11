@@ -276,12 +276,13 @@ const setMenuIconAndSort = (menus, permissions) => {
   loading: loading.effects["global/fetchPermission"]
 }))
 export default class AuthRoute extends Component {
-  componentDidMount() {
+  constructor(props) {
+    super(props);
     const {
       global: { permissions },
       loading,
       path
-    } = this.props;
+    } = props;
     if (
       (!permissions || !permissions.menu || permissions.menu.length === 0) &&
       !loading &&
