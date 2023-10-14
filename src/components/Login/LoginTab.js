@@ -40,7 +40,7 @@ export default class LoginTab extends Component {
     this.uniqueId = generateId('login-tab-');
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const { tabUtil } = this.context;
     if (tabUtil) {
       tabUtil.addTab(this.uniqueId);
