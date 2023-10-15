@@ -31,12 +31,12 @@ function initTime(target) {
       targetTime = new Date(target).getTime();
     }
   } catch (e) {
-    throw new Error('invalid target prop', e);
+    throw new Error(`invalid target prop ${e.message}`);
   }
 
   lastTime = targetTime - new Date().getTime();
   return {
-    lastTime: lastTime < 0 ? 0 : lastTime,
+    lastTime: Math.max(lastTime, 0),
   };
 }
 
