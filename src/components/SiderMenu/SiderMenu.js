@@ -82,34 +82,35 @@ export default class SiderMenu extends PureComponent {
     super(props);
     this.flatMenuKeys = getFlatMenuKeys(props.menuData);
     this.state = {
-      openKeys: this.getDefaultCollapsedSubMenus(props),
+      openKeys: SiderMenu.getDefaultCollapsedSubMenus(props, this.flatMenuKeys),
       localeName: "",
       mode: "inline",
       theme: "dark"
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { location, menuData } = this.props;
-    this.flatMenuKeys = getFlatMenuKeys(menuData);
-    if (nextProps.location.pathname !== location.pathname) {
-      this.setState({
-        openKeys: this.getDefaultCollapsedSubMenus(nextProps)
-      });
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.location.pathname !== prevState.prevPathname) {
+      return {
+        prevPathname: nextProps.location.pathname,
+        openKeys: SiderMenu.getDefaultCollapsedSubMenus(nextProps, getFlatMenuKeys(nextProps.menuData))
+      };
     }
+    // No state update necessary
+    return null;
   }
 
   /**
    * Convert pathname to openKeys
    * /list/search/articles = > ['list','/list/search']
    * @param  props
+   * @param  flatMenuKeys
    */
-  getDefaultCollapsedSubMenus(props) {
+  static getDefaultCollapsedSubMenus(props, flatMenuKeys) {
     const {
       location: { pathname }
-    } =
-      props || this.props;
-    return getMenuMatchKeys(this.flatMenuKeys, urlToList(pathname));
+    } = props;
+    return getMenuMatchKeys(flatMenuKeys, urlToList(pathname));
   }
 
   saveCurrentRoute = route => {
