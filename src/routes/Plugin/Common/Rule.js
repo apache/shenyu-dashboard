@@ -46,7 +46,7 @@ class AddModal extends Component {
     this.initDics();
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const {
       dispatch,
       pluginId,
