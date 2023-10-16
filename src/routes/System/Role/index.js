@@ -39,7 +39,7 @@ export default class Role extends Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.getAllRoles();
   }
 
