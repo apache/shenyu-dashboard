@@ -17,7 +17,6 @@
 
 import React, { Component } from "react";
 import { connect } from "dva";
-import { Redirect } from "react-router-dom";
 import { Route } from "dva/router";
 import { Spin } from "antd";
 import { filterTree } from "./utils";
@@ -312,7 +311,7 @@ export default class AuthRoute extends Component {
       redirectPath,
       location: { pathname }
     } = this.props;
-    if (loading || Object.keys(permissions).length === 0) {
+    if (loading) {
       return (
         <Spin
           tip="Loading..."
@@ -328,7 +327,7 @@ export default class AuthRoute extends Component {
         return <Route path={path} component={component} />;
       } else {
         return (
-          <Route render={() => <Redirect to={{ pathname: redirectPath }} />} />
+          <Route path={redirectPath} component={null} />
         );
       }
     }
