@@ -41,7 +41,7 @@ export default class Manage extends Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.getAllUsers();
     this.getAllRoles();
   }
