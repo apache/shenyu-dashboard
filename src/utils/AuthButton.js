@@ -61,8 +61,9 @@ export function checkButtonAuth(perms, permissions) {
   }))
 export default class AuthButton extends Component {
 
-  componentWillMount() {
-    const { global: { permissions } } = this.props;
+  constructor(props) {
+    super(props);
+    const { global: { permissions } } = props;
     if (!permissions || !permissions.menu || permissions.menu.length === 0) {
       resetAuthButtonCache();
     }
