@@ -44,10 +44,11 @@ export default class PluginHandle extends Component {
       pluginId:'',
       field: '',
       localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
+      columns: [],
     };
   }
 
-  componentWillMount = async () => {
+  componentDidMount = async () => {
     await this.loadPluginDict();
 
     this.initPluginColumns();
