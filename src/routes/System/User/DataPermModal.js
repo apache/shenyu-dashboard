@@ -57,7 +57,7 @@ export default class DataPermModal extends Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.getPluginTreeData();
   }
 
