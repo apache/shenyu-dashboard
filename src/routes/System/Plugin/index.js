@@ -50,11 +50,12 @@ export default class Plugin extends Component {
       popup: "",
       localeName: window.sessionStorage.getItem("locale")
         ? window.sessionStorage.getItem("locale")
-        : "en-US"
+        : "en-US",
+      columns: [],
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.query()
     this.initPluginColumns();
   }

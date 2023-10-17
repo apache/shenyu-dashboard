@@ -42,10 +42,11 @@ export default class ShenYuDict extends Component {
       dictCode: "",
       popup: "",
       localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
+      columns: [],
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.query()
     this.initPluginColumns();
   }

@@ -41,10 +41,11 @@ export default class Metadata extends Component {
       path: "",
       popup: "",
       localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
+      columns: [],
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.query()
     this.initPluginColumns();
   }

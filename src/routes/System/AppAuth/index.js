@@ -45,10 +45,11 @@ export default class Auth extends Component {
       phone: "",
       popup: "",
       localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
+      columns: []
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.query()
     this.initPluginColumns();
   }
