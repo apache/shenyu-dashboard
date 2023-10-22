@@ -20,6 +20,7 @@
 import { Modal, Form, Input, Select, message, Radio } from "antd";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import ReactJson from "react-json-view";
 import { Method, RPCTYPE, API_SOURCE_TYPE, STATE_TYPE } from "./globalData";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { addApi, updateApi } from "../../../services/api";
@@ -40,7 +41,7 @@ class AddAndUpdateApiDoc extends Component {
 
 
   handleSubmit = () => {
-    const { form, onOk } = this.props;
+    const { form, onOk, document, ext } = this.props;
     form.validateFieldsAndScroll(async (err, values) => {
       function isJsonStr(str) {
         try {
@@ -56,6 +57,8 @@ class AddAndUpdateApiDoc extends Component {
         values.state = parseInt(values.state);
         values.apiSource = parseInt(values.apiSource);
         values.httpMethod = parseInt(values.httpMethod);
+        values.document = document
+        values.ext = ext
         // validate ext
         if (!isJsonStr(values.ext)) {
           message.error(getIntlContent("SHENYU.DOCUMENT.APIDOC.EXT.INFO"));
@@ -97,8 +100,10 @@ class AddAndUpdateApiDoc extends Component {
       apiOwner = "",
       apiDesc = "",
       apiSource = "",
-      document = "",
-      visible = false
+      document = "{}",
+      visible = false,
+      updateDocument = () => {},
+      updateExt = () => {},
     } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
     const formItemLayout = {
@@ -117,6 +122,7 @@ class AddAndUpdateApiDoc extends Component {
         onOk={this.handleSubmit}
         closable={false}
         forceRender
+        width="100%"
       >
         <Form className="login-form">
           <Form.Item
@@ -293,21 +299,16 @@ class AddAndUpdateApiDoc extends Component {
             label={getIntlContent("SHENYU.DOCUMENT.APIDOC.EXT")}
             {...formItemLayout}
           >
-            {getFieldDecorator("ext", {
-              rules: [
-                {
-                  required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.EXT.INFO")
-                }
-              ],
-              initialValue: ext
-            })(
-              <Input
-                allowClear
-                size="large"
-                placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.EXT.INFO")}
-              />
-            )}
+            <ReactJson
+              src={JSON.parse(ext)}
+              theme="monokai"
+              displayDataTypes={false}
+              name={false}
+              onAdd={updateExt}
+              onEdit={updateExt}
+              onDelete={updateExt}
+              style={{borderRadius: 4, padding: 16, overflow: 'auto'}}
+            />
           </Form.Item>
           <Form.Item
             label={getIntlContent("SHENYU.DOCUMENT.APIDOC.APIOWNER")}
@@ -375,20 +376,16 @@ class AddAndUpdateApiDoc extends Component {
             label={getIntlContent("SHENYU.DOCUMENT.APIDOC.DOCUMENT")}
             {...formItemLayout}
           >
-            {getFieldDecorator("document", {
-              rules: [
-                {
-                  required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.DOCUMENT")
-                }
-              ],
-              initialValue: document
-            })(
-              <Input
-                allowClear
-                placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.DOCUMENT")}
-              />
-            )}
+            <ReactJson
+              src={JSON.parse(document)}
+              theme="monokai"
+              displayDataTypes={false}
+              name={false}
+              onAdd={updateDocument}
+              onEdit={updateDocument}
+              onDelete={updateDocument}
+              style={{borderRadius: 4, padding: 16, overflow: 'auto'}}
+            />
           </Form.Item>
 
           <Form.Item hidden>{getFieldDecorator("tagIds")(<Input allowClear />)}</Form.Item>
