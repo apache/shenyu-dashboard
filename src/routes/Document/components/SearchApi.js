@@ -33,6 +33,8 @@ const SearchApi = React.forwardRef((props, ref) => {
   const [treeData, setTreeData] = useState({});
   const [expandedKeys, setExpandedKeys] = useState([]);
   const [selectedKeys, setSelectedKeys] = useState([]);
+  const [document, setDocument] = useState("{}");
+  const [ext, setExt] = useState("{}");
 
   const queryRootTag = async () => {
     setExpandedKeys([]);
@@ -196,6 +198,8 @@ const SearchApi = React.forwardRef((props, ref) => {
     apiForm.setFieldsValue({
       ...data
     });
+    setDocument(data.document || "{}")
+    setExt(data.ext || "{}")
     setOpenApi(true);
   };
 
@@ -276,6 +280,10 @@ const SearchApi = React.forwardRef((props, ref) => {
       />
       <AddAndUpdateApiDoc
         visible={openApi}
+        document={document}
+        updateDocument={obj => setDocument(JSON.stringify(obj.updated_src))}
+        ext={ext}
+        updateExt={obj => setExt(JSON.stringify(obj.updated_src))}
         formLoaded={setApiForm}
         onOk={handleApiOk}
         onCancel={handleApiCancel}
