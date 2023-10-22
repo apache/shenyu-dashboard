@@ -39,6 +39,7 @@ import classnames from "classnames";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import SelectorCopy from "./SelectorCopy";
+import { parseBooleanString } from "../../../utils/utils";
 
 const { Item } = Form;
 const { Option } = Select;
@@ -93,7 +94,7 @@ class AddModal extends Component {
     this.initDics();
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const { dispatch, pluginId, handle, multiSelectorHandle } = this.props;
     this.setState({ pluginHandleList: [] });
     let type = 1;
@@ -214,6 +215,9 @@ class AddModal extends Component {
                 delete values.divideUpstreams;
                 delete values.gray;
                 delete values.key;
+              } else if (item.dataType === 3 && item.dictOptions) {
+                handle[index][item.field] = parseBooleanString(values[item.field + index]);
+                delete values[item.field + index];
               } else {
                 handle[index][item.field] = values[item.field + index];
                 delete values[item.field + index];
@@ -571,7 +575,7 @@ class AddModal extends Component {
                               : item.defaultValue === "false"
                                 ? false
                                 : item.defaultValue);
-                        let placeholder = item.placeholder || item.label;
+                        let placeholder = item.label || item.placeholder;
                         let checkRule = item.checkRule;
                         let fieldName = item.field + index;
                         let rules = [];
@@ -601,8 +605,8 @@ class AddModal extends Component {
                                     rules,
                                     initialValue: defaultValue
                                   })(
-                                    <InputNumber
-                                      precision={0}
+                                    <Input
+                                      allowClear
                                       addonBefore={
                                         <div style={{ width: labelWidth }}>
                                           {item.label}
@@ -623,23 +627,17 @@ class AddModal extends Component {
                                 <Item>
                                   {getFieldDecorator(fieldName, {
                                     rules,
-                                    initialValue: defaultValue
+                                    initialValue: defaultValue.toString()
                                   })(
                                     <Select
-                                      placeholder={placeholder}
+                                      placeholder={defaultValue.toString()}
                                       style={{ width: "100%" }}
                                     >
                                       {item.dictOptions.map(option => {
                                         return (
                                           <Option
                                             key={option.dictValue}
-                                            value={
-                                              option.dictValue === "true"
-                                                ? true
-                                                : option.dictValue === "false"
-                                                  ? false
-                                                  : option.dictValue
-                                            }
+                                            value={option.dictValue}
                                           >
                                             {option.dictName} ({item.label})
                                           </Option>
@@ -654,7 +652,7 @@ class AddModal extends Component {
                         } else {
                           return (
                             <li key={fieldName}>
-                              <Tooltip title={item.value}>
+                              <Tooltip title={item.label}>
                                 <Item>
                                   {getFieldDecorator(fieldName, {
                                     rules,

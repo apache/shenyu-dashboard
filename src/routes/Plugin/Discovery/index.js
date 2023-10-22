@@ -230,7 +230,7 @@ export default class TCPProxy extends Component {
 
   editClick = () => {
     const {dispatch, plugins} = this.props;
-    const {pluginName} = this.props;
+    const {pluginName} = this.state;
     const plugin = this.getPlugin(plugins, pluginName);
     getUpdateModal({
       pluginId: plugin.id,
