@@ -314,7 +314,7 @@ export default class ShenYuDict extends Component {
                   <span style={{color:"#1f640a"}}>{record.desc}</span>
                 </p>
                 <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.CODE")}</span>:
+                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.CODE")}</span> :
                   <span style={{color:"#1f640a"}}>{record.dictCode}</span>
                 </p>
                 <p>
@@ -331,7 +331,7 @@ export default class ShenYuDict extends Component {
                 </p>
               </div>
             );
-            return <Popover placement="topLeft" content={content} title={getIntlContent("SHENYU.DIC.DESCRIBE")}><div style={{color: "#1f640a"}}>{text || "----"}</div></Popover>
+            return <Popover placement="topLeft" content={content} title={getIntlContent("SHENYU.DIC.NAME")}><div style={{color: "#1f640a"}}>{text || "----"}</div></Popover>
 
           }
         },
@@ -355,21 +355,21 @@ export default class ShenYuDict extends Component {
                 </p>
                 <hr />
                 <p>
-                  <span style={{color:"#204969"}}>code</span>:
+                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.CODE")}</span> :
                   <span style={{color:"#1f640a"}}>{record.dictCode}</span>
                 </p>
                 <p>
-                  <span style={{color:"#204969"}}>name</span>:
+                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.NAME")}</span> :
                   <span style={{color:"#1f640a"}}>{record.dictName}</span>
                 </p>
                 <p>
-                  <span style={{color:"#204969"}}>value</span>:
+                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.VALUE")}</span> :
                   <span style={{color:"#1f640a"}}>{record.dictValue}</span>
                 </p>
               </div>
             );
             return (
-              <Popover placement="topLeft" content={content} title={getIntlContent("SHENYU.DIC.DESCRIBE")}>
+              <Popover placement="topLeft" content={content} title={getIntlContent("SHENYU.DIC.VALUE")}>
                 <div style={{color: "#260033","fontWeight":"bold"}}>{text || "----"}</div>
               </Popover>
             )
