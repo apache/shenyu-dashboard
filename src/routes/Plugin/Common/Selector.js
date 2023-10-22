@@ -39,6 +39,7 @@ import classnames from "classnames";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import SelectorCopy from "./SelectorCopy";
+import { parseBooleanString } from "../../../utils/utils";
 
 const { Item } = Form;
 const { Option } = Select;
@@ -215,11 +216,7 @@ class AddModal extends Component {
                 delete values.gray;
                 delete values.key;
               } else if (item.dataType === 3 && item.dictOptions) {
-                handle[index][item.field] = values[item.field + index] === "true"
-                    ? true
-                    : values[item.field + index] === "false"
-                        ? false
-                        : values[item.field + index];
+                handle[index][item.field] = parseBooleanString(values[item.field + index]);
                 delete values[item.field + index];
               } else {
                 handle[index][item.field] = values[item.field + index];

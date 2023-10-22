@@ -23,7 +23,7 @@ import {getIntlContent} from "../../../utils/IntlUtils";
 import EditableTable from './UpstreamTable';
 import styles from "../index.less";
 import ProxySelectorCopy from "./ProxySelectorCopy.js";
-import {findKeyByValue} from "../../../utils/utils";
+import {findKeyByValue, parseBooleanString} from "../../../utils/utils";
 
 
 const FormItem = Form.Item;
@@ -125,11 +125,7 @@ class ProxySelectorModal extends Component {
         if(Object.keys(pluginHandleList).length > 0){
           pluginHandleList[0].forEach(item => {
             if (item.dataType === 3 && item.dictOptions) {
-              handleResult[0][item.field] = values[item.field + 0] === "true"
-                  ? true
-                  : values[item.field + 0] === "false"
-                      ? false
-                      : values[item.field + 0];
+              handleResult[0][item.field] = parseBooleanString(values[item.field + 0]);
             } else {
               handleResult[0][item.field] = values[item.field + 0];
             }
