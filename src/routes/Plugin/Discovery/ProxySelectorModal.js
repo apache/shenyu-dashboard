@@ -17,7 +17,7 @@
 
 import React, {Component} from "react";
 import {connect} from "dva";
-import {Button, Col, Divider, Form, Input, InputNumber, Modal, Row, Select, Table, Tabs, Tooltip} from "antd";
+import {Button, Col, Divider, Form, Input, Modal, Row, Select, Table, Tabs, Tooltip} from "antd";
 import classnames from "classnames";
 import {getIntlContent} from "../../../utils/IntlUtils";
 import EditableTable from './UpstreamTable';
@@ -124,7 +124,15 @@ class ProxySelectorModal extends Component {
         handleResult[0] = {};
         if(Object.keys(pluginHandleList).length > 0){
           pluginHandleList[0].forEach(item => {
-            handleResult[0][item.field] = values[item.field + 0];
+            if (item.dataType === 3 && item.dictOptions) {
+              handleResult[0][item.field] = values[item.field + 0] === "true"
+                  ? true
+                  : values[item.field + 0] === "false"
+                      ? false
+                      : values[item.field + 0];
+            } else {
+              handleResult[0][item.field] = values[item.field + 0];
+            }
           });
         }
         handler = JSON.stringify(handler);
@@ -342,8 +350,8 @@ class ProxySelectorModal extends Component {
                                           rules,
                                           initialValue: defaultValue
                                         })(
-                                          <InputNumber
-                                            precision={0}
+                                          <Input
+                                            allowClear
                                             disabled={!isAdd}
                                             addonBefore={
                                               <div style={{ width: labelWidth }}>
@@ -365,24 +373,18 @@ class ProxySelectorModal extends Component {
                                       <FormItem>
                                         {getFieldDecorator(fieldName, {
                                           rules,
-                                          initialValue: defaultValue
+                                          initialValue: defaultValue.toString()
                                         })(
                                           <Select
                                             disabled={!isAdd}
-                                            placeholder={placeholder}
+                                            placeholder={placeholder.toString()}
                                             style={{ width: 260 }}
                                           >
                                             {item.dictOptions.map(option => {
                                               return (
                                                 <Option
                                                   key={option.dictValue}
-                                                  value={
-                                                    option.dictValue === "true"
-                                                      ? true
-                                                      : option.dictValue === "false"
-                                                        ? false
-                                                        : option.dictValue
-                                                  }
+                                                  value={option.dictValue}
                                                 >
                                                   {option.dictName} ({item.label})
                                                 </Option>
