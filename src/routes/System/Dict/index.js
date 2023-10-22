@@ -270,6 +270,42 @@ export default class ShenYuDict extends Component {
     }
   };
 
+  commonPopover = (record, value) => {
+    let content =(
+      <div>
+        <p>
+          <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.CODE")}</span>:
+          <span style={{color:"#1f640a"}}> {record.dictCode}</span>
+        </p>
+        <p>
+          <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.TYPE")}</span>:
+          <span style={{color:"#1f640a"}}> {record.type}</span>
+        </p>
+        <p>
+          <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.NAME")}</span>:
+          <span style={{color:"#1f640a"}}> {record.dictName}</span>
+        </p>
+        <p>
+          <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.VALUE")}</span>:
+          <span style={{color:"#1f640a"}}> {record.dictValue}</span>
+        </p>
+        <p>
+          <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.DESCRIBE")}</span>:
+          <span style={{color:"#1f640a"}}> {record.desc}</span>
+        </p>
+        <p>
+          <span style={{color:"#204969"}}>{getIntlContent("SHENYU.SYSTEM.CREATETIME")}</span>:
+          <span style={{color:"#1f640a"}}> {record.dateCreated}</span>
+        </p>
+        <p>
+          <span style={{color:"#204969"}}>{getIntlContent("SHENYU.SYSTEM.UPDATETIME")}</span>:
+          <span style={{color:"#1f640a"}}> {record.dateUpdated}</span>
+        </p>
+      </div>
+    );
+    return <Popover placement="topLeft" content={content} title={getIntlContent("SHENYU.DIC")}>{value}</Popover>
+  };
+
   changeLocale(locale) {
     this.setState({
       localeName: locale
@@ -307,35 +343,9 @@ export default class ShenYuDict extends Component {
           key: "dictName",
           ellipsis:true,
           // width: 200,
-          render: (text,record) => {
-            let content =(
-              <div>
-                <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.DESCRIBE")}</span> :
-                  <span style={{color:"#1f640a"}}>{record.desc}</span>
-                </p>
-                <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.CODE")}</span>:
-                  <span style={{color:"#1f640a"}}>{record.dictCode}</span>
-                </p>
-                <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.TYPE")}</span> :
-                  <span style={{color:"#1f640a"}}>{record.type}</span>
-                </p>
-                <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.SYSTEM.CREATETIME")}</span> :
-                  <span style={{color:"#1f640a"}}>{record.dateCreated}</span>
-                </p>
-                <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.SYSTEM.UPDATETIME")}</span> :
-                  <span style={{color:"#1f640a"}}>{record.dateUpdated}</span>
-                </p>
-              </div>
-            );
-            return <Popover placement="topLeft" content={content} title={getIntlContent("SHENYU.DIC.DESCRIBE")}><div style={{color: "#1f640a"}}>{text || "----"}</div></Popover>
-
-          }
+          render: (text, record) => this.commonPopover(record, <div style={{color: "#1f640a"}}>{text || "----"}</div>)
         },
+
         {
           align: "center",
           title: getIntlContent("SHENYU.DIC.VALUE"),
@@ -343,39 +353,7 @@ export default class ShenYuDict extends Component {
           key: "dictValue",
           ellipsis:true,
           // width: 140,
-          render: (text,record) => {
-            let content =(
-              <div>
-                <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.DESCRIBE")}</span> :
-                  <span style={{color:"#1f640a"}}>{record.desc}</span>
-                </p>
-                <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.TYPE")}</span> :
-                  <span style={{color:"#1f640a"}}>{record.type}</span>
-                </p>
-                <hr />
-                <p>
-                  <span style={{color:"#204969"}}>code</span>:
-                  <span style={{color:"#1f640a"}}>{record.dictCode}</span>
-                </p>
-                <p>
-                  <span style={{color:"#204969"}}>name</span>:
-                  <span style={{color:"#1f640a"}}>{record.dictName}</span>
-                </p>
-                <p>
-                  <span style={{color:"#204969"}}>value</span>:
-                  <span style={{color:"#1f640a"}}>{record.dictValue}</span>
-                </p>
-              </div>
-            );
-            return (
-              <Popover placement="topLeft" content={content} title={getIntlContent("SHENYU.DIC.DESCRIBE")}>
-                <div style={{color: "#260033","fontWeight":"bold"}}>{text || "----"}</div>
-              </Popover>
-            )
-
-          }
+          render: (text,record) => this.commonPopover(record, <div style={{color: "#260033","fontWeight":"bold"}}>{text || "----"}</div>)
         },
 
         {
@@ -386,6 +364,7 @@ export default class ShenYuDict extends Component {
           ellipsis:true,
           width: 80,
         },
+
         {
           align: "center",
           title: getIntlContent("SHENYU.SYSTEM.STATUS"),
@@ -401,6 +380,7 @@ export default class ShenYuDict extends Component {
             }
           }
         },
+
         {
           align: "center",
           title: getIntlContent("SHENYU.COMMON.OPERAT"),
