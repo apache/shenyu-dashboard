@@ -64,6 +64,9 @@ const SearchApi = React.forwardRef((props, ref) => {
       // 默认选中第一个
       setSelectedKeys(["0"]);
       onSelect(["0"], { node: { props: arr[0] } })
+    } else {
+      setTreeData(arr);
+      setSelectedKeys([]);
     }
   };
 
