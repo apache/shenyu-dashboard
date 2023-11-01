@@ -59,13 +59,13 @@ class DiscoveryConfigModal extends Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        let { name, serverList, tcpType } = values;
+        let { name, serverList, discoveryType } = values;
         const propsjson = {};
         Object.entries(configPropsJson).forEach(([key]) => {
           propsjson[key] = form.getFieldValue(key);
         });
         const props = JSON.stringify(propsjson);
-        handleOk({ name, serverList, props, tcpType});
+        handleOk({ name, serverList, props, discoveryType});
       }
     });
   };
@@ -82,7 +82,7 @@ class DiscoveryConfigModal extends Component {
   render() {
     const { handleCancel, form, data, isSetConfig, handleConfigDelete, dispatch } = this.props
     const { getFieldDecorator } = form;
-    const { name, serverList, type: tcpType, id} = data || {};
+    const { name, serverList, type: discoveryType, id} = data || {};
     const { configPropsJson, discoveryDicts } = this.state;
     const formItemLayout = {
       labelCol: {
@@ -129,9 +129,9 @@ class DiscoveryConfigModal extends Component {
       >
         <Form onSubmit={this.handleSubmit}>
           <Form.Item label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE")} {...formItemLayout}>
-            {getFieldDecorator('tcpType', {
+            {getFieldDecorator('discoveryType', {
               rules: [{ required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT") }],
-              initialValue: tcpType !== "" ? tcpType : undefined
+              initialValue: discoveryType !== "" ? discoveryType : undefined
             })(
               <Select
                 placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}

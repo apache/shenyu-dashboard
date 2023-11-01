@@ -53,7 +53,7 @@ class ProxySelectorModal extends Component {
   }
 
   componentDidMount() {
-    const { isAdd, isSetConfig, tcpType, data, pluginId, dispatch } = this.props;
+    const { isAdd, isSetConfig, discoveryType, data, pluginId, dispatch } = this.props;
     const { discoveryDicts } = this.state;
     const { props } = this.props.data || {};
 
@@ -62,7 +62,7 @@ class ProxySelectorModal extends Component {
       dispatch({
         type: 'discovery/saveGlobalType',
         payload: {
-          chosenType: tcpType
+          chosenType: discoveryType
         }
       });
     }else{
@@ -106,7 +106,7 @@ class ProxySelectorModal extends Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        let {name, forwardPort, listenerNode, serverList, discoveryType} = values;
+        let {name, forwardPort, listenerNode, serverList, selectedDiscoveryType} = values;
         const discoveryPropsJson = {};
         Object.entries(configPropsJson).forEach(([key]) => {
           discoveryPropsJson[key] = form.getFieldValue(key);
@@ -133,7 +133,7 @@ class ProxySelectorModal extends Component {
         }
         handler = JSON.stringify(handler);
         let props = JSON.stringify(handleResult[0]);
-        handleOk({name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, discoveryType, upstreams});
+        handleOk({name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, selectedDiscoveryType, upstreams});
       }
     });
   };
@@ -145,7 +145,7 @@ class ProxySelectorModal extends Component {
       name,
       forwardPort,
       listenerNode,
-      discoveryType: discovery.type,
+      selectedDiscoveryType: discovery.type,
       serverList: discovery.serverList
     };
     dispatch({
@@ -180,7 +180,7 @@ class ProxySelectorModal extends Component {
 
 
   render() {
-    const { tcpType, form, handleCancel, isSetConfig, isAdd, chosenType, dispatch } = this.props;
+    const { discoveryType, form, handleCancel, isSetConfig, isAdd, chosenType, dispatch } = this.props;
     const { recordCount, upstreams, pluginHandleList, visible, discoveryHandler, defaultValueList, discoveryDicts, configPropsJson } = this.state;
     const { getFieldDecorator } = form;
     const { name, forwardPort, listenerNode, discovery, handler } = this.props.data || {};
@@ -430,9 +430,9 @@ class ProxySelectorModal extends Component {
             </TabPane>
             <TabPane tab={getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.DISCOVERY")} key="2">
               <FormItem label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE")} {...formItemLayout}>
-                {getFieldDecorator('discoveryType', {
+                {getFieldDecorator('selectedDiscoveryType', {
                   rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}],
-                  initialValue: tcpType !== '' ? tcpType : undefined
+                  initialValue: discoveryType !== '' ? discoveryType : undefined
                 })(
                   <Select
                     placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}

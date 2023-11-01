@@ -19,7 +19,7 @@ import React, {Component} from "react";
 import {Card, Popover, Typography, Skeleton, Icon, Popconfirm} from "antd";
 
 import {getIntlContent} from "../../../utils/IntlUtils";
-import tcpStyles from "./tcp.less";
+import discoveryStyles from "./discovery.less";
 
 import { formatTimestamp } from "../../../utils/utils";
 import {ConsulIcon, EtcdIcon, LocalIcon, NacosIcon, ZkIcon} from "./DiscoveryIcon";
@@ -28,7 +28,7 @@ import AuthButton from "../../../utils/AuthButton";
 const { Text } = Typography;
 const { Meta } = Card;
 
-export class TcpCard extends Component {
+export class DiscoveryCard extends Component {
 
   render() {
     const { updateSelector, data, handleDelete, handleRefresh } = this.props
@@ -67,7 +67,7 @@ export class TcpCard extends Component {
         <Card
           title={<div style={{ fontSize: '17px', lineHeight: '1.5'}}>{data.name}</div>}
           bordered={false}
-          className={tcpStyles.tcpCard}
+          className={discoveryStyles.discoveryCard}
           actions={[
             <AuthButton perms="plugin:tcp:modify">
               <Icon type="reload" key="reload" style={{color: '#2E496E', fontSize: "17px"}} onClick={() => handleRefresh(data.discoveryHandlerId)} />
