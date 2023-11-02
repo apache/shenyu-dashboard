@@ -121,6 +121,7 @@ function ApiDoc() {
       message.success(msg);
       if (tagDetail.id) {
         searchApiRef.current?.updateTree(null, 'tag');
+        setTagDetail({});
       }
       if (apiDetail.id) {
         searchApiRef.current?.updateTree(null, 'api');
