@@ -65,7 +65,8 @@ export default class Common extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  /* eslint-disable no-unused-vars */
+  componentDidUpdate(prevProps,  prevState, snapshot) {
     const preId = prevProps.match.params.id;
     const newId = this.props.match.params.id;
     const { selectorPage, selectorPageSize } = this.state;
@@ -89,6 +90,7 @@ export default class Common extends Component {
       }
     }
   }
+  /* eslint-enable no-unused-vars */
 
   componentWillUnmount() {
     const { dispatch } = this.props;
