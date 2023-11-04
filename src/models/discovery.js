@@ -35,7 +35,7 @@ export default {
 
   state: {
     typeEnums: [],
-    selectorList: [],
+    proxySelectorList: [],
     chosenType: '',
     totalPage: 0,
     currentPage: 1,
@@ -43,7 +43,7 @@ export default {
   },
 
   effects: {
-    * fetchSelector(params, {call, put}) {
+    * fetchProxySelectors(params, {call, put}) {
       const {payload} = params;
       const json = yield call(fetchProxySelector, payload);
       if (json.code === 200) {
@@ -107,7 +107,7 @@ export default {
       const {fetchValue} = params;
       const {name = '', currentPage, pageSize} = fetchValue;
       const payload = {name, currentPage, pageSize};
-      yield put({type: "fetchSelector", payload});
+      yield put({type: "fetchProxySelectors", payload});
     },
 
 
@@ -169,7 +169,7 @@ export default {
       return {
         ...state,
         totalPage: payload.total,
-        selectorList: payload.dataList,
+        proxySelectorList: payload.dataList,
       };
     },
 

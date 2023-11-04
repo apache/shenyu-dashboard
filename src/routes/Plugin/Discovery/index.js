@@ -71,7 +71,7 @@ export default class DiscoveryProxy extends Component {
   componentDidMount() {
     const {dispatch, currentPage, pageSize} = this.props
     dispatch({
-      type: "discovery/fetchSelector",
+      type: "discovery/fetchProxySelectors",
       payload: {
         name: '',
         currentPage,
@@ -95,8 +95,8 @@ export default class DiscoveryProxy extends Component {
   }
 
   // eslint-disable-next-line react/sort-comp
-  renderCards(selectorList = []) {
-    return selectorList.map(selector =>
+  renderCards(proxySelectorList = []) {
+    return proxySelectorList.map(selector =>
       <DiscoveryCard key={selector.id} updateSelector={this.updateSelector} data={selector} handleDelete={this.handleDelete} handleRefresh={this.handleRefresh} />
     );
   }
@@ -111,7 +111,7 @@ export default class DiscoveryProxy extends Component {
     })
     const {searchKey} = this.state;
     this.props.dispatch({
-      type: "discovery/fetchSelector",
+      type: "discovery/fetchProxySelectors",
       payload: {
         currentPage: page,
         pageSize,
@@ -257,7 +257,7 @@ export default class DiscoveryProxy extends Component {
     const {searchKey} = this.state;
     const {currentPage, pageSize} = this.props
     this.props.dispatch({
-      type: "discovery/fetchSelector",
+      type: "discovery/fetchProxySelectors",
       payload: {
         currentPage,
         pageSize,
@@ -340,9 +340,9 @@ export default class DiscoveryProxy extends Component {
   }
 
   updateSelector = (id) => {
-    const {dispatch, selectorList, discoveryType, currentPage, pageSize, plugins, typeEnums} = this.props;
+    const {dispatch, proxySelectorList, discoveryType, currentPage, pageSize, plugins, typeEnums} = this.props;
     const { discoveryDics, pluginName } = this.state;
-    const data = selectorList.find(value => value.id === id)
+    const data = proxySelectorList.find(value => value.id === id)
     const plugin = this.getPlugin(plugins, pluginName);
     let isSetConfig = false
     this.setState({
@@ -446,7 +446,7 @@ export default class DiscoveryProxy extends Component {
 
   render() {
     const {popup} = this.state;
-    const {selectorList, totalPage, currentPage, pageSize} = this.props;
+    const {proxySelectorList, totalPage, currentPage, pageSize} = this.props;
     const tag = {
       text: this.state.isPluginEnabled ? getIntlContent("SHENYU.COMMON.OPEN") : getIntlContent("SHENYU.COMMON.CLOSE"),
       color: this.state.isPluginEnabled ? 'green' : 'red'
@@ -529,7 +529,7 @@ export default class DiscoveryProxy extends Component {
               alignItems: 'stretch'
             }}
             >
-              {this.renderCards(selectorList)}
+              {this.renderCards(proxySelectorList)}
             </div>
           </Row>
 
