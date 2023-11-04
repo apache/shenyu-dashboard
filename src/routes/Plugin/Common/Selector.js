@@ -32,7 +32,7 @@ import {
   Icon,
   InputNumber,
   DatePicker,
-  TimePicker
+  TimePicker, Tabs
 } from "antd";
 import { connect } from "dva";
 import classnames from "classnames";
@@ -42,6 +42,7 @@ import SelectorCopy from "./SelectorCopy";
 import { parseBooleanString } from "../../../utils/utils";
 
 const { Item } = Form;
+const { TabPane } = Tabs;
 const { Option } = Select;
 
 const formItemLayout = {
@@ -860,9 +861,8 @@ class AddModal extends Component {
     }
   }
 
-  render() {
+  renderBasicConfig = () => {
     let {
-      onCancel,
       form,
       name = "",
       platform,
@@ -888,12 +888,279 @@ class AddModal extends Component {
     let { selectorTypeEnums } = platform;
 
     const { getFieldDecorator } = form;
+    return(
+      <>
+        <Item
+          label={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")}
+          {...formItemLayout}
+        >
+          {getFieldDecorator("name", {
+            rules: [
+              {
+                  required: true,
+                  message: getIntlContent("SHENYU.COMMON.INPUTNAME")
+              }
+            ],
+            initialValue: name
+        })(
+          <Input
+            allowClear
+            placeholder={getIntlContent(
+                "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"
+            )}
+            addonAfter={
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                    this.setState({ visible: true });
+                }}
+              >
+                {getIntlContent("SHENYU.SELECTOR.COPY")}
+              </Button>
+            }
+          />
+          )}
+        </Item>
+        <SelectorCopy
+          visible={visible}
+          onOk={this.handleCopyData}
+          onCancel={() => {
+              this.setState({ visible: false });
+          }}
+        />
+        <Item
+          label={getIntlContent("SHENYU.COMMON.TYPE")}
+          {...formItemLayout}
+        >
+          {getFieldDecorator("type", {
+              rules: [
+                  {
+                      required: true,
+                      message: getIntlContent("SHENYU.COMMON.INPUTTYPE")
+                  }
+              ],
+              initialValue: type
+          })(
+            <Select
+              placeholder={getIntlContent("SHENYU.COMMON.TYPE")}
+              onChange={value => this.getSelectValue(value)}
+            >
+              {selectorTypeEnums.map(item => {
+                return (
+                  <Option key={item.code} value={item.code.toString()}>
+                    {getIntlContent(
+                      `SHENYU.COMMON.SELECTOR.TYPE.${item.name.toUpperCase()}`,
+                      item.name
+                    )}
+                  </Option>
+                );
+              })}
+            </Select>
+          )}
+        </Item>
+        {selectValue !== "0" && (
+          <Fragment>
+            <Item
+              label={getIntlContent("SHENYU.COMMON.MATCHTYPE")}
+              {...formItemLayout}
+            >
+              {getFieldDecorator("matchMode", {
+                rules: [
+                    {
+                        required: true,
+                        message: getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE")
+                    }
+                ],
+                initialValue: `${matchMode}`
+              })(
+                <Select
+                  placeholder={getIntlContent("SHENYU.COMMON.MATCHTYPE")}
+                >
+                  {matchModeDics &&
+                    matchModeDics.map(item => {
+                      return (
+                        <Option key={item.dictValue} value={item.dictValue}>
+                          {item.dictName}
+                        </Option>
+                      );
+                    })}
+                </Select>
+              )}
+            </Item>
+            <div className={styles.condition}>
+              <Item
+                label={getIntlContent("SHENYU.COMMON.CONDITION")}
+                required
+                {...formItemLayout}
+              >
+                {selectorConditions.map((item, index) => {
+                  return (
+                    <Row key={index} gutter={8}>
+                      <Col span={5}>
+                        <Select
+                          onChange={value => {
+                              this.conditionChange(index, "paramType", value);
+                          }}
+                          value={item.paramType}
+                        >
+                          {this.renderParamTypeOptions(paramTypeDics)}
+                        </Select>
+                      </Col>
+                      <Col
+                        span={4}
+                        style={{
+                            display: this.state[`paramTypeValueEn${index}`]
+                                ? "none"
+                                : "block"
+                        }}
+                      >
+                        <Input
+                          allowClear
+                          onChange={e => {
+                            this.conditionChange(
+                                index,
+                                "paramName",
+                                e.target.value
+                            );
+                          }}
+                          placeholder={item.paramName}
+                        />
+                      </Col>
+                      <Col span={4}>
+                        <Select
+                          onChange={value => {
+                            this.conditionChange(index, "operator", value);
+                          }}
+                          value={item.operator}
+                        >
+                          {this.renderOperatorOptions(operatorDics, item.paramType)}
+                        </Select>
+                      </Col>
 
+                      <Col
+                        span={7}
+                        style={{
+                            display: item.operator === "isBlank"
+                                ? "none"
+                                : "block"
+                        }}
+                      >
+                        <Tooltip title={item.paramValue}>
+                          {this.getParamValueInput(item, index)}
+                        </Tooltip>
+                      </Col>
+                      <Col span={4}>
+                        <Button
+                          type="danger"
+                          onClick={() => {
+                              this.handleDelete(index);
+                          }}
+                          style={{ marginLeft: 10 }}
+                        >
+                          {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                        </Button>
+                      </Col>
+                    </Row>
+                  );
+                  })}
+              </Item>
+              <Item
+                label={' '}
+                colon={false}
+                {...formItemLayout}
+              >
+                <Button className={styles.addButton} onClick={this.handleAdd} type="primary">
+                  {getIntlContent("SHENYU.COMMON.ADD")} {" "}
+                  {getIntlContent("SHENYU.COMMON.CONDITION")}
+                </Button>
+              </Item>
+            </div>
+          </Fragment>
+      )}
+        <div className={styles.layout}>
+          <Item
+            {...formCheckLayout}
+            label={getIntlContent("SHENYU.SELECTOR.CONTINUE")}
+          >
+            {getFieldDecorator("continued", {
+              initialValue: continued,
+              valuePropName: "checked",
+              rules: [{ required: true }]
+            })(<Switch />)}
+          </Item>
+          <Item
+            style={{ margin: "0 30px" }}
+            {...formCheckLayout}
+            label={getIntlContent("SHENYU.SELECTOR.PRINTLOG")}
+          >
+            {getFieldDecorator("loged", {
+              initialValue: loged,
+              valuePropName: "checked",
+              rules: [{ required: true }]
+            })(<Switch />)}
+          </Item>
+          <Item
+            {...formCheckLayout}
+            label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}
+          >
+            {getFieldDecorator("enabled", {
+              initialValue: enabled,
+              valuePropName: "checked",
+              rules: [{ required: true }]
+            })(<Switch />)}
+          </Item>
+          <Item
+            style={{ margin: "0 30px" }}
+            {...formCheckLayout}
+            label={getIntlContent("SHENYU.SELECTOR.MATCHRESTFUL")}
+          >
+            {getFieldDecorator("matchRestful", {
+                initialValue: matchRestful,
+                valuePropName: "checked",
+                rules: [{ required: true }]
+            })(<Switch />)}
+          </Item>
+        </div>
+        {this.renderPluginHandler()}
+        <Item
+          label={getIntlContent("SHENYU.SELECTOR.EXEORDER")}
+          {...formItemLayout}
+        >
+          {getFieldDecorator("sort", {
+            initialValue: sort,
+            rules: [
+              {
+                  required: true,
+                  message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
+              },
+              {
+                  pattern: /^([1-9][0-9]{0,2}|1000)$/,
+                  message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
+              }
+            ]
+          })(
+            <Input
+              allowClear
+              placeholder={getIntlContent("SHENYU.SELECTOR.INPUTORDER")}
+            />
+          )}
+        </Item>
+      </>
+    )
+  }
+
+  render() {
+    let {
+      onCancel,
+      pluginId
+    } = this.props;
     return (
       <Modal
         width='900px'
         centered
         title={getIntlContent("SHENYU.SELECTOR.NAME")}
+        // visible here defaults to true, because the visibility of modal is determined by the popup attribute in index.js
         visible
         okText={getIntlContent("SHENYU.COMMON.SURE")}
         cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
@@ -901,263 +1168,18 @@ class AddModal extends Component {
         onCancel={onCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <Item
-            label={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")}
-            {...formItemLayout}
-          >
-            {getFieldDecorator("name", {
-              rules: [
-                {
-                  required: true,
-                  message: getIntlContent("SHENYU.COMMON.INPUTNAME")
-                }
-              ],
-              initialValue: name
-            })(
-              <Input
-                allowClear
-                placeholder={getIntlContent(
-                  "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"
-                )}
-                addonAfter={
-                  <Button
-                    size="small"
-                    type="link"
-                    onClick={() => {
-                      this.setState({ visible: true });
-                    }}
-                  >
-                    {getIntlContent("SHENYU.SELECTOR.COPY")}
-                  </Button>
-                }
-              />
-            )}
-          </Item>
-          <SelectorCopy
-            visible={visible}
-            onOk={this.handleCopyData}
-            onCancel={() => {
-              this.setState({ visible: false });
-            }}
-          />
-          <Item
-            label={getIntlContent("SHENYU.COMMON.TYPE")}
-            {...formItemLayout}
-          >
-            {getFieldDecorator("type", {
-              rules: [
-                {
-                  required: true,
-                  message: getIntlContent("SHENYU.COMMON.INPUTTYPE")
-                }
-              ],
-              initialValue: type
-            })(
-              <Select
-                placeholder={getIntlContent("SHENYU.COMMON.TYPE")}
-                onChange={value => this.getSelectValue(value)}
-              >
-                {selectorTypeEnums.map(item => {
-                  return (
-                    <Option key={item.code} value={item.code.toString()}>
-                      {getIntlContent(
-                        `SHENYU.COMMON.SELECTOR.TYPE.${item.name.toUpperCase()}`,
-                        item.name
-                      )}
-                    </Option>
-                  );
-                })}
-              </Select>
-            )}
-          </Item>
-          {selectValue !== "0" && (
-            <Fragment>
-              <Item
-                label={getIntlContent("SHENYU.COMMON.MATCHTYPE")}
-                {...formItemLayout}
-              >
-                {getFieldDecorator("matchMode", {
-                  rules: [
-                    {
-                      required: true,
-                      message: getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE")
-                    }
-                  ],
-                  initialValue: `${matchMode}`
-                })(
-                  <Select
-                    placeholder={getIntlContent("SHENYU.COMMON.MATCHTYPE")}
-                  >
-                    {matchModeDics &&
-                      matchModeDics.map(item => {
-                        return (
-                          <Option key={item.dictValue} value={item.dictValue}>
-                            {item.dictName}
-                          </Option>
-                        );
-                      })}
-                  </Select>
-                )}
-              </Item>
-              <div className={styles.condition}>
-                <Item
-                  label={getIntlContent("SHENYU.COMMON.CONDITION")}
-                  required
-                  {...formItemLayout}
-                >
-                  {selectorConditions.map((item, index) => {
-                    return (
-                      <Row key={index} gutter={8}>
-                        <Col span={5}>
-                          <Select
-                            onChange={value => {
-                              this.conditionChange(index, "paramType", value);
-                            }}
-                            value={item.paramType}
-                          >
-                            {this.renderParamTypeOptions(paramTypeDics)}
-                          </Select>
-                        </Col>
-                        <Col
-                          span={4}
-                          style={{
-                            display: this.state[`paramTypeValueEn${index}`]
-                              ? "none"
-                              : "block"
-                          }}
-                        >
-                          <Input
-                            allowClear
-                            onChange={e => {
-                              this.conditionChange(
-                                index,
-                                "paramName",
-                                e.target.value
-                              );
-                            }}
-                            placeholder={item.paramName}
-                          />
-                        </Col>
-                        <Col span={4}>
-                          <Select
-                            onChange={value => {
-                              this.conditionChange(index, "operator", value);
-                            }}
-                            value={item.operator}
-                          >
-                            {this.renderOperatorOptions(operatorDics, item.paramType)}
-                          </Select>
-                        </Col>
-
-                        <Col
-                          span={7}
-                          style={{
-                            display: item.operator === "isBlank"
-                              ? "none"
-                              : "block"
-                          }}
-                        >
-                          <Tooltip title={item.paramValue}>
-                            {this.getParamValueInput(item, index)}
-                          </Tooltip>
-                        </Col>
-                        <Col span={4}>
-                          <Button
-                            type="danger"
-                            onClick={() => {
-                              this.handleDelete(index);
-                            }}
-                            style={{ marginLeft: 10 }}
-                          >
-                            {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
-                          </Button>
-                        </Col>
-                      </Row>
-                    );
-                  })}
-                </Item>
-                <Item
-                  label={' '}
-                  colon={false}
-                  {...formItemLayout}
-                >
-                  <Button className={styles.addButton} onClick={this.handleAdd} type="primary">
-                    {getIntlContent("SHENYU.COMMON.ADD")} {" "}
-                    {getIntlContent("SHENYU.COMMON.CONDITION")}
-                  </Button>
-                </Item>
-              </div>
-
-            </Fragment>
-          )}
-          <div className={styles.layout}>
-            <Item
-              {...formCheckLayout}
-              label={getIntlContent("SHENYU.SELECTOR.CONTINUE")}
-            >
-              {getFieldDecorator("continued", {
-                initialValue: continued,
-                valuePropName: "checked",
-                rules: [{ required: true }]
-              })(<Switch />)}
-            </Item>
-            <Item
-              style={{ margin: "0 30px" }}
-              {...formCheckLayout}
-              label={getIntlContent("SHENYU.SELECTOR.PRINTLOG")}
-            >
-              {getFieldDecorator("loged", {
-                initialValue: loged,
-                valuePropName: "checked",
-                rules: [{ required: true }]
-              })(<Switch />)}
-            </Item>
-            <Item
-              {...formCheckLayout}
-              label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}
-            >
-              {getFieldDecorator("enabled", {
-                initialValue: enabled,
-                valuePropName: "checked",
-                rules: [{ required: true }]
-              })(<Switch />)}
-            </Item>
-            <Item
-              style={{ margin: "0 30px" }}
-              {...formCheckLayout}
-              label={getIntlContent("SHENYU.SELECTOR.MATCHRESTFUL")}
-            >
-              {getFieldDecorator("matchRestful", {
-                initialValue: matchRestful,
-                valuePropName: "checked",
-                rules: [{ required: true }]
-              })(<Switch />)}
-            </Item>
-          </div>
-          {this.renderPluginHandler()}
-          <Item
-            label={getIntlContent("SHENYU.SELECTOR.EXEORDER")}
-            {...formItemLayout}
-          >
-            {getFieldDecorator("sort", {
-              initialValue: sort,
-              rules: [
-                {
-                  required: true,
-                  message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
-                },
-                {
-                  pattern: /^([1-9][0-9]{0,2}|1000)$/,
-                  message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
-                }
-              ]
-            })(
-              <Input
-                allowClear
-                placeholder={getIntlContent("SHENYU.SELECTOR.INPUTORDER")}
-              />
-            )}
-          </Item>
+          {// the pluginId of the divide plugin
+            pluginId === "5" ? (
+              <Tabs defaultActiveKey="1" size="small">
+                <TabPane tab={getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.BASIC")} key="1">
+                  {this.renderBasicConfig()}
+                </TabPane>
+                <TabPane tab={getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.DISCOVERY")} key="2">
+                  Content of Tab Pane 2
+                </TabPane>
+              </Tabs>
+            ) : this.renderBasicConfig()
+          }
         </Form>
       </Modal>
     );
