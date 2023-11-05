@@ -32,14 +32,15 @@ import {
   Icon,
   InputNumber,
   DatePicker,
-  TimePicker, Tabs
+  TimePicker, Tabs, Divider, Table
 } from "antd";
 import { connect } from "dva";
 import classnames from "classnames";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import SelectorCopy from "./SelectorCopy";
-import { parseBooleanString } from "../../../utils/utils";
+import { findKeyByValue, parseBooleanString } from "../../../utils/utils";
+import EditableTable from "../Discovery/UpstreamTable";
 
 const { Item } = Form;
 const { TabPane } = Tabs;
@@ -56,10 +57,11 @@ const formCheckLayout = {
 
 let id = 0;
 
-@connect(({ pluginHandle, global, shenyuDict }) => ({
+@connect(({ pluginHandle, global, shenyuDict, discovery }) => ({
   pluginHandle,
   platform: global.platform,
-  shenyuDict
+  shenyuDict,
+  discovery
 }))
 class AddModal extends Component {
   constructor(props) {
@@ -77,6 +79,7 @@ class AddModal extends Component {
     }
 
     const { divideUpstreams = [], gray = false, serviceId = "" } = data;
+    const { discoveryUpstreams = [] } = this.props;
 
     if (pluginId === "8") {
       id = divideUpstreams.length;
@@ -87,18 +90,28 @@ class AddModal extends Component {
       gray,
       serviceId,
       divideUpstreams,
-
-      visible: false
+      visible: false,
+      pluginHandleList: [],
+      upstreams: discoveryUpstreams,
+      recordCount: discoveryUpstreams.length,
+      discoveryHandler: null,
+      defaultValueList: null,
+      configPropsJson: {}
     };
 
     this.initSelectorCondition(props);
-    this.initDics();
   }
 
   componentDidMount() {
-    const { dispatch, pluginId, handle, multiSelectorHandle } = this.props;
+    const { dispatch, pluginId, handle, multiSelectorHandle, isAdd= true, discoveryConfig = {} } = this.props;
     this.setState({ pluginHandleList: [] });
     let type = 1;
+    this.initDics();
+
+    dispatch({
+      type: "discovery/fetchEnumType"
+    })
+
     dispatch({
       type: "pluginHandle/fetchByPluginId",
       payload: {
@@ -108,9 +121,35 @@ class AddModal extends Component {
         isHandleArray: multiSelectorHandle,
         callBack: pluginHandles => {
           this.setPluginHandleList(pluginHandles);
+          if (pluginId === "5") {
+            const handlerArray = pluginHandles[0].filter(item => item.field === 'discoveryHandler');
+            this.setState({discoveryHandler: handlerArray});
+            let defaultValue = handlerArray[0].defaultValue;
+            this.setState({ defaultValueList: defaultValue.split(",")  });
+          }
         }
       }
     });
+
+    if (pluginId === "5"){
+      if (!isAdd) {
+        this.setState({configPropsJson: JSON.parse(discoveryConfig.props)})
+        dispatch({
+          type: 'discovery/saveGlobalType',
+          payload: {
+            chosenType: discoveryConfig.discoveryType
+          }
+        });
+      }else{
+        dispatch({
+          type: 'discovery/saveGlobalType',
+          payload: {
+            chosenType: ''
+          }
+        });
+      }
+    }
+
   }
 
   initSelectorCondition = props => {
@@ -139,6 +178,7 @@ class AddModal extends Component {
     this.initDic("operator");
     this.initDic("matchMode");
     this.initDic("paramType");
+    this.initDic("discoveryMode");
   };
 
   initDic = type => {
@@ -149,6 +189,11 @@ class AddModal extends Component {
         type,
         callBack: dics => {
           this.state[`${type}Dics`] = dics;
+          if (type === "discoveryMode") {
+            let configProps = dics.filter(item => item.dictName === 'zookeeper');
+            let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
+            this.setState({configPropsJson: propsEntries});
+          }
         }
       }
     });
@@ -861,6 +906,16 @@ class AddModal extends Component {
     }
   }
 
+  handleOptions() {
+    const { discovery } = this.props;
+    if (!discovery || !Array.isArray(discovery.typeEnums)) {
+      return [];
+    }
+    return discovery.typeEnums.map(type =>
+      <Option key={type} value={type.toString()}>{type.toString()}</Option>
+    )
+  }
+
   renderBasicConfig = () => {
     let {
       form,
@@ -886,7 +941,6 @@ class AddModal extends Component {
 
     type = `${type.toString()}` || "1";
     let { selectorTypeEnums } = platform;
-
     const { getFieldDecorator } = form;
     return(
       <>
@@ -1150,6 +1204,224 @@ class AddModal extends Component {
     )
   }
 
+  renderDiscoveryConfig = () => {
+    const { dispatch, form, isAdd = true, listenerNode = "" } = this.props;
+    const { discoveryModeDics, upstreams, recordCount, discoveryHandler, defaultValueList, configPropsJson } = this.state;
+    let discoveryConfig = {
+      discoveryType: '',
+      serverList: '',
+      handler: {},
+      listenerNode: ''
+    }
+    const { getFieldDecorator } = form;
+    const columns = [
+      {
+        title: 'protocol',
+        dataIndex: 'protocol',
+        key: 'protocol',
+        align: 'center'
+      },
+      {
+        title: 'url',
+        dataIndex: 'url',
+        key: 'url',
+        align: 'center'
+      },
+      {
+        title: 'status',
+        dataIndex: 'status',
+        key: 'status',
+        align: 'center'
+      },
+      {
+        title: 'weight',
+        dataIndex: 'weight',
+        key: 'weight',
+        align: 'center'
+      },
+    ];
+    return(
+      <>
+        <Item label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE")} {...formItemLayout}>
+          {getFieldDecorator('selectedDiscoveryType', {
+            rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}],
+            initialValue: discoveryConfig.discoveryType !== '' ? discoveryConfig.discoveryType : undefined
+          })(
+            <Select
+              placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}
+              disabled={!isAdd}
+              onChange={value => {
+                dispatch({
+                  type: 'discovery/saveGlobalType',
+                  payload: {
+                    chosenType: value
+                  }
+                });
+                let configProps = discoveryModeDics.filter(item => item.dictName === value);
+                let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
+                this.setState({configPropsJson: propsEntries})
+              }
+              }
+            >
+              {this.handleOptions()}
+            </Select>,
+          )}
+        </Item>
+
+        {
+          this.props.discovery.chosenType !== 'local' ? (
+            <>
+              <Item label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.LISTENERNODE")} {...formItemLayout}>
+                {getFieldDecorator('listenerNode', {
+                  rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.SELECTOR.LISTENERNODE.INPUT")}],
+                  initialValue: listenerNode
+                })(<Input
+                  allowClear
+                  disabled={!isAdd}
+                  placeholder={getIntlContent("SHENYU.DISCOVERY.SELECTOR.LISTENERNODE.INPUT")}
+                />)}
+              </Item>
+
+              <Item label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.HANDLER")} {...formItemLayout}>
+                <div
+                  className={styles.handleWrap}
+                  style={{
+                    display: "flex"
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      flexDirection: "row"
+                    }}
+                  >
+                    <ul
+                      className={classnames({
+                        [styles.handleUl]: true,
+                        [styles.springUl]: true
+                      })}
+                      style={{ width: "100%" }}
+                    >
+                      {(() => {
+                        if(discoveryHandler != null ){
+                          let item = discoveryHandler[0];
+                          let checkRule = item.checkRule;
+                          let required = item.required === "1";
+                          let rules = [];
+                          if (required) {
+                            rules.push({
+                              required: { required },
+                              message:
+                                  getIntlContent("SHENYU.COMMON.PLEASEINPUT") +
+                                  item.label
+                            });
+                          }
+                          if (checkRule) {
+                            rules.push({
+                              // eslint-disable-next-line no-eval
+                              pattern: eval(checkRule),
+                              message: `${getIntlContent(
+                                  "SHENYU.PLUGIN.RULE.INVALID"
+                              )}:(${checkRule})`
+                            });
+                          }
+                          if (defaultValueList != null) {
+                            return defaultValueList.map((value, index) => (
+                              <li key={index}>
+                                <Item>
+                                  {getFieldDecorator(value, {
+                                    initialValue: isAdd === true ? findKeyByValue(discoveryConfig.handler, value): findKeyByValue(JSON.parse(discoveryConfig.handler), value),
+                                    rules
+                                  })(
+                                    <Input
+                                      allowClear
+                                      disabled={!isAdd}
+                                      addonAfter={
+                                        <div style={{ width: '50px' }}>
+                                          {value}
+                                        </div>
+                                      }
+                                      placeholder={`Your ${value}`}
+                                      key={value}
+                                    />
+                                  )}
+                                </Item>
+                              </li>
+                            ));
+                          }
+                        }
+                      })()}
+                    </ul>
+                  </div>
+                </div>
+              </Item>
+
+              <Item label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST")} {...formItemLayout}>
+                {getFieldDecorator('serverList', {
+                  rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT")}],
+                  initialValue: discoveryConfig.serverList
+                })(<Input
+                  allowClear
+                  disabled={!isAdd}
+                  placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT")}
+                />)}
+              </Item>
+
+              <div style={{ marginLeft: '50px', marginTop: '15px', marginBottom: '15px', fontWeight: '500', }}>
+                {getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS")}
+                <span style={{ marginLeft: '2px', fontWeight: '500' }}>:</span>
+              </div>
+              <div style={{ marginLeft: '35px', display: 'flex', alignItems: 'baseline' }}>
+                <div style={{ marginLeft: '8px' }}>
+                  <Row gutter={[16, 4]} justify="center">
+                    {Object.entries(configPropsJson).map(([key, value]) => (
+                      <Col span={12} key={key}>
+                        <Item>
+                          {getFieldDecorator(key, {
+                            initialValue: value
+                          })(
+                            <Input
+                              allowClear
+                              disabled={!isAdd}
+                              placeholder={`Enter ${key}`}
+                              addonBefore={key}
+                            />
+                          )}
+                        </Item>
+                      </Col>
+                    ))}
+                  </Row>
+                </div>
+              </div>
+
+              {
+                isAdd !== true ? (
+                  <>
+                    <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}</Divider>
+                    <Table dataSource={upstreams} columns={columns} />;
+                  </>
+                ):null
+              }
+            </>
+          ) : (
+            <>
+              <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}</Divider>
+              <EditableTable
+                dataSource={upstreams}
+                recordCount={recordCount}
+                onTableChange={this.handleTableChange}
+                onCountChange={this.handleCountChange}
+              />
+            </>
+          )
+        }
+      </>
+    )
+
+  }
+
+
   render() {
     let {
       onCancel,
@@ -1175,7 +1447,7 @@ class AddModal extends Component {
                   {this.renderBasicConfig()}
                 </TabPane>
                 <TabPane tab={getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.DISCOVERY")} key="2">
-                  Content of Tab Pane 2
+                  {this.renderDiscoveryConfig()}
                 </TabPane>
               </Tabs>
             ) : this.renderBasicConfig()
