@@ -386,6 +386,10 @@ class AddModal extends Component {
     } = this.props;
     const labelWidth = 75;
 
+    if (pluginId === "5") {
+      return;
+    }
+
     if (pluginId === "8") {
       getFieldDecorator("keys", {
         initialValue: Array.from({
@@ -808,6 +812,14 @@ class AddModal extends Component {
     item.value = value;
   };
 
+  handleTableChange = (newData) => {
+    this.setState({ upstreams: newData });
+  };
+
+  handleCountChange = (newCount) => {
+    this.setState({ recordCount: newCount });
+  };
+
   renderOperatorOptions = (operators, paramType) => {
     if (operators && operators instanceof Array) {
       let operatorsFil = operators.map(operate => {
@@ -1205,14 +1217,8 @@ class AddModal extends Component {
   }
 
   renderDiscoveryConfig = () => {
-    const { dispatch, form, isAdd = true, listenerNode = "" } = this.props;
+    const { dispatch, form, isAdd = true, discoveryConfig} = this.props;
     const { discoveryModeDics, upstreams, recordCount, discoveryHandler, defaultValueList, configPropsJson } = this.state;
-    let discoveryConfig = {
-      discoveryType: '',
-      serverList: '',
-      handler: {},
-      listenerNode: ''
-    }
     const { getFieldDecorator } = form;
     const columns = [
       {
@@ -1274,7 +1280,7 @@ class AddModal extends Component {
               <Item label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.LISTENERNODE")} {...formItemLayout}>
                 {getFieldDecorator('listenerNode', {
                   rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.SELECTOR.LISTENERNODE.INPUT")}],
-                  initialValue: listenerNode
+                  initialValue: discoveryConfig.listenerNode
                 })(<Input
                   allowClear
                   disabled={!isAdd}

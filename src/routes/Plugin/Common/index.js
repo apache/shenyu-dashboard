@@ -181,11 +181,19 @@ export default class Common extends Component {
     const { id: pluginId, config } = plugin;
     const multiSelectorHandle =
       this.getPluginConfigField(config, "multiSelectorHandle") === "1";
+    let discoveryConfig = {
+      discoveryType: '',
+      serverList: '',
+      handler: {},
+      listenerNode: ''
+    }
     this.setState({
       popup: (
         <Selector
           pluginId={pluginId}
           multiSelectorHandle={multiSelectorHandle}
+          isAdd={true}
+          discoveryConfig={discoveryConfig}
           handleOk={selector => {
             dispatch({
               type: "common/addSelector",
