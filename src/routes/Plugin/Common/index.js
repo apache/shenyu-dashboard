@@ -197,39 +197,28 @@ export default class Common extends Component {
             isAdd={true}
             discoveryConfig={discoveryConfig}
             handleOk={selector => {
-              const { name: selectorName, listenerNode, serverList, selectedDiscoveryType, discoveryProps, handler } = selector;
+              const { name: selectorName, listenerNode, serverList, selectedDiscoveryType, discoveryProps, handler, upstreams } = selector;
               dispatch({
                 type: "common/addSelector",
                 payload: { pluginId, ...selector },
                 fetchValue: { pluginId, currentPage: selectorPage, pageSize: selectorPageSize },
                 callback: (selectorId) => {
                   dispatch({
-                    type: "discovery/set",
+                    type: "discovery/bindSelector",
                     payload: {
-                      type: selectedDiscoveryType,
-                      serverList,
+                      selectorId,
                       name: selectorName,
-                      props: discoveryProps,
                       pluginName: name,
-                      level: "0", // 0: selector level
-                    },
-                    callback: (discoveryConfigData) => {
-                      dispatch({
-                        type: "discovery/bindSelector",
-                        payload: {
-                          selectorId,
-                          name: selectorName,
-                          pluginName: name,
-                          listenerNode,
-                          handler,
-                          type: "http",
-                          discovery: {
-                            discoveryType: selectedDiscoveryType,
-                            serverList,
-                            id: discoveryConfigData.id
-                          }
-                        }
-                      })
+                      listenerNode,
+                      handler,
+                      type: "http",
+                      discoveryUpstreams: upstreams,
+                      discovery: {
+                        discoveryType: selectedDiscoveryType,
+                        serverList,
+                        props: discoveryProps,
+                        name: selectorName
+                      }
                     }
                   })
                   this.closeModal();
@@ -450,20 +439,20 @@ export default class Common extends Component {
     const { selectorPage, selectorPageSize } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const pluginId = this.getPluginId(plugins, name);
-    dispatch({
-      type: "common/fetchSeItem",
-      payload: {
-        id: record.id
-      },
-      callback: selector => {
-        dispatch({
-          type: "discovery/deleteConfig",
-          payload: {
-            discoveryId: selector.discoveryVO ? selector.discoveryVO.id : '',
-          },
-        })
-      }
-    })
+    // dispatch({
+    //   type: "common/fetchSeItem",
+    //   payload: {
+    //     id: record.id
+    //   },
+    //   callback: selector => {
+    //     dispatch({
+    //       type: "discovery/deleteConfig",
+    //       payload: {
+    //         discoveryId: selector.discoveryVO ? selector.discoveryVO.id : '',
+    //       },
+    //     })
+    //   }
+    // })
     dispatch({
       type: "common/deleteSelector",
       payload: {
