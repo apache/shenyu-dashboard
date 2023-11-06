@@ -1048,3 +1048,14 @@ export function fetchAlertReport(params) {
     }
   });
 }
+
+export function bindingSelector(params) {
+  return request(`${baseUrl}/proxy-selector/binding`,
+      {
+        method: `POST`,
+        body: params
+      });
+}
+
+
+

@@ -181,33 +181,86 @@ export default class Common extends Component {
     const { id: pluginId, config } = plugin;
     const multiSelectorHandle =
       this.getPluginConfigField(config, "multiSelectorHandle") === "1";
-    let discoveryConfig = {
-      discoveryType: '',
-      serverList: '',
-      handler: {},
-      listenerNode: ''
+    if (pluginId === "5") {
+      let discoveryConfig = {
+        discoveryType: '',
+        serverList: '',
+        handler: {},
+        listenerNode: ''
+      }
+      this.setState({
+        popup: (
+          <Selector
+            pluginId={pluginId}
+            multiSelectorHandle={multiSelectorHandle}
+            isAdd={true}
+            discoveryConfig={discoveryConfig}
+            handleOk={selector => {
+              const { name: selectorName, listenerNode, serverList, selectedDiscoveryType, discoveryProps, handler } = selector;
+              dispatch({
+                type: "common/addSelector",
+                payload: { pluginId, ...selector },
+                fetchValue: { pluginId, currentPage: selectorPage, pageSize: selectorPageSize },
+                callback: (selectorId) => {
+                  dispatch({
+                    type: "discovery/set",
+                    payload: {
+                      type: selectedDiscoveryType,
+                      serverList,
+                      name: selectorName,
+                      props: discoveryProps,
+                      pluginName: name,
+                      level: "0", // 0: selector level
+                    },
+                    callback: (discoveryConfigData) => {
+                      dispatch({
+                        type: "discovery/bindSelector",
+                        payload: {
+                          selectorId,
+                          name: selectorName,
+                          pluginName: name,
+                          listenerNode,
+                          handler,
+                          type: "http",
+                          discovery: {
+                            discoveryType: selectedDiscoveryType,
+                            serverList,
+                            id: discoveryConfigData.id
+                          }
+                        }
+                      })
+                    }
+                  })
+                  this.closeModal();
+                }
+              });
+            }}
+            onCancel={this.closeModal}
+          />
+        )
+      });
+    }else {
+      this.setState({
+        popup: (
+          <Selector
+            pluginId={pluginId}
+            multiSelectorHandle={multiSelectorHandle}
+            handleOk={selector => {
+              dispatch({
+                type: "common/addSelector",
+                payload: { pluginId, ...selector },
+                fetchValue: { pluginId, currentPage: selectorPage, pageSize: selectorPageSize },
+                callback: () => {
+                  this.closeModal();
+                }
+              });
+            }}
+            onCancel={this.closeModal}
+          />
+        )
+      });
     }
-    this.setState({
-      popup: (
-        <Selector
-          pluginId={pluginId}
-          multiSelectorHandle={multiSelectorHandle}
-          isAdd={true}
-          discoveryConfig={discoveryConfig}
-          handleOk={selector => {
-            dispatch({
-              type: "common/addSelector",
-              payload: { pluginId, ...selector },
-              fetchValue: { pluginId, currentPage: selectorPage, pageSize: selectorPageSize },
-              callback: () => {
-                this.closeModal();
-              }
-            });
-          }}
-          onCancel={this.closeModal}
-        />
-      )
-    });
+
   };
 
   searchRuleOnchange = e => {

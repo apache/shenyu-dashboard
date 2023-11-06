@@ -93,7 +93,7 @@ class AddModal extends Component {
       visible: false,
       pluginHandleList: [],
       upstreams: discoveryUpstreams,
-      recordCount: discoveryUpstreams.length,
+      recordCount: discoveryUpstreams ? discoveryUpstreams.length : 0,
       discoveryHandler: null,
       defaultValueList: null,
       configPropsJson: {}
@@ -121,9 +121,15 @@ class AddModal extends Component {
         isHandleArray: multiSelectorHandle,
         callBack: pluginHandles => {
           this.setPluginHandleList(pluginHandles);
-          if (pluginId === "5") {
+          if (pluginId === "5" && Object.keys(pluginHandles).length > 0) {
+            const filteredArray = pluginHandles[0].filter(item => item.field !== 'discoveryHandler');
+
             const handlerArray = pluginHandles[0].filter(item => item.field === 'discoveryHandler');
             this.setState({discoveryHandler: handlerArray});
+
+            pluginHandles[0] = filteredArray;
+            this.setState({ pluginHandleList: pluginHandles });
+
             let defaultValue = handlerArray[0].defaultValue;
             this.setState({ defaultValueList: defaultValue.split(",")  });
           }
@@ -235,7 +241,7 @@ class AddModal extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, handleOk, multiSelectorHandle, pluginId } = this.props;
-    const { selectorConditions, selectValue, pluginHandleList } = this.state;
+    const { selectorConditions, selectValue, pluginHandleList, defaultValueList, configPropsJson, upstreams } = this.state;
     let handle = [];
 
     form.validateFieldsAndScroll((err, values) => {
@@ -243,41 +249,71 @@ class AddModal extends Component {
         const mySubmit =
           selectValue !== "0" && this.checkConditions(selectorConditions);
         if (mySubmit || selectValue === "0") {
-          pluginHandleList.forEach((handleList, index) => {
-            handle[index] = {};
-            handleList.forEach(item => {
-              if (pluginId === "8") {
-                const { keys, divideUpstreams } = values;
-                const data = {
-                  [item.field]: values[item.field],
-                  gray: values.gray
-                };
+          if ( pluginId === '5') {
+            const {name, listenerNode, serverList, selectedDiscoveryType} = values;
 
-                if (Array.isArray(divideUpstreams) && divideUpstreams.length) {
-                  data.divideUpstreams = keys.map(key => divideUpstreams[key]);
-                }
-                handle[index] = data;
-                delete values[item.field];
-                delete values.divideUpstreams;
-                delete values.gray;
-                delete values.key;
-              } else if (item.dataType === 3 && item.dictOptions) {
-                handle[index][item.field] = parseBooleanString(values[item.field + index]);
-                delete values[item.field + index];
-              } else {
-                handle[index][item.field] = values[item.field + index];
-                delete values[item.field + index];
-              }
+            // The discoveryProps refer to the attributes corresponding to each registration center mode
+            const discoveryPropsJson = {};
+            Object.entries(configPropsJson).forEach(([key]) => {
+              discoveryPropsJson[key] = form.getFieldValue(key);
             });
-          });
-          handleOk({
-            ...values,
-            handle: multiSelectorHandle
-              ? JSON.stringify(handle)
-              : JSON.stringify(handle[0]),
-            sort: Number(values.sort),
-            selectorConditions
-          });
+            const discoveryProps = JSON.stringify(discoveryPropsJson);
+
+            // The handler refers to the url, status, weight, protocol, etc. of the discovery module.
+            let handler = {};
+            if ( defaultValueList !== null) {
+              defaultValueList.forEach(item => {
+                if ((values[item]) !== undefined){
+                  handler[values[item]] = item;
+                }
+              });
+            }
+            handler = JSON.stringify(handler);
+
+            handleOk({...values,
+              sort: Number(values.sort),
+              selectorConditions,
+              handler,
+              discoveryProps,
+              upstreams});
+
+          } else {
+            pluginHandleList.forEach((handleList, index) => {
+              handle[index] = {};
+              handleList.forEach(item => {
+                if (pluginId === "8") {
+                  const { keys, divideUpstreams } = values;
+                  const data = {
+                    [item.field]: values[item.field],
+                    gray: values.gray
+                  };
+
+                  if (Array.isArray(divideUpstreams) && divideUpstreams.length) {
+                    data.divideUpstreams = keys.map(key => divideUpstreams[key]);
+                  }
+                  handle[index] = data;
+                  delete values[item.field];
+                  delete values.divideUpstreams;
+                  delete values.gray;
+                  delete values.key;
+                } else if (item.dataType === 3 && item.dictOptions) {
+                  handle[index][item.field] = parseBooleanString(values[item.field + index]);
+                  delete values[item.field + index];
+                } else {
+                  handle[index][item.field] = values[item.field + index];
+                  delete values[item.field + index];
+                }
+              });
+            });
+            handleOk({
+              ...values,
+              handle: multiSelectorHandle
+                  ? JSON.stringify(handle)
+                  : JSON.stringify(handle[0]),
+              sort: Number(values.sort),
+              selectorConditions
+            });
+          }
         }
       }
     });
@@ -1217,9 +1253,10 @@ class AddModal extends Component {
   }
 
   renderDiscoveryConfig = () => {
-    const { dispatch, form, isAdd = true, discoveryConfig} = this.props;
+    const { dispatch, form, isAdd = true, discoveryConfig = {} } = this.props;
     const { discoveryModeDics, upstreams, recordCount, discoveryHandler, defaultValueList, configPropsJson } = this.state;
     const { getFieldDecorator } = form;
+    console.log("defaultValueList", defaultValueList)
     const columns = [
       {
         title: 'protocol',

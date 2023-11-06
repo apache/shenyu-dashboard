@@ -25,8 +25,8 @@ import {
   updateProxySelector,
   getDiscovery,
   refreshProxySelector,
-  deleteDiscovery
-
+  deleteDiscovery,
+  bindingSelector
 } from "../services/api";
 import {getIntlContent} from "../utils/IntlUtils";
 
@@ -116,9 +116,9 @@ export default {
       const json = yield call(postDiscoveryInsertOrUpdate, payload);
       if (json.code === 200) {
         message.success(getIntlContent('SHENYU.COMMON.RESPONSE.CONFIGURATION.SUCCESS'));
-        const { data } = json;
+        const discoveryConfigData = json.data;
         if (callback) {
-          callback(data);
+          callback(discoveryConfigData);
         }
       } else {
         message.warn(json.message);
@@ -157,6 +157,17 @@ export default {
       const json = yield call(deleteDiscovery, payload);
       if (json.code === 200) {
         message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
+      } else {
+        message.warn(json.message);
+      }
+    },
+
+    * bindSelector(params, {call}) {
+      const {payload, callback} = params;
+      const json = yield call(bindingSelector, payload);
+      if (json.code === 200) {
+        // message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
+        callback();
       } else {
         message.warn(json.message);
       }

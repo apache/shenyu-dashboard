@@ -86,12 +86,16 @@ class ProxySelectorModal extends Component {
         handle: Object.keys(props).length === 0 ? '' : props,
         isHandleArray: false,
         callBack: (pluginHandles) => {
+          console.log("pluginHandles", pluginHandles)
           if  (Object.keys(pluginHandles).length > 0) {
             const filteredArray = pluginHandles[0].filter(item => item.field !== 'discoveryHandler');
+
             const handlerArray = pluginHandles[0].filter(item => item.field === 'discoveryHandler');
-            pluginHandles[0] = filteredArray;
             this.setState({discoveryHandler: handlerArray});
+
+            pluginHandles[0] = filteredArray;
             this.setState({ pluginHandleList: pluginHandles });
+
             let defaultValue = handlerArray[0].defaultValue;
             this.setState({ defaultValueList: defaultValue.split(",")  });
           }
@@ -111,7 +115,10 @@ class ProxySelectorModal extends Component {
         Object.entries(configPropsJson).forEach(([key]) => {
           discoveryPropsJson[key] = form.getFieldValue(key);
         });
+        // The discoveryProps refer to the attributes corresponding to each registration center mode
         const discoveryProps = JSON.stringify(discoveryPropsJson);
+
+        // The handler refers to the url, status, weight, protocol, etc. of the discovery module.
         let handler = {};
         if ( defaultValueList !== null) {
           defaultValueList.forEach(item => {
@@ -120,6 +127,8 @@ class ProxySelectorModal extends Component {
             }
           });
         }
+        handler = JSON.stringify(handler);
+
         let handleResult = [];
         handleResult[0] = {};
         if(Object.keys(pluginHandleList).length > 0){
@@ -131,7 +140,7 @@ class ProxySelectorModal extends Component {
             }
           });
         }
-        handler = JSON.stringify(handler);
+        // The props refer to the properties of each plug-in
         let props = JSON.stringify(handleResult[0]);
         handleOk({name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, selectedDiscoveryType, upstreams});
       }
@@ -185,6 +194,7 @@ class ProxySelectorModal extends Component {
     const { getFieldDecorator } = form;
     const { name, forwardPort, listenerNode, discovery, handler } = this.props.data || {};
     const labelWidth = 200;
+    console.log("pluginHandleList", pluginHandleList)
     const formItemLayout = {
       labelCol: {
         sm: { span: 4 }
