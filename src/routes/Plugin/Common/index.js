@@ -181,12 +181,13 @@ export default class Common extends Component {
     const { id: pluginId, config } = plugin;
     const multiSelectorHandle =
       this.getPluginConfigField(config, "multiSelectorHandle") === "1";
-    if (pluginId === "5") {
+    if (name === "divide") {
       let discoveryConfig = {
         discoveryType: '',
         serverList: '',
         handler: {},
-        listenerNode: ''
+        listenerNode: '',
+        props: {}
       }
       this.setState({
         popup: (
@@ -367,11 +368,28 @@ export default class Common extends Component {
         id
       },
       callback: selector => {
+       if ( name === "divide"){
+        let discoveryConfig = {
+          props: selector.discoveryVO ? selector.discoveryVO.props: {},
+          discoveryType: selector.discoveryVO ? selector.discoveryVO.type: '',
+          serverList: selector.discoveryVO ? selector.discoveryVO.serverList: '',
+          handler: selector.discoveryHandler ? selector.discoveryHandler.handler: {},
+          listenerNode: selector.discoveryHandler ? selector.discoveryHandler.listenerNode : '',
+        }
+        let updateArray = [];
+        if (selector.discoveryVO && selector.discoveryVO.discoveryUpstreams) {
+          updateArray = selector.discoveryVO.discoveryUpstreams.map((item) => {
+            return { ...item, key: item.id };
+          });
+        }
         this.setState({
           popup: (
             <Selector
               {...selector}
               multiSelectorHandle={multiSelectorHandle}
+              discoveryConfig={discoveryConfig}
+              discoveryUpstreams={updateArray}
+              isAdd={false}
               handleOk={values => {
                 dispatch({
                   type: "common/updateSelector",
@@ -394,6 +412,35 @@ export default class Common extends Component {
             />
           )
         });
+        } else {
+          this.setState({
+            popup: (
+              <Selector
+                {...selector}
+                multiSelectorHandle={multiSelectorHandle}
+                handleOk={values => {
+                  dispatch({
+                    type: "common/updateSelector",
+                    payload: {
+                      pluginId,
+                      ...values,
+                      id
+                    },
+                    fetchValue: {
+                      pluginId,
+                      currentPage: selectorPage,
+                      pageSize: selectorPageSize
+                    },
+                    callback: () => {
+                      this.closeModal();
+                    }
+                  });
+                }}
+                onCancel={this.closeModal}
+              />
+            )
+          });
+        }
       }
     });
   };
@@ -403,6 +450,20 @@ export default class Common extends Component {
     const { selectorPage, selectorPageSize } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const pluginId = this.getPluginId(plugins, name);
+    dispatch({
+      type: "common/fetchSeItem",
+      payload: {
+        id: record.id
+      },
+      callback: selector => {
+        dispatch({
+          type: "discovery/deleteConfig",
+          payload: {
+            discoveryId: selector.discoveryVO ? selector.discoveryVO.id : '',
+          },
+        })
+      }
+    })
     dispatch({
       type: "common/deleteSelector",
       payload: {

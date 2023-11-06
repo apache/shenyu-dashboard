@@ -250,8 +250,6 @@ class AddModal extends Component {
           selectValue !== "0" && this.checkConditions(selectorConditions);
         if (mySubmit || selectValue === "0") {
           if ( pluginId === '5') {
-            const {name, listenerNode, serverList, selectedDiscoveryType} = values;
-
             // The discoveryProps refer to the attributes corresponding to each registration center mode
             const discoveryPropsJson = {};
             Object.entries(configPropsJson).forEach(([key]) => {
@@ -1256,7 +1254,6 @@ class AddModal extends Component {
     const { dispatch, form, isAdd = true, discoveryConfig = {} } = this.props;
     const { discoveryModeDics, upstreams, recordCount, discoveryHandler, defaultValueList, configPropsJson } = this.state;
     const { getFieldDecorator } = form;
-    console.log("defaultValueList", defaultValueList)
     const columns = [
       {
         title: 'protocol',

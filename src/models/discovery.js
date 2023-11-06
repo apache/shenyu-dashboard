@@ -163,11 +163,11 @@ export default {
     },
 
     * bindSelector(params, {call}) {
-      const {payload, callback} = params;
+      const {payload} = params;
       const json = yield call(bindingSelector, payload);
       if (json.code === 200) {
         // message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
-        callback();
+        // callback();
       } else {
         message.warn(json.message);
       }
