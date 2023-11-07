@@ -366,11 +366,12 @@ export default class Common extends Component {
           listenerNode: selector.discoveryHandler ? selector.discoveryHandler.listenerNode : '',
         }
         let updateArray = [];
-        if (selector.discoveryVO && selector.discoveryVO.discoveryUpstreams) {
-          updateArray = selector.discoveryVO.discoveryUpstreams.map((item) => {
+        if (selector.discoveryUpstreams) {
+          updateArray = selector.discoveryUpstreams.map((item) => {
             return { ...item, key: item.id };
           });
         }
+        console.log("discoveryUpstreams", updateArray)
         this.setState({
           popup: (
             <Selector
