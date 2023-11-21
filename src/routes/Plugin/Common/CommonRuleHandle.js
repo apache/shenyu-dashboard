@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Form, Select, Input, InputNumber, Button, Tooltip, Popconfirm } from "antd";
+import { Form, Select, Input, Button, Tooltip, Popconfirm } from "antd";
 import classnames from "classnames";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
@@ -113,8 +113,8 @@ export default class CommonRuleHandle extends Component {
                                   rules,
                                   initialValue: defaultValue
                                 })(
-                                  <InputNumber
-                                    precision={0}
+                                  <Input
+                                    allowClear
                                     addonBefore={
                                       <div style={{ width: labelWidth }}>
                                         {item.label}
@@ -145,13 +145,7 @@ export default class CommonRuleHandle extends Component {
                                       return (
                                         <Option
                                           key={option.dictValue}
-                                          value={
-                                            option.dictValue === "true"
-                                              ? true
-                                              : option.dictValue === "false"
-                                                ? false
-                                                : option.dictValue
-                                          }
+                                          value={option.dictValue}
                                         >
                                           {option.dictName} ({item.label})
                                         </Option>
