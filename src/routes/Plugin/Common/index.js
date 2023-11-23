@@ -181,7 +181,8 @@ export default class Common extends Component {
     const { id: pluginId, config } = plugin;
     const multiSelectorHandle =
       this.getPluginConfigField(config, "multiSelectorHandle") === "1";
-    if (name === "divide") {
+    const isDiscovery = ["5", "15", "26"].includes(pluginId);
+    if (isDiscovery) {
       let discoveryConfig = {
         discoveryType: '',
         serverList: '',
@@ -189,6 +190,10 @@ export default class Common extends Component {
         listenerNode: '',
         props: {}
       }
+      let typeValue =
+        name === "divide" ? "http" :
+          name === "websocket" ? "ws" :
+            name === "grpc" ? "grpc" : "http";
       this.setState({
         popup: (
           <Selector
@@ -196,6 +201,7 @@ export default class Common extends Component {
             multiSelectorHandle={multiSelectorHandle}
             isAdd={true}
             discoveryConfig={discoveryConfig}
+            isDiscovery={true}
             handleOk={selector => {
               const { name: selectorName, listenerNode, serverList, selectedDiscoveryType, discoveryProps, handler, upstreams } = selector;
               dispatch({
@@ -211,7 +217,7 @@ export default class Common extends Component {
                       pluginName: name,
                       listenerNode,
                       handler,
-                      type: "http",
+                      type: typeValue,
                       discoveryUpstreams: upstreams,
                       discovery: {
                         discoveryType: selectedDiscoveryType,
@@ -235,6 +241,7 @@ export default class Common extends Component {
           <Selector
             pluginId={pluginId}
             multiSelectorHandle={multiSelectorHandle}
+            isDiscovery={false}
             handleOk={selector => {
               dispatch({
                 type: "common/addSelector",
@@ -350,6 +357,7 @@ export default class Common extends Component {
     const { id: pluginId, config } = plugin;
     const multiSelectorHandle =
       this.getPluginConfigField(config, "multiSelectorHandle") === "1";
+    const isDiscovery = ["5", "15", "26"].includes(pluginId);
     const { id } = record;
     dispatch({
       type: "common/fetchSeItem",
@@ -357,12 +365,12 @@ export default class Common extends Component {
         id
       },
       callback: selector => {
-       if ( name === "divide"){
+       if ( isDiscovery ){
         let discoveryConfig = {
-          props: selector.discoveryVO ? selector.discoveryVO.props: {},
+          props: selector.discoveryVO ? selector.discoveryVO.props: "{}",
           discoveryType: selector.discoveryVO ? selector.discoveryVO.type: '',
           serverList: selector.discoveryVO ? selector.discoveryVO.serverList: '',
-          handler: selector.discoveryHandler ? selector.discoveryHandler.handler: {},
+          handler: selector.discoveryHandler ? selector.discoveryHandler.handler: "{}",
           listenerNode: selector.discoveryHandler ? selector.discoveryHandler.listenerNode : '',
         }
         let updateArray = [];
@@ -371,7 +379,7 @@ export default class Common extends Component {
             return { ...item, key: item.id };
           });
         }
-        console.log("discoveryUpstreams", updateArray)
+        console.log("updatedArray", updateArray)
         this.setState({
           popup: (
             <Selector
@@ -380,6 +388,7 @@ export default class Common extends Component {
               discoveryConfig={discoveryConfig}
               discoveryUpstreams={updateArray}
               isAdd={false}
+              isDiscovery={true}
               handleOk={values => {
                 dispatch({
                   type: "common/updateSelector",
@@ -408,6 +417,7 @@ export default class Common extends Component {
               <Selector
                 {...selector}
                 multiSelectorHandle={multiSelectorHandle}
+                isDiscovery={false}
                 handleOk={values => {
                   dispatch({
                     type: "common/updateSelector",

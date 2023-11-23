@@ -103,7 +103,7 @@ class AddModal extends Component {
   }
 
   componentDidMount() {
-    const { dispatch, pluginId, handle, multiSelectorHandle, isAdd= true, discoveryConfig = {} } = this.props;
+    const { dispatch, pluginId, handle, multiSelectorHandle, isAdd= true, discoveryConfig = {}, isDiscovery } = this.props;
     this.setState({ pluginHandleList: [] });
     let type = 1;
     this.initDics();
@@ -121,7 +121,7 @@ class AddModal extends Component {
         isHandleArray: multiSelectorHandle,
         callBack: pluginHandles => {
           this.setPluginHandleList(pluginHandles);
-          if (pluginId === "5" && Object.keys(pluginHandles).length > 0) {
+          if (isDiscovery && Object.keys(pluginHandles).length > 0) {
             const filteredArray = pluginHandles[0].filter(item => item.field !== 'discoveryHandler');
 
             const handlerArray = pluginHandles[0].filter(item => item.field === 'discoveryHandler');
@@ -137,7 +137,7 @@ class AddModal extends Component {
       }
     });
 
-    if (pluginId === "5"){
+    if (isDiscovery){
       if (!isAdd) {
         this.setState({configPropsJson: JSON.parse(discoveryConfig.props)})
         dispatch({
@@ -240,7 +240,7 @@ class AddModal extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, handleOk, multiSelectorHandle, pluginId } = this.props;
+    const { form, handleOk, multiSelectorHandle, pluginId, isDiscovery } = this.props;
     const { selectorConditions, selectValue, pluginHandleList, defaultValueList, configPropsJson, upstreams } = this.state;
     let handle = [];
 
@@ -249,7 +249,7 @@ class AddModal extends Component {
         const mySubmit =
           selectValue !== "0" && this.checkConditions(selectorConditions);
         if (mySubmit || selectValue === "0") {
-          if ( pluginId === '5') {
+          if ( isDiscovery ) {
             // The discoveryProps refer to the attributes corresponding to each registration center mode
             const discoveryPropsJson = {};
             Object.entries(configPropsJson).forEach(([key]) => {
@@ -416,11 +416,12 @@ class AddModal extends Component {
     const {
       form: { getFieldDecorator, getFieldValue, setFieldsValue },
       multiSelectorHandle,
-      pluginId
+      pluginId,
+      isDiscovery
     } = this.props;
     const labelWidth = 75;
 
-    if (pluginId === "5") {
+    if (isDiscovery) {
       return;
     }
 
@@ -1465,7 +1466,7 @@ class AddModal extends Component {
   render() {
     let {
       onCancel,
-      pluginId
+      isDiscovery
     } = this.props;
     return (
       <Modal
@@ -1480,8 +1481,8 @@ class AddModal extends Component {
         onCancel={onCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          {// the pluginId of the divide plugin
-            pluginId === "5" ? (
+          {// divide, grpc, websocket plugin
+            isDiscovery ? (
               <Tabs defaultActiveKey="1" size="small">
                 <TabPane tab={getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.BASIC")} key="1">
                   {this.renderBasicConfig()}
