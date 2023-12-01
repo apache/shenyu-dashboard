@@ -379,7 +379,6 @@ export default class Common extends Component {
             return { ...item, key: item.id };
           });
         }
-        console.log("updatedArray", updateArray)
         this.setState({
           popup: (
             <Selector

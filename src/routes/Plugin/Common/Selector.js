@@ -130,8 +130,10 @@ class AddModal extends Component {
             pluginHandles[0] = filteredArray;
             this.setState({ pluginHandleList: pluginHandles });
 
-            let defaultValue = handlerArray[0].defaultValue;
-            this.setState({ defaultValueList: defaultValue.split(",")  });
+            if (handlerArray.length !== 0) {
+              let defaultValue = handlerArray[0].defaultValue;
+              this.setState({ defaultValueList: defaultValue.split(",")  });
+            }
           }
         }
       }
@@ -245,6 +247,7 @@ class AddModal extends Component {
     let handle = [];
 
     form.validateFieldsAndScroll((err, values) => {
+      console.log("values", values)
       if (!err) {
         const mySubmit =
           selectValue !== "0" && this.checkConditions(selectorConditions);
@@ -1255,6 +1258,7 @@ class AddModal extends Component {
     const { dispatch, form, isAdd = true, discoveryConfig = {} } = this.props;
     const { discoveryModeDics, upstreams, recordCount, discoveryHandler, defaultValueList, configPropsJson } = this.state;
     const { getFieldDecorator } = form;
+    // console.log("typetype", this.props.discovery.chosenType)
     const columns = [
       {
         title: 'protocol',
@@ -1345,7 +1349,7 @@ class AddModal extends Component {
                       style={{ width: "100%" }}
                     >
                       {(() => {
-                        if(discoveryHandler != null ){
+                        if(discoveryHandler !== null && Array.isArray(discoveryHandler) && discoveryHandler.length !== 0){
                           let item = discoveryHandler[0];
                           let checkRule = item.checkRule;
                           let required = item.required === "1";

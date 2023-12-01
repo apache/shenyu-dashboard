@@ -1,6 +1,5 @@
 import React, {Component, createContext} from "react";
 import { Table, Input, Button, Popconfirm, Form } from 'antd';
-import AuthButton from "../../../utils/AuthButton";
 import {getIntlContent} from "../../../utils/IntlUtils";
 
 
@@ -194,11 +193,9 @@ export default class EditableTable extends Component {
     });
     return (
       <div>
-        <AuthButton perms="plugin:tcpSelector:add">
-          <Button onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
-            {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.ADD")}
-          </Button>
-        </AuthButton>
+        <Button onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
+          {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.ADD")}
+        </Button>
         <Table
           components={components}
           rowClassName={() => 'editable-row'}

@@ -1057,5 +1057,29 @@ export function bindingSelector(params) {
       });
 }
 
+export function addDiscoveryUpstreams(params) {
+    return request(`${baseUrl}/discovery-upstream/batch`,
+        {
+            method: `POST`,
+            body: [...params.list]
+        });
+}
+
+export function deleteDiscoveryUpstreams(params) {
+    return request(`${baseUrl}/discovery-upstream/batch`,
+        {
+            method: `DELETE`,
+            body: [...params.list]
+        });
+}
+
+export function updateDiscoveryUpstream(params) {
+    return request(`${baseUrl}/discovery-upstream/${params.id}`,
+        {
+            method: `PUT`,
+            body: params
+        });
+}
+
 
 

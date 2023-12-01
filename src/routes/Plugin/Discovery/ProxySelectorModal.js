@@ -86,7 +86,6 @@ class ProxySelectorModal extends Component {
         handle: Object.keys(props).length === 0 ? '' : props,
         isHandleArray: false,
         callBack: (pluginHandles) => {
-          console.log("pluginHandles", pluginHandles)
           if  (Object.keys(pluginHandles).length > 0) {
             const filteredArray = pluginHandles[0].filter(item => item.field !== 'discoveryHandler');
 
@@ -109,6 +108,7 @@ class ProxySelectorModal extends Component {
     const { configPropsJson, upstreams, pluginHandleList, defaultValueList } = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
+      console.log("values", values)
       if (!err) {
         let {name, forwardPort, listenerNode, serverList, selectedDiscoveryType} = values;
         const discoveryPropsJson = {};
@@ -194,7 +194,6 @@ class ProxySelectorModal extends Component {
     const { getFieldDecorator } = form;
     const { name, forwardPort, listenerNode, discovery, handler } = this.props.data || {};
     const labelWidth = 200;
-    console.log("pluginHandleList", pluginHandleList)
     const formItemLayout = {
       labelCol: {
         sm: { span: 4 }
