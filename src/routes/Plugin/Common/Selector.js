@@ -79,7 +79,7 @@ class AddModal extends Component {
     }
 
     const { divideUpstreams = [], gray = false, serviceId = "" } = data;
-    const { discoveryUpstreams = [] } = this.props;
+    const { discoveryUpstreams = [], isDiscovery, isAdd = true, discoveryConfig = {} } = this.props;
 
     if (pluginId === "8") {
       id = divideUpstreams.length;
@@ -96,14 +96,20 @@ class AddModal extends Component {
       recordCount: discoveryUpstreams ? discoveryUpstreams.length : 0,
       discoveryHandler: null,
       defaultValueList: null,
-      configPropsJson: {}
+      configPropsJson: {},
+      selectedDiscoveryValue : ''
     };
 
     this.initSelectorCondition(props);
+
+    if (isDiscovery && !isAdd){
+      this.state.configPropsJson = JSON.parse(discoveryConfig.props);
+      this.state.selectedDiscoveryValue = discoveryConfig.discoveryType;
+    }
   }
 
   componentDidMount() {
-    const { dispatch, pluginId, handle, multiSelectorHandle, isAdd= true, discoveryConfig = {}, isDiscovery } = this.props;
+    const { dispatch, pluginId, handle, multiSelectorHandle, isDiscovery } = this.props;
     this.setState({ pluginHandleList: [] });
     let type = 1;
     this.initDics();
@@ -138,26 +144,6 @@ class AddModal extends Component {
         }
       }
     });
-
-    if (isDiscovery){
-      if (!isAdd) {
-        this.setState({configPropsJson: JSON.parse(discoveryConfig.props)})
-        dispatch({
-          type: 'discovery/saveGlobalType',
-          payload: {
-            chosenType: discoveryConfig.discoveryType
-          }
-        });
-      }else{
-        dispatch({
-          type: 'discovery/saveGlobalType',
-          payload: {
-            chosenType: ''
-          }
-        });
-      }
-    }
-
   }
 
   initSelectorCondition = props => {
@@ -858,6 +844,10 @@ class AddModal extends Component {
     this.setState({ recordCount: newCount });
   };
 
+  handleDiscoveryValueChange = (value) => {
+    this.setState({selectedDiscoveryValue: value})
+  }
+
   renderOperatorOptions = (operators, paramType) => {
     if (operators && operators instanceof Array) {
       let operatorsFil = operators.map(operate => {
@@ -1255,10 +1245,9 @@ class AddModal extends Component {
   }
 
   renderDiscoveryConfig = () => {
-    const { dispatch, form, isAdd = true, discoveryConfig = {} } = this.props;
-    const { discoveryModeDics, upstreams, recordCount, discoveryHandler, defaultValueList, configPropsJson } = this.state;
+    const { form, isAdd = true, discoveryConfig = {} } = this.props;
+    const { discoveryModeDics, upstreams, recordCount, discoveryHandler, defaultValueList, configPropsJson, selectedDiscoveryValue } = this.state;
     const { getFieldDecorator } = form;
-    // console.log("typetype", this.props.discovery.chosenType)
     const columns = [
       {
         title: 'protocol',
@@ -1296,12 +1285,7 @@ class AddModal extends Component {
               placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}
               disabled={!isAdd}
               onChange={value => {
-                dispatch({
-                  type: 'discovery/saveGlobalType',
-                  payload: {
-                    chosenType: value
-                  }
-                });
+                this.handleDiscoveryValueChange(value)
                 let configProps = discoveryModeDics.filter(item => item.dictName === value);
                 let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
                 this.setState({configPropsJson: propsEntries})
@@ -1314,7 +1298,7 @@ class AddModal extends Component {
         </Item>
 
         {
-          this.props.discovery.chosenType !== 'local' ? (
+          selectedDiscoveryValue !== 'local' ? (
             <>
               <Item label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.LISTENERNODE")} {...formItemLayout}>
                 {getFieldDecorator('listenerNode', {
