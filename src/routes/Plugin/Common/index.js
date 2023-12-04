@@ -379,8 +379,6 @@ export default class Common extends Component {
             return { ...item, key: item.id };
           });
         }
-        let discoveryHandlerId = selector.discoveryHandler ? selector.discoveryHandler.id : '';
-
         this.setState({
           popup: (
             <Selector
@@ -404,31 +402,6 @@ export default class Common extends Component {
                     pageSize: selectorPageSize
                   },
                   callback: () => {
-                    const {addedData, deletedIds, updatedData} = values
-                    // if (Array.isArray(addedData) && addedData.length !== 0) {
-                    //   const addedDataWithHandlerId = addedData.map(item => ({
-                    //     ...item,
-                    //     discoveryHandlerId
-                    //   }));
-                    //   dispatch({
-                    //     type: "discovery/addDiscoveryUpstreams",
-                    //     payload: addedDataWithHandlerId
-                    //   })
-                    // }
-                    if (Array.isArray(deletedIds) && deletedIds.length !== 0) {
-                      dispatch({
-                        type: "discovery/deleteDiscoveryUpstreams",
-                        payload: deletedIds
-                      })
-                    }
-                    // if (Array.isArray(updatedData) && updatedData.length !== 0) {
-                    //   updatedData.forEach((element) => {
-                    //     dispatch({
-                    //       type: "discovery/updateDiscoveryUpstream",
-                    //       payload: element
-                    //     });
-                    //   });
-                    // }
                     this.closeModal();
                   }
                 });

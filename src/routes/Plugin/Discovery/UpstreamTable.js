@@ -138,20 +138,13 @@ export default class EditableTable extends Component {
   }
 
   handleDelete = key => {
-    const { dataSource, isCommonUpdate } = this.props;
+    const { dataSource } = this.props;
     const newData = dataSource.filter(item => item.key !== key);
     this.props.onTableChange(newData);
-    if (isCommonUpdate) {
-      if (this.props.addedKeys.includes(key)) {
-        this.props.onAddedKeyDelete(key);
-      } else {
-        this.props.onDataDeleteKey(key);
-      }
-    }
   };
 
   handleAdd = () => {
-    const { dataSource, recordCount, isCommonUpdate} = this.props;
+    const { dataSource, recordCount} = this.props;
     const newRecordCount = recordCount + 1;
     const newData = {
       key: newRecordCount,
@@ -162,9 +155,6 @@ export default class EditableTable extends Component {
     };
     this.props.onTableChange([...dataSource, newData]);
     this.props.onCountChange(newRecordCount);
-    if (isCommonUpdate) {
-      this.props.onDataAddKey(newRecordCount);
-    }
   };
 
   handleSave = row => {
@@ -176,14 +166,6 @@ export default class EditableTable extends Component {
       ...row,
     });
     this.props.onTableChange(newData);
-    if (this.props.isCommonUpdate) {
-      row.props = '{}'
-      if (this.props.addedKeys.includes(row.key)){
-        this.props.onDataAdd(row);
-      } else {
-        this.props.onDataUpdate(row);
-      }
-    }
   };
 
   render() {

@@ -181,7 +181,7 @@ export default {
 
     * addDiscoveryUpstreams(params, {call}) {
       const {payload} = params;
-      const json = yield call(addDiscoveryUpstreams, {list: payload});
+      const json = yield call(addDiscoveryUpstreams, payload);
       if (json.code === 200) {
         // message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
         // callback();
@@ -192,7 +192,7 @@ export default {
 
     * deleteDiscoveryUpstreams(params, {call}) {
       const {payload} = params;
-      const json = yield call(deleteDiscoveryUpstreams, {list: payload});
+      const json = yield call(deleteDiscoveryUpstreams, payload);
       if (json.code === 200) {
         // message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
         // callback();

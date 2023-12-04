@@ -108,6 +108,7 @@ class ProxySelectorModal extends Component {
     const { configPropsJson, upstreams, pluginHandleList, defaultValueList } = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
+      console.log("values", values)
       if (!err) {
         let {name, forwardPort, listenerNode, serverList, selectedDiscoveryType} = values;
         const discoveryPropsJson = {};
@@ -614,7 +615,6 @@ class ProxySelectorModal extends Component {
                       recordCount={recordCount}
                       onTableChange={this.handleTableChange}
                       onCountChange={this.handleCountChange}
-                      isCommonUpdate={false}
                     />
                   </>
                 )
