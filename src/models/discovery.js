@@ -27,8 +27,6 @@ import {
   refreshProxySelector,
   deleteDiscovery,
   bindingSelector,
-  addDiscoveryUpstreams,
-  deleteDiscoveryUpstreams,
   updateDiscoveryUpstream
 } from "../services/api";
 import {getIntlContent} from "../utils/IntlUtils";
@@ -179,41 +177,15 @@ export default {
       }
     },
 
-    * addDiscoveryUpstreams(params, {call}) {
-      const {payload} = params;
-      const json = yield call(addDiscoveryUpstreams, payload);
-      if (json.code === 200) {
-        // message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
-        // callback();
-      } else {
-        message.warn(json.message);
-      }
-    },
-
-    * deleteDiscoveryUpstreams(params, {call}) {
-      const {payload} = params;
-      const json = yield call(deleteDiscoveryUpstreams, payload);
-      if (json.code === 200) {
-        // message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
-        // callback();
-      } else {
-        message.warn(json.message);
-      }
-    },
-
     * updateDiscoveryUpstream(params, {call}) {
-      const {payload, callback} = params;
-      const json = yield call(updateDiscoveryUpstream, payload);
+      const { discoveryHandlerId, upstreams } = params;
+      const json = yield call(updateDiscoveryUpstream, discoveryHandlerId, upstreams);
       if (json.code === 200) {
         // message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
-        callback();
       } else {
         message.warn(json.message);
       }
     },
-
-
-
 
   },
 

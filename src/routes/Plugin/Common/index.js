@@ -379,6 +379,7 @@ export default class Common extends Component {
             return { ...item, key: item.id };
           });
         }
+        let discoveryHandlerId = selector.discoveryHandler ? selector.discoveryHandler.id : '';
         this.setState({
           popup: (
             <Selector
@@ -402,6 +403,19 @@ export default class Common extends Component {
                     pageSize: selectorPageSize
                   },
                   callback: () => {
+                    const {upstreams} = values
+                    const upstreamsWithHandlerId = upstreams.map(item => ({
+                          ...item,
+                          props: '{}',
+                          discoveryHandlerId
+                        }));
+                    dispatch({
+                      type: "discovery/updateDiscoveryUpstream",
+                      payload: {
+                        discoveryHandlerId,
+                        upstreams: upstreamsWithHandlerId
+                      }
+                    })
                     this.closeModal();
                   }
                 });

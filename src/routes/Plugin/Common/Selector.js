@@ -233,7 +233,6 @@ class AddModal extends Component {
     let handle = [];
 
     form.validateFieldsAndScroll((err, values) => {
-      console.log("values", values)
       if (!err) {
         const mySubmit =
           selectValue !== "0" && this.checkConditions(selectorConditions);
