@@ -97,7 +97,11 @@ class AddModal extends Component {
       discoveryHandler: null,
       defaultValueList: null,
       configPropsJson: {},
-      selectedDiscoveryValue : ''
+      selectedDiscoveryValue : '',
+      addedKeys: [],
+      addedData: [],
+      deletedIds: [],
+      updatedData: []
     };
 
     this.initSelectorCondition(props);
@@ -229,11 +233,10 @@ class AddModal extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, handleOk, multiSelectorHandle, pluginId, isDiscovery } = this.props;
-    const { selectorConditions, selectValue, pluginHandleList, defaultValueList, configPropsJson, upstreams } = this.state;
+    const { selectorConditions, selectValue, pluginHandleList, defaultValueList, configPropsJson, upstreams, addedData, deletedIds, updatedData } = this.state;
     let handle = [];
 
     form.validateFieldsAndScroll((err, values) => {
-      console.log("values", values)
       if (!err) {
         const mySubmit =
           selectValue !== "0" && this.checkConditions(selectorConditions);
@@ -262,7 +265,11 @@ class AddModal extends Component {
               selectorConditions,
               handler,
               discoveryProps,
-              upstreams});
+              upstreams,
+              addedData,
+              deletedIds,
+              updatedData
+            });
 
           } else {
             pluginHandleList.forEach((handleList, index) => {
@@ -844,6 +851,50 @@ class AddModal extends Component {
     this.setState({ recordCount: newCount });
   };
 
+  handleAddKey = (newRecordCount) => {
+    this.setState((prevState) => ({
+      addedKeys: [...prevState.addedKeys, newRecordCount]
+    }));
+  }
+
+  handleDeleteKey = (key) => {
+    this.setState((prevState) => ({
+      deletedIds: [...prevState.deletedIds, key]
+    }));
+  }
+
+  handleDeleteAddedKey = (key) => {
+    this.setState((prevState) => ({
+      addedKeys: prevState.addedKeys.filter(item => item !== key)
+    }));
+  }
+
+  handleDataAdd = (row) => {
+    this.setState((prevState) => {
+      const existingIndex = prevState.addedData.findIndex(item => item.key === row.key);
+      if (existingIndex >= 0) {
+        let updatedAddedData = [...prevState.addedData];
+        updatedAddedData[existingIndex] = row;
+        return { addedData: updatedAddedData };
+      } else {
+        return { addedData: [...prevState.addedData, row] };
+      }
+    });
+  }
+
+  handleDataUpdate = (row) => {
+    this.setState((prevState) => {
+      const existingIndex = prevState.updatedData.findIndex(item => item.key === row.key);
+      if (existingIndex >= 0) {
+        let updatedAddedData = [...prevState.updatedData];
+        updatedAddedData[existingIndex] = row;
+        return { updatedData: updatedAddedData };
+      } else {
+        return { updatedData: [...prevState.updatedData, row] };
+      }
+    });
+  }
+
   handleDiscoveryValueChange = (value) => {
     this.setState({selectedDiscoveryValue: value})
   }
@@ -1246,7 +1297,7 @@ class AddModal extends Component {
 
   renderDiscoveryConfig = () => {
     const { form, isAdd = true, discoveryConfig = {} } = this.props;
-    const { discoveryModeDics, upstreams, recordCount, discoveryHandler, defaultValueList, configPropsJson, selectedDiscoveryValue } = this.state;
+    const { discoveryModeDics, upstreams, recordCount, discoveryHandler, defaultValueList, configPropsJson, selectedDiscoveryValue, addedKeys, addedData, deletedIds, updatedData } = this.state;
     const { getFieldDecorator } = form;
     const columns = [
       {
@@ -1441,6 +1492,16 @@ class AddModal extends Component {
                 recordCount={recordCount}
                 onTableChange={this.handleTableChange}
                 onCountChange={this.handleCountChange}
+                onDataAddKey={this.handleAddKey}
+                onDataDeleteKey={this.handleDeleteKey}
+                onAddedKeyDelete={this.handleDeleteAddedKey}
+                onDataAdd={this.handleDataAdd}
+                onDataUpdate={this.handleDataUpdate}
+                addedKeys={addedKeys}
+                addedData={addedData}
+                deletedIds={deletedIds}
+                updatedData={updatedData}
+                isCommonUpdate={!isAdd}
               />
             </>
           )
