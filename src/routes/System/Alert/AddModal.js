@@ -41,7 +41,7 @@ class AddModal extends Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        handleOk({ ...values, id, labels: Object.fromEntries(this.state.labelList.map(({ name, value }) => [name, value])) });
+        handleOk({ ...values, id, labels: Object.fromEntries(this.state.labelList.filter(({ name, value }) => name && value).map(({ name, value }) => [name, value])) });
       }
     });
   }
