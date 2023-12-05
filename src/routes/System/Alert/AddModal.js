@@ -41,7 +41,7 @@ class AddModal extends Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        handleOk({ ...values, id, labels: Object.fromEntries(this.state.labelList.map(({ name, value }) => [name, value])) });
+        handleOk({ ...values, id, labels: Object.fromEntries(this.state.labelList.filter(({ name, value }) => name && value).map(({ name, value }) => [name, value])) });
       }
     });
   }
@@ -178,7 +178,7 @@ class AddModal extends Component {
             )}
           </FormItem>
           {
-            form.getFieldValue('matchAll') || 
+            form.getFieldValue('matchAll') ||
             (
             <>
               <FormItem
@@ -228,7 +228,12 @@ class AddModal extends Component {
                         style={{ marginLeft: 10 }}
                         onClick={() => {
                       const index = labelList.findIndex(l => l.key === label.key)
-                      labelList.splice(index, 1)
+                      if (labelList.length > 1) {
+                        labelList.splice(index, 1)
+                      } else {
+                        labelList[0].name = ''
+                        labelList[0].value = ''
+                      }
                       this.setState({ labelList })
                     }}
                       >
