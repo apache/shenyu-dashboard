@@ -1051,18 +1051,18 @@ export function fetchAlertReport(params) {
 
 export function bindingSelector(params) {
   return request(`${baseUrl}/proxy-selector/binding`,
-      {
-        method: `POST`,
-        body: params
-      });
+    {
+      method: `POST`,
+      body: params
+    });
 }
 
 export function updateDiscoveryUpstream(discoveryHandlerId, upstreams) {
-    return request(`${baseUrl}/discovery-upstream/${discoveryHandlerId}`,
-        {
-            method: `PUT`,
-            body: upstreams
-        });
+  return request(`${baseUrl}/discovery-upstream/${discoveryHandlerId}`,
+    {
+        method: `PUT`,
+        body: upstreams
+    });
 }
 
 

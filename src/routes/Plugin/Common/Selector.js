@@ -41,6 +41,7 @@ import { getIntlContent } from "../../../utils/IntlUtils";
 import SelectorCopy from "./SelectorCopy";
 import { findKeyByValue, parseBooleanString } from "../../../utils/utils";
 import EditableTable from "../Discovery/UpstreamTable";
+import DiscoveryImportModal from "../Discovery/DiscoveryImportModal";
 
 const { Item } = Form;
 const { TabPane } = Tabs;
@@ -97,7 +98,8 @@ class AddModal extends Component {
       discoveryHandler: null,
       defaultValueList: null,
       configPropsJson: {},
-      selectedDiscoveryValue : ''
+      selectedDiscoveryValue : '',
+      showDiscoveryImportModal: false
     };
 
     this.initSelectorCondition(props);
@@ -831,6 +833,21 @@ class AddModal extends Component {
     this.setState({ visible: false, selectValue: formData.type });
   };
 
+  handleImportDiscoveryConfig = configData => {
+    const { form } = this.props;
+    const {
+      type,
+      serverList
+    } = configData;
+    const formData = {
+      selectedDiscoveryType: type,
+      serverList
+    };
+    // this.setState({configPropsJson: JSON.parse(props)})
+    form.setFieldsValue(formData);
+    this.setState({ showDiscoveryImportModal: false });
+  };
+
   onDealChange = (value, item) => {
     item.value = value;
   };
@@ -1451,10 +1468,23 @@ class AddModal extends Component {
 
 
   render() {
-    let {
+    const {
       onCancel,
-      isDiscovery
+      isDiscovery,
+      isAdd
     } = this.props;
+    const operations = (
+      <Button
+        type="primary"
+        icon="import"
+        onClick={() => {
+          this.setState({ showDiscoveryImportModal: true });
+        }}
+        disabled={!isAdd}
+      >
+        {getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.IMPORT")}
+      </Button>
+    );
     return (
       <Modal
         width='900px'
@@ -1470,12 +1500,21 @@ class AddModal extends Component {
         <Form onSubmit={this.handleSubmit} className="login-form">
           {// divide, grpc, websocket plugin
             isDiscovery ? (
-              <Tabs defaultActiveKey="1" size="small">
+              <Tabs defaultActiveKey="1" size="small" tabBarExtraContent={operations}>
                 <TabPane tab={getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.BASIC")} key="1">
                   {this.renderBasicConfig()}
                 </TabPane>
                 <TabPane tab={getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.DISCOVERY")} key="2">
                   {this.renderDiscoveryConfig()}
+                  <DiscoveryImportModal
+                    pluginName={this.props.pluginName}
+                    disabled={!isAdd}
+                    visible={this.state.showDiscoveryImportModal}
+                    onOk={this.handleImportDiscoveryConfig}
+                    onCancel={() => {
+                      this.setState({ showDiscoveryImportModal: false });
+                    }}
+                  />
                 </TabPane>
               </Tabs>
             ) : this.renderBasicConfig()

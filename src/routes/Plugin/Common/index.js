@@ -197,6 +197,7 @@ export default class Common extends Component {
       this.setState({
         popup: (
           <Selector
+            pluginName={name}
             pluginId={pluginId}
             multiSelectorHandle={multiSelectorHandle}
             isAdd={true}
@@ -239,6 +240,7 @@ export default class Common extends Component {
       this.setState({
         popup: (
           <Selector
+            pluginName={name}
             pluginId={pluginId}
             multiSelectorHandle={multiSelectorHandle}
             isDiscovery={false}
@@ -383,6 +385,7 @@ export default class Common extends Component {
         this.setState({
           popup: (
             <Selector
+              pluginName={name}
               {...selector}
               multiSelectorHandle={multiSelectorHandle}
               discoveryConfig={discoveryConfig}
@@ -428,6 +431,7 @@ export default class Common extends Component {
           this.setState({
             popup: (
               <Selector
+                pluginName={name}
                 {...selector}
                 multiSelectorHandle={multiSelectorHandle}
                 isDiscovery={false}
