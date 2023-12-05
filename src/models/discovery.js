@@ -178,7 +178,7 @@ export default {
     },
 
     * updateDiscoveryUpstream(params, {call}) {
-      const { discoveryHandlerId, upstreams } = params;
+      const { discoveryHandlerId, upstreams } = params.payload;
       const json = yield call(updateDiscoveryUpstream, discoveryHandlerId, upstreams);
       if (json.code === 200) {
         // message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
