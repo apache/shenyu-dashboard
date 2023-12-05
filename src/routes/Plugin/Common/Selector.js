@@ -836,9 +836,9 @@ class AddModal extends Component {
   handleImportDiscoveryConfig = configData => {
     const { form } = this.props;
     const {
-      type,
-      serverList
-    } = configData;
+      type = '',
+      serverList = ''
+    } = configData || {};
     const formData = {
       selectedDiscoveryType: type,
       serverList

@@ -63,7 +63,7 @@ class DiscoveryImportModal extends Component {
   render() {
     const { visible = false } = this.props;
     const { loading, configList } = this.state;
-    const { type = '', serverList =  '' } = configList
+    const { type = '', serverList =  '' } = configList || {};
     return (
       <Modal
         visible={visible}
