@@ -172,16 +172,38 @@ export async function findUser(params) {
 
 /* addPlugin */
 export async function addPlugin(params) {
-  const formData = new FormData;
-  formData.append("name",params.name);
-  if(params.config) formData.append("config",params.config);
-  formData.append("sort",params.sort);
-  formData.append("role",params.role);
-  formData.append("enabled",params.enabled);
-  if(params.file) formData.append("file",params.file);
+  const formData = new FormData();
+  formData.append("name", params.name);
+  if (params.config) formData.append("config", params.config);
+  formData.append("sort", params.sort);
+  formData.append("role", params.role);
+  formData.append("enabled", params.enabled);
+  if (params.file && typeof  params.file === 'object') {
+    const base64Data = await readFileAsBase64(params.file);
+    formData.append("file", base64Data);
+  }
+  if(params.file) formData.append("file", params.file);
+
   return request(`${baseUrl}/plugin`, {
     method: `POST`,
     body: formData,
+  });
+}
+
+function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      const base64String = event.target.result.split(",")[1];
+      resolve(base64String);
+    };
+
+    reader.onerror = (error) => {
+      reject(error);
+    };
+
+    reader.readAsDataURL(file);
   });
 }
 
@@ -202,7 +224,11 @@ export async function updatePlugin(params) {
   formData.append("sort",params.sort);
   formData.append("role",params.role);
   formData.append("enabled",params.enabled);
-  if(params.file) formData.append("file",params.file);
+  if (params.file && typeof  params.file === 'object') {
+    const base64Data = await readFileAsBase64(params.file);
+    formData.append("file", base64Data);
+  }
+  if(params.file) formData.append("file", params.file);
   return request(`${baseUrl}/plugin/${params.id}`, {
 
     method: `PUT`,
