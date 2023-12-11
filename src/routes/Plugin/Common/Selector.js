@@ -32,7 +32,7 @@ import {
   Icon,
   InputNumber,
   DatePicker,
-  TimePicker, Tabs, Divider, Table
+  TimePicker, Tabs, Divider
 } from "antd";
 import { connect } from "dva";
 import classnames from "classnames";
@@ -1264,32 +1264,6 @@ class AddModal extends Component {
     const { form, isAdd = true, discoveryConfig = {} } = this.props;
     const { discoveryModeDics, upstreams, recordCount, discoveryHandler, defaultValueList, configPropsJson, selectedDiscoveryValue } = this.state;
     const { getFieldDecorator } = form;
-    const columns = [
-      {
-        title: 'protocol',
-        dataIndex: 'protocol',
-        key: 'protocol',
-        align: 'center'
-      },
-      {
-        title: 'url',
-        dataIndex: 'url',
-        key: 'url',
-        align: 'center'
-      },
-      {
-        title: 'status',
-        dataIndex: 'status',
-        key: 'status',
-        align: 'center'
-      },
-      {
-        title: 'weight',
-        dataIndex: 'weight',
-        key: 'weight',
-        align: 'center'
-      },
-    ];
     return(
       <>
         <Item label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE")} {...formItemLayout}>
