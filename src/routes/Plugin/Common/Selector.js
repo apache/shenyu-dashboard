@@ -1444,7 +1444,14 @@ class AddModal extends Component {
                 isAdd !== true ? (
                   <>
                     <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}</Divider>
-                    <Table dataSource={upstreams} columns={columns} />;
+                    <EditableTable
+                      isLocal={false}
+                      dataSource={upstreams}
+                      recordCount={recordCount}
+                      onTableChange={this.handleTableChange}
+                      onCountChange={this.handleCountChange}
+                    />
+                    {/* <Table dataSource={upstreams} columns={columns} />; */}
                   </>
                 ):null
               }
@@ -1453,6 +1460,7 @@ class AddModal extends Component {
             <>
               <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}</Divider>
               <EditableTable
+                isLocal={true}
                 dataSource={upstreams}
                 recordCount={recordCount}
                 onTableChange={this.handleTableChange}

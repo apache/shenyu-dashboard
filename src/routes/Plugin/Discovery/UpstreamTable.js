@@ -93,6 +93,9 @@ class EditableCell extends Component {
 export default class EditableTable extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isLocal: this.props.isLocal
+    };
     this.columns = [
       {
         title: 'protocol',
@@ -104,7 +107,7 @@ export default class EditableTable extends Component {
       {
         title: 'url',
         dataIndex: 'url',
-        editable: true,
+        editable: this.state.isLocal,
         width: '33%',
         align: 'center'
       },
@@ -121,8 +124,11 @@ export default class EditableTable extends Component {
         editable: true,
         // width: '19%',
         align: 'center'
-      },
-      {
+      }
+    ];
+
+    if (this.state.isLocal) {
+      this.columns.push({
         title: getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.OPERATION"),
         dataIndex: 'operation',
         align: 'center',
@@ -132,8 +138,8 @@ export default class EditableTable extends Component {
               <a>{getIntlContent("SHENYU.BUTTON.SYSTEM.DELETE")}</a>
             </Popconfirm>
           ) : null,
-      },
-    ];
+      });
+    }
 
   }
 
@@ -193,9 +199,11 @@ export default class EditableTable extends Component {
     });
     return (
       <div>
-        <Button onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
-          {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.ADD")}
-        </Button>
+        {this.state.isLocal && (
+          <Button onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
+            {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.ADD")}
+          </Button>
+        )}
         <Table
           components={components}
           rowClassName={() => 'editable-row'}
