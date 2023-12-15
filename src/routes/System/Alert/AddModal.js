@@ -57,7 +57,7 @@ class AddModal extends Component {
   }
 
   render() {
-    let { handleCancel, form, name = null, enable = null, type = null, email = null, accessToken = null, matchAll = null, levels = [] } = this.props;
+    let { handleCancel, form, name = null, enable = true, type = null, email = null, accessToken = null, matchAll = true, levels = [] } = this.props;
     const { labelList } = this.state;
 
     const { getFieldDecorator } = form;
@@ -248,7 +248,7 @@ class AddModal extends Component {
                 {...formItemLayout}
               >
                 {getFieldDecorator('levels', {
-              initialValue: levels.map(i => i.toString()),
+              initialValue: levels?.map(i => i.toString()),
             })(
               <Select
                 mode="tags"
