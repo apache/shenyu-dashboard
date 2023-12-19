@@ -179,7 +179,7 @@ export async function addPlugin(params) {
   formData.append("role", params.role);
   formData.append("enabled", params.enabled);
   if (params.file) {
-    if(typeof params.file == 'string')
+    if(typeof params.file === 'string')
     {
       formData.append("file", params.file);
     }
@@ -227,7 +227,7 @@ export async function updatePlugin(params) {
   formData.append("role",params.role);
   formData.append("enabled",params.enabled);
   if (params.file ) {
-    if(typeof params.file == 'string')
+    if(typeof params.file === 'string')
     {
       formData.append("file", params.file);
     }
