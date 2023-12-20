@@ -182,9 +182,10 @@ export async function addPlugin(params) {
     if(typeof params.file === 'string')
     {
       formData.append("file", params.file);
+    }else {
+      const base64Data = await readFileAsBase64(params.file);
+      formData.append("file", base64Data);
     }
-    const base64Data = await readFileAsBase64(params.file);
-    formData.append("file", base64Data);
   }
   return request(`${baseUrl}/plugin`, {
     method: `POST`,
@@ -230,10 +231,10 @@ export async function updatePlugin(params) {
     if(typeof params.file === 'string')
     {
       formData.append("file", params.file);
+    }else {
+      const base64Data = await readFileAsBase64(params.file);
+      formData.append("file", base64Data);
     }
-    const base64Data = await readFileAsBase64(params.file);
-    formData.append("file", base64Data);
-
   }
   return request(`${baseUrl}/plugin/${params.id}`, {
 
