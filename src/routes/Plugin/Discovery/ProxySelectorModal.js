@@ -17,7 +17,7 @@
 
 import React, {Component} from "react";
 import {connect} from "dva";
-import {Button, Col, Divider, Form, Input, Modal, Row, Select, Table, Tabs, Tooltip} from "antd";
+import {Button, Col, Divider, Form, Input, Modal, Row, Select, Tabs, Tooltip} from "antd";
 import classnames from "classnames";
 import {getIntlContent} from "../../../utils/IntlUtils";
 import EditableTable from './UpstreamTable';
@@ -202,32 +202,6 @@ class ProxySelectorModal extends Component {
         sm: { span: 19 }
       }
     };
-    const columns = [
-      {
-        title: 'protocol',
-        dataIndex: 'protocol',
-        key: 'protocol',
-        align: 'center'
-      },
-      {
-        title: 'url',
-        dataIndex: 'url',
-        key: 'url',
-        align: 'center'
-      },
-      {
-        title: 'status',
-        dataIndex: 'status',
-        key: 'status',
-        align: 'center'
-      },
-      {
-        title: 'weight',
-        dataIndex: 'weight',
-        key: 'weight',
-        align: 'center'
-      },
-    ];
 
     return (
       <Modal
@@ -602,7 +576,13 @@ class ProxySelectorModal extends Component {
                       isAdd !== true ? (
                         <>
                           <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}</Divider>
-                          <Table dataSource={upstreams} columns={columns} />;
+                          <EditableTable
+                            isLocal={false}
+                            dataSource={upstreams}
+                            recordCount={recordCount}
+                            onTableChange={this.handleTableChange}
+                            onCountChange={this.handleCountChange}
+                          />
                         </>
                       ):null
                     }
@@ -611,6 +591,7 @@ class ProxySelectorModal extends Component {
                   <>
                     <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}</Divider>
                     <EditableTable
+                      isLocal={true}
                       dataSource={upstreams}
                       recordCount={recordCount}
                       onTableChange={this.handleTableChange}

@@ -98,13 +98,6 @@ export default class EditableTable extends Component {
     };
     this.columns = [
       {
-        title: 'protocol',
-        dataIndex: 'protocol',
-        editable: true,
-        // width: '20%',
-        align: 'center'
-      },
-      {
         title: 'url',
         dataIndex: 'url',
         editable: this.state.isLocal,
@@ -154,7 +147,6 @@ export default class EditableTable extends Component {
     const newRecordCount = recordCount + 1;
     const newData = {
       key: newRecordCount,
-      protocol: 'protocol',
       url: 'url',
       status: '0',
       weight: '0',
