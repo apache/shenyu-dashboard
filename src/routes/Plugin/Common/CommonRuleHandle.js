@@ -73,7 +73,6 @@ export default class CommonRuleHandle extends Component {
                     style={{ width: "100%" }}
                   >
                     {handleList.map(item => {
-                      console.log(item)
                       let required = item.required === "1";
                       let defaultValue =
                         item.value === 0 || item.value === false
@@ -106,8 +105,6 @@ export default class CommonRuleHandle extends Component {
                         });
                       }
                       if (item.dataType === 1) {
-                        console.log("这里是1")
-                        console.log(item)
                         return (
                           <li key={fieldName}>
                             <Tooltip title={placeholder}>
@@ -132,15 +129,15 @@ export default class CommonRuleHandle extends Component {
                           </li>
                         );
                       } else if (item.dataType === 3 && item.dictOptions) {
-                        console.log("here")
-                        console.log(item)
                         return (
                           <li key={fieldName}>
                             <Tooltip title={placeholder}>
                               <FormItem>
                                 {getFieldDecorator(fieldName, {
                                   rules,
-                                  initialValue: defaultValue
+                                  initialValue: defaultValue === true ? "true" :
+                                    defaultValue === false ? "false" :
+                                      defaultValue
                                 })(
                                   <Select
                                     placeholder={placeholder}

@@ -195,13 +195,5 @@ export function findKeyByValue(obj, value) {
   return Object.keys(obj).find(key => obj[key] === value);
 }
 
-export function parseBooleanString(str) {
-  if (str.toLowerCase() === 'true') {
-    return true;
-  } else if (str.toLowerCase() === 'false') {
-    return false;
-  }
-  return str;
-}
 
 

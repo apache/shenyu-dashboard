@@ -39,7 +39,6 @@ import classnames from "classnames";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import SelectorCopy from "./SelectorCopy";
-import { parseBooleanString } from "../../../utils/utils";
 
 const { Item } = Form;
 const { Option } = Select;
@@ -215,9 +214,6 @@ class AddModal extends Component {
                 delete values.divideUpstreams;
                 delete values.gray;
                 delete values.key;
-              } else if (item.dataType === 3 && item.dictOptions) {
-                handle[index][item.field] = parseBooleanString(values[item.field + index]);
-                delete values[item.field + index];
               } else {
                 handle[index][item.field] = values[item.field + index];
                 delete values[item.field + index];
@@ -627,17 +623,22 @@ class AddModal extends Component {
                                 <Item>
                                   {getFieldDecorator(fieldName, {
                                     rules,
-                                    initialValue: defaultValue.toString()
+                                    initialValue: defaultValue === true ? "true" :
+                                      defaultValue === false ? "false" :
+                                        defaultValue
                                   })(
                                     <Select
-                                      placeholder={defaultValue.toString()}
+                                      placeholder={placeholder}
                                       style={{ width: "100%" }}
                                     >
                                       {item.dictOptions.map(option => {
+                                        const optionValue = option.dictValue === true ? "true" :
+                                          option.dictValue === false ? "false" :
+                                            option.dictValue;
                                         return (
                                           <Option
-                                            key={option.dictValue}
-                                            value={option.dictValue}
+                                            key={optionValue}
+                                            value={optionValue}
                                           >
                                             {option.dictName} ({item.label})
                                           </Option>
