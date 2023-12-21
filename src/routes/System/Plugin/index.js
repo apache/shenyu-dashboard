@@ -152,6 +152,9 @@ export default class Plugin extends Component {
         id,
         enabled
       },
+      callback: () => {
+        refreshAuthMenus({ dispatch });
+      }
     });
   };
 

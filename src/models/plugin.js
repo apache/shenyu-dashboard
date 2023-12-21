@@ -154,7 +154,7 @@ export default {
       const json = yield call(addPluginResource, payload);
       if (json.code === 200) {
         message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
-        callback(json)
+        callback();
       } else {
         message.warn(json.message);
       }
