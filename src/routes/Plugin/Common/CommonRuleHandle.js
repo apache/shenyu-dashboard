@@ -77,12 +77,7 @@ export default class CommonRuleHandle extends Component {
                       let defaultValue =
                         item.value === 0 || item.value === false
                           ? item.value
-                          : item.value ||
-                            (item.defaultValue === "true"
-                              ? true
-                              : item.defaultValue === "false"
-                                ? false
-                                : item.defaultValue);
+                          : item.value || item.defaultValue;
                       let placeholder = item.placeholder || item.label;
                       let checkRule = item.checkRule;
                       let fieldName = item.field + index;
@@ -135,17 +130,22 @@ export default class CommonRuleHandle extends Component {
                               <FormItem>
                                 {getFieldDecorator(fieldName, {
                                   rules,
-                                  initialValue: defaultValue
+                                  initialValue: defaultValue === true ? "true" :
+                                    defaultValue === false ? "false" :
+                                      defaultValue
                                 })(
                                   <Select
                                     placeholder={placeholder}
                                     style={{ width: 260 }}
                                   >
                                     {item.dictOptions.map(option => {
+                                      const optionValue = option.dictValue === true ? "true" :
+                                        option.dictValue === false ? "false" :
+                                          option.dictValue;
                                       return (
                                         <Option
-                                          key={option.dictValue}
-                                          value={option.dictValue}
+                                          key={optionValue}
+                                          value={optionValue}
                                         >
                                           {option.dictName} ({item.label})
                                         </Option>
@@ -232,17 +232,19 @@ export default class CommonRuleHandle extends Component {
                   ) {
                     callback();
                   }
-                  try {
-                    const obj = JSON.parse(value);
-                    if (obj.constructor === Object) {
-                      callback();
-                    } else {
-                      callback(
-                        getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID")
-                      );
+                  if (getFieldValue("handleType") === "2") {
+                    try {
+                      const obj = JSON.parse(value);
+                      if (obj.constructor === Object) {
+                        callback();
+                      } else {
+                        callback(
+                          getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID")
+                        );
+                      }
+                    } catch (e) {
+                      callback(getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID"));
                     }
-                  } catch (e) {
-                    callback(getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID"));
                   }
                 }
               }

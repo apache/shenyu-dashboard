@@ -23,7 +23,6 @@ import { getIntlContent } from "../../../utils/IntlUtils";
 import CommonRuleHandle from "./CommonRuleHandle";
 import PluginRuleHandle from "../PluginRuleHandle";
 import RuleCopy from "./RuleCopy";
-import {parseBooleanString} from "../../../utils/utils";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -178,11 +177,7 @@ class AddModal extends Component {
                 pluginHandleList.forEach((handleList, index) => {
                   handle[index] = {};
                   handleList.forEach(item => {
-                    if (item.dataType === 3 && item.dictOptions) {
-                      handle[index][item.field] = parseBooleanString(values[item.field + index]);
-                    } else {
-                      handle[index][item.field] = values[item.field + index];
-                    }
+                    handle[index][item.field] = values[item.field + index];
                   });
                 });
                 handle = multiRuleHandle
