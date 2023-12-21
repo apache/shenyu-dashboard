@@ -306,12 +306,7 @@ class ProxySelectorModal extends Component {
                               let defaultValue =
                                 item.value === 0 || item.value === false
                                   ? item.value
-                                  : item.value ||
-                                  (item.defaultValue === "true"
-                                    ? true
-                                    : item.defaultValue === "false"
-                                      ? false
-                                      : item.defaultValue);
+                                  : item.value || item.defaultValue;
                               let placeholder = item.placeholder || item.label;
                               let checkRule = item.checkRule;
                               let fieldName = item.field + index;
