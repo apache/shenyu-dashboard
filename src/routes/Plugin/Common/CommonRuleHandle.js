@@ -232,17 +232,19 @@ export default class CommonRuleHandle extends Component {
                   ) {
                     callback();
                   }
-                  try {
-                    const obj = JSON.parse(value);
-                    if (obj.constructor === Object) {
-                      callback();
-                    } else {
-                      callback(
-                        getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID")
-                      );
+                  if (getFieldValue("handleType") === "2") {
+                    try {
+                      const obj = JSON.parse(value);
+                      if (obj.constructor === Object) {
+                        callback();
+                      } else {
+                        callback(
+                          getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID")
+                        );
+                      }
+                    } catch (e) {
+                      callback(getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID"));
                     }
-                  } catch (e) {
-                    callback(getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID"));
                   }
                 }
               }
