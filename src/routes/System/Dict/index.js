@@ -348,6 +348,16 @@ export default class ShenYuDict extends Component {
 
         {
           align: "center",
+          title: getIntlContent("SHENYU.DIC.CODE"),
+          dataIndex: "dictCode",
+          key: "dictCode",
+          ellipsis:true,
+          // width: 200,
+          render: (text, record) => this.commonPopover(record, <div style={{color: "#1f640a"}}>{text || "----"}</div>)
+        },
+
+        {
+          align: "center",
           title: getIntlContent("SHENYU.DIC.VALUE"),
           dataIndex: "dictValue",
           key: "dictValue",
