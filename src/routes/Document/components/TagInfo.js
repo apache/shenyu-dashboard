@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Typography, Button, Row, Col, Table } from "antd";
+import {Typography, Button, Row, Col, Table, Popconfirm} from "antd";
 import React, { useContext } from "react";
 import dayjs from "dayjs";
 import ApiContext from "./ApiContext";
@@ -80,9 +80,23 @@ function TagInfo(props) {
           {getIntlContent("SHENYU.BUTTON.SYSTEM.EDIT")}
         </Button>
         &nbsp;&nbsp;
-        <Button ghost type="danger" onClick={handleDelete}>
-          {getIntlContent("SHENYU.BUTTON.SYSTEM.DELETE")}
-        </Button>
+        <Popconfirm
+          title={getIntlContent("SHENYU.COMMON.DELETE")}
+          placement="bottom"
+          onCancel={e => {
+            e.stopPropagation();
+          }}
+          onConfirm={e => {
+            e.stopPropagation();
+            handleDelete(e)
+          }}
+          okText={getIntlContent("SHENYU.COMMON.SURE")}
+          cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+        >
+          <Button ghost type="danger">
+            {getIntlContent("SHENYU.BUTTON.SYSTEM.DELETE")}
+          </Button>
+        </Popconfirm>
       </Col>
       <Col span={12}>
         <Text>

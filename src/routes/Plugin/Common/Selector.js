@@ -39,7 +39,7 @@ import classnames from "classnames";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import SelectorCopy from "./SelectorCopy";
-import { findKeyByValue, parseBooleanString } from "../../../utils/utils";
+import { findKeyByValue } from "../../../utils/utils";
 import EditableTable from "../Discovery/UpstreamTable";
 import DiscoveryImportModal from "../Discovery/DiscoveryImportModal";
 
@@ -270,7 +270,7 @@ class AddModal extends Component {
               handle[index] = {};
               handleList.forEach(item => {
                 if (pluginId === "8") {
-                  const { keys, divideUpstreams } = values;
+                  const {keys, divideUpstreams} = values;
                   const data = {
                     [item.field]: values[item.field],
                     gray: values.gray
@@ -284,9 +284,6 @@ class AddModal extends Component {
                   delete values.divideUpstreams;
                   delete values.gray;
                   delete values.key;
-                } else if (item.dataType === 3 && item.dictOptions) {
-                  handle[index][item.field] = parseBooleanString(values[item.field + index]);
-                  delete values[item.field + index];
                 } else {
                   handle[index][item.field] = values[item.field + index];
                   delete values[item.field + index];
@@ -296,8 +293,8 @@ class AddModal extends Component {
             handleOk({
               ...values,
               handle: multiSelectorHandle
-                  ? JSON.stringify(handle)
-                  : JSON.stringify(handle[0]),
+                ? JSON.stringify(handle)
+                : JSON.stringify(handle[0]),
               sort: Number(values.sort),
               selectorConditions
             });
@@ -644,12 +641,7 @@ class AddModal extends Component {
                         let defaultValue =
                           item.value === 0 || item.value === false
                             ? item.value
-                            : item.value ||
-                            (item.defaultValue === "true"
-                              ? true
-                              : item.defaultValue === "false"
-                                ? false
-                                : item.defaultValue);
+                            : item.value || item.defaultValue;
                         let placeholder = item.label || item.placeholder;
                         let checkRule = item.checkRule;
                         let fieldName = item.field + index;
@@ -702,17 +694,22 @@ class AddModal extends Component {
                                 <Item>
                                   {getFieldDecorator(fieldName, {
                                     rules,
-                                    initialValue: defaultValue.toString()
+                                    initialValue: defaultValue === true ? "true" :
+                                      defaultValue === false ? "false" :
+                                        defaultValue
                                   })(
                                     <Select
-                                      placeholder={defaultValue.toString()}
+                                      placeholder={placeholder}
                                       style={{ width: "100%" }}
                                     >
                                       {item.dictOptions.map(option => {
+                                        const optionValue = option.dictValue === true ? "true" :
+                                          option.dictValue === false ? "false" :
+                                            option.dictValue;
                                         return (
                                           <Option
-                                            key={option.dictValue}
-                                            value={option.dictValue}
+                                            key={optionValue}
+                                            value={optionValue}
                                           >
                                             {option.dictName} ({item.label})
                                           </Option>
