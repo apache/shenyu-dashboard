@@ -98,7 +98,7 @@ class AddModal extends Component {
       discoveryHandler: null,
       defaultValueList: null,
       configPropsJson: {},
-      selectedDiscoveryValue : '',
+      selectedDiscoveryValue : 'local',
       showDiscoveryImportModal: false
     };
 
@@ -178,14 +178,14 @@ class AddModal extends Component {
   };
 
   initDic = type => {
-    const { dispatch } = this.props;
+    const { dispatch, isAdd = true} = this.props;
     dispatch({
       type: "shenyuDict/fetchByType",
       payload: {
         type,
         callBack: dics => {
           this.state[`${type}Dics`] = dics;
-          if (type === "discoveryMode") {
+          if (type === "discoveryMode" && isAdd ) {
             let configProps = dics.filter(item => item.dictName === 'zookeeper');
             let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
             this.setState({configPropsJson: propsEntries});
@@ -1266,7 +1266,7 @@ class AddModal extends Component {
         <Item label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE")} {...formItemLayout}>
           {getFieldDecorator('selectedDiscoveryType', {
             rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}],
-            initialValue: discoveryConfig.discoveryType !== '' ? discoveryConfig.discoveryType : undefined
+            initialValue: discoveryConfig.discoveryType !== '' ? discoveryConfig.discoveryType : 'local'
           })(
             <Select
               placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}

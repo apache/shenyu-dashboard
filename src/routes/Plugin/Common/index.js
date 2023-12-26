@@ -205,9 +205,19 @@ export default class Common extends Component {
             isDiscovery={true}
             handleOk={selector => {
               const { name: selectorName, listenerNode, serverList, selectedDiscoveryType, discoveryProps, handler, upstreams } = selector;
+              const upstreamsWithProps = upstreams.map(item => ({
+                protocol: item.protocol,
+                url: item.url,
+                status: item.status,
+                weight: item.weight,
+                props: JSON.stringify({
+                  startupTime: item.startupTime,
+                  warmupTime: item.warmupTime
+                })
+              }));
               dispatch({
                 type: "common/addSelector",
-                payload: { pluginId, ...selector },
+                payload: { pluginId, ...selector, upstreams: upstreamsWithProps },
                 fetchValue: { pluginId, currentPage: selectorPage, pageSize: selectorPageSize },
                 callback: (selectorId) => {
                   dispatch({
@@ -219,7 +229,7 @@ export default class Common extends Component {
                       listenerNode,
                       handler,
                       type: typeValue,
-                      discoveryUpstreams: upstreams,
+                      discoveryUpstreams: upstreamsWithProps,
                       discovery: {
                         discoveryType: selectedDiscoveryType,
                         serverList,
@@ -378,7 +388,14 @@ export default class Common extends Component {
         let updateArray = [];
         if (selector.discoveryUpstreams) {
           updateArray = selector.discoveryUpstreams.map((item) => {
-            return { ...item, key: item.id };
+            let propsObj = JSON.parse(item.props || "{}");
+            if (item.props === null) {
+              propsObj = {
+                startupTime: 0,
+                warmupTime: 10,
+              };
+            }
+            return { ...item, key: item.id, startupTime: propsObj.startupTime, warmupTime: propsObj.warmupTime };
           });
         }
         let discoveryHandlerId = selector.discoveryHandler ? selector.discoveryHandler.id : '';
@@ -408,10 +425,16 @@ export default class Common extends Component {
                   callback: () => {
                     const {upstreams} = values
                     const upstreamsWithHandlerId = upstreams.map(item => ({
-                          ...item,
-                          props: '{}',
-                          discoveryHandlerId
-                        }));
+                      protocol: item.protocol,
+                      url: item.url,
+                      status: item.status,
+                      weight: item.weight,
+                      props: JSON.stringify({
+                        startupTime: item.startupTime,
+                        warmupTime: item.warmupTime
+                      }),
+                      discoveryHandlerId
+                    }));
                     dispatch({
                       type: "discovery/updateDiscoveryUpstream",
                       payload: {

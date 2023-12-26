@@ -98,6 +98,20 @@ export default class EditableTable extends Component {
     };
     this.columns = [
       {
+        title: 'protocol',
+        dataIndex: 'protocol',
+        editable: true,
+        // width: '33%',
+        align: 'center'
+      },
+      // {
+      //   title: 'host',
+      //   dataIndex: 'host',
+      //   editable: true,
+      //   // width: '33%',
+      //   align: 'center'
+      // },
+      {
         title: 'url',
         dataIndex: 'url',
         editable: this.state.isLocal,
@@ -114,6 +128,20 @@ export default class EditableTable extends Component {
       {
         title: 'weight',
         dataIndex: 'weight',
+        editable: true,
+        // width: '19%',
+        align: 'center'
+      },
+      {
+        title: 'startupTime',
+        dataIndex: 'startupTime',
+        editable: true,
+        // width: '19%',
+        align: 'center'
+      },
+      {
+        title: 'warmupTime',
+        dataIndex: 'warmupTime',
         editable: true,
         // width: '19%',
         align: 'center'
@@ -147,9 +175,12 @@ export default class EditableTable extends Component {
     const newRecordCount = recordCount + 1;
     const newData = {
       key: newRecordCount,
-      url: 'url',
+      protocol: 'http://',
+      url: 'localhost:',
       status: '0',
-      weight: '0',
+      weight: '50',
+      startupTime: '0',
+      warmupTime: '10'
     };
     this.props.onTableChange([...dataSource, newData]);
     this.props.onCountChange(newRecordCount);
