@@ -40,8 +40,9 @@ import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import SelectorCopy from "./SelectorCopy";
 import { findKeyByValue } from "../../../utils/utils";
-import EditableTable from "../Discovery/UpstreamTable";
 import DiscoveryImportModal from "../Discovery/DiscoveryImportModal";
+import EditableFormTable from "./TestTable.js";
+import EditableTable from "../Discovery/UpstreamTable";
 
 const { Item } = Form;
 const { TabPane } = Tabs;
@@ -842,6 +843,7 @@ class AddModal extends Component {
     };
     // this.setState({configPropsJson: JSON.parse(props)})
     form.setFieldsValue(formData);
+    this.setState({ selectedDiscoveryValue: type })
     this.setState({ showDiscoveryImportModal: false });
   };
 
@@ -1298,29 +1300,29 @@ class AddModal extends Component {
                 />)}
               </Item>
 
-              <Item label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.HANDLER")} {...formItemLayout}>
-                <div
-                  className={styles.handleWrap}
-                  style={{
-                    display: "flex"
-                  }}
-                >
+              {discoveryHandler !== null && Array.isArray(discoveryHandler) && discoveryHandler.length !== 0 && (
+                <Item label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.HANDLER")} {...formItemLayout}>
                   <div
+                    className={styles.handleWrap}
                     style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      flexDirection: "row"
+                      display: "flex"
                     }}
                   >
-                    <ul
-                      className={classnames({
-                        [styles.handleUl]: true,
-                        [styles.springUl]: true
-                      })}
-                      style={{ width: "100%" }}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        flexDirection: "row"
+                      }}
                     >
-                      {(() => {
-                        if(discoveryHandler !== null && Array.isArray(discoveryHandler) && discoveryHandler.length !== 0){
+                      <ul
+                        className={classnames({
+                          [styles.handleUl]: true,
+                          [styles.springUl]: true
+                        })}
+                        style={{ width: "100%" }}
+                      >
+                        {(() => {
                           let item = discoveryHandler[0];
                           let checkRule = item.checkRule;
                           let required = item.required === "1";
@@ -1366,12 +1368,12 @@ class AddModal extends Component {
                               </li>
                             ));
                           }
-                        }
-                      })()}
-                    </ul>
+                        })()}
+                      </ul>
+                    </div>
                   </div>
-                </div>
-              </Item>
+                </Item>
+              )}
 
               <Item label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST")} {...formItemLayout}>
                 {getFieldDecorator('serverList', {
@@ -1384,10 +1386,13 @@ class AddModal extends Component {
                 />)}
               </Item>
 
-              <div style={{ marginLeft: '50px', marginTop: '15px', marginBottom: '15px', fontWeight: '500', }}>
-                {getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS")}
-                <span style={{ marginLeft: '2px', fontWeight: '500' }}>:</span>
-              </div>
+              {Object.keys(configPropsJson).length > 0 && (
+                <div style={{ marginLeft: '50px', marginTop: '15px', marginBottom: '15px', fontWeight: '500' }}>
+                  {getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS")}
+                  <span style={{ marginLeft: '2px', fontWeight: '500' }}>:</span>
+                </div>
+              )}
+
               <div style={{ marginLeft: '35px', display: 'flex', alignItems: 'baseline' }}>
                 <div style={{ marginLeft: '8px' }}>
                   <Row gutter={[16, 4]} justify="center">
@@ -1415,7 +1420,7 @@ class AddModal extends Component {
                 isAdd !== true ? (
                   <>
                     <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}</Divider>
-                    <EditableTable
+                    <EditableFormTable
                       isLocal={false}
                       dataSource={upstreams}
                       recordCount={recordCount}
@@ -1430,7 +1435,7 @@ class AddModal extends Component {
           ) : (
             <>
               <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}</Divider>
-              <EditableTable
+              <EditableFormTable
                 isLocal={true}
                 dataSource={upstreams}
                 recordCount={recordCount}
@@ -1466,7 +1471,7 @@ class AddModal extends Component {
     );
     return (
       <Modal
-        width='900px'
+        width='1100px'
         centered
         title={getIntlContent("SHENYU.SELECTOR.NAME")}
         // visible here defaults to true, because the visibility of modal is determined by the popup attribute in index.js

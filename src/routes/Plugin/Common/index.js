@@ -208,10 +208,10 @@ export default class Common extends Component {
               const upstreamsWithProps = upstreams.map(item => ({
                 protocol: item.protocol,
                 url: item.url,
-                status: item.status,
+                status: parseInt(item.status, 10),
                 weight: item.weight,
+                startupTime: item.startupTime,
                 props: JSON.stringify({
-                  startupTime: item.startupTime,
                   warmupTime: item.warmupTime
                 })
               }));
@@ -380,7 +380,7 @@ export default class Common extends Component {
        if ( isDiscovery ){
         let discoveryConfig = {
           props: selector.discoveryVO ? selector.discoveryVO.props: "{}",
-          discoveryType: selector.discoveryVO ? selector.discoveryVO.type: '',
+          discoveryType: selector.discoveryVO ? selector.discoveryVO.type: 'local',
           serverList: selector.discoveryVO ? selector.discoveryVO.serverList: '',
           handler: selector.discoveryHandler ? selector.discoveryHandler.handler: "{}",
           listenerNode: selector.discoveryHandler ? selector.discoveryHandler.listenerNode : '',
@@ -391,11 +391,10 @@ export default class Common extends Component {
             let propsObj = JSON.parse(item.props || "{}");
             if (item.props === null) {
               propsObj = {
-                startupTime: 0,
                 warmupTime: 10,
               };
             }
-            return { ...item, key: item.id, startupTime: propsObj.startupTime, warmupTime: propsObj.warmupTime };
+            return { ...item, key: item.id, warmupTime: propsObj.warmupTime };
           });
         }
         let discoveryHandlerId = selector.discoveryHandler ? selector.discoveryHandler.id : '';
@@ -427,7 +426,7 @@ export default class Common extends Component {
                     const upstreamsWithHandlerId = upstreams.map(item => ({
                       protocol: item.protocol,
                       url: item.url,
-                      status: item.status,
+                      status: parseInt(item.status, 10),
                       weight: item.weight,
                       props: JSON.stringify({
                         startupTime: item.startupTime,
