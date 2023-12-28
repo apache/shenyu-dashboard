@@ -144,9 +144,13 @@ class EditableTable extends Component {
                 </span>
                 ) : (
                   <span>
-                    <a disabled={editingKey !== ''} onClick={() => this.edit(record.key)}>
+                    <Button
+                      type="link"
+                      disabled={editingKey !== ''}
+                      onClick={() => this.edit(record.key)}
+                    >
                       Edit
-                    </a>
+                    </Button>
                     {' '}
                     {this.props.dataSource.length >= 1 && this.state.isLocal ? (
                       <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.key)}>
