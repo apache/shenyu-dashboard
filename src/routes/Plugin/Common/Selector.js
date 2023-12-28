@@ -42,7 +42,7 @@ import SelectorCopy from "./SelectorCopy";
 import { findKeyByValue } from "../../../utils/utils";
 import DiscoveryImportModal from "../Discovery/DiscoveryImportModal";
 import EditableFormTable from "./TestTable.js";
-import EditableTable from "../Discovery/UpstreamTable";
+// import EditableTable from "../Discovery/UpstreamTable";
 
 const { Item } = Form;
 const { TabPane } = Tabs;
@@ -100,7 +100,8 @@ class AddModal extends Component {
       defaultValueList: null,
       configPropsJson: {},
       selectedDiscoveryValue : 'local',
-      showDiscoveryImportModal: false
+      showDiscoveryImportModal: false,
+      importedDiscoveryId: ''
     };
 
     this.initSelectorCondition(props);
@@ -232,7 +233,7 @@ class AddModal extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { form, handleOk, multiSelectorHandle, pluginId, isDiscovery } = this.props;
-    const { selectorConditions, selectValue, pluginHandleList, defaultValueList, configPropsJson, upstreams } = this.state;
+    const { selectorConditions, selectValue, pluginHandleList, defaultValueList, configPropsJson, upstreams, importedDiscoveryId } = this.state;
     let handle = [];
 
     form.validateFieldsAndScroll((err, values) => {
@@ -264,7 +265,8 @@ class AddModal extends Component {
               selectorConditions,
               handler,
               discoveryProps,
-              upstreams});
+              upstreams,
+              importedDiscoveryId});
 
           } else {
             pluginHandleList.forEach((handleList, index) => {
@@ -835,16 +837,19 @@ class AddModal extends Component {
     const { form } = this.props;
     const {
       type = '',
-      serverList = ''
+      serverList = '',
+      id: discoveryId = ''
     } = configData || {};
     const formData = {
       selectedDiscoveryType: type,
       serverList
     };
-    // this.setState({configPropsJson: JSON.parse(props)})
-    form.setFieldsValue(formData);
-    this.setState({ selectedDiscoveryValue: type })
-    this.setState({ showDiscoveryImportModal: false });
+    this.setState(
+      { selectedDiscoveryValue: type, showDiscoveryImportModal: false, importedDiscoveryId: discoveryId },
+      () => {
+        form.setFieldsValue(formData);
+      }
+    );
   };
 
   onDealChange = (value, item) => {

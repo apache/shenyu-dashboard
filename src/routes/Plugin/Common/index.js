@@ -204,7 +204,7 @@ export default class Common extends Component {
             discoveryConfig={discoveryConfig}
             isDiscovery={true}
             handleOk={selector => {
-              const { name: selectorName, listenerNode, serverList, selectedDiscoveryType, discoveryProps, handler, upstreams } = selector;
+              const { name: selectorName, listenerNode, serverList, selectedDiscoveryType, discoveryProps, handler, upstreams, importedDiscoveryId } = selector;
               const upstreamsWithProps = upstreams.map(item => ({
                 protocol: item.protocol,
                 url: item.url,
@@ -231,6 +231,7 @@ export default class Common extends Component {
                       type: typeValue,
                       discoveryUpstreams: upstreamsWithProps,
                       discovery: {
+                        id: importedDiscoveryId,
                         discoveryType: selectedDiscoveryType,
                         serverList,
                         props: discoveryProps,
@@ -429,7 +430,6 @@ export default class Common extends Component {
                       status: parseInt(item.status, 10),
                       weight: item.weight,
                       props: JSON.stringify({
-                        startupTime: item.startupTime,
                         warmupTime: item.warmupTime
                       }),
                       discoveryHandlerId
