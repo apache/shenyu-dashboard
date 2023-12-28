@@ -835,6 +835,7 @@ class AddModal extends Component {
 
   handleImportDiscoveryConfig = configData => {
     const { form } = this.props;
+    const { discoveryModeDics } = this.state;
     const {
       type = '',
       serverList = '',
@@ -848,6 +849,9 @@ class AddModal extends Component {
       { selectedDiscoveryValue: type, showDiscoveryImportModal: false, importedDiscoveryId: discoveryId },
       () => {
         form.setFieldsValue(formData);
+        let configProps = discoveryModeDics.filter(item => item.dictName === type);
+        let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
+        this.setState({configPropsJson: propsEntries})
       }
     );
   };
@@ -1410,7 +1414,7 @@ class AddModal extends Component {
                             <Input
                               allowClear
                               disabled={!isAdd}
-                              placeholder={`Enter ${key}`}
+                              placeholder={isAdd ? `Enter ${key}` : ''}
                               addonBefore={key}
                             />
                           )}
