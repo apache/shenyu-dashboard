@@ -190,7 +190,7 @@ class DiscoveryConfigModal extends Component {
                         <Input
                           allowClear
                           disabled={isSetConfig}
-                          placeholder={`Enter ${key}`}
+                          placeholder={!isSetConfig ? `Enter ${key}` : ''}
                           addonBefore={key}
                         />
                       )}

@@ -20,10 +20,11 @@ import {connect} from "dva";
 import {Button, Col, Divider, Form, Input, Modal, Row, Select, Tabs, Tooltip} from "antd";
 import classnames from "classnames";
 import {getIntlContent} from "../../../utils/IntlUtils";
-import EditableTable from './UpstreamTable';
+// import EditableTable from './UpstreamTable';
 import styles from "../index.less";
 import ProxySelectorCopy from "./ProxySelectorCopy.js";
 import {findKeyByValue} from "../../../utils/utils";
+import EditableFormTable from "../Common/TestTable";
 
 
 const FormItem = Form.Item;
@@ -108,7 +109,6 @@ class ProxySelectorModal extends Component {
     const { configPropsJson, upstreams, pluginHandleList, defaultValueList } = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
-      console.log("values", values)
       if (!err) {
         let {name, forwardPort, listenerNode, serverList, selectedDiscoveryType} = values;
         const discoveryPropsJson = {};
@@ -509,7 +509,7 @@ class ProxySelectorModal extends Component {
                                                 {value}
                                               </div>
                                             }
-                                            placeholder={`Your ${value}`}
+                                            placeholder={isAdd? `Your ${value}` : ''}
                                             key={value}
                                           />
                                         )}
@@ -554,7 +554,7 @@ class ProxySelectorModal extends Component {
                                         <Input
                                           allowClear
                                           disabled={!isAdd}
-                                          placeholder={`Enter ${key}`}
+                                          placeholder={isAdd ? `Enter ${key}` : ''}
                                           addonBefore={key}
                                         />
                                       )}
@@ -572,7 +572,7 @@ class ProxySelectorModal extends Component {
                       isAdd !== true ? (
                         <>
                           <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}</Divider>
-                          <EditableTable
+                          <EditableFormTable
                             isLocal={false}
                             dataSource={upstreams}
                             recordCount={recordCount}
@@ -586,7 +586,7 @@ class ProxySelectorModal extends Component {
                 ) : (
                   <>
                     <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}</Divider>
-                    <EditableTable
+                    <EditableFormTable
                       isLocal={true}
                       dataSource={upstreams}
                       recordCount={recordCount}

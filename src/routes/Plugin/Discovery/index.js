@@ -163,15 +163,7 @@ export default class DiscoveryProxy extends Component {
           serverList: '',
           props: {}
         },
-        discoveryUpstreams: [
-          // {
-          //   protocol: '1',
-          //   url: '1',
-          //   status:'1',
-          //   weight: '1',
-          //   key: '1'
-          // }
-        ]
+        discoveryUpstreams: []
       }
     });
   };
@@ -300,6 +292,16 @@ export default class DiscoveryProxy extends Component {
               discoveryDicts={discoveryDics}
               handleOk={values => {
                 const {name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, selectedDiscoveryType, upstreams} = values;
+                const upstreamsWithProps = upstreams.map(item => ({
+                  protocol: item.protocol,
+                  url: item.url,
+                  status: parseInt(item.status, 10),
+                  weight: item.weight,
+                  startupTime: item.startupTime,
+                  props: JSON.stringify({
+                    warmupTime: item.warmupTime
+                  })
+                }));
                 dispatch({
                   type: 'discovery/add',
                   payload: {
@@ -318,7 +320,7 @@ export default class DiscoveryProxy extends Component {
                       serverList,
                       props: discoveryProps
                     },
-                    discoveryUpstreams: upstreams
+                    discoveryUpstreams: upstreamsWithProps
                   },
                   callback: () => {
                     this.closeModal();
@@ -352,7 +354,13 @@ export default class DiscoveryProxy extends Component {
       isSetConfig = true
     }
     const updateArray = data.discoveryUpstreams.map((item) => {
-      return { ...item, key: item.id };
+      let propsObj = JSON.parse(item.props || "{}");
+      if (item.props === null) {
+        propsObj = {
+          warmupTime: 10,
+        };
+      }
+      return { ...item, key: item.id, warmupTime: propsObj.warmupTime };
     });
     this.setState({
       popup: (
@@ -368,6 +376,16 @@ export default class DiscoveryProxy extends Component {
           discoveryDicts={discoveryDics}
           handleOk={values => {
             const {name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, upstreams} = values;
+            const upstreamsWithProps = upstreams.map(item => ({
+              protocol: item.protocol,
+              url: item.url,
+              status: parseInt(item.status, 10),
+              weight: item.weight,
+              startupTime: item.startupTime,
+              props: JSON.stringify({
+                warmupTime: item.warmupTime
+              })
+            }));
             dispatch({
               type: 'discovery/update',
               payload: {
@@ -384,7 +402,7 @@ export default class DiscoveryProxy extends Component {
                   serverList,
                   props: discoveryProps
                 },
-                discoveryUpstreams: upstreams
+                discoveryUpstreams: upstreamsWithProps
               },
               callback: () => {
                 this.closeUpdateModal();

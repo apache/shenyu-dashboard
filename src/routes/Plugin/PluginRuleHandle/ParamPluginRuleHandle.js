@@ -96,7 +96,6 @@ class ParamPluginRuleConfig extends Component {
     const data = {};
     const currentData = this.getCurrentData();
     const valueStr = JSON.stringify(currentData);
-    // console.log(currentData);
     if (value !== undefined) {
       try {
         Object.assign(data, JSON.parse(value));
