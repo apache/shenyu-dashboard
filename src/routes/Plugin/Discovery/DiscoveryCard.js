@@ -86,7 +86,7 @@ export class DiscoveryCard extends Component {
             >
               <AuthButton perms="plugin:tcpSelector:delete">
                 <Icon type="delete" key="delete" style={{color: "#CC0000", fontSize: "17px"}} />
-              </AuthButton>,
+              </AuthButton>
             </Popconfirm>
           ]}
           extra={<div style={{ fontSize: '15px', lineHeight: '1.5', marginRight: '14px'}}>{formatTimestamp(createTime)}</div>}
