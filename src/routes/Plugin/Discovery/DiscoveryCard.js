@@ -22,7 +22,7 @@ import {getIntlContent} from "../../../utils/IntlUtils";
 import discoveryStyles from "./discovery.less";
 
 import { formatTimestamp } from "../../../utils/utils";
-import {ConsulIcon, EtcdIcon, LocalIcon, NacosIcon, ZkIcon} from "./DiscoveryIcon";
+import {ConsulIcon, EtcdIcon, LocalIcon, NacosIcon, ZkIcon, EurekaIcon} from "./DiscoveryIcon";
 import AuthButton from "../../../utils/AuthButton";
 
 const { Text } = Typography;
@@ -56,6 +56,7 @@ export class DiscoveryCard extends Component {
       nacos: <NacosIcon style={{ fontSize: '40px', color: '#354458' }} />,
       consul: <ConsulIcon style={{ fontSize: '40px', color: '#354458' }} />,
       etcd: <EtcdIcon style={{ fontSize: '40px', color: '#354458' }} />,
+      eureka: <EurekaIcon style={{ fontSize: '40px', color: '#354458' }} />,
     };
 
     const getAvatarIcon = () => {

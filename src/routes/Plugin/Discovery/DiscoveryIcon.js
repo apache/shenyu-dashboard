@@ -100,11 +100,26 @@ const EtcdSvg = () => (
   </svg>
 )
 
+const EurekaSvg = () => (
+  <svg
+    className="icon"
+    viewBox="0 0 1024 1024"
+    width="1em"
+    height="1em"
+  >
+    <path
+      d="M985.417388 0H38.457749C17.231069 0 0 17.231069 0 38.457749v947.084502c0 21.22668 17.231069 38.457749 38.457749 38.457749h947.084502c21.22668 0 38.332886-17.231069 38.457749-38.332886V38.457749C1023.875137 17.231069 1006.644068 0 985.417388 0zM744.182417 820.723326H279.69272V203.151811h449.506158v92.897939H390.32118V449.506158h311.158152v92.897939H390.32118v185.42129H744.182417v92.897939z"
+      fill="currentColor"
+    />
+  </svg>
+)
+
 export const ZkIcon = props => <Icon component={ZkSvg} {...props} />;
 export const LocalIcon = props => <Icon component={LocalSvg} {...props} />;
 export const NacosIcon = props => <Icon component={NacosSvg} {...props} />;
 export const ConsulIcon = props => <Icon component={ConsulSvg} {...props} />;
 export const EtcdIcon = props => <Icon component={EtcdSvg} {...props} />;
+export const EurekaIcon = props => <Icon component={EurekaSvg} {...props} />;
 
 
 
