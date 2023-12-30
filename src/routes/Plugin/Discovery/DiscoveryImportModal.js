@@ -63,7 +63,7 @@ class DiscoveryImportModal extends Component {
   render() {
     const { visible = false } = this.props;
     const { loading, configList } = this.state;
-    const { type = '', serverList =  '' } = configList || {};
+    const { type = '', serverList =  '', props: discoveryProps = '{}' } = configList || {};
     return (
       <Modal
         visible={visible}
@@ -72,15 +72,18 @@ class DiscoveryImportModal extends Component {
         onCancel={this.handleCancel}
         onOk={this.handleOk}
         confirmLoading={loading}
-        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        okText={getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.IMPORT.SURE")}
         cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
       >
         <ul>
           <li style={{ marginBottom: '8px' }}>
             <strong>{getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE")}:</strong> {type}
           </li>
-          <li>
+          <li style={{ marginBottom: '8px' }}>
             <strong>{getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST")}:</strong> {serverList}
+          </li>
+          <li>
+            <strong>{getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS")}:</strong> <pre><code>{JSON.stringify(JSON.parse(discoveryProps), null, 4)}</code></pre>
           </li>
         </ul>
       </Modal>

@@ -489,20 +489,6 @@ export default class Common extends Component {
     const { selectorPage, selectorPageSize } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const pluginId = this.getPluginId(plugins, name);
-    // dispatch({
-    //   type: "common/fetchSeItem",
-    //   payload: {
-    //     id: record.id
-    //   },
-    //   callback: selector => {
-    //     dispatch({
-    //       type: "discovery/deleteConfig",
-    //       payload: {
-    //         discoveryId: selector.discoveryVO ? selector.discoveryVO.id : '',
-    //       },
-    //     })
-    //   }
-    // })
     dispatch({
       type: "common/deleteSelector",
       payload: {

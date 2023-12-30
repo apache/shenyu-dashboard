@@ -109,8 +109,8 @@ class DiscoveryConfigModal extends Component {
               placement="topLeft"
               title={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.DELETE")}
               onConfirm={() => handleConfigDelete(id)}
-              okText="Yes"
-              cancelText="No"
+              okText={getIntlContent("SHENYU.COMMON.SURE")}
+              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
               key="popconfirm"
             >
               <Button key="delete" type="danger" style={{ marginRight: '10px' }}>
@@ -179,7 +179,7 @@ class DiscoveryConfigModal extends Component {
             <span style={{ marginLeft: '2px', fontWeight: '500' }}>:</span>
           </div>
           <div style={{ marginLeft: '35px', display: 'flex', alignItems: 'baseline' }}>
-            <div style={{ marginLeft: '8px' }}>
+            <div style={{ marginLeft: '8px', width: '100%' }}>
               <Row gutter={[16, 4]} justify="center">
                 {Object.entries(configPropsJson).map(([key, value]) => (
                   <Col span={12} key={key}>

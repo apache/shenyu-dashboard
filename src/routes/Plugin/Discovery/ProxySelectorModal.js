@@ -23,7 +23,7 @@ import {getIntlContent} from "../../../utils/IntlUtils";
 import styles from "../index.less";
 import ProxySelectorCopy from "./ProxySelectorCopy.js";
 import {findKeyByValue} from "../../../utils/utils";
-import EditableFormTable from "../Common/TestTable";
+import EditableFormTable from "./DiscoveryUpstreamTable";
 
 
 const FormItem = Form.Item;
@@ -542,7 +542,7 @@ class ProxySelectorModal extends Component {
                             <span style={{ marginLeft: '2px', fontWeight: '500' }}>:</span>
                           </div>
                           <div style={{ marginLeft: '35px', display: 'flex', alignItems: 'baseline' }}>
-                            <div style={{ marginLeft: '8px' }}>
+                            <div style={{ marginLeft: '8px', width: '100%' }}>
                               <Row gutter={[16, 4]} justify="center">
                                 {Object.entries(configPropsJson).map(([key, value]) => (
                                   <Col span={12} key={key}>

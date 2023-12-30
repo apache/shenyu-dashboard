@@ -155,7 +155,7 @@ export default class EditableTable extends Component {
         align: 'center',
         render: (text, record) =>
           this.props.dataSource.length >= 1 ? (
-            <Popconfirm title={getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.DELETE")} onConfirm={() => this.handleDelete(record.key)}>
+            <Popconfirm title={getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.DELETE.CONFIRM")} onConfirm={() => this.handleDelete(record.key)}>
               <a>{getIntlContent("SHENYU.BUTTON.SYSTEM.DELETE")}</a>
             </Popconfirm>
           ) : null,

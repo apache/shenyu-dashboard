@@ -41,7 +41,7 @@ import { getIntlContent } from "../../../utils/IntlUtils";
 import SelectorCopy from "./SelectorCopy";
 import { findKeyByValue } from "../../../utils/utils";
 import DiscoveryImportModal from "../Discovery/DiscoveryImportModal";
-import EditableFormTable from "./TestTable.js";
+import EditableFormTable from "../Discovery/DiscoveryUpstreamTable.js";
 
 const { Item } = Form;
 const { TabPane } = Tabs;
@@ -834,11 +834,11 @@ class AddModal extends Component {
 
   handleImportDiscoveryConfig = configData => {
     const { form } = this.props;
-    const { discoveryModeDics } = this.state;
     const {
       type = '',
       serverList = '',
-      id: discoveryId = ''
+      id: discoveryId = '',
+      props = '{}'
     } = configData || {};
     const formData = {
       selectedDiscoveryType: type,
@@ -848,9 +848,7 @@ class AddModal extends Component {
       { selectedDiscoveryValue: type, showDiscoveryImportModal: false, importedDiscoveryId: discoveryId },
       () => {
         form.setFieldsValue(formData);
-        let configProps = discoveryModeDics.filter(item => item.dictName === type);
-        let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
-        this.setState({configPropsJson: propsEntries})
+        this.state.configPropsJson = JSON.parse(props);
       }
     );
   };
@@ -1395,14 +1393,14 @@ class AddModal extends Component {
               </Item>
 
               {Object.keys(configPropsJson).length > 0 && (
-                <div style={{ marginLeft: '50px', marginTop: '15px', marginBottom: '15px', fontWeight: '500' }}>
+                <div style={{ marginLeft: '60px', marginTop: '15px', marginBottom: '15px', fontWeight: '500' }}>
                   {getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS")}
                   <span style={{ marginLeft: '2px', fontWeight: '500' }}>:</span>
                 </div>
               )}
 
-              <div style={{ marginLeft: '35px', display: 'flex', alignItems: 'baseline' }}>
-                <div style={{ marginLeft: '8px' }}>
+              <div style={{ marginLeft: '40px', marginRight: '35px', display: 'flex', alignItems: 'baseline' }}>
+                <div style={{ marginLeft: '8px', width: '100%' }}>
                   <Row gutter={[16, 4]} justify="center">
                     {Object.entries(configPropsJson).map(([key, value]) => (
                       <Col span={12} key={key}>
@@ -1415,6 +1413,7 @@ class AddModal extends Component {
                               disabled={!isAdd}
                               placeholder={isAdd ? `Enter ${key}` : ''}
                               addonBefore={key}
+                              style={{ width: '100%' }}
                             />
                           )}
                         </Item>

@@ -73,13 +73,6 @@ class EditableTable extends Component {
         width: '25%',
         align: 'center'
       },
-      // {
-      //   title: 'host',
-      //   dataIndex: 'host',
-      //   editable: true,
-      //   // width: '33%',
-      //   align: 'center'
-      // },
       {
         title: 'url',
         dataIndex: 'url',
@@ -101,26 +94,25 @@ class EditableTable extends Component {
         title: 'weight',
         dataIndex: 'weight',
         editable: true,
-        // width: '19%',
         align: 'center'
       },
       {
         title: 'startupTime',
         dataIndex: 'startupTime',
         editable: this.state.isLocal,
-        // width: '19%',
         align: 'center'
       },
       {
         title: 'warmupTime',
         dataIndex: 'warmupTime',
         editable: true,
-        // width: '19%',
         align: 'center'
       },
       {
-        title: 'operation',
+        title: getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.OPERATION"),
         dataIndex: 'operation',
+        width: '18%',
+        align: 'center',
         render: (text, record) => {
           const { editingKey } = this.state;
           const editable = this.isEditing(record);
@@ -134,12 +126,17 @@ class EditableTable extends Component {
                         onClick={() => this.save(form, record.key)}
                         style={{ marginRight: 8 }}
                       >
-                        Save
+                        {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.SAVE")}
                       </a>
                     )}
                   </EditableContext.Consumer>
-                  <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.key)}>
-                    <a>Cancel</a>
+                  <Popconfirm
+                    title={getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.CANCEL.CONFIRM")}
+                    onConfirm={() => this.cancel(record.key)}
+                    okText={getIntlContent("SHENYU.COMMON.SURE")}
+                    cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                  >
+                    <a>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.CANCEL")}</a>
                   </Popconfirm>
                 </span>
                 ) : (
@@ -149,12 +146,17 @@ class EditableTable extends Component {
                       disabled={editingKey !== ''}
                       onClick={() => this.edit(record.key)}
                     >
-                      Edit
+                      {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.EDIT")}
                     </Button>
                     {' '}
                     {this.props.dataSource.length >= 1 && this.state.isLocal ? (
-                      <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.key)}>
-                        <a>Delete</a>
+                      <Popconfirm
+                        title={getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.DELETE.CONFIRM")}
+                        onConfirm={() => this.handleDelete(record.key)}
+                        okText={getIntlContent("SHENYU.COMMON.SURE")}
+                        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                      >
+                        <a>{getIntlContent("SHENYU.BUTTON.SYSTEM.DELETE")}</a>
                       </Popconfirm>
                     ) : null}
                   </span>
