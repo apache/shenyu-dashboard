@@ -1462,7 +1462,7 @@ class AddModal extends Component {
     const {
       onCancel,
       isDiscovery,
-      isAdd
+      isAdd = true
     } = this.props;
     const operations = (
       <Button
