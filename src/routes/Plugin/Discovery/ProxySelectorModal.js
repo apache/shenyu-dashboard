@@ -20,7 +20,6 @@ import {connect} from "dva";
 import {Button, Col, Divider, Form, Input, Modal, Row, Select, Tabs, Tooltip} from "antd";
 import classnames from "classnames";
 import {getIntlContent} from "../../../utils/IntlUtils";
-// import EditableTable from './UpstreamTable';
 import styles from "../index.less";
 import ProxySelectorCopy from "./ProxySelectorCopy.js";
 import {findKeyByValue} from "../../../utils/utils";

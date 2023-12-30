@@ -42,7 +42,6 @@ import SelectorCopy from "./SelectorCopy";
 import { findKeyByValue } from "../../../utils/utils";
 import DiscoveryImportModal from "../Discovery/DiscoveryImportModal";
 import EditableFormTable from "./TestTable.js";
-// import EditableTable from "../Discovery/UpstreamTable";
 
 const { Item } = Form;
 const { TabPane } = Tabs;
