@@ -19,10 +19,10 @@ import React, {Component} from 'react';
 import {connect} from 'dva';
 import {Button, Pagination, Row, Switch, Tag, Input, Typography, message} from "antd";
 import {getIntlContent} from "../../../utils/IntlUtils";
-import tcpStyles from './tcp.less'
+import discoveryStyles from './discovery.less'
 import DiscoveryConfigModal from "./DiscoveryConfigModal";
 import ProxySelectorModal from "./ProxySelectorModal";
-import {TcpCard} from "./TcpCard";
+import {DiscoveryCard} from "./DiscoveryCard";
 import AuthButton from "../../../utils/AuthButton";
 import { getUpdateModal, updatePluginsEnabled } from "../../../utils/plugin";
 
@@ -35,13 +35,13 @@ const {Title} = Typography;
   ...shenyuDict,
   loading: loading.effects["global/fetchPlatform"]
 }))
-export default class TCPProxy extends Component {
+export default class DiscoveryProxy extends Component {
   constructor(props) {
     super(props);
     this.state = {
       searchKey: '',
       cardData: {
-        tcpType: '',
+        discoveryType: '',
         name: '',
         forwardPort: '',
         type: 'tcp',
@@ -71,7 +71,7 @@ export default class TCPProxy extends Component {
   componentDidMount() {
     const {dispatch, currentPage, pageSize} = this.props
     dispatch({
-      type: "discovery/fetchSelector",
+      type: "discovery/fetchProxySelectors",
       payload: {
         name: '',
         currentPage,
@@ -95,9 +95,9 @@ export default class TCPProxy extends Component {
   }
 
   // eslint-disable-next-line react/sort-comp
-  renderCards(selectorList = []) {
-    return selectorList.map(selector =>
-      <TcpCard key={selector.id} updateSelector={this.updateSelector} data={selector} handleDelete={this.handleDelete} handleRefresh={this.handleRefresh} />
+  renderCards(proxySelectorList = []) {
+    return proxySelectorList.map(selector =>
+      <DiscoveryCard key={selector.id} updateSelector={this.updateSelector} data={selector} handleDelete={this.handleDelete} handleRefresh={this.handleRefresh} />
     );
   }
 
@@ -111,7 +111,7 @@ export default class TCPProxy extends Component {
     })
     const {searchKey} = this.state;
     this.props.dispatch({
-      type: "discovery/fetchSelector",
+      type: "discovery/fetchProxySelectors",
       payload: {
         currentPage: page,
         pageSize,
@@ -152,7 +152,7 @@ export default class TCPProxy extends Component {
     this.setState({popup: ""});
     this.setState({
       cardData: {
-        tcpType: '',
+        discoveryType: '',
         name: '',
         forwardPort: '',
         type: 'tcp',
@@ -163,15 +163,7 @@ export default class TCPProxy extends Component {
           serverList: '',
           props: {}
         },
-        discoveryUpstreams: [
-          // {
-          //   protocol: '1',
-          //   url: '1',
-          //   status:'1',
-          //   weight: '1',
-          //   key: '1'
-          // }
-        ]
+        discoveryUpstreams: []
       }
     });
   };
@@ -201,11 +193,11 @@ export default class TCPProxy extends Component {
               discoveryDicts={discoveryDics}
               handleConfigDelete={this.handleConfigDelete}
               handleOk={values => {
-                const {name, serverList, props, tcpType} = values;
+                const {name, serverList, props, discoveryType} = values;
                 dispatch({
                   type: "discovery/set",
                   payload: {
-                    type: tcpType,
+                    type: discoveryType,
                     serverList,
                     name,
                     props,
@@ -257,7 +249,7 @@ export default class TCPProxy extends Component {
     const {searchKey} = this.state;
     const {currentPage, pageSize} = this.props
     this.props.dispatch({
-      type: "discovery/fetchSelector",
+      type: "discovery/fetchProxySelectors",
       payload: {
         currentPage,
         pageSize,
@@ -278,11 +270,11 @@ export default class TCPProxy extends Component {
         level: "1"
       },
       callback: discoveryConfigList => {
-        let tcpType = '';
+        let discoveryType = '';
         let id = null;
         let isSetConfig = false;
         if (discoveryConfigList !== null) {
-          tcpType = discoveryConfigList.type;
+          discoveryType = discoveryConfigList.type;
           id = discoveryConfigList.id
           isSetConfig = true;
         }
@@ -294,12 +286,22 @@ export default class TCPProxy extends Component {
               typeEnums={typeEnums}
               data={cardData}
               discoveryUpstreams={cardData.discoveryUpstreams}
-              tcpType={tcpType}
+              discoveryType={discoveryType}
               isAdd={true}
               isSetConfig={isSetConfig}
               discoveryDicts={discoveryDics}
               handleOk={values => {
-                const {name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, discoveryType, upstreams} = values;
+                const {name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, selectedDiscoveryType, upstreams} = values;
+                const upstreamsWithProps = upstreams.map(item => ({
+                  protocol: item.protocol,
+                  url: item.url,
+                  status: parseInt(item.status, 10),
+                  weight: item.weight,
+                  startupTime: item.startupTime,
+                  props: JSON.stringify({
+                    warmupTime: item.warmupTime
+                  })
+                }));
                 dispatch({
                   type: 'discovery/add',
                   payload: {
@@ -314,11 +316,11 @@ export default class TCPProxy extends Component {
                       id,
                       level: "0", // 0 selector
                       pluginName,
-                      discoveryType,
+                      discoveryType: selectedDiscoveryType,
                       serverList,
                       props: discoveryProps
                     },
-                    discoveryUpstreams: upstreams
+                    discoveryUpstreams: upstreamsWithProps
                   },
                   callback: () => {
                     this.closeModal();
@@ -340,9 +342,9 @@ export default class TCPProxy extends Component {
   }
 
   updateSelector = (id) => {
-    const {dispatch, selectorList, tcpType: discoveryType, currentPage, pageSize, plugins, typeEnums} = this.props;
+    const {dispatch, proxySelectorList, discoveryType, currentPage, pageSize, plugins, typeEnums} = this.props;
     const { discoveryDics, pluginName } = this.state;
-    const data = selectorList.find(value => value.id === id)
+    const data = proxySelectorList.find(value => value.id === id)
     const plugin = this.getPlugin(plugins, pluginName);
     let isSetConfig = false
     this.setState({
@@ -352,14 +354,20 @@ export default class TCPProxy extends Component {
       isSetConfig = true
     }
     const updateArray = data.discoveryUpstreams.map((item) => {
-      return { ...item, key: item.id };
+      let propsObj = JSON.parse(item.props || "{}");
+      if (item.props === null) {
+        propsObj = {
+          warmupTime: 10,
+        };
+      }
+      return { ...item, key: item.id, warmupTime: propsObj.warmupTime };
     });
     this.setState({
       popup: (
         <ProxySelectorModal
           recordCount={updateArray.length}
           discoveryUpstreams={updateArray}
-          tcpType={data.discovery.type}
+          discoveryType={data.discovery.type}
           typeEnums={typeEnums}
           isAdd={false}
           isSetConfig={isSetConfig}
@@ -368,6 +376,16 @@ export default class TCPProxy extends Component {
           discoveryDicts={discoveryDics}
           handleOk={values => {
             const {name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, upstreams} = values;
+            const upstreamsWithProps = upstreams.map(item => ({
+              protocol: item.protocol,
+              url: item.url,
+              status: parseInt(item.status, 10),
+              weight: item.weight,
+              startupTime: item.startupTime,
+              props: JSON.stringify({
+                warmupTime: item.warmupTime
+              })
+            }));
             dispatch({
               type: 'discovery/update',
               payload: {
@@ -384,7 +402,7 @@ export default class TCPProxy extends Component {
                   serverList,
                   props: discoveryProps
                 },
-                discoveryUpstreams: upstreams
+                discoveryUpstreams: upstreamsWithProps
               },
               callback: () => {
                 this.closeUpdateModal();
@@ -446,14 +464,14 @@ export default class TCPProxy extends Component {
 
   render() {
     const {popup} = this.state;
-    const {selectorList, totalPage, currentPage, pageSize} = this.props;
+    const {proxySelectorList, totalPage, currentPage, pageSize} = this.props;
     const tag = {
       text: this.state.isPluginEnabled ? getIntlContent("SHENYU.COMMON.OPEN") : getIntlContent("SHENYU.COMMON.CLOSE"),
       color: this.state.isPluginEnabled ? 'green' : 'red'
     }
     return (
       <>
-        <div className={tcpStyles.main}>
+        <div className={discoveryStyles.main}>
           <Row style={{marginBottom: '0px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
             <div style={{display: 'flex', alignItems: 'end', flex: 1, margin: 0}}>
               <Title level={2} style={{textTransform: 'capitalize', margin: '0 20px 0 0'}}>
@@ -476,7 +494,7 @@ export default class TCPProxy extends Component {
           </Row>
 
           <Row>
-            <div className={tcpStyles["header-bar"]}>
+            <div className={discoveryStyles["header-bar"]}>
               <h3 style={{overflow: "visible", margin: 0}}>
                 {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}
               </h3>
@@ -529,7 +547,7 @@ export default class TCPProxy extends Component {
               alignItems: 'stretch'
             }}
             >
-              {this.renderCards(selectorList)}
+              {this.renderCards(proxySelectorList)}
             </div>
           </Row>
 

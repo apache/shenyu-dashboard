@@ -59,13 +59,13 @@ class DiscoveryConfigModal extends Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        let { name, serverList, tcpType } = values;
+        let { name, serverList, discoveryType } = values;
         const propsjson = {};
         Object.entries(configPropsJson).forEach(([key]) => {
           propsjson[key] = form.getFieldValue(key);
         });
         const props = JSON.stringify(propsjson);
-        handleOk({ name, serverList, props, tcpType});
+        handleOk({ name, serverList, props, discoveryType});
       }
     });
   };
@@ -82,7 +82,7 @@ class DiscoveryConfigModal extends Component {
   render() {
     const { handleCancel, form, data, isSetConfig, handleConfigDelete, dispatch } = this.props
     const { getFieldDecorator } = form;
-    const { name, serverList, type: tcpType, id} = data || {};
+    const { name, serverList, type: discoveryType, id} = data || {};
     const { configPropsJson, discoveryDicts } = this.state;
     const formItemLayout = {
       labelCol: {
@@ -109,8 +109,8 @@ class DiscoveryConfigModal extends Component {
               placement="topLeft"
               title={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.DELETE")}
               onConfirm={() => handleConfigDelete(id)}
-              okText="Yes"
-              cancelText="No"
+              okText={getIntlContent("SHENYU.COMMON.SURE")}
+              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
               key="popconfirm"
             >
               <Button key="delete" type="danger" style={{ marginRight: '10px' }}>
@@ -129,9 +129,9 @@ class DiscoveryConfigModal extends Component {
       >
         <Form onSubmit={this.handleSubmit}>
           <Form.Item label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE")} {...formItemLayout}>
-            {getFieldDecorator('tcpType', {
+            {getFieldDecorator('discoveryType', {
               rules: [{ required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT") }],
-              initialValue: tcpType !== "" ? tcpType : undefined
+              initialValue: discoveryType !== "" ? discoveryType : undefined
             })(
               <Select
                 placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}
@@ -179,7 +179,7 @@ class DiscoveryConfigModal extends Component {
             <span style={{ marginLeft: '2px', fontWeight: '500' }}>:</span>
           </div>
           <div style={{ marginLeft: '35px', display: 'flex', alignItems: 'baseline' }}>
-            <div style={{ marginLeft: '8px' }}>
+            <div style={{ marginLeft: '8px', width: '100%' }}>
               <Row gutter={[16, 4]} justify="center">
                 {Object.entries(configPropsJson).map(([key, value]) => (
                   <Col span={12} key={key}>
@@ -190,7 +190,7 @@ class DiscoveryConfigModal extends Component {
                         <Input
                           allowClear
                           disabled={isSetConfig}
-                          placeholder={`Enter ${key}`}
+                          placeholder={!isSetConfig ? `Enter ${key}` : ''}
                           addonBefore={key}
                         />
                       )}

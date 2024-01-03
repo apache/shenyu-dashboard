@@ -65,7 +65,8 @@ export default class Common extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  /* eslint-disable no-unused-vars */
+  componentDidUpdate(prevProps,  prevState, snapshot) {
     const preId = prevProps.match.params.id;
     const newId = this.props.match.params.id;
     const { selectorPage, selectorPageSize } = this.state;
@@ -89,6 +90,7 @@ export default class Common extends Component {
       }
     }
   }
+  /* eslint-enable no-unused-vars */
 
   componentWillUnmount() {
     const { dispatch } = this.props;
@@ -179,25 +181,96 @@ export default class Common extends Component {
     const { id: pluginId, config } = plugin;
     const multiSelectorHandle =
       this.getPluginConfigField(config, "multiSelectorHandle") === "1";
-    this.setState({
-      popup: (
-        <Selector
-          pluginId={pluginId}
-          multiSelectorHandle={multiSelectorHandle}
-          handleOk={selector => {
-            dispatch({
-              type: "common/addSelector",
-              payload: { pluginId, ...selector },
-              fetchValue: { pluginId, currentPage: selectorPage, pageSize: selectorPageSize },
-              callback: () => {
-                this.closeModal();
-              }
-            });
-          }}
-          onCancel={this.closeModal}
-        />
-      )
-    });
+    const isDiscovery = ["5", "15", "26"].includes(pluginId);
+    if (isDiscovery) {
+      let discoveryConfig = {
+        discoveryType: '',
+        serverList: '',
+        handler: {},
+        listenerNode: '',
+        props: {}
+      }
+      let typeValue =
+        name === "divide" ? "http" :
+          name === "websocket" ? "ws" :
+            name === "grpc" ? "grpc" : "http";
+      this.setState({
+        popup: (
+          <Selector
+            pluginName={name}
+            pluginId={pluginId}
+            multiSelectorHandle={multiSelectorHandle}
+            isAdd={true}
+            discoveryConfig={discoveryConfig}
+            isDiscovery={true}
+            handleOk={selector => {
+              const { name: selectorName, listenerNode, serverList, selectedDiscoveryType, discoveryProps, handler, upstreams, importedDiscoveryId } = selector;
+              const upstreamsWithProps = upstreams.map(item => ({
+                protocol: item.protocol,
+                url: item.url,
+                status: parseInt(item.status, 10),
+                weight: item.weight,
+                startupTime: item.startupTime,
+                props: JSON.stringify({
+                  warmupTime: item.warmupTime
+                })
+              }));
+              dispatch({
+                type: "common/addSelector",
+                payload: { pluginId, ...selector, upstreams: upstreamsWithProps },
+                fetchValue: { pluginId, currentPage: selectorPage, pageSize: selectorPageSize },
+                callback: (selectorId) => {
+                  dispatch({
+                    type: "discovery/bindSelector",
+                    payload: {
+                      selectorId,
+                      name: selectorName,
+                      pluginName: name,
+                      listenerNode,
+                      handler,
+                      type: typeValue,
+                      discoveryUpstreams: upstreamsWithProps,
+                      discovery: {
+                        id: importedDiscoveryId,
+                        discoveryType: selectedDiscoveryType,
+                        serverList,
+                        props: discoveryProps,
+                        name: selectorName
+                      }
+                    }
+                  })
+                  this.closeModal();
+                }
+              });
+            }}
+            onCancel={this.closeModal}
+          />
+        )
+      });
+    }else {
+      this.setState({
+        popup: (
+          <Selector
+            pluginName={name}
+            pluginId={pluginId}
+            multiSelectorHandle={multiSelectorHandle}
+            isDiscovery={false}
+            handleOk={selector => {
+              dispatch({
+                type: "common/addSelector",
+                payload: { pluginId, ...selector },
+                fetchValue: { pluginId, currentPage: selectorPage, pageSize: selectorPageSize },
+                callback: () => {
+                  this.closeModal();
+                }
+              });
+            }}
+            onCancel={this.closeModal}
+          />
+        )
+      });
+    }
+
   };
 
   searchRuleOnchange = e => {
@@ -297,6 +370,7 @@ export default class Common extends Component {
     const { id: pluginId, config } = plugin;
     const multiSelectorHandle =
       this.getPluginConfigField(config, "multiSelectorHandle") === "1";
+    const isDiscovery = ["5", "15", "26"].includes(pluginId);
     const { id } = record;
     dispatch({
       type: "common/fetchSeItem",
@@ -304,11 +378,37 @@ export default class Common extends Component {
         id
       },
       callback: selector => {
+       if ( isDiscovery ){
+        let discoveryConfig = {
+          props: selector.discoveryVO ? selector.discoveryVO.props: "{}",
+          discoveryType: selector.discoveryVO ? selector.discoveryVO.type: 'local',
+          serverList: selector.discoveryVO ? selector.discoveryVO.serverList: '',
+          handler: selector.discoveryHandler ? selector.discoveryHandler.handler: "{}",
+          listenerNode: selector.discoveryHandler ? selector.discoveryHandler.listenerNode : '',
+        }
+        let updateArray = [];
+        if (selector.discoveryUpstreams) {
+          updateArray = selector.discoveryUpstreams.map((item) => {
+            let propsObj = JSON.parse(item.props || "{}");
+            if (item.props === null) {
+              propsObj = {
+                warmupTime: 10,
+              };
+            }
+            return { ...item, key: item.id, warmupTime: propsObj.warmupTime };
+          });
+        }
+        let discoveryHandlerId = selector.discoveryHandler ? selector.discoveryHandler.id : '';
         this.setState({
           popup: (
             <Selector
+              pluginName={name}
               {...selector}
               multiSelectorHandle={multiSelectorHandle}
+              discoveryConfig={discoveryConfig}
+              discoveryUpstreams={updateArray}
+              isAdd={false}
+              isDiscovery={true}
               handleOk={values => {
                 dispatch({
                   type: "common/updateSelector",
@@ -323,6 +423,24 @@ export default class Common extends Component {
                     pageSize: selectorPageSize
                   },
                   callback: () => {
+                    const {upstreams} = values
+                    const upstreamsWithHandlerId = upstreams.map(item => ({
+                      protocol: item.protocol,
+                      url: item.url,
+                      status: parseInt(item.status, 10),
+                      weight: item.weight,
+                      props: JSON.stringify({
+                        warmupTime: item.warmupTime
+                      }),
+                      discoveryHandlerId
+                    }));
+                    dispatch({
+                      type: "discovery/updateDiscoveryUpstream",
+                      payload: {
+                        discoveryHandlerId,
+                        upstreams: upstreamsWithHandlerId
+                      }
+                    })
                     this.closeModal();
                   }
                 });
@@ -331,6 +449,37 @@ export default class Common extends Component {
             />
           )
         });
+        } else {
+          this.setState({
+            popup: (
+              <Selector
+                pluginName={name}
+                {...selector}
+                multiSelectorHandle={multiSelectorHandle}
+                isDiscovery={false}
+                handleOk={values => {
+                  dispatch({
+                    type: "common/updateSelector",
+                    payload: {
+                      pluginId,
+                      ...values,
+                      id
+                    },
+                    fetchValue: {
+                      pluginId,
+                      currentPage: selectorPage,
+                      pageSize: selectorPageSize
+                    },
+                    callback: () => {
+                      this.closeModal();
+                    }
+                  });
+                }}
+                onCancel={this.closeModal}
+              />
+            )
+          });
+        }
       }
     });
   };

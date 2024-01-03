@@ -241,7 +241,6 @@ const setMenuIconAndSort = (menus, permissions) => {
       if (Array.isArray(menuArr)) {
         menuArr.forEach(menu => {
           const currentMenu = iconAndSortMap[formatRouteUrl(menu.path)];
-          // console.log(menu, currentMenu, menu.path);
           if (
             currentMenu &&
             currentMenu.meta.icon &&

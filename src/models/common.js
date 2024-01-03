@@ -109,7 +109,8 @@ export default {
       const json = yield call(addSelector, payload);
       if (json.code === 200) {
         message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
-        callback();
+        const selectorId = json.data;
+        callback(selectorId);
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);

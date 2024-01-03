@@ -16,7 +16,7 @@
  */
 
 import React, {Component} from "react";
-import {Form, Select, Row, Col, Input, Button, Tabs, Table} from "antd";
+import {Button, Col, Form, Input, Row, Select, Table, Tabs} from "antd";
 import {getIntlContent} from '../../../utils/IntlUtils'
 
 const {Option} = Select;
@@ -96,7 +96,6 @@ class ParamPluginRuleConfig extends Component {
     const data = {};
     const currentData = this.getCurrentData();
     const valueStr = JSON.stringify(currentData);
-    // console.log(currentData);
     if (value !== undefined) {
       try {
         Object.assign(data, JSON.parse(value));
@@ -315,8 +314,7 @@ export default class ParamPluginRuleHandle extends Component {
     const {
       form: {getFieldValue}
     } = this.props;
-    const value = getFieldValue("handle");
-    return value;
+    return getFieldValue("handle");
   };
 
   render() {

@@ -17,13 +17,13 @@
 
 import React, {Component} from "react";
 import {connect} from "dva";
-import {Button, Col, Divider, Form, Input, Modal, Row, Select, Table, Tabs, Tooltip} from "antd";
+import {Button, Col, Divider, Form, Input, Modal, Row, Select, Tabs, Tooltip} from "antd";
 import classnames from "classnames";
 import {getIntlContent} from "../../../utils/IntlUtils";
-import EditableTable from './UpstreamTable';
 import styles from "../index.less";
 import ProxySelectorCopy from "./ProxySelectorCopy.js";
 import {findKeyByValue} from "../../../utils/utils";
+import EditableFormTable from "./DiscoveryUpstreamTable";
 
 
 const FormItem = Form.Item;
@@ -53,7 +53,7 @@ class ProxySelectorModal extends Component {
   }
 
   componentDidMount() {
-    const { isAdd, isSetConfig, tcpType, data, pluginId, dispatch } = this.props;
+    const { isAdd, isSetConfig, discoveryType, data, pluginId, dispatch } = this.props;
     const { discoveryDicts } = this.state;
     const { props } = this.props.data || {};
 
@@ -62,7 +62,7 @@ class ProxySelectorModal extends Component {
       dispatch({
         type: 'discovery/saveGlobalType',
         payload: {
-          chosenType: tcpType
+          chosenType: discoveryType
         }
       });
     }else{
@@ -88,10 +88,13 @@ class ProxySelectorModal extends Component {
         callBack: (pluginHandles) => {
           if  (Object.keys(pluginHandles).length > 0) {
             const filteredArray = pluginHandles[0].filter(item => item.field !== 'discoveryHandler');
+
             const handlerArray = pluginHandles[0].filter(item => item.field === 'discoveryHandler');
-            pluginHandles[0] = filteredArray;
             this.setState({discoveryHandler: handlerArray});
+
+            pluginHandles[0] = filteredArray;
             this.setState({ pluginHandleList: pluginHandles });
+
             let defaultValue = handlerArray[0].defaultValue;
             this.setState({ defaultValueList: defaultValue.split(",")  });
           }
@@ -106,12 +109,15 @@ class ProxySelectorModal extends Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        let {name, forwardPort, listenerNode, serverList, discoveryType} = values;
+        let {name, forwardPort, listenerNode, serverList, selectedDiscoveryType} = values;
         const discoveryPropsJson = {};
         Object.entries(configPropsJson).forEach(([key]) => {
           discoveryPropsJson[key] = form.getFieldValue(key);
         });
+        // The discoveryProps refer to the attributes corresponding to each registration center mode
         const discoveryProps = JSON.stringify(discoveryPropsJson);
+
+        // The handler refers to the url, status, weight, protocol, etc. of the discovery module.
         let handler = {};
         if ( defaultValueList !== null) {
           defaultValueList.forEach(item => {
@@ -120,6 +126,8 @@ class ProxySelectorModal extends Component {
             }
           });
         }
+        handler = JSON.stringify(handler);
+
         let handleResult = [];
         handleResult[0] = {};
         if(Object.keys(pluginHandleList).length > 0){
@@ -127,9 +135,9 @@ class ProxySelectorModal extends Component {
             handleResult[0][item.field] = values[item.field + 0];
           });
         }
-        handler = JSON.stringify(handler);
+        // The props refer to the properties of each plug-in
         let props = JSON.stringify(handleResult[0]);
-        handleOk({name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, discoveryType, upstreams});
+        handleOk({name, forwardPort, props, listenerNode, handler, discoveryProps, serverList, selectedDiscoveryType, upstreams});
       }
     });
   };
@@ -141,7 +149,7 @@ class ProxySelectorModal extends Component {
       name,
       forwardPort,
       listenerNode,
-      discoveryType: discovery.type,
+      selectedDiscoveryType: discovery.type,
       serverList: discovery.serverList
     };
     dispatch({
@@ -176,7 +184,7 @@ class ProxySelectorModal extends Component {
 
 
   render() {
-    const { tcpType, form, handleCancel, isSetConfig, isAdd, chosenType, dispatch } = this.props;
+    const { discoveryType, form, handleCancel, isSetConfig, isAdd, chosenType, dispatch } = this.props;
     const { recordCount, upstreams, pluginHandleList, visible, discoveryHandler, defaultValueList, discoveryDicts, configPropsJson } = this.state;
     const { getFieldDecorator } = form;
     const { name, forwardPort, listenerNode, discovery, handler } = this.props.data || {};
@@ -189,32 +197,6 @@ class ProxySelectorModal extends Component {
         sm: { span: 19 }
       }
     };
-    const columns = [
-      {
-        title: 'protocol',
-        dataIndex: 'protocol',
-        key: 'protocol',
-        align: 'center'
-      },
-      {
-        title: 'url',
-        dataIndex: 'url',
-        key: 'url',
-        align: 'center'
-      },
-      {
-        title: 'status',
-        dataIndex: 'status',
-        key: 'status',
-        align: 'center'
-      },
-      {
-        title: 'weight',
-        dataIndex: 'weight',
-        key: 'weight',
-        align: 'center'
-      },
-    ];
 
     return (
       <Modal
@@ -426,9 +408,9 @@ class ProxySelectorModal extends Component {
             </TabPane>
             <TabPane tab={getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.DISCOVERY")} key="2">
               <FormItem label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE")} {...formItemLayout}>
-                {getFieldDecorator('discoveryType', {
+                {getFieldDecorator('selectedDiscoveryType', {
                   rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}],
-                  initialValue: tcpType !== '' ? tcpType : undefined
+                  initialValue: discoveryType !== '' ? discoveryType : undefined
                 })(
                   <Select
                     placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}
@@ -526,7 +508,7 @@ class ProxySelectorModal extends Component {
                                                 {value}
                                               </div>
                                             }
-                                            placeholder={`Your ${value}`}
+                                            placeholder={isAdd? `Your ${value}` : ''}
                                             key={value}
                                           />
                                         )}
@@ -560,7 +542,7 @@ class ProxySelectorModal extends Component {
                             <span style={{ marginLeft: '2px', fontWeight: '500' }}>:</span>
                           </div>
                           <div style={{ marginLeft: '35px', display: 'flex', alignItems: 'baseline' }}>
-                            <div style={{ marginLeft: '8px' }}>
+                            <div style={{ marginLeft: '8px', width: '100%' }}>
                               <Row gutter={[16, 4]} justify="center">
                                 {Object.entries(configPropsJson).map(([key, value]) => (
                                   <Col span={12} key={key}>
@@ -571,7 +553,7 @@ class ProxySelectorModal extends Component {
                                         <Input
                                           allowClear
                                           disabled={!isAdd}
-                                          placeholder={`Enter ${key}`}
+                                          placeholder={isAdd ? `Enter ${key}` : ''}
                                           addonBefore={key}
                                         />
                                       )}
@@ -589,7 +571,13 @@ class ProxySelectorModal extends Component {
                       isAdd !== true ? (
                         <>
                           <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}</Divider>
-                          <Table dataSource={upstreams} columns={columns} />;
+                          <EditableFormTable
+                            isLocal={false}
+                            dataSource={upstreams}
+                            recordCount={recordCount}
+                            onTableChange={this.handleTableChange}
+                            onCountChange={this.handleCountChange}
+                          />
                         </>
                       ):null
                     }
@@ -597,7 +585,8 @@ class ProxySelectorModal extends Component {
                 ) : (
                   <>
                     <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}</Divider>
-                    <EditableTable
+                    <EditableFormTable
+                      isLocal={true}
                       dataSource={upstreams}
                       recordCount={recordCount}
                       onTableChange={this.handleTableChange}

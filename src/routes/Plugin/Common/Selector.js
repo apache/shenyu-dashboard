@@ -32,15 +32,19 @@ import {
   Icon,
   InputNumber,
   DatePicker,
-  TimePicker
+  TimePicker, Tabs, Divider
 } from "antd";
 import { connect } from "dva";
 import classnames from "classnames";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import SelectorCopy from "./SelectorCopy";
+import { findKeyByValue } from "../../../utils/utils";
+import DiscoveryImportModal from "../Discovery/DiscoveryImportModal";
+import EditableFormTable from "../Discovery/DiscoveryUpstreamTable.js";
 
 const { Item } = Form;
+const { TabPane } = Tabs;
 const { Option } = Select;
 
 const formItemLayout = {
@@ -54,10 +58,11 @@ const formCheckLayout = {
 
 let id = 0;
 
-@connect(({ pluginHandle, global, shenyuDict }) => ({
+@connect(({ pluginHandle, global, shenyuDict, discovery }) => ({
   pluginHandle,
   platform: global.platform,
-  shenyuDict
+  shenyuDict,
+  discovery
 }))
 class AddModal extends Component {
   constructor(props) {
@@ -75,6 +80,7 @@ class AddModal extends Component {
     }
 
     const { divideUpstreams = [], gray = false, serviceId = "" } = data;
+    const { discoveryUpstreams = [], isDiscovery, isAdd = true, discoveryConfig = {} } = this.props;
 
     if (pluginId === "8") {
       id = divideUpstreams.length;
@@ -85,18 +91,36 @@ class AddModal extends Component {
       gray,
       serviceId,
       divideUpstreams,
-
-      visible: false
+      visible: false,
+      pluginHandleList: [],
+      upstreams: discoveryUpstreams,
+      recordCount: discoveryUpstreams ? discoveryUpstreams.length : 0,
+      discoveryHandler: null,
+      defaultValueList: null,
+      configPropsJson: {},
+      selectedDiscoveryValue : 'local',
+      showDiscoveryImportModal: false,
+      importedDiscoveryId: ''
     };
 
     this.initSelectorCondition(props);
-    this.initDics();
+
+    if (isDiscovery && !isAdd){
+      this.state.configPropsJson = JSON.parse(discoveryConfig.props);
+      this.state.selectedDiscoveryValue = discoveryConfig.discoveryType;
+    }
   }
 
   componentDidMount() {
-    const { dispatch, pluginId, handle, multiSelectorHandle } = this.props;
+    const { dispatch, pluginId, handle, multiSelectorHandle, isDiscovery } = this.props;
     this.setState({ pluginHandleList: [] });
     let type = 1;
+    this.initDics();
+
+    dispatch({
+      type: "discovery/fetchEnumType"
+    })
+
     dispatch({
       type: "pluginHandle/fetchByPluginId",
       payload: {
@@ -106,6 +130,20 @@ class AddModal extends Component {
         isHandleArray: multiSelectorHandle,
         callBack: pluginHandles => {
           this.setPluginHandleList(pluginHandles);
+          if (isDiscovery && Object.keys(pluginHandles).length > 0) {
+            const filteredArray = pluginHandles[0].filter(item => item.field !== 'discoveryHandler');
+
+            const handlerArray = pluginHandles[0].filter(item => item.field === 'discoveryHandler');
+            this.setState({discoveryHandler: handlerArray});
+
+            pluginHandles[0] = filteredArray;
+            this.setState({ pluginHandleList: pluginHandles });
+
+            if (handlerArray.length !== 0) {
+              let defaultValue = handlerArray[0].defaultValue;
+              this.setState({ defaultValueList: defaultValue.split(",")  });
+            }
+          }
         }
       }
     });
@@ -137,16 +175,22 @@ class AddModal extends Component {
     this.initDic("operator");
     this.initDic("matchMode");
     this.initDic("paramType");
+    this.initDic("discoveryMode");
   };
 
   initDic = type => {
-    const { dispatch } = this.props;
+    const { dispatch, isAdd = true} = this.props;
     dispatch({
       type: "shenyuDict/fetchByType",
       payload: {
         type,
         callBack: dics => {
           this.state[`${type}Dics`] = dics;
+          if (type === "discoveryMode" && isAdd ) {
+            let configProps = dics.filter(item => item.dictName === 'zookeeper');
+            let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
+            this.setState({configPropsJson: propsEntries});
+          }
         }
       }
     });
@@ -187,8 +231,8 @@ class AddModal extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { form, handleOk, multiSelectorHandle, pluginId } = this.props;
-    const { selectorConditions, selectValue, pluginHandleList } = this.state;
+    const { form, handleOk, multiSelectorHandle, pluginId, isDiscovery } = this.props;
+    const { selectorConditions, selectValue, pluginHandleList, defaultValueList, configPropsJson, upstreams, importedDiscoveryId } = this.state;
     let handle = [];
 
     form.validateFieldsAndScroll((err, values) => {
@@ -196,38 +240,67 @@ class AddModal extends Component {
         const mySubmit =
           selectValue !== "0" && this.checkConditions(selectorConditions);
         if (mySubmit || selectValue === "0") {
-          pluginHandleList.forEach((handleList, index) => {
-            handle[index] = {};
-            handleList.forEach(item => {
-              if (pluginId === "8") {
-                const { keys, divideUpstreams } = values;
-                const data = {
-                  [item.field]: values[item.field],
-                  gray: values.gray
-                };
-
-                if (Array.isArray(divideUpstreams) && divideUpstreams.length) {
-                  data.divideUpstreams = keys.map(key => divideUpstreams[key]);
-                }
-                handle[index] = data;
-                delete values[item.field];
-                delete values.divideUpstreams;
-                delete values.gray;
-                delete values.key;
-              } else {
-                handle[index][item.field] = values[item.field + index];
-                delete values[item.field + index];
-              }
+          if ( isDiscovery ) {
+            // The discoveryProps refer to the attributes corresponding to each registration center mode
+            const discoveryPropsJson = {};
+            Object.entries(configPropsJson).forEach(([key]) => {
+              discoveryPropsJson[key] = form.getFieldValue(key);
             });
-          });
-          handleOk({
-            ...values,
-            handle: multiSelectorHandle
-              ? JSON.stringify(handle)
-              : JSON.stringify(handle[0]),
-            sort: Number(values.sort),
-            selectorConditions
-          });
+            const discoveryProps = JSON.stringify(discoveryPropsJson);
+
+            // The handler refers to the url, status, weight, protocol, etc. of the discovery module.
+            let handler = {};
+            if ( defaultValueList !== null) {
+              defaultValueList.forEach(item => {
+                if ((values[item]) !== undefined){
+                  handler[values[item]] = item;
+                }
+              });
+            }
+            handler = JSON.stringify(handler);
+
+            handleOk({...values,
+              sort: Number(values.sort),
+              selectorConditions,
+              handler,
+              discoveryProps,
+              upstreams,
+              importedDiscoveryId});
+
+          } else {
+            pluginHandleList.forEach((handleList, index) => {
+              handle[index] = {};
+              handleList.forEach(item => {
+                if (pluginId === "8") {
+                  const {keys, divideUpstreams} = values;
+                  const data = {
+                    [item.field]: values[item.field],
+                    gray: values.gray
+                  };
+
+                  if (Array.isArray(divideUpstreams) && divideUpstreams.length) {
+                    data.divideUpstreams = keys.map(key => divideUpstreams[key]);
+                  }
+                  handle[index] = data;
+                  delete values[item.field];
+                  delete values.divideUpstreams;
+                  delete values.gray;
+                  delete values.key;
+                } else {
+                  handle[index][item.field] = values[item.field + index];
+                  delete values[item.field + index];
+                }
+              });
+            });
+            handleOk({
+              ...values,
+              handle: multiSelectorHandle
+                ? JSON.stringify(handle)
+                : JSON.stringify(handle[0]),
+              sort: Number(values.sort),
+              selectorConditions
+            });
+          }
         }
       }
     });
@@ -332,9 +405,14 @@ class AddModal extends Component {
     const {
       form: { getFieldDecorator, getFieldValue, setFieldsValue },
       multiSelectorHandle,
-      pluginId
+      pluginId,
+      isDiscovery
     } = this.props;
     const labelWidth = 75;
+
+    if (isDiscovery) {
+      return;
+    }
 
     if (pluginId === "8") {
       getFieldDecorator("keys", {
@@ -754,9 +832,42 @@ class AddModal extends Component {
     this.setState({ visible: false, selectValue: formData.type });
   };
 
+  handleImportDiscoveryConfig = configData => {
+    const { form } = this.props;
+    const {
+      type = '',
+      serverList = '',
+      id: discoveryId = '',
+      props = '{}'
+    } = configData || {};
+    const formData = {
+      selectedDiscoveryType: type,
+      serverList
+    };
+    this.setState(
+      { selectedDiscoveryValue: type, showDiscoveryImportModal: false, importedDiscoveryId: discoveryId },
+      () => {
+        form.setFieldsValue(formData);
+        this.state.configPropsJson = JSON.parse(props);
+      }
+    );
+  };
+
   onDealChange = (value, item) => {
     item.value = value;
   };
+
+  handleTableChange = (newData) => {
+    this.setState({ upstreams: newData });
+  };
+
+  handleCountChange = (newCount) => {
+    this.setState({ recordCount: newCount });
+  };
+
+  handleDiscoveryValueChange = (value) => {
+    this.setState({selectedDiscoveryValue: value})
+  }
 
   renderOperatorOptions = (operators, paramType) => {
     if (operators && operators instanceof Array) {
@@ -856,9 +967,18 @@ class AddModal extends Component {
     }
   }
 
-  render() {
+  handleOptions() {
+    const { discovery } = this.props;
+    if (!discovery || !Array.isArray(discovery.typeEnums)) {
+      return [];
+    }
+    return discovery.typeEnums.map(type =>
+      <Option key={type} value={type.toString()}>{type.toString()}</Option>
+    )
+  }
+
+  renderBasicConfig = () => {
     let {
-      onCancel,
       form,
       name = "",
       platform,
@@ -882,14 +1002,486 @@ class AddModal extends Component {
 
     type = `${type.toString()}` || "1";
     let { selectorTypeEnums } = platform;
-
     const { getFieldDecorator } = form;
+    return(
+      <>
+        <Item
+          label={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")}
+          {...formItemLayout}
+        >
+          {getFieldDecorator("name", {
+            rules: [
+              {
+                  required: true,
+                  message: getIntlContent("SHENYU.COMMON.INPUTNAME")
+              }
+            ],
+            initialValue: name
+        })(
+          <Input
+            allowClear
+            placeholder={getIntlContent(
+                "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"
+            )}
+            addonAfter={
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                    this.setState({ visible: true });
+                }}
+              >
+                {getIntlContent("SHENYU.SELECTOR.COPY")}
+              </Button>
+            }
+          />
+          )}
+        </Item>
+        <SelectorCopy
+          visible={visible}
+          onOk={this.handleCopyData}
+          onCancel={() => {
+              this.setState({ visible: false });
+          }}
+        />
+        <Item
+          label={getIntlContent("SHENYU.COMMON.TYPE")}
+          {...formItemLayout}
+        >
+          {getFieldDecorator("type", {
+              rules: [
+                  {
+                      required: true,
+                      message: getIntlContent("SHENYU.COMMON.INPUTTYPE")
+                  }
+              ],
+              initialValue: type
+          })(
+            <Select
+              placeholder={getIntlContent("SHENYU.COMMON.TYPE")}
+              onChange={value => this.getSelectValue(value)}
+            >
+              {selectorTypeEnums.map(item => {
+                return (
+                  <Option key={item.code} value={item.code.toString()}>
+                    {getIntlContent(
+                      `SHENYU.COMMON.SELECTOR.TYPE.${item.name.toUpperCase()}`,
+                      item.name
+                    )}
+                  </Option>
+                );
+              })}
+            </Select>
+          )}
+        </Item>
+        {selectValue !== "0" && (
+          <Fragment>
+            <Item
+              label={getIntlContent("SHENYU.COMMON.MATCHTYPE")}
+              {...formItemLayout}
+            >
+              {getFieldDecorator("matchMode", {
+                rules: [
+                    {
+                        required: true,
+                        message: getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE")
+                    }
+                ],
+                initialValue: `${matchMode}`
+              })(
+                <Select
+                  placeholder={getIntlContent("SHENYU.COMMON.MATCHTYPE")}
+                >
+                  {matchModeDics &&
+                    matchModeDics.map(item => {
+                      return (
+                        <Option key={item.dictValue} value={item.dictValue}>
+                          {item.dictName}
+                        </Option>
+                      );
+                    })}
+                </Select>
+              )}
+            </Item>
+            <div className={styles.condition}>
+              <Item
+                label={getIntlContent("SHENYU.COMMON.CONDITION")}
+                required
+                {...formItemLayout}
+              >
+                {selectorConditions.map((item, index) => {
+                  return (
+                    <Row key={index} gutter={8}>
+                      <Col span={5}>
+                        <Select
+                          onChange={value => {
+                              this.conditionChange(index, "paramType", value);
+                          }}
+                          value={item.paramType}
+                        >
+                          {this.renderParamTypeOptions(paramTypeDics)}
+                        </Select>
+                      </Col>
+                      <Col
+                        span={4}
+                        style={{
+                            display: this.state[`paramTypeValueEn${index}`]
+                                ? "none"
+                                : "block"
+                        }}
+                      >
+                        <Input
+                          allowClear
+                          onChange={e => {
+                            this.conditionChange(
+                                index,
+                                "paramName",
+                                e.target.value
+                            );
+                          }}
+                          placeholder={item.paramName}
+                        />
+                      </Col>
+                      <Col span={4}>
+                        <Select
+                          onChange={value => {
+                            this.conditionChange(index, "operator", value);
+                          }}
+                          value={item.operator}
+                        >
+                          {this.renderOperatorOptions(operatorDics, item.paramType)}
+                        </Select>
+                      </Col>
 
+                      <Col
+                        span={7}
+                        style={{
+                            display: item.operator === "isBlank"
+                                ? "none"
+                                : "block"
+                        }}
+                      >
+                        <Tooltip title={item.paramValue}>
+                          {this.getParamValueInput(item, index)}
+                        </Tooltip>
+                      </Col>
+                      <Col span={4}>
+                        <Button
+                          type="danger"
+                          onClick={() => {
+                              this.handleDelete(index);
+                          }}
+                          style={{ marginLeft: 10 }}
+                        >
+                          {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                        </Button>
+                      </Col>
+                    </Row>
+                  );
+                  })}
+              </Item>
+              <Item
+                label={' '}
+                colon={false}
+                {...formItemLayout}
+              >
+                <Button className={styles.addButton} onClick={this.handleAdd} type="primary">
+                  {getIntlContent("SHENYU.COMMON.ADD")} {" "}
+                  {getIntlContent("SHENYU.COMMON.CONDITION")}
+                </Button>
+              </Item>
+            </div>
+          </Fragment>
+      )}
+        <div className={styles.layout}>
+          <Item
+            {...formCheckLayout}
+            label={getIntlContent("SHENYU.SELECTOR.CONTINUE")}
+          >
+            {getFieldDecorator("continued", {
+              initialValue: continued,
+              valuePropName: "checked",
+              rules: [{ required: true }]
+            })(<Switch />)}
+          </Item>
+          <Item
+            style={{ margin: "0 30px" }}
+            {...formCheckLayout}
+            label={getIntlContent("SHENYU.SELECTOR.PRINTLOG")}
+          >
+            {getFieldDecorator("loged", {
+              initialValue: loged,
+              valuePropName: "checked",
+              rules: [{ required: true }]
+            })(<Switch />)}
+          </Item>
+          <Item
+            {...formCheckLayout}
+            label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}
+          >
+            {getFieldDecorator("enabled", {
+              initialValue: enabled,
+              valuePropName: "checked",
+              rules: [{ required: true }]
+            })(<Switch />)}
+          </Item>
+          <Item
+            style={{ margin: "0 30px" }}
+            {...formCheckLayout}
+            label={getIntlContent("SHENYU.SELECTOR.MATCHRESTFUL")}
+          >
+            {getFieldDecorator("matchRestful", {
+                initialValue: matchRestful,
+                valuePropName: "checked",
+                rules: [{ required: true }]
+            })(<Switch />)}
+          </Item>
+        </div>
+        {this.renderPluginHandler()}
+        <Item
+          label={getIntlContent("SHENYU.SELECTOR.EXEORDER")}
+          {...formItemLayout}
+        >
+          {getFieldDecorator("sort", {
+            initialValue: sort,
+            rules: [
+              {
+                  required: true,
+                  message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
+              },
+              {
+                  pattern: /^([1-9][0-9]{0,2}|1000)$/,
+                  message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
+              }
+            ]
+          })(
+            <Input
+              allowClear
+              placeholder={getIntlContent("SHENYU.SELECTOR.INPUTORDER")}
+            />
+          )}
+        </Item>
+      </>
+    )
+  }
+
+  renderDiscoveryConfig = () => {
+    const { form, isAdd = true, discoveryConfig = {} } = this.props;
+    const { discoveryModeDics, upstreams, recordCount, discoveryHandler, defaultValueList, configPropsJson, selectedDiscoveryValue } = this.state;
+    const { getFieldDecorator } = form;
+    return(
+      <>
+        <Item label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE")} {...formItemLayout}>
+          {getFieldDecorator('selectedDiscoveryType', {
+            rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}],
+            initialValue: discoveryConfig.discoveryType !== '' ? discoveryConfig.discoveryType : 'local'
+          })(
+            <Select
+              placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}
+              disabled={!isAdd}
+              onChange={value => {
+                this.handleDiscoveryValueChange(value)
+                let configProps = discoveryModeDics.filter(item => item.dictName === value);
+                let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
+                this.setState({configPropsJson: propsEntries})
+              }
+              }
+            >
+              {this.handleOptions()}
+            </Select>,
+          )}
+        </Item>
+
+        {
+          selectedDiscoveryValue !== 'local' ? (
+            <>
+              <Item label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.LISTENERNODE")} {...formItemLayout}>
+                {getFieldDecorator('listenerNode', {
+                  rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.SELECTOR.LISTENERNODE.INPUT")}],
+                  initialValue: discoveryConfig.listenerNode
+                })(<Input
+                  allowClear
+                  disabled={!isAdd}
+                  placeholder={getIntlContent("SHENYU.DISCOVERY.SELECTOR.LISTENERNODE.INPUT")}
+                />)}
+              </Item>
+
+              {discoveryHandler !== null && Array.isArray(discoveryHandler) && discoveryHandler.length !== 0 && (
+                <Item label={getIntlContent("SHENYU.DISCOVERY.SELECTOR.HANDLER")} {...formItemLayout}>
+                  <div
+                    className={styles.handleWrap}
+                    style={{
+                      display: "flex"
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        flexDirection: "row"
+                      }}
+                    >
+                      <ul
+                        className={classnames({
+                          [styles.handleUl]: true,
+                          [styles.springUl]: true
+                        })}
+                        style={{ width: "100%" }}
+                      >
+                        {(() => {
+                          let item = discoveryHandler[0];
+                          let checkRule = item.checkRule;
+                          let required = item.required === "1";
+                          let rules = [];
+                          if (required) {
+                            rules.push({
+                              required: { required },
+                              message:
+                                  getIntlContent("SHENYU.COMMON.PLEASEINPUT") +
+                                  item.label
+                            });
+                          }
+                          if (checkRule) {
+                            rules.push({
+                              // eslint-disable-next-line no-eval
+                              pattern: eval(checkRule),
+                              message: `${getIntlContent(
+                                  "SHENYU.PLUGIN.RULE.INVALID"
+                              )}:(${checkRule})`
+                            });
+                          }
+                          if (defaultValueList != null) {
+                            return defaultValueList.map((value, index) => (
+                              <li key={index}>
+                                <Item>
+                                  {getFieldDecorator(value, {
+                                    initialValue: isAdd === true ? findKeyByValue(discoveryConfig.handler, value): findKeyByValue(JSON.parse(discoveryConfig.handler), value),
+                                    rules
+                                  })(
+                                    <Input
+                                      allowClear
+                                      disabled={!isAdd}
+                                      addonAfter={
+                                        <div style={{ width: '50px' }}>
+                                          {value}
+                                        </div>
+                                      }
+                                      placeholder={`Your ${value}`}
+                                      key={value}
+                                    />
+                                  )}
+                                </Item>
+                              </li>
+                            ));
+                          }
+                        })()}
+                      </ul>
+                    </div>
+                  </div>
+                </Item>
+              )}
+
+              <Item label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST")} {...formItemLayout}>
+                {getFieldDecorator('serverList', {
+                  rules: [{required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT")}],
+                  initialValue: discoveryConfig.serverList
+                })(<Input
+                  allowClear
+                  disabled={!isAdd}
+                  placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT")}
+                />)}
+              </Item>
+
+              {Object.keys(configPropsJson).length > 0 && (
+                <div style={{ marginLeft: '60px', marginTop: '15px', marginBottom: '15px', fontWeight: '500' }}>
+                  {getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS")}
+                  <span style={{ marginLeft: '2px', fontWeight: '500' }}>:</span>
+                </div>
+              )}
+
+              <div style={{ marginLeft: '40px', marginRight: '35px', display: 'flex', alignItems: 'baseline' }}>
+                <div style={{ marginLeft: '8px', width: '100%' }}>
+                  <Row gutter={[16, 4]} justify="center">
+                    {Object.entries(configPropsJson).map(([key, value]) => (
+                      <Col span={12} key={key}>
+                        <Item>
+                          {getFieldDecorator(key, {
+                            initialValue: value
+                          })(
+                            <Input
+                              allowClear
+                              disabled={!isAdd}
+                              placeholder={isAdd ? `Enter ${key}` : ''}
+                              addonBefore={key}
+                              style={{ width: '100%' }}
+                            />
+                          )}
+                        </Item>
+                      </Col>
+                    ))}
+                  </Row>
+                </div>
+              </div>
+
+              {
+                isAdd !== true ? (
+                  <>
+                    <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}</Divider>
+                    <EditableFormTable
+                      isLocal={false}
+                      dataSource={upstreams}
+                      recordCount={recordCount}
+                      onTableChange={this.handleTableChange}
+                      onCountChange={this.handleCountChange}
+                    />
+                    {/* <Table dataSource={upstreams} columns={columns} />; */}
+                  </>
+                ):null
+              }
+            </>
+          ) : (
+            <>
+              <Divider>{getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}</Divider>
+              <EditableFormTable
+                isLocal={true}
+                dataSource={upstreams}
+                recordCount={recordCount}
+                onTableChange={this.handleTableChange}
+                onCountChange={this.handleCountChange}
+              />
+            </>
+          )
+        }
+      </>
+    )
+
+  }
+
+
+  render() {
+    const {
+      onCancel,
+      isDiscovery,
+      isAdd = true
+    } = this.props;
+    const operations = (
+      <Button
+        type="primary"
+        icon="import"
+        onClick={() => {
+          this.setState({ showDiscoveryImportModal: true });
+        }}
+        disabled={!isAdd}
+      >
+        {getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.IMPORT")}
+      </Button>
+    );
     return (
       <Modal
-        width='900px'
+        width='1100px'
         centered
         title={getIntlContent("SHENYU.SELECTOR.NAME")}
+        // visible here defaults to true, because the visibility of modal is determined by the popup attribute in index.js
         visible
         okText={getIntlContent("SHENYU.COMMON.SURE")}
         cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
@@ -897,263 +1489,27 @@ class AddModal extends Component {
         onCancel={onCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <Item
-            label={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")}
-            {...formItemLayout}
-          >
-            {getFieldDecorator("name", {
-              rules: [
-                {
-                  required: true,
-                  message: getIntlContent("SHENYU.COMMON.INPUTNAME")
-                }
-              ],
-              initialValue: name
-            })(
-              <Input
-                allowClear
-                placeholder={getIntlContent(
-                  "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"
-                )}
-                addonAfter={
-                  <Button
-                    size="small"
-                    type="link"
-                    onClick={() => {
-                      this.setState({ visible: true });
+          {// divide, grpc, websocket plugin
+            isDiscovery ? (
+              <Tabs defaultActiveKey="1" size="small" tabBarExtraContent={operations}>
+                <TabPane tab={getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.BASIC")} key="1">
+                  {this.renderBasicConfig()}
+                </TabPane>
+                <TabPane tab={getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.DISCOVERY")} key="2">
+                  {this.renderDiscoveryConfig()}
+                  <DiscoveryImportModal
+                    pluginName={this.props.pluginName}
+                    disabled={!isAdd}
+                    visible={this.state.showDiscoveryImportModal}
+                    onOk={this.handleImportDiscoveryConfig}
+                    onCancel={() => {
+                      this.setState({ showDiscoveryImportModal: false });
                     }}
-                  >
-                    {getIntlContent("SHENYU.SELECTOR.COPY")}
-                  </Button>
-                }
-              />
-            )}
-          </Item>
-          <SelectorCopy
-            visible={visible}
-            onOk={this.handleCopyData}
-            onCancel={() => {
-              this.setState({ visible: false });
-            }}
-          />
-          <Item
-            label={getIntlContent("SHENYU.COMMON.TYPE")}
-            {...formItemLayout}
-          >
-            {getFieldDecorator("type", {
-              rules: [
-                {
-                  required: true,
-                  message: getIntlContent("SHENYU.COMMON.INPUTTYPE")
-                }
-              ],
-              initialValue: type
-            })(
-              <Select
-                placeholder={getIntlContent("SHENYU.COMMON.TYPE")}
-                onChange={value => this.getSelectValue(value)}
-              >
-                {selectorTypeEnums.map(item => {
-                  return (
-                    <Option key={item.code} value={item.code.toString()}>
-                      {getIntlContent(
-                        `SHENYU.COMMON.SELECTOR.TYPE.${item.name.toUpperCase()}`,
-                        item.name
-                      )}
-                    </Option>
-                  );
-                })}
-              </Select>
-            )}
-          </Item>
-          {selectValue !== "0" && (
-            <Fragment>
-              <Item
-                label={getIntlContent("SHENYU.COMMON.MATCHTYPE")}
-                {...formItemLayout}
-              >
-                {getFieldDecorator("matchMode", {
-                  rules: [
-                    {
-                      required: true,
-                      message: getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE")
-                    }
-                  ],
-                  initialValue: `${matchMode}`
-                })(
-                  <Select
-                    placeholder={getIntlContent("SHENYU.COMMON.MATCHTYPE")}
-                  >
-                    {matchModeDics &&
-                      matchModeDics.map(item => {
-                        return (
-                          <Option key={item.dictValue} value={item.dictValue}>
-                            {item.dictName}
-                          </Option>
-                        );
-                      })}
-                  </Select>
-                )}
-              </Item>
-              <div className={styles.condition}>
-                <Item
-                  label={getIntlContent("SHENYU.COMMON.CONDITION")}
-                  required
-                  {...formItemLayout}
-                >
-                  {selectorConditions.map((item, index) => {
-                    return (
-                      <Row key={index} gutter={8}>
-                        <Col span={5}>
-                          <Select
-                            onChange={value => {
-                              this.conditionChange(index, "paramType", value);
-                            }}
-                            value={item.paramType}
-                          >
-                            {this.renderParamTypeOptions(paramTypeDics)}
-                          </Select>
-                        </Col>
-                        <Col
-                          span={4}
-                          style={{
-                            display: this.state[`paramTypeValueEn${index}`]
-                              ? "none"
-                              : "block"
-                          }}
-                        >
-                          <Input
-                            allowClear
-                            onChange={e => {
-                              this.conditionChange(
-                                index,
-                                "paramName",
-                                e.target.value
-                              );
-                            }}
-                            placeholder={item.paramName}
-                          />
-                        </Col>
-                        <Col span={4}>
-                          <Select
-                            onChange={value => {
-                              this.conditionChange(index, "operator", value);
-                            }}
-                            value={item.operator}
-                          >
-                            {this.renderOperatorOptions(operatorDics, item.paramType)}
-                          </Select>
-                        </Col>
-
-                        <Col
-                          span={7}
-                          style={{
-                            display: item.operator === "isBlank"
-                              ? "none"
-                              : "block"
-                          }}
-                        >
-                          <Tooltip title={item.paramValue}>
-                            {this.getParamValueInput(item, index)}
-                          </Tooltip>
-                        </Col>
-                        <Col span={4}>
-                          <Button
-                            type="danger"
-                            onClick={() => {
-                              this.handleDelete(index);
-                            }}
-                            style={{ marginLeft: 10 }}
-                          >
-                            {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
-                          </Button>
-                        </Col>
-                      </Row>
-                    );
-                  })}
-                </Item>
-                <Item
-                  label={' '}
-                  colon={false}
-                  {...formItemLayout}
-                >
-                  <Button className={styles.addButton} onClick={this.handleAdd} type="primary">
-                    {getIntlContent("SHENYU.COMMON.ADD")} {" "}
-                    {getIntlContent("SHENYU.COMMON.CONDITION")}
-                  </Button>
-                </Item>
-              </div>
-
-            </Fragment>
-          )}
-          <div className={styles.layout}>
-            <Item
-              {...formCheckLayout}
-              label={getIntlContent("SHENYU.SELECTOR.CONTINUE")}
-            >
-              {getFieldDecorator("continued", {
-                initialValue: continued,
-                valuePropName: "checked",
-                rules: [{ required: true }]
-              })(<Switch />)}
-            </Item>
-            <Item
-              style={{ margin: "0 30px" }}
-              {...formCheckLayout}
-              label={getIntlContent("SHENYU.SELECTOR.PRINTLOG")}
-            >
-              {getFieldDecorator("loged", {
-                initialValue: loged,
-                valuePropName: "checked",
-                rules: [{ required: true }]
-              })(<Switch />)}
-            </Item>
-            <Item
-              {...formCheckLayout}
-              label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}
-            >
-              {getFieldDecorator("enabled", {
-                initialValue: enabled,
-                valuePropName: "checked",
-                rules: [{ required: true }]
-              })(<Switch />)}
-            </Item>
-            <Item
-              style={{ margin: "0 30px" }}
-              {...formCheckLayout}
-              label={getIntlContent("SHENYU.SELECTOR.MATCHRESTFUL")}
-            >
-              {getFieldDecorator("matchRestful", {
-                initialValue: matchRestful,
-                valuePropName: "checked",
-                rules: [{ required: true }]
-              })(<Switch />)}
-            </Item>
-          </div>
-          {this.renderPluginHandler()}
-          <Item
-            label={getIntlContent("SHENYU.SELECTOR.EXEORDER")}
-            {...formItemLayout}
-          >
-            {getFieldDecorator("sort", {
-              initialValue: sort,
-              rules: [
-                {
-                  required: true,
-                  message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
-                },
-                {
-                  pattern: /^([1-9][0-9]{0,2}|1000)$/,
-                  message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER")
-                }
-              ]
-            })(
-              <Input
-                allowClear
-                placeholder={getIntlContent("SHENYU.SELECTOR.INPUTORDER")}
-              />
-            )}
-          </Item>
+                  />
+                </TabPane>
+              </Tabs>
+            ) : this.renderBasicConfig()
+          }
         </Form>
       </Modal>
     );

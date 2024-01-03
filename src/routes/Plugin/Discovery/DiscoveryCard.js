@@ -19,16 +19,16 @@ import React, {Component} from "react";
 import {Card, Popover, Typography, Skeleton, Icon, Popconfirm} from "antd";
 
 import {getIntlContent} from "../../../utils/IntlUtils";
-import tcpStyles from "./tcp.less";
+import discoveryStyles from "./discovery.less";
 
 import { formatTimestamp } from "../../../utils/utils";
-import {ConsulIcon, EtcdIcon, LocalIcon, NacosIcon, ZkIcon} from "./DiscoveryIcon";
+import {ConsulIcon, EtcdIcon, LocalIcon, NacosIcon, ZkIcon, EurekaIcon} from "./DiscoveryIcon";
 import AuthButton from "../../../utils/AuthButton";
 
 const { Text } = Typography;
 const { Meta } = Card;
 
-export class TcpCard extends Component {
+export class DiscoveryCard extends Component {
 
   render() {
     const { updateSelector, data, handleDelete, handleRefresh } = this.props
@@ -56,6 +56,7 @@ export class TcpCard extends Component {
       nacos: <NacosIcon style={{ fontSize: '40px', color: '#354458' }} />,
       consul: <ConsulIcon style={{ fontSize: '40px', color: '#354458' }} />,
       etcd: <EtcdIcon style={{ fontSize: '40px', color: '#354458' }} />,
+      eureka: <EurekaIcon style={{ fontSize: '40px', color: '#354458' }} />,
     };
 
     const getAvatarIcon = () => {
@@ -67,7 +68,7 @@ export class TcpCard extends Component {
         <Card
           title={<div style={{ fontSize: '17px', lineHeight: '1.5'}}>{data.name}</div>}
           bordered={false}
-          className={tcpStyles.tcpCard}
+          className={discoveryStyles.discoveryCard}
           actions={[
             <AuthButton perms="plugin:tcp:modify">
               <Icon type="reload" key="reload" style={{color: '#2E496E', fontSize: "17px"}} onClick={() => handleRefresh(data.discoveryHandlerId)} />
@@ -85,7 +86,7 @@ export class TcpCard extends Component {
             >
               <AuthButton perms="plugin:tcpSelector:delete">
                 <Icon type="delete" key="delete" style={{color: "#CC0000", fontSize: "17px"}} />
-              </AuthButton>,
+              </AuthButton>
             </Popconfirm>
           ]}
           extra={<div style={{ fontSize: '15px', lineHeight: '1.5', marginRight: '14px'}}>{formatTimestamp(createTime)}</div>}

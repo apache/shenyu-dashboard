@@ -25,8 +25,9 @@ import {
   updateProxySelector,
   getDiscovery,
   refreshProxySelector,
-  deleteDiscovery
-
+  deleteDiscovery,
+  bindingSelector,
+  updateDiscoveryUpstream
 } from "../services/api";
 import {getIntlContent} from "../utils/IntlUtils";
 
@@ -35,7 +36,7 @@ export default {
 
   state: {
     typeEnums: [],
-    selectorList: [],
+    proxySelectorList: [],
     chosenType: '',
     totalPage: 0,
     currentPage: 1,
@@ -43,7 +44,7 @@ export default {
   },
 
   effects: {
-    * fetchSelector(params, {call, put}) {
+    * fetchProxySelectors(params, {call, put}) {
       const {payload} = params;
       const json = yield call(fetchProxySelector, payload);
       if (json.code === 200) {
@@ -80,6 +81,7 @@ export default {
         message.warn(json.message);
       }
     },
+
     * delete(params, {call, put}) {
       const {payload, fetchValue} = params;
       const { list } = payload;
@@ -92,6 +94,7 @@ export default {
         message.warn(json.message);
       }
     },
+
     * update(params, {call, put}) {
       const {payload, callback, fetchValue} = params;
       const json = yield call(updateProxySelector, payload);
@@ -103,11 +106,12 @@ export default {
         message.warn(json.message);
       }
     },
+
     * reload(params, {put}) {
       const {fetchValue} = params;
       const {name = '', currentPage, pageSize} = fetchValue;
       const payload = {name, currentPage, pageSize};
-      yield put({type: "fetchSelector", payload});
+      yield put({type: "fetchProxySelectors", payload});
     },
 
 
@@ -116,9 +120,9 @@ export default {
       const json = yield call(postDiscoveryInsertOrUpdate, payload);
       if (json.code === 200) {
         message.success(getIntlContent('SHENYU.COMMON.RESPONSE.CONFIGURATION.SUCCESS'));
-        const { data } = json;
+        const discoveryConfigData = json.data;
         if (callback) {
-          callback(data);
+          callback(discoveryConfigData);
         }
       } else {
         message.warn(json.message);
@@ -162,6 +166,27 @@ export default {
       }
     },
 
+    * bindSelector(params, {call}) {
+      const {payload} = params;
+      const json = yield call(bindingSelector, payload);
+      if (json.code === 200) {
+        // message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
+        // callback();
+      } else {
+        message.warn(json.message);
+      }
+    },
+
+    * updateDiscoveryUpstream(params, {call}) {
+      const { discoveryHandlerId, upstreams } = params.payload;
+      const json = yield call(updateDiscoveryUpstream, discoveryHandlerId, upstreams);
+      if (json.code === 200) {
+        // message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+      } else {
+        message.warn(json.message);
+      }
+    },
+
   },
 
   reducers: {
@@ -169,7 +194,7 @@ export default {
       return {
         ...state,
         totalPage: payload.total,
-        selectorList: payload.dataList,
+        proxySelectorList: payload.dataList,
       };
     },
 
