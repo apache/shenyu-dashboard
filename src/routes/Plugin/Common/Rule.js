@@ -541,7 +541,7 @@ class AddModal extends Component {
               <strong>*</strong>
               {getIntlContent("SHENYU.COMMON.CONDITION")}:
             </h3>
-            <div className={styles.content}>
+            <div className={styles.content} style={{ marginLeft: '2%' }}>
               {ruleConditions.map((item, index) => {
                 return (
                   <ul key={index}>

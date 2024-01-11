@@ -380,11 +380,11 @@ export default class Common extends Component {
       callback: selector => {
        if ( isDiscovery ){
         let discoveryConfig = {
-          props: selector.discoveryVO ? selector.discoveryVO.props: "{}",
-          discoveryType: selector.discoveryVO ? selector.discoveryVO.type: 'local',
-          serverList: selector.discoveryVO ? selector.discoveryVO.serverList: '',
-          handler: selector.discoveryHandler ? selector.discoveryHandler.handler: "{}",
-          listenerNode: selector.discoveryHandler ? selector.discoveryHandler.listenerNode : '',
+          props: selector.discoveryVO && selector.discoveryVO.props ? selector.discoveryVO.props: "{}",
+          discoveryType: selector.discoveryVO && selector.discoveryVO.type ? selector.discoveryVO.type: 'local',
+          serverList: selector.discoveryVO && selector.discoveryVO.serverList ? selector.discoveryVO.serverList: '',
+          handler: selector.discoveryHandler && selector.discoveryHandler.handler ? selector.discoveryHandler.handler: "{}",
+          listenerNode: selector.discoveryHandler && selector.discoveryHandler.listenerNode ? selector.discoveryHandler.listenerNode : '',
         }
         let updateArray = [];
         if (selector.discoveryUpstreams) {
