@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { connect } from 'dva';
-import { Alert } from 'antd';
+import React, {Component} from 'react';
+import CryptoJS from 'crypto-js';
+import {connect} from 'dva';
+import {Alert} from 'antd';
 import Login from 'components/Login';
 import styles from './Login.less';
+
+import config from '../../config/config';
 
 const { UserName, Password, Submit, VerifyCode, LoginCode } = Login;
 @connect(({ login, loading }) => ({
@@ -49,6 +52,17 @@ export default class LoginPage extends Component {
         this.ChildRef.current.handleChange();
         return;
       }
+      if (config.secret_key !== "" && config.secret_iv !== "" ){
+        const keyByte = CryptoJS.enc.Utf8.parse(config.secret_key);
+        const ivByte = CryptoJS.enc.Utf8.parse(config.secret_iv);
+        const encryptedPassword = CryptoJS.AES.encrypt(values.password, keyByte, {
+          iv: ivByte,
+          mode: CryptoJS.mode.CBC,
+          padding: CryptoJS.pad.Pkcs7
+        });
+        values.password = encryptedPassword.toString();
+      }
+
       dispatch({
         type: 'login/login',
         payload: {
