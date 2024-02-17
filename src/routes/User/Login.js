@@ -57,8 +57,8 @@ export default class LoginPage extends Component {
         const ivByte = CryptoJS.enc.Utf8.parse(config.secret_iv);
         const encryptedPassword = CryptoJS.AES.encrypt(values.password, keyByte, {
           iv: ivByte,
-          mode: CryptoJS.mode.CBC,
-          padding: CryptoJS.pad.Pkcs7
+          mode: CryptoJS.mode.CTR,
+          padding: CryptoJS.pad.NoPadding
         });
         values.password = encryptedPassword.toString();
       }
