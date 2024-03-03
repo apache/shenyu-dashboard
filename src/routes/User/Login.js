@@ -21,10 +21,29 @@ import {connect} from 'dva';
 import {Alert} from 'antd';
 import Login from 'components/Login';
 import styles from './Login.less';
-
-import config from '../../config/config';
+import {querySecretInfo} from "../../services/api";
 
 const { UserName, Password, Submit, VerifyCode, LoginCode } = Login;
+
+let secretKey= ""
+let secretIv = ""
+async function initSecret() {
+  try {
+    let promise = await querySecretInfo();
+    if (typeof promise !== 'undefined') {
+      if (promise.status === 200) {
+        let body = await promise.json();
+        if ((body.data.key != null && body.data.key !== "") && (body.data.iv != null && body.data.iv !== "")) {
+          secretKey = body.data.key
+          secretIv = body.data.iv;
+        }
+      }
+    }
+  } catch (e) {
+    // ignore error
+  }
+}
+initSecret().then(() => {});
 @connect(({ login, loading }) => ({
   login,
   submitting: loading.effects['login/login'],
@@ -52,9 +71,9 @@ export default class LoginPage extends Component {
         this.ChildRef.current.handleChange();
         return;
       }
-      if (config.secret_key !== "" && config.secret_iv !== "" ){
-        const keyByte = CryptoJS.enc.Utf8.parse(config.secret_key);
-        const ivByte = CryptoJS.enc.Utf8.parse(config.secret_iv);
+      if (secretKey !== "" && secretIv !== "" ){
+        const keyByte = CryptoJS.enc.Utf8.parse(secretKey);
+        const ivByte = CryptoJS.enc.Utf8.parse(secretIv);
         const encryptedPassword = CryptoJS.AES.encrypt(values.password, keyByte, {
           iv: ivByte,
           mode: CryptoJS.mode.CTR,
