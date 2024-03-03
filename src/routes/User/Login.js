@@ -33,9 +33,10 @@ async function initSecret() {
     if (typeof promise !== 'undefined') {
       if (promise.status === 200) {
         let body = await promise.json();
-        if ((body.data.key != null && body.data.key !== "") && (body.data.iv != null && body.data.iv !== "")) {
-          secretKey = body.data.key
-          secretIv = body.data.iv;
+        let secret = JSON.parse(atob(body.data));
+        if ((secret.key != null && secret.key !== "") && (secret.iv != null && secret.iv !== "")) {
+          secretKey = secret.key
+          secretIv = secret.iv;
         }
       }
     }
