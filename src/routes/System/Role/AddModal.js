@@ -30,6 +30,7 @@ class AddModal extends Component {
     autoExpandParent: true,
     checkedKeys: [],
     selectedKeys: [],
+    searchValue: '',
   }
 
   componentDidMount() {
@@ -79,7 +80,15 @@ class AddModal extends Component {
     this.setState({ checkedKeys });
   };
 
-  renderTreeNodes = (parentItem,data) => {
+  onSearch = (e) => {
+    const { value } = e.target;
+    this.setState({
+      searchValue: value,
+    });
+  }
+
+  renderTreeNodes = (parentItem, data) => {
+    const { searchValue } = this.state;
     data = data.sort((a,b)=>(a.sort||0)-(b.sort||0));
     return data.map(item => {
       if(!item.ids){
@@ -93,10 +102,26 @@ class AddModal extends Component {
       if (item.title.startsWith("SHENYU.")) {
         item.displayName = getIntlContent(item.title);
       }
+      if (parentItem && parentItem.name === "plug" && searchValue) {
+        const nodeStyle = {};
+        if (item.name.indexOf(searchValue) === -1) {
+          nodeStyle.display = "none";
+        }
+        return (
+            <TreeNode style={nodeStyle} title={item.displayName} key={item.id} dataRef={item}>
+              {this.renderTreeNodes(item, item.children)}
+            </TreeNode>
+        );
+      }
       if (item.children) {
         return (
-          <TreeNode title={item.displayName} key={item.id} dataRef={item}>
-            {this.renderTreeNodes(item,item.children)}
+          <TreeNode title={item.name === "plug" ? (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div>{item.displayName}</div>
+              <Input style={{ marginLeft: 8 }} placeholder="Filter by plugin name" allowClear onChange={this.onSearch}/>
+            </div>
+          ) : item.displayName} key={item.id} dataRef={item}>
+            {this.renderTreeNodes(item, item.children)}
           </TreeNode>
         );
       }
