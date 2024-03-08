@@ -374,14 +374,13 @@ export default class PluginHandle extends Component {
           key: "required",
           ellipsis:true,
           width: 120,
-          sorter: (a,b) => (a.required || "-1") > (b.required || "-1") ? 1 : -1,
+          sorter: (a,b) => (a.required || "0") > (b.required || "0") ? 1 : -1,
           render: text => {
             if (text === "1") {
               return <span style={{color:"green",fontWeight:"bold"}}>{getIntlContent("SHENYU.COMMON.YES")}</span>;
-            } else if (text === "0") {
+            } else {
               return <span style={{color:"red",fontWeight:"bold"}}>{getIntlContent("SHENYU.COMMON.NO")}</span>;
             }
-            return <span style={{color:"orange",fontWeight:"bold"}}>{getIntlContent("SHENYU.PLUGIN.UNDEFINETYPE")}</span>;
           }
         },
         {
