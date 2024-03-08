@@ -223,7 +223,7 @@ class AddModal extends Component {
                       >
                         {getIntlContent("SHENYU.SYSTEM.ALERT.LABELS.ADD")}
                       </div>
-                      <span
+                      {labelList.length !== 1 && <span
                         className="edit"
                         style={{ marginLeft: 10 }}
                         onClick={() => {
@@ -238,7 +238,7 @@ class AddModal extends Component {
                     }}
                       >
                         {getIntlContent("SHENYU.SYSTEM.ALERT.LABELS.DELETE")}
-                      </span>
+                      </span>}
                     </Col>
                   </Row>
             ))}
