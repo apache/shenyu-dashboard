@@ -299,6 +299,10 @@ class AddModal extends Component {
   };
 
   handleCopyData = copyData => {
+    if (!copyData) {
+      this.setState({ visible: false });
+      return;
+    }
     const { form } = this.props;
     const { ruleConditions, name, matchMode, loged, enabled, sort } = copyData;
     const formData = {
