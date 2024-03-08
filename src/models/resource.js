@@ -63,6 +63,8 @@ export default {
       if (json.code === 200) {
         const resource = json.data;
         callback(resource);
+      } else {
+        message.warn(json.message);
       }
     },
     *add(params, { call }) {
