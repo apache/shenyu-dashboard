@@ -108,19 +108,23 @@ class AddModal extends Component {
           nodeStyle.display = "none";
         }
         return (
-            <TreeNode style={nodeStyle} title={item.displayName} key={item.id} dataRef={item}>
-              {this.renderTreeNodes(item, item.children)}
-            </TreeNode>
+          <TreeNode style={nodeStyle} title={item.displayName} key={item.id} dataRef={item}>
+            {this.renderTreeNodes(item, item.children)}
+          </TreeNode>
         );
       }
       if (item.children) {
         return (
-          <TreeNode title={item.name === "plug" ? (
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <div>{item.displayName}</div>
-              <Input style={{ marginLeft: 8 }} placeholder="Filter by plugin name" allowClear onChange={this.onSearch}/>
-            </div>
-          ) : item.displayName} key={item.id} dataRef={item}>
+          <TreeNode
+            title={item.name === "plug" ? (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <div>{item.displayName}</div>
+                <Input style={{ marginLeft: 8 }} placeholder="Filter by plugin name" allowClear onChange={this.onSearch} />
+              </div>
+          ) : item.displayName}
+            key={item.id}
+            dataRef={item}
+          >
             {this.renderTreeNodes(item, item.children)}
           </TreeNode>
         );
