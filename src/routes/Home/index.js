@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-import React, { Component } from "react"
-import { Button, Steps, Divider, Card, Col, Row, Timeline, Statistic, Icon, Popover, Tag, Alert, Button, Modal } from 'antd'
-import { connect } from "dva"
-import { routerRedux } from 'dva/router'
-import styles from "./home.less"
-import { getIntlContent } from '../../utils/IntlUtils'
-import { activePluginSnapshot, getNewEventRecodLogList } from "../../services/api"
+import React, { Component } from "react";
+import { Button, Steps, Divider, Card, Col, Row, Timeline, Statistic, Icon, Popover, Tag, Alert, Modal } from 'antd';
+import { connect } from "dva";
+import { routerRedux } from 'dva/router';
+import styles from "./home.less";
+import { getIntlContent } from '../../utils/IntlUtils';
+import { activePluginSnapshot, getNewEventRecodLogList } from "../../services/api";
 import AddModal from "./AddModal";
 
-const { Step } = Steps
+const { Step } = Steps;
 
-const colors = ["magenta", "red", "green", "cyan", "purple", "blue", "orange"]
+const colors = ["magenta", "red", "green", "cyan", "purple", "blue", "orange"];
 
 @connect(({ global }) => ({
   global
@@ -34,45 +34,45 @@ const colors = ["magenta", "red", "green", "cyan", "purple", "blue", "orange"]
 export default class Home extends Component {
 
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       // eslint-disable-next-line react/no-unused-state
       localeName: '',
       activePluginSnapshot: [],
       activeLog: [],
       popup: "",
-    }
+    };
   }
 
   componentDidMount () {
-    const token = window.sessionStorage.getItem("token")
+    const token = window.sessionStorage.getItem("token");
     if (token) {
-      const { dispatch } = this.props
+      const { dispatch } = this.props;
       dispatch({
         type: "global/fetchPlatform"
-      })
+      });
     }
     activePluginSnapshot().then(res => {
       if (res) {
-        this.setState({ activePluginSnapshot: res.data || [] })
+        this.setState({ activePluginSnapshot: res.data || [] });
       }
-    })
+    });
     getNewEventRecodLogList().then(res => {
       if (res) {
-        this.setState({ activeLog: res.data || [] })
+        this.setState({ activeLog: res.data || [] });
       }
-    })
+    });
 
   }
 
   componentWillUnmount () {
-    this.setState = () => false
+    this.setState = () => false;
   }
 
   pluginOnClick = (plugin) => {
     const { dispatch } = this.props;
     dispatch(routerRedux.push(`plug/${plugin.role}/${plugin.name}`));
-  }
+  };
 
   getEventLogTitle = (log) => {
     const textStyle = { fontWeight: "bold", color: "#4f6eee" };
@@ -82,7 +82,7 @@ export default class Home extends Component {
         <span style={textStyle}>{log.operationType}</span> by <span style={textStyle}>{log.operator}</span>
       </div>
     );
-  }
+  };
 
   showEventLogDetail = (log) => {
     Modal.info({
@@ -90,27 +90,27 @@ export default class Home extends Component {
       icon: null,
       width: 500,
       content: (
-        <div style={{ maxHeight: 400, overflowY: 'auto'}}>
+        <div style={{ maxHeight: 400, overflowY: 'auto' }}>
           {log.context}
         </div>
       ),
-      onOk() {},
+      onOk () { },
     });
-  }
+  };
 
   // 导出数据
   exportAllClick = () => {
-    const { dispatch } = this.props
+    const { dispatch } = this.props;
     dispatch({
       type: "common/exportAll"
-    })
+    });
   };
 
   closeModal = (refresh) => {
     if (refresh) {
-      this.setState({ popup: "" }, this.query)
+      this.setState({ popup: "" }, this.query);
     }
-    this.setState({ popup: "" })
+    this.setState({ popup: "" });
   };
 
   importConfigClick = () => {
@@ -119,26 +119,26 @@ export default class Home extends Component {
         <AddModal
           disabled={false}
           handleOk={values => {
-            const { dispatch } = this.props
+            const { dispatch } = this.props;
             dispatch({
               type: "common/import",
               payload: values,
               callback: () => {
-                this.closeModal(true)
+                this.closeModal(true);
               }
-            })
+            });
           }}
           handleCancel={() => {
-            this.closeModal()
+            this.closeModal();
           }}
         />
       )
-    })
+    });
   };
 
   render () {
-    const { popup } = this.state
-    const contextStyle = { "fontWeight": "bold", color: "#3b9a9c" }
+    const { popup } = this.state;
+    const contextStyle = { "fontWeight": "bold", color: "#3b9a9c" };
     const pluginSteps = this.state.activePluginSnapshot.map((p, index) => {
       const content = (
         <div>
@@ -150,16 +150,16 @@ export default class Home extends Component {
             <pre><code>{JSON.stringify(JSON.parse(p.config ? p.config : '{}'), null, 4)}</code></pre>
           </div>
         </div>
-      )
+      );
       const title = (
         <Popover placement="topLeft" content={content} title={<Tag color="geekblue" onClick={this.pluginOnClick.bind(this, p)}>{p.name} </Tag>}>
           <Tag color="geekblue" onClick={this.pluginOnClick.bind(this, p)} style={{ "fontWeight": "bold" }}>{p.name} </Tag>
           <Tag color={colors[(p.role.length + index) % colors.length]}>{p.role}</Tag>
         </Popover>
-      )
-      const description = <span>handle is <span style={contextStyle}>{p.handleCount}</span>  selector is <span style={contextStyle}>{p.selectorCount} </span></span>
-      return <Step title={title} key={index} description={description} />
-    })
+      );
+      const description = <span>handle is <span style={contextStyle}>{p.handleCount}</span>  selector is <span style={contextStyle}>{p.selectorCount} </span></span>;
+      return <Step title={title} key={index} description={description} />;
+    });
     const activeLogItems = this.state.activeLog.map((log, index) => {
       const type = log.operationType.startsWith("CREATE") ? "success" : log.operationType.startsWith("DELETE") ? "warning" : "info";
       return (
@@ -175,8 +175,8 @@ export default class Home extends Component {
             type={type}
           />
         </Timeline.Item>
-      )
-    })
+      );
+    });
 
     return (
       <div>
@@ -288,6 +288,6 @@ export default class Home extends Component {
         </div>
         {popup}
       </div>
-    )
+    );
   }
 }

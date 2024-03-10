@@ -28,8 +28,10 @@ import {
   deleteRule,
   findRule,
   updateRule,
-  } from "../services/api";
-import {getIntlContent} from "../utils/IntlUtils";
+  asyncConfigExport,
+  asyncConfigImport,
+} from "../services/api";
+import { getIntlContent } from "../utils/IntlUtils";
 
 export default {
   namespace: "common",
@@ -43,7 +45,7 @@ export default {
   },
 
   effects: {
-    *fetchSelector({ payload }, { call, put }) {
+    *fetchSelector ({ payload }, { call, put }) {
       const json = yield call(getAllSelectors, { ...payload });
       if (json.code === 200) {
         let { page, dataList } = json.data;
@@ -87,7 +89,7 @@ export default {
       }
 
     },
-    *fetchRule({ payload }, { call, put }) {
+    *fetchRule ({ payload }, { call, put }) {
       const json = yield call(getAllRules, payload);
       if (json.code === 200) {
         let { page, dataList } = json.data;
@@ -104,7 +106,7 @@ export default {
         });
       }
     },
-    *addSelector(params, { call, put }) {
+    *addSelector (params, { call, put }) {
       const { payload, callback, fetchValue } = params;
       const json = yield call(addSelector, payload);
       if (json.code === 200) {
@@ -117,7 +119,7 @@ export default {
       }
     },
 
-    *addRule(params, { call, put }) {
+    *addRule (params, { call, put }) {
       const { payload, callback, fetchValue } = params;
       const json = yield call(addRule, payload);
       if (json.code === 200) {
@@ -129,7 +131,7 @@ export default {
       }
     },
 
-    *fetchSeItem(params, { call }) {
+    *fetchSeItem (params, { call }) {
       const { payload, callback } = params;
       const json = yield call(findSelector, payload);
       if (json.code === 200) {
@@ -137,7 +139,7 @@ export default {
         callback(selector);
       }
     },
-    *deleteSelector(params, { call, put }) {
+    *deleteSelector (params, { call, put }) {
       const { payload, fetchValue } = params;
       const { list } = payload;
       const json = yield call(deleteSelector, { list });
@@ -155,7 +157,7 @@ export default {
         message.warn(json.message);
       }
     },
-    *updateSelector(params, { call, put }) {
+    *updateSelector (params, { call, put }) {
       const { payload, callback, fetchValue } = params;
       const json = yield call(updateSelector, payload);
       if (json.code === 200) {
@@ -166,7 +168,7 @@ export default {
         message.warn(json.message);
       }
     },
-    *deleteRule(params, { call, put }) {
+    *deleteRule (params, { call, put }) {
       const { payload, fetchValue } = params;
       const { list } = payload;
       const json = yield call(deleteRule, { list });
@@ -177,7 +179,7 @@ export default {
         message.warn(json.message);
       }
     },
-    *fetchRuleItem(params, { call }) {
+    *fetchRuleItem (params, { call }) {
       const { payload, callback } = params;
       const json = yield call(findRule, payload);
       if (json.code === 200) {
@@ -185,7 +187,7 @@ export default {
         callback(rule);
       }
     },
-    *updateRule(params, { call, put }) {
+    *updateRule (params, { call, put }) {
       const { payload, callback, fetchValue } = params;
       const json = yield call(updateRule, payload);
       if (json.code === 200) {
@@ -197,7 +199,7 @@ export default {
       }
     },
 
-    *reload(params, { put }) {
+    *reload (params, { put }) {
       const { fetchValue } = params;
       const { pluginId, currentPage, pageSize } = fetchValue;
       const payload = { pluginId, currentPage, pageSize };
@@ -234,7 +236,7 @@ export default {
   },
 
   reducers: {
-    saveSelector(state, { payload }) {
+    saveSelector (state, { payload }) {
       return {
         ...state,
         selectorList: payload.selectorList,
@@ -242,27 +244,27 @@ export default {
       };
     },
 
-    saveRule(state, { payload }) {
+    saveRule (state, { payload }) {
       return {
         ...state,
         ruleList: payload.ruleList,
         ruleTotal: payload.ruleTotal
       };
     },
-    saveCurrentSelector(state, { payload }) {
+    saveCurrentSelector (state, { payload }) {
       return {
         ...state,
         currentSelector: payload.currentSelector
       };
     },
-    resetData() {
+    resetData () {
       return {
         selectorList: [],
         ruleList: [],
         selectorTotal: 0,
         ruleTotal: 0,
         currentSelector: ""
-      }
+      };
     }
   }
 };

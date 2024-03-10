@@ -15,38 +15,38 @@
  * limitations under the License.
  */
 
-import React, { Component, forwardRef, Fragment } from "react"
-import { Modal, Form, Button } from "antd"
-import { connect } from "dva"
-import { getIntlContent } from "../../utils/IntlUtils"
+import React, { Component, forwardRef, Fragment } from "react";
+import { Modal, Form, Button } from "antd";
+import { connect } from "dva";
+import { getIntlContent } from "../../utils/IntlUtils";
 
 
-const FormItem = Form.Item
+const FormItem = Form.Item;
 const ChooseFile = forwardRef(({ onChange, file }, ref) => {
   const handleFileInput = (e) => {
-    onChange(e.target.files[0])
-  }
+    onChange(e.target.files[0]);
+  };
   return (
     <>
 
-      <Button onClick={() => { document.getElementById("file").click() }}>{getIntlContent("SHENYU.COMMON.UPLOAD")}</Button> {file?.name}
+      <Button onClick={() => { document.getElementById("file").click(); }}>{getIntlContent("SHENYU.COMMON.UPLOAD")}</Button> {file?.name}
       <input ref={ref} type="file" onChange={handleFileInput} style={{ display: 'none' }} id="file" />
     </>
-  )
-})
+  );
+});
 @connect(({ global }) => ({
   platform: global.platform
 }))
 class AddModal extends Component {
   handleSubmit = e => {
-    const { form, handleOk } = this.props
-    e.preventDefault()
+    const { form, handleOk } = this.props;
+    e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        let { file } = values
-        handleOk({ file })
+        let { file } = values;
+        handleOk({ file });
       }
-    })
+    });
   };
 
   render () {
@@ -55,8 +55,8 @@ class AddModal extends Component {
       form,
       config,
       file
-    } = this.props
-    const { getFieldDecorator } = form
+    } = this.props;
+    const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
         sm: { span: 7 }
@@ -64,9 +64,9 @@ class AddModal extends Component {
       wrapperCol: {
         sm: { span: 17 }
       }
-    }
+    };
     if (config) {
-      config = JSON.parse(config)
+      config = JSON.parse(config);
     }
 
     return (
@@ -99,8 +99,8 @@ class AddModal extends Component {
           </FormItem>
         </Form>
       </Modal>
-    )
+    );
   }
 }
 
-export default Form.create()(AddModal)
+export default Form.create()(AddModal);
