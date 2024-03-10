@@ -498,6 +498,12 @@ export async function queryLogin (params) {
   })
 }
 
+export async function querySecretInfo() {
+  return  fetch(`${baseUrl}/platform/secretInfo`)
+    .catch(() => {
+    });
+}
+
 // sync all plugin
 export async function asyncPlugin () {
   return request(`${baseUrl}/plugin/syncPluginAll`, {

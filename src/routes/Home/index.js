@@ -16,13 +16,13 @@
  */
 
 import React, { Component } from "react"
-import { Button, Steps, Divider, Card, Col, Row, Timeline, Statistic, Icon, Popover, Tag, Alert } from 'antd'
+import { Button, Steps, Divider, Card, Col, Row, Timeline, Statistic, Icon, Popover, Tag, Alert, Button, Modal } from 'antd'
 import { connect } from "dva"
 import { routerRedux } from 'dva/router'
 import styles from "./home.less"
 import { getIntlContent } from '../../utils/IntlUtils'
 import { activePluginSnapshot, getNewEventRecodLogList } from "../../services/api"
-import AddModal from "./AddModal"
+import AddModal from "./AddModal";
 
 const { Step } = Steps
 
@@ -70,9 +70,32 @@ export default class Home extends Component {
   }
 
   pluginOnClick = (plugin) => {
-    const { dispatch } = this.props
-    dispatch(routerRedux.push(`plug/${plugin.role}/${plugin.name}`))
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`plug/${plugin.role}/${plugin.name}`));
+  }
 
+  getEventLogTitle = (log) => {
+    const textStyle = { fontWeight: "bold", color: "#4f6eee" };
+    return (
+      <div style={{ display: "inline" }}>
+        <Tag color="geekblue">{log.operationTime}</Tag>
+        <span style={textStyle}>{log.operationType}</span> by <span style={textStyle}>{log.operator}</span>
+      </div>
+    );
+  }
+
+  showEventLogDetail = (log) => {
+    Modal.info({
+      title: this.getEventLogTitle(log),
+      icon: null,
+      width: 500,
+      content: (
+        <div style={{ maxHeight: 400, overflowY: 'auto'}}>
+          {log.context}
+        </div>
+      ),
+      onOk() {},
+    });
   }
 
   // 导出数据
@@ -138,14 +161,17 @@ export default class Home extends Component {
       return <Step title={title} key={index} description={description} />
     })
     const activeLogItems = this.state.activeLog.map((log, index) => {
-      const textStyle = { "fontWeight": "bold", color: "#4f6eee" }
-      const type = log.operationType.startsWith("CREATE") ? "success" : log.operationType.startsWith("DELETE") ? "warning" : "info"
+      const type = log.operationType.startsWith("CREATE") ? "success" : log.operationType.startsWith("DELETE") ? "warning" : "info";
       return (
         <Timeline.Item color="#e8e8e8" label={index} key={index}>
           <Alert
             className={styles.logItem}
-            message={<p><span style={textStyle}>{log.operationType}</span> by <span style={textStyle}>{log.operator}</span></p>}
-            description={<p className={styles.contextHide}>{log.operationTime} : <span>{log.context}</span></p>}
+            message={
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                {this.getEventLogTitle(log)}
+                <Button type="link" onClick={this.showEventLogDetail.bind(this, log)}>Detail</Button>
+              </div>
+            }
             type={type}
           />
         </Timeline.Item>

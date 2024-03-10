@@ -15,13 +15,36 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { connect } from 'dva';
-import { Alert } from 'antd';
+import React, {Component} from 'react';
+import CryptoJS from 'crypto-js';
+import {connect} from 'dva';
+import {Alert} from 'antd';
 import Login from 'components/Login';
 import styles from './Login.less';
+import {querySecretInfo} from "../../services/api";
 
 const { UserName, Password, Submit, VerifyCode, LoginCode } = Login;
+
+let secretKey= ""
+let secretIv = ""
+async function initSecret() {
+  try {
+    let promise = await querySecretInfo();
+    if (typeof promise !== 'undefined') {
+      if (promise.status === 200) {
+        let body = await promise.json();
+        let secret = JSON.parse(atob(body.data));
+        if ((secret.key != null && secret.key !== "") && (secret.iv != null && secret.iv !== "")) {
+          secretKey = secret.key
+          secretIv = secret.iv;
+        }
+      }
+    }
+  } catch (e) {
+    // ignore error
+  }
+}
+initSecret().then(() => {});
 @connect(({ login, loading }) => ({
   login,
   submitting: loading.effects['login/login'],
@@ -49,6 +72,17 @@ export default class LoginPage extends Component {
         this.ChildRef.current.handleChange();
         return;
       }
+      if (secretKey !== "" && secretIv !== "" ){
+        const keyByte = CryptoJS.enc.Utf8.parse(secretKey);
+        const ivByte = CryptoJS.enc.Utf8.parse(secretIv);
+        const encryptedPassword = CryptoJS.AES.encrypt(values.password, keyByte, {
+          iv: ivByte,
+          mode: CryptoJS.mode.CBC,
+          padding: CryptoJS.pad.Pkcs7
+        });
+        values.password = encryptedPassword.toString();
+      }
+
       dispatch({
         type: 'login/login',
         payload: {
