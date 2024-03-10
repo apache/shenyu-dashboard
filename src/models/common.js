@@ -28,7 +28,7 @@ import {
   deleteRule,
   findRule,
   updateRule,
-} from "../services/api";
+  } from "../services/api";
 import {getIntlContent} from "../utils/IntlUtils";
 
 export default {
@@ -204,12 +204,33 @@ export default {
       yield put({ type: "fetchSelector", payload });
     },
 
-    *reloadRule(params, { put }) {
+    *reloadRule (params, { put }) {
       const { fetchValue } = params;
       const { selectorId, currentPage, pageSize } = fetchValue;
       const payload = { selectorId, currentPage, pageSize };
       yield put({ type: "fetchRule", payload });
-    }
+    },
+
+    *exportAll (_, { call }) {
+      yield call(asyncConfigExport);
+    },
+
+    *import (params, { call }) {
+      const { payload, callback } = params;
+      const json = yield call(asyncConfigImport, payload);
+      if (json.code === 200) {
+        if (json.data === null) {
+          message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+          callback();
+        } else {
+          message.warn(JSON.stringify(json.data));
+          callback();
+        }
+      } else {
+        message.warn(json.message);
+      }
+    },
+
   },
 
   reducers: {

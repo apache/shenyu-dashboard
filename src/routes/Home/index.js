@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-import React, { Component } from "react";
-import { Steps, Divider, Card, Col, Row, Timeline, Statistic, Icon, Popover, Tag, Alert } from 'antd';
-import { connect } from "dva";
-import { routerRedux } from 'dva/router';
-import styles from "./home.less";
-import { getIntlContent } from '../../utils/IntlUtils';
-import { activePluginSnapshot, getNewEventRecodLogList } from "../../services/api";
+import React, { Component } from "react"
+import { Button, Steps, Divider, Card, Col, Row, Timeline, Statistic, Icon, Popover, Tag, Alert } from 'antd'
+import { connect } from "dva"
+import { routerRedux } from 'dva/router'
+import styles from "./home.less"
+import { getIntlContent } from '../../utils/IntlUtils'
+import { activePluginSnapshot, getNewEventRecodLogList } from "../../services/api"
+import AddModal from "./AddModal"
 
-const { Step } = Steps;
+const { Step } = Steps
 
-const colors = ["magenta", "red", "green", "cyan", "purple", "blue", "orange"];
+const colors = ["magenta", "red", "green", "cyan", "purple", "blue", "orange"]
 
 @connect(({ global }) => ({
   global
@@ -33,28 +34,29 @@ const colors = ["magenta", "red", "green", "cyan", "purple", "blue", "orange"];
 export default class Home extends Component {
 
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       // eslint-disable-next-line react/no-unused-state
       localeName: '',
       activePluginSnapshot: [],
       activeLog: [],
+      popup: "",
     }
   }
 
-  componentDidMount() {
-    const token = window.sessionStorage.getItem("token");
+  componentDidMount () {
+    const token = window.sessionStorage.getItem("token")
     if (token) {
-      const { dispatch } = this.props;
+      const { dispatch } = this.props
       dispatch({
         type: "global/fetchPlatform"
-      });
+      })
     }
     activePluginSnapshot().then(res => {
       if (res) {
         this.setState({ activePluginSnapshot: res.data || [] })
       }
-    });
+    })
     getNewEventRecodLogList().then(res => {
       if (res) {
         this.setState({ activeLog: res.data || [] })
@@ -63,17 +65,56 @@ export default class Home extends Component {
 
   }
 
-  componentWillUnmount() {
-    this.setState = () => false;
+  componentWillUnmount () {
+    this.setState = () => false
   }
 
   pluginOnClick = (plugin) => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`plug/${plugin.role}/${plugin.name}`));
+    const { dispatch } = this.props
+    dispatch(routerRedux.push(`plug/${plugin.role}/${plugin.name}`))
 
   }
 
-  render() {
+  // 导出数据
+  exportAllClick = () => {
+    const { dispatch } = this.props
+    dispatch({
+      type: "common/exportAll"
+    })
+  };
+
+  closeModal = (refresh) => {
+    if (refresh) {
+      this.setState({ popup: "" }, this.query)
+    }
+    this.setState({ popup: "" })
+  };
+
+  importConfigClick = () => {
+    this.setState({
+      popup: (
+        <AddModal
+          disabled={false}
+          handleOk={values => {
+            const { dispatch } = this.props
+            dispatch({
+              type: "common/import",
+              payload: values,
+              callback: () => {
+                this.closeModal(true)
+              }
+            })
+          }}
+          handleCancel={() => {
+            this.closeModal()
+          }}
+        />
+      )
+    })
+  };
+
+  render () {
+    const { popup } = this.state
     const contextStyle = { "fontWeight": "bold", color: "#3b9a9c" }
     const pluginSteps = this.state.activePluginSnapshot.map((p, index) => {
       const content = (
@@ -83,22 +124,22 @@ export default class Home extends Component {
           <p>the plugin has selector is : <span style={contextStyle}>{p.selectorCount} </span></p>
           <hr />
           <div style={contextStyle}>
-            <pre><code>{JSON.stringify(JSON.parse(p.config  ? p.config : '{}'), null, 4)}</code></pre>
+            <pre><code>{JSON.stringify(JSON.parse(p.config ? p.config : '{}'), null, 4)}</code></pre>
           </div>
         </div>
-      );
+      )
       const title = (
         <Popover placement="topLeft" content={content} title={<Tag color="geekblue" onClick={this.pluginOnClick.bind(this, p)}>{p.name} </Tag>}>
           <Tag color="geekblue" onClick={this.pluginOnClick.bind(this, p)} style={{ "fontWeight": "bold" }}>{p.name} </Tag>
           <Tag color={colors[(p.role.length + index) % colors.length]}>{p.role}</Tag>
         </Popover>
-      );
-      const description = <span>handle is <span style={contextStyle}>{p.handleCount}</span>  selector is <span style={contextStyle}>{p.selectorCount} </span></span>;
-      return <Step title={title} key={index} description={description} />;
+      )
+      const description = <span>handle is <span style={contextStyle}>{p.handleCount}</span>  selector is <span style={contextStyle}>{p.selectorCount} </span></span>
+      return <Step title={title} key={index} description={description} />
     })
     const activeLogItems = this.state.activeLog.map((log, index) => {
-      const textStyle = { "fontWeight": "bold", color: "#4f6eee" };
-      const type = log.operationType.startsWith("CREATE") ? "success" : log.operationType.startsWith("DELETE") ? "warning" : "info";
+      const textStyle = { "fontWeight": "bold", color: "#4f6eee" }
+      const type = log.operationType.startsWith("CREATE") ? "success" : log.operationType.startsWith("DELETE") ? "warning" : "info"
       return (
         <Timeline.Item color="#e8e8e8" label={index} key={index}>
           <Alert
@@ -115,6 +156,24 @@ export default class Home extends Component {
       <div>
         <div className={styles.content}>
           <span style={{ textShadow: '1px 1px 3px' }}>{getIntlContent("SHENYU.HOME.WELCOME")}</span>
+        </div>
+        <div>
+          <Button
+            style={{ marginLeft: 20, marginBottom: 20 }}
+            icon="export"
+            type="primary"
+            onClick={this.exportAllClick}
+          >
+            {getIntlContent("SHENYU.COMMON.EXPORT")}
+          </Button>
+          <Button
+            style={{ marginLeft: 20, marginBottom: 20 }}
+            icon="import"
+            type="primary"
+            onClick={this.importConfigClick}
+          >
+            {getIntlContent("SHENYU.COMMON.IMPORT")}
+          </Button>
         </div>
         <div className={styles.processContent}>
           <Steps current={1}>
@@ -201,7 +260,8 @@ export default class Home extends Component {
             </Col>
           </Row>
         </div>
+        {popup}
       </div>
-    );
+    )
   }
 }
