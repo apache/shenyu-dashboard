@@ -524,7 +524,7 @@ export default class ShenYuDict extends Component {
           components={this.components}
           style={{ marginTop: 30 }}
           bordered
-          rowKey={record => record.id}
+          rowKey={record => `${record.type}_${record.dictCode}_${record.dictName}`}
           loading={loading}
           columns={columns}
           // scroll={{ x: 1350 }}
