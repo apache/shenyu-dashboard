@@ -39,6 +39,12 @@ export default {
 
   effects: {
     * fetch(params, {call, put}) {
+      yield put({
+        type: "saveShenYuDicts",
+        payload: {
+          dataList: []
+        }
+      });
       const {payload} = params;
       const json = yield call(fetchShenYuDicts, payload);
       if (json.code === 200) {
@@ -138,8 +144,8 @@ export default {
     saveShenYuDicts(state, { payload }) {
       return {
         ...state,
-        shenyuDictList: payload.dataList,
-        total: payload.total
+        shenyuDictList: payload?.dataList ?? state.shenyuDictList,
+        total: payload?.total ?? state.total
       };
     },
 
