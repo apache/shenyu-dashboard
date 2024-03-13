@@ -113,8 +113,12 @@ export default {
     },
     *syncDa( params, {call}) {
       const { payload } = params;
-      yield call(syncData,payload);
-
+      const json = yield call(syncData,payload);
+      if (json.code === 200) {
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.SYNC.SUCCESS'));
+      } else {
+        message.warn(json.message);
+      }
     },
     *reload(params, { put }) {
       const { fetchValue } = params;

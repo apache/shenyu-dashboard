@@ -146,7 +146,12 @@ export default {
     },
     *syncDa(params,{ call }) {
       const {payload} = params;
-      yield call( syncAuthsData,payload );
+      const json = yield call( syncAuthsData,payload );
+      if (json.code === 200) {
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.SYNC.SUCCESS'));
+      } else {
+        message.warn(json.message);
+      }
     },
     *getDatas(params, {call}) {
       const {payload} = params;
