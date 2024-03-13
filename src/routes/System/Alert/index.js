@@ -24,6 +24,8 @@ import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { Type } from "./globalData";
 
+const DEFAULT_ALERT_TYPE = 1;
+
 @connect(({ alert, loading }) => ({
   alert,
   loading: loading.effects["alert/fetch"]
@@ -144,6 +146,7 @@ export default class Alert extends Component {
     this.setState({
       popup: (
         <AddModal
+          type={DEFAULT_ALERT_TYPE}
           handleOk={values => {
             const { dispatch } = this.props;
             dispatch({
