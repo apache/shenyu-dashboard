@@ -40,7 +40,7 @@ export const RPCTYPE = [
 export const API_SOURCE_TYPE = [
   "swagger",
   "annotation generation",
-  "create manuallym",
+  "create manually",
   "import swagger",
   "import yapi"
 ];
