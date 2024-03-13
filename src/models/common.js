@@ -225,8 +225,8 @@ export default {
           message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
           callback();
         } else {
-          message.warn(JSON.stringify(json.data));
-          callback();
+          // message.warn(JSON.stringify(json.data));
+          callback(JSON.stringify(json.data));
         }
       } else {
         message.warn(json.message);

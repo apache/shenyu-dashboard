@@ -23,6 +23,7 @@ import styles from "./home.less";
 import { getIntlContent } from '../../utils/IntlUtils';
 import { activePluginSnapshot, getNewEventRecodLogList } from "../../services/api";
 import AddModal from "./AddModal";
+import ImportResultModal from "./ImportResultModal";
 
 const { Step } = Steps;
 
@@ -123,14 +124,29 @@ export default class Home extends Component {
             dispatch({
               type: "common/import",
               payload: values,
-              callback: () => {
+              callback: (res) => {
                 this.closeModal(true);
+                this.showImportRestlt(JSON.parse(res));
               }
             });
           }}
           handleCancel={() => {
             this.closeModal();
           }}
+        />
+      )
+    });
+  };
+
+  showImportRestlt = (json) => {
+    this.setState({
+      popup: (
+        <ImportResultModal
+          disabled={false}
+          json={json}
+          title={getIntlContent("SHENYU.COMMON.IMPORT.RESULT")}
+          onCancel={() => this.closeModal(true)}
+          onOk={() => this.closeModal(true)}
         />
       )
     });
