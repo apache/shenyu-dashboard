@@ -305,34 +305,33 @@ export default class Metadata extends Component {
                 <p>{record.pathDesc}</p>
                 <hr />
                 <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.META.SERVER.INTER")}</span> :
-                  <span style={{color:"#1f640a"}}>{record.serviceName}</span>
+                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.META.SERVER.INTER")}</span>:
+                  <span style={{color:"#1f640a"}}> {record.serviceName}</span>
                 </p>
                 <p>
                   <span style={{color:"#204969"}}>{getIntlContent("SHENYU.META.FUNC.NAME")}</span>:
-                  <span style={{color:"#1f640a"}}>{record.methodName}</span>
+                  <span style={{color:"#1f640a"}}> {record.methodName}</span>
                 </p>
                 <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.AUTH.PARAMS")}</span> :
-                  <span style={{color:"#1f640a"}}>{record.parameterTypes}</span>
+                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.AUTH.PARAMS")}</span>:
+                  <span style={{color:"#1f640a"}}> {record.parameterTypes}</span>
                 </p>
                 <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.META.EXPAND.PARAMS")}</span> :
-                  <span style={{color:"#1f640a"}}>{record.rpcExt}</span>
+                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.META.EXPAND.PARAMS")}</span>:
+                  <span style={{color:"#1f640a"}}> {record.rpcExt}</span>
                 </p>
                 <hr />
                 <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.SYSTEM.CREATETIME")}</span> :
-                  <span style={{color:"#1f640a"}}>{record.dateCreated}</span>
+                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.SYSTEM.CREATETIME")}</span>:
+                  <span style={{color:"#1f640a"}}> {record.dateCreated}</span>
                 </p>
                 <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.SYSTEM.UPDATETIME")}</span> :
-                  <span style={{color:"#1f640a"}}>{record.dateUpdated}</span>
+                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.SYSTEM.UPDATETIME")}</span>:
+                  <span style={{color:"#1f640a"}}> {record.dateUpdated}</span>
                 </p>
               </div>
             );
             return <Popover placement="topLeft" content={content} title={getIntlContent("SHENYU.AUTH.PATH.DESCRIBE")}><div style={{color: "#1f640a"}}>{text || "----"}</div></Popover>
-
           }
         },
         {
