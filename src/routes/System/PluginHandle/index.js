@@ -307,7 +307,13 @@ export default class PluginHandle extends Component {
             if (pluginHandleList) {
               pluginHandleList.forEach(item => {
                 if (item.extObj) {
-                  let obj = JSON.parse(item.extObj)
+                  let obj = {};
+                  try {
+                    obj = JSON.parse(item.extObj);
+                  } catch (e) {
+                    // eslint-disable-next-line no-console
+                    console.error(e);
+                  }
                   if (obj.required) {
                     item.required = obj.required
                   }
