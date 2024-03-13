@@ -73,6 +73,8 @@ export default {
       if (json.code === 200) {
         const role = json.data;
         callback(role);
+      } else {
+        message.warn(json.message);
       }
     },
     *add(params, { call, put }) {
