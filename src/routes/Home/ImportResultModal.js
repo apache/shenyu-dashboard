@@ -21,20 +21,20 @@ import { connect } from "dva";
 import { getIntlContent } from "../../utils/IntlUtils";
 
 const keyMap = {
-  metaImportSuccessCount: '元数据导入成功数量',
-  metaImportFailMessage: '元数据导入失败信息',
-  authImportSuccessCount: 'auth导入成功数量',
-  authImportFailMessage: 'auth导入失败信息',
-  pluginImportSuccessCount: '插件导入成功数量',
-  pluginImportFailMessage: '插件导入失败信息',
-  proxySelectorImportSuccessCount: 'proxySelector导入成功数量',
-  proxySelectorImportFailMessage: 'proxySelector导入失败信息',
-  discoveryImportSuccessCount: 'discovery导入成功数量',
-  discoveryImportFailMessage: 'discovery导入失败信息',
-  discoveryUpstreamImportSuccessCount: 'discoveryUpstream导入成功数量',
-  discoveryUpstreamImportFailMessage: 'discoveryUpstream导入失败信息',
-  dictImportSuccessCount: '字典导入成功数量',
-  dictImportFailMessage: '字典导入失败信息'
+  metaImportSuccessCount: 'metaImportSuccessCount',
+  metaImportFailMessage: 'metaImportFailMessage',
+  authImportSuccessCount: 'authImportSuccessCount',
+  authImportFailMessage: 'authImportFailMessage',
+  pluginImportSuccessCount: 'pluginImportSuccessCount',
+  pluginImportFailMessage: 'pluginImportFailMessage',
+  proxySelectorImportSuccessCount: 'proxySelectorImportSuccessCount',
+  proxySelectorImportFailMessage: 'proxySelectorImportFailMessage',
+  discoveryImportSuccessCount: 'discoveryImportSuccessCount',
+  discoveryImportFailMessage: 'discoveryImportFailMessage',
+  discoveryUpstreamImportSuccessCount: 'discoveryUpstreamImportSuccessCount',
+  discoveryUpstreamImportFailMessage: 'discoveryUpstreamImportFailMessage',
+  dictImportSuccessCount: 'dictImportSuccessCount',
+  dictImportFailMessage: 'dictImportFailMessage'
 };
 
 @connect(({ global }) => ({
@@ -55,7 +55,7 @@ class ImportResultModal extends Component {
   handleRes = (json, key) => {
     // return data;
     const data = json[key];
-    const maxLength = 50; // 设置最大显示长度
+    const maxLength = 50; // set the max show length
     if (data && data.length > maxLength) {
       return (
         <Tooltip title={data}>

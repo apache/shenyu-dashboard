@@ -52,8 +52,8 @@ export default async function download (url, options) {
     const blob = await response.blob()
 
     const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob) // 使用 blob 对象创建 URL
-    a.download = filename // 使用后端返回的文件名
+    a.href = URL.createObjectURL(blob) // use blob obj to create URL
+    a.download = filename // use the file name from backend 
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
