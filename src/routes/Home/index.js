@@ -16,12 +16,14 @@
  */
 
 import React, { Component } from "react";
-import { Steps, Divider, Card, Col, Row, Timeline, Statistic, Icon, Popover, Tag, Alert, Button, Modal } from 'antd';
+import { Button, Steps, Divider, Card, Col, Row, Timeline, Statistic, Icon, Popover, Tag, Alert, Modal } from 'antd';
 import { connect } from "dva";
 import { routerRedux } from 'dva/router';
 import styles from "./home.less";
 import { getIntlContent } from '../../utils/IntlUtils';
 import { activePluginSnapshot, getNewEventRecodLogList } from "../../services/api";
+import AddModal from "./AddModal";
+import ImportResultModal from "./ImportResultModal";
 
 const { Step } = Steps;
 
@@ -39,10 +41,11 @@ export default class Home extends Component {
       localeName: '',
       activePluginSnapshot: [],
       activeLog: [],
-    }
+      popup: "",
+    };
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const token = window.sessionStorage.getItem("token");
     if (token) {
       const { dispatch } = this.props;
@@ -52,25 +55,25 @@ export default class Home extends Component {
     }
     activePluginSnapshot().then(res => {
       if (res) {
-        this.setState({ activePluginSnapshot: res.data || [] })
+        this.setState({ activePluginSnapshot: res.data || [] });
       }
     });
     getNewEventRecodLogList().then(res => {
       if (res) {
-        this.setState({ activeLog: res.data || [] })
+        this.setState({ activeLog: res.data || [] });
       }
-    })
+    });
 
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.setState = () => false;
   }
 
   pluginOnClick = (plugin) => {
     const { dispatch } = this.props;
     dispatch(routerRedux.push(`plug/${plugin.role}/${plugin.name}`));
-  }
+  };
 
   getEventLogTitle = (log) => {
     const textStyle = { fontWeight: "bold", color: "#4f6eee" };
@@ -80,7 +83,7 @@ export default class Home extends Component {
         <span style={textStyle}>{log.operationType}</span> by <span style={textStyle}>{log.operator}</span>
       </div>
     );
-  }
+  };
 
   showEventLogDetail = (log) => {
     Modal.info({
@@ -88,16 +91,70 @@ export default class Home extends Component {
       icon: null,
       width: 500,
       content: (
-        <div style={{ maxHeight: 400, overflowY: 'auto'}}>
+        <div style={{ maxHeight: 400, overflowY: 'auto' }}>
           {log.context}
         </div>
       ),
-      onOk() {},
+      onOk () { },
     });
-  }
+  };
 
-  render() {
-    const contextStyle = { "fontWeight": "bold", color: "#3b9a9c" }
+  // 导出数据
+  exportAllClick = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "common/exportAll"
+    });
+  };
+
+  closeModal = (refresh) => {
+    if (refresh) {
+      this.setState({ popup: "" }, this.query);
+    }
+    this.setState({ popup: "" });
+  };
+
+  importConfigClick = () => {
+    this.setState({
+      popup: (
+        <AddModal
+          disabled={false}
+          handleOk={values => {
+            const { dispatch } = this.props;
+            dispatch({
+              type: "common/import",
+              payload: values,
+              callback: (res) => {
+                this.closeModal(true);
+                this.showImportRestlt(JSON.parse(res));
+              }
+            });
+          }}
+          handleCancel={() => {
+            this.closeModal();
+          }}
+        />
+      )
+    });
+  };
+
+  showImportRestlt = (json) => {
+    this.setState({
+      popup: (
+        <ImportResultModal
+          disabled={false}
+          json={json}
+          title={getIntlContent("SHENYU.COMMON.IMPORT.RESULT")}
+          onCancel={() => this.closeModal(true)}
+          onOk={() => this.closeModal(true)}
+        />
+      )
+    });
+  };
+
+  render () {
+    const { popup } = this.state;
+    const contextStyle = { "fontWeight": "bold", color: "#3b9a9c" };
     const pluginSteps = this.state.activePluginSnapshot.map((p, index) => {
       const content = (
         <div>
@@ -106,7 +163,7 @@ export default class Home extends Component {
           <p>the plugin has selector is : <span style={contextStyle}>{p.selectorCount} </span></p>
           <hr />
           <div style={contextStyle}>
-            <pre><code>{JSON.stringify(JSON.parse(p.config  ? p.config : '{}'), null, 4)}</code></pre>
+            <pre><code>{JSON.stringify(JSON.parse(p.config ? p.config : '{}'), null, 4)}</code></pre>
           </div>
         </div>
       );
@@ -118,7 +175,7 @@ export default class Home extends Component {
       );
       const description = <span>handle is <span style={contextStyle}>{p.handleCount}</span>  selector is <span style={contextStyle}>{p.selectorCount} </span></span>;
       return <Step title={title} key={index} description={description} />;
-    })
+    });
     const activeLogItems = this.state.activeLog.map((log, index) => {
       const type = log.operationType.startsWith("CREATE") ? "success" : log.operationType.startsWith("DELETE") ? "warning" : "info";
       return (
@@ -134,13 +191,31 @@ export default class Home extends Component {
             type={type}
           />
         </Timeline.Item>
-      )
-    })
+      );
+    });
 
     return (
       <div>
         <div className={styles.content}>
           <span style={{ textShadow: '1px 1px 3px' }}>{getIntlContent("SHENYU.HOME.WELCOME")}</span>
+        </div>
+        <div>
+          <Button
+            style={{ marginLeft: 20, marginBottom: 20 }}
+            icon="export"
+            type="primary"
+            onClick={this.exportAllClick}
+          >
+            {getIntlContent("SHENYU.COMMON.EXPORT")}
+          </Button>
+          <Button
+            style={{ marginLeft: 20, marginBottom: 20 }}
+            icon="import"
+            type="primary"
+            onClick={this.importConfigClick}
+          >
+            {getIntlContent("SHENYU.COMMON.IMPORT")}
+          </Button>
         </div>
         <div className={styles.processContent}>
           <Steps current={1}>
@@ -227,6 +302,7 @@ export default class Home extends Component {
             </Col>
           </Row>
         </div>
+        {popup}
       </div>
     );
   }
