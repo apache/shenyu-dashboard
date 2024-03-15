@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Table, Button, message,Popconfirm } from "antd";
+import { Table, Button, message, Popconfirm, Switch } from "antd";
 import { connect } from "dva";
 import dayjs from "dayjs";
 import { resizableComponents } from '../../../utils/resizable';
@@ -275,6 +275,40 @@ export default class Auth extends Component {
     })
   };
 
+  openSwitch = ({list, enabled, callback}) => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: "auth/updateOp",
+      payload: {
+        list,
+        enabled
+      },
+      fetchValue: {},
+      callback
+    });
+  }
+
+  openClick = () => {
+    const {dispatch} = this.props;
+    const {selectedRowKeys} = this.state;
+    if(selectedRowKeys && selectedRowKeys.length>0) {
+      dispatch({
+        type: "auth/fetchItem",
+        payload: {
+          id: selectedRowKeys[0]
+        },
+        callback: user => {
+          this.openSwitch({list: selectedRowKeys, enabled: !user.open, callback: () => {
+            this.setState({selectedRowKeys: []}, this.query);
+          }});
+        }
+      })
+    } else {
+      message.destroy();
+      message.warn("Please select data");
+    }
+  }
+
   enableClick = () => {
     const {dispatch} = this.props;
     const {selectedRowKeys} = this.state;
@@ -362,14 +396,17 @@ export default class Auth extends Component {
           dataIndex: "open",
           key: "open",
           ellipsis:true,
-          width: 80,
-          render: text => {
-            if (text) {
-              return <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>;
-            } else {
-              return <div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>;
-            }
-          }
+          width: 100,
+          render: (text, row) => (
+            <Switch
+              checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+              unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+              checked={text}
+              onChange={checked => {
+                this.openSwitch({list: [row.id], enabled: checked, callback: this.query});
+              }}
+            />
+          )
         },
         {
           align: "center",
@@ -495,6 +532,15 @@ export default class Auth extends Component {
               onClick={this.addClick}
             >
               {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
+            </Button>
+          </AuthButton>
+          <AuthButton perms="system:authen:open">
+            <Button
+              style={{ marginLeft: 20 }}
+              type="primary"
+              onClick={this.openClick}
+            >
+              {getIntlContent("SHENYU.PLUGIN.BATCH.OPENED")}
             </Button>
           </AuthButton>
           <AuthButton perms="system:authen:disable">

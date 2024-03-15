@@ -17,7 +17,7 @@
 
 import { message } from 'antd';
 import { getIntlContent } from '../utils/IntlUtils'
-import { getAllAuths, findAuthData,findAuthDataDel, updateAuthData,updateAuthDel,updateAuthEnabled, deleteAuths, addAuthData, syncAuthsData,getAllMetadata, getAllMetadatas, getfetchMetaGroup } from '../services/api';
+import { getAllAuths, findAuthData, findAuthDataDel, updateAuthData, updateAuthDel, updateAuthEnabled, updateAuthOpened, deleteAuths, addAuthData, syncAuthsData, getAllMetadata, getAllMetadatas, getfetchMetaGroup } from '../services/api';
 
 export default {
   namespace: "auth",
@@ -136,6 +136,17 @@ export default {
     *updateEn(params, {call, put}) {
       const {payload,fetchValue,callback} = params;
       const json = yield call (updateAuthEnabled,payload);
+      if(json.code===200){
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        callback();
+        yield put({type: "reload", fetchValue});
+      } else {
+        message.warn(json.message)
+      }
+    },
+    *updateOp(params, {call, put}) {
+      const {payload,fetchValue,callback} = params;
+      const json = yield call (updateAuthOpened, payload);
       if(json.code===200){
         message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
