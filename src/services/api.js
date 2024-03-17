@@ -433,6 +433,17 @@ export async function updateSelector (params) {
   })
 }
 
+/* enable selector */
+export async function enableSelector (params) {
+  return request(`${baseUrl}/selector/batchEnabled`, {
+    method: `POST`,
+    body: {
+      ids: params.list,
+      enabled: params.enabled
+    }
+  })
+}
+
 /* get all selectors */
 export async function getAllSelectors (params) {
   return request(`${baseUrl}/selector?${stringify(params)}`, {
@@ -480,6 +491,16 @@ export async function updateRule (params) {
     method: `PUT`,
     body: {
       ...params
+    }
+  })
+}
+
+export async function enableRule (params) {
+  return request(`${baseUrl}/rule/batchEnabled`, {
+    method: `POST`,
+    body: {
+      ids: params.list,
+      enabled: params.enabled
     }
   })
 }

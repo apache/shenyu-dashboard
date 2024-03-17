@@ -24,10 +24,12 @@ import {
   findSelector,
   deleteSelector,
   updateSelector,
+  enableSelector,
   addRule,
   deleteRule,
   findRule,
   updateRule,
+  enableRule,
   asyncConfigExport,
   asyncConfigImport,
 } from "../services/api";
@@ -168,6 +170,19 @@ export default {
         message.warn(json.message);
       }
     },
+    *enableSelector (params, { call, put }) {
+      const { payload, callback, fetchValue } = params;
+      const json = yield call(enableSelector, payload);
+      if (json.code === 200) {
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        if (callback) {
+          callback();
+        }
+        yield put({ type: "reload", fetchValue });
+      } else {
+        message.warn(json.message);
+      }
+    },
     *deleteRule (params, { call, put }) {
       const { payload, fetchValue } = params;
       const { list } = payload;
@@ -193,6 +208,19 @@ export default {
       if (json.code === 200) {
         message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
         callback();
+        yield put({ type: "reloadRule", fetchValue });
+      } else {
+        message.warn(json.message);
+      }
+    },
+    *enableRule (params, { call, put }) {
+      const { payload, callback, fetchValue } = params;
+      const json = yield call(enableRule, payload);
+      if (json.code === 200) {
+        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        if (callback) {
+          callback();
+        }
         yield put({ type: "reloadRule", fetchValue });
       } else {
         message.warn(json.message);
