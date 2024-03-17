@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import {Table, Input, Button, message, Popconfirm, Tag, Popover} from "antd";
+import {Table, Input, Button, message, Popconfirm, Tag, Popover, Switch} from "antd";
 import { connect } from "dva";
 import { resizableComponents } from '../../../utils/resizable';
 import AddModal from "./AddModal";
@@ -228,33 +228,37 @@ export default class Metadata extends Component {
     });
   };
 
+  statusSwitch = ({list, enabled, callback}) => {
+    const { dispatch } = this.props;
+    const { appName, currentPage, pageSize } = this.state;
+    dispatch({
+      type: "metadata/updateEn",
+      payload: {
+        list,
+        enabled
+      },
+      fetchValue: {
+        appName,
+        currentPage,
+        pageSize
+      },
+      callback
+    });
+  }
+
   enableClick = () => {
     const { dispatch } = this.props;
-    const { appName, currentPage, pageSize, selectedRowKeys } = this.state;
+    const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
-
       dispatch({
         type: "metadata/fetchItem",
         payload: {
           id: selectedRowKeys[0]
         },
         callback: user => {
-
-          dispatch({
-            type: "metadata/updateEn",
-            payload: {
-              list: selectedRowKeys ,
-              enabled: !user.enabled
-            },
-            fetchValue: {
-              appName,
-              currentPage,
-              pageSize
-            },
-            callback: () => {
-              this.setState({ selectedRowKeys: [] }, this.query);
-            }
-          });
+          this.statusSwitch({list: selectedRowKeys, enabled: !user.enabled, callback: () => {
+            this.setState({ selectedRowKeys: [] }, this.query);
+          }});
         }
       })
     } else {
@@ -360,14 +364,17 @@ export default class Metadata extends Component {
           dataIndex: "enabled",
           key: "enabled",
           ellipsis:true,
-          width: 60,
-          render: text => {
-            if (text) {
-              return <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>;
-            } else {
-              return <div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>;
-            }
-          }
+          width: 100,
+          render: (text, row) => (
+            <Switch
+              checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+              unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+              checked={text}
+              onChange={checked => {
+                this.statusSwitch({list: [row.id], enabled: checked, callback: this.query});
+              }}
+            />
+          )
         },
         {
           align: "center",
