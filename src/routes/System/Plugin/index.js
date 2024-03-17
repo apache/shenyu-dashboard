@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Table, Input, Button, message, Popconfirm, Select, Popover, Tag, Typography } from "antd";
+import { Table, Input, Button, message, Popconfirm, Select, Popover, Tag, Typography, Switch } from "antd";
 import { connect } from "dva";
 import { Link } from "dva/router";
 import { resizableComponents } from "../../../utils/resizable";
@@ -226,6 +226,18 @@ export default class Plugin extends Component {
     });
   };
 
+  // 数据状态切换
+  statusSwitch = ({list, enabled, callback}) => {
+    const { dispatch } = this.props;
+    updatePluginsEnabled({
+      list,
+      dispatch,
+      callback,
+      enabled,
+      fetchValue: this.currentQueryPayload(),
+    });
+  }
+
   // 批量启用或禁用
   enableClick = () => {
     const { dispatch } = this.props;
@@ -237,11 +249,9 @@ export default class Plugin extends Component {
           id: selectedRowKeys[0]
         },
         callback: user => {
-          updatePluginsEnabled({
+          this.statusSwitch({
             list: selectedRowKeys,
             enabled: !user.enabled,
-            dispatch,
-            fetchValue: this.currentQueryPayload(),
             callback: () => {
               this.setState({ selectedRowKeys: [] });
             }
@@ -347,21 +357,16 @@ export default class Plugin extends Component {
           width: 80,
           sorter: (a, b) =>
             (a.enabled || "-1") > (b.enabled || "-1") ? 1 : -1,
-          render: text => {
-            if (text) {
-              return (
-                <div className="open" style={{ "fontWeight":"bold" }}>
-                  {getIntlContent("SHENYU.COMMON.OPEN")}
-                </div>
-              );
-            } else {
-              return (
-                <div className="close" style={{ "fontWeight":"bold" }}>
-                  {getIntlContent("SHENYU.COMMON.CLOSE")}
-                </div>
-              );
-            }
-          }
+          render: (text, row) => (
+            <Switch
+              checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+              unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+              checked={text}
+              onChange={checked => {
+                this.statusSwitch({list: [row.id], enabled: checked });
+              }}
+            />
+          )
         },
         {
           align: "center",
