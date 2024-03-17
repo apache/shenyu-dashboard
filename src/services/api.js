@@ -390,6 +390,17 @@ export async function updateAuthEnabled (params) {
   })
 }
 
+/* batch open auth */
+export async function updateAuthOpened(params) {
+  return request(`${baseUrl}/appAuth/batchOpened`, {
+    method: `POST`,
+    body: {
+      ids: params.list,
+      enabled: params.enabled
+    }
+  });
+}
+
 /* batch delete auth */
 export async function deleteAuths (params) {
   return request(`${baseUrl}/appAuth/batchDelete`, {

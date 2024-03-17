@@ -203,6 +203,7 @@
   "SHENYU.PLUGIN.SELECTNAME": "Select Plugin",
   "SHENYU.PLUGIN.SYNCALLDATA": "Synchronize All Data",
   "SHENYU.PLUGIN.BATCH": "Batch Enable Or Disabled",
+  "SHENYU.PLUGIN.BATCH.OPENED": "Batch Opened Or Closed PathAuth",
   "SHENYU.PLUGIN.PLUGINHANDLE": "PluginHandle",
   "SHENYU.PLUGIN.PLUGIN.NAME": "PluginName",
   "SHENYU.PLUGIN.WAY": "Ways",
