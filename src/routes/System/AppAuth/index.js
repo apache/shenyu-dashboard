@@ -275,7 +275,7 @@ export default class Auth extends Component {
     })
   };
 
-  openSwitch = ({list, enabled, callback}) => {
+openSwitch = ({list, enabled, callback}) => {
     const {dispatch} = this.props;
     dispatch({
       type: "auth/updateOp",
@@ -309,6 +309,19 @@ export default class Auth extends Component {
     }
   }
 
+  statusSwitch = ({list, enabled, callback}) => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: "auth/updateEn",
+      payload: {
+        list,
+        enabled
+      },
+      fetchValue: {},
+      callback
+    })
+  }
+
   enableClick = () => {
     const {dispatch} = this.props;
     const {selectedRowKeys} = this.state;
@@ -319,17 +332,9 @@ export default class Auth extends Component {
           id: selectedRowKeys[0]
         },
         callback: user => {
-          dispatch({
-            type: "auth/updateEn",
-            payload: {
-              list: selectedRowKeys,
-              enabled: !user.enabled
-            },
-            fetchValue: {},
-            callback: () => {
-              this.setState({selectedRowKeys: []}, this.query);
-            }
-          })
+          this.statusSwitch({list: selectedRowKeys, enabled: !user.enabled, callback: () => {
+            this.setState({selectedRowKeys: []}, this.query);
+          }});
         }
       })
     } else {
@@ -414,14 +419,17 @@ export default class Auth extends Component {
           dataIndex: "enabled",
           key: "enabled",
           ellipsis:true,
-          width: 80,
-          render: text => {
-            if (text) {
-              return <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>;
-            } else {
-              return <div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>;
-            }
-          }
+          width: 100,
+          render: (text, row) => (
+            <Switch
+              checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+              unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+              checked={text}
+              onChange={checked => {
+                this.statusSwitch({list: [row.id], enabled: checked, callback: this.query});
+              }}
+            />
+          )
         },
         {
           align: "center",
