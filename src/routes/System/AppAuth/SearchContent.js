@@ -33,7 +33,7 @@ class InlineSearch extends React.Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     return (
-      <Form layout="inline" onSubmit={this.handleSubmit}>
+      <Form layout="inline" onSubmit={this.handleSubmit} className={styles.form}>
         <Form.Item className={styles.formInput}>
           {getFieldDecorator('appKey', {
             initialValue: null
@@ -55,7 +55,7 @@ class InlineSearch extends React.Component {
             />,
           )}
         </Form.Item>
-        <Form.Item className={styles.formItem}>
+        <Form.Item className={styles.formBtn}>
           <AuthButton perms="system:authen:list">
             <Button type="primary" htmlType="submit">
               {getIntlContent("SHENYU.SYSTEM.SEARCH")}
