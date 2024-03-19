@@ -22,8 +22,6 @@ import { routerRedux } from 'dva/router';
 import styles from "./home.less";
 import { getIntlContent } from '../../utils/IntlUtils';
 import { activePluginSnapshot, getNewEventRecodLogList } from "../../services/api";
-import AddModal from "./AddModal";
-import ImportResultModal from "./ImportResultModal";
 
 const { Step } = Steps;
 
@@ -41,7 +39,6 @@ export default class Home extends Component {
       localeName: '',
       activePluginSnapshot: [],
       activeLog: [],
-      popup: "",
     };
   }
 
@@ -85,7 +82,9 @@ export default class Home extends Component {
     );
   };
 
-  showEventLogDetail = (log) => {
+  showEventLogDetail = (e, log) => {
+    e.stopPropagation();
+    e.preventDefault();
     Modal.info({
       title: this.getEventLogTitle(log),
       icon: null,
@@ -99,61 +98,7 @@ export default class Home extends Component {
     });
   };
 
-  // 导出数据
-  exportAllClick = () => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "common/exportAll"
-    });
-  };
-
-  closeModal = (refresh) => {
-    if (refresh) {
-      this.setState({ popup: "" }, this.query);
-    }
-    this.setState({ popup: "" });
-  };
-
-  importConfigClick = () => {
-    this.setState({
-      popup: (
-        <AddModal
-          disabled={false}
-          handleOk={values => {
-            const { dispatch } = this.props;
-            dispatch({
-              type: "common/import",
-              payload: values,
-              callback: (res) => {
-                this.closeModal(true);
-                this.showImportRestlt(JSON.parse(res));
-              }
-            });
-          }}
-          handleCancel={() => {
-            this.closeModal();
-          }}
-        />
-      )
-    });
-  };
-
-  showImportRestlt = (json) => {
-    this.setState({
-      popup: (
-        <ImportResultModal
-          disabled={false}
-          json={json}
-          title={getIntlContent("SHENYU.COMMON.IMPORT.RESULT")}
-          onCancel={() => this.closeModal(true)}
-          onOk={() => this.closeModal(true)}
-        />
-      )
-    });
-  };
-
   render () {
-    const { popup } = this.state;
     const contextStyle = { "fontWeight": "bold", color: "#3b9a9c" };
     const pluginSteps = this.state.activePluginSnapshot.map((p, index) => {
       const content = (
@@ -180,16 +125,18 @@ export default class Home extends Component {
       const type = log.operationType.startsWith("CREATE") ? "success" : log.operationType.startsWith("DELETE") ? "warning" : "info";
       return (
         <Timeline.Item color="#e8e8e8" label={index} key={index}>
-          <Alert
-            className={styles.logItem}
-            message={
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                {this.getEventLogTitle(log)}
-                <Button type="link" onClick={this.showEventLogDetail.bind(this, log)}>Detail</Button>
-              </div>
-            }
-            type={type}
-          />
+          <div style={{ cursor: "pointer" }} onClick={(e) => this.showEventLogDetail(e, log)}>
+            <Alert
+              className={styles.logItem}
+              message={
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  {this.getEventLogTitle(log)}
+                  <Button type="link" onClick={(e) => this.showEventLogDetail(e, log)}>Detail</Button>
+                </div>
+              }
+              type={type}
+            />
+          </div>
         </Timeline.Item>
       );
     });
@@ -199,24 +146,6 @@ export default class Home extends Component {
         <div className={styles.content}>
           <span style={{ textShadow: '1px 1px 3px' }}>{getIntlContent("SHENYU.HOME.WELCOME")}</span>
         </div>
-        <div>
-          <Button
-            style={{ marginLeft: 20, marginBottom: 20 }}
-            icon="export"
-            type="primary"
-            onClick={this.exportAllClick}
-          >
-            {getIntlContent("SHENYU.COMMON.EXPORT")}
-          </Button>
-          <Button
-            style={{ marginLeft: 20, marginBottom: 20 }}
-            icon="import"
-            type="primary"
-            onClick={this.importConfigClick}
-          >
-            {getIntlContent("SHENYU.COMMON.IMPORT")}
-          </Button>
-        </div>
         <div className={styles.processContent}>
           <Steps current={1}>
             <Step title="User Request" />
@@ -225,7 +154,7 @@ export default class Home extends Component {
           </Steps>
           <Divider />
           <Row gutter={16} className={styles.row}>
-            <Col span={10}>
+            <Col span={12}>
               <Card title="Activity plugin list" bordered={false} className={styles.card}>
                 <Steps size="small" current={this.state.activePluginSnapshot.length} direction="vertical">
                   {pluginSteps}
@@ -292,7 +221,7 @@ export default class Home extends Component {
                 <Divider />
               </Card>
             </Col>
-            <Col span={14}>
+            <Col span={12}>
               <Card title="Event log" bordered={false} className={styles.card}>
                 <Timeline>
                   {activeLogItems}
@@ -302,7 +231,6 @@ export default class Home extends Component {
             </Col>
           </Row>
         </div>
-        {popup}
       </div>
     );
   }

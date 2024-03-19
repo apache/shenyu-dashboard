@@ -18,6 +18,8 @@
 import React, { PureComponent } from "react";
 import { Dropdown, Form, Icon, Input, Menu, Modal, Button } from "antd";
 import { connect } from "dva";
+import AddModal from "./AddModal";
+import ImportResultModal from "./ImportResultModal";
 import styles from "./index.less";
 import { getIntlContent, getCurrentLocale } from "../../utils/IntlUtils";
 import { checkUserPassword } from "../../services/api";
@@ -77,7 +79,8 @@ class GlobalHeader extends PureComponent {
         : "en-US",
       userName: window.sessionStorage.getItem("userName"),
       visible: false,
-      display: "none"
+      display: "none",
+      popup: "",
     };
   }
 
@@ -116,6 +119,59 @@ class GlobalHeader extends PureComponent {
     getCurrentLocale(this.state.localeName);
   };
 
+  importConfigClick = () => {
+    this.setState({
+      popup: (
+        <AddModal
+          disabled={false}
+          handleOk={values => {
+            const { dispatch } = this.props;
+            dispatch({
+              type: "common/import",
+              payload: values,
+              callback: (res) => {
+                this.closeModal(true);
+                this.showImportRestlt(JSON.parse(res));
+              }
+            });
+          }}
+          handleCancel={() => {
+            this.closeModal();
+          }}
+        />
+      )
+    });
+  };
+
+  showImportRestlt = (json) => {
+    this.setState({
+      popup: (
+        <ImportResultModal
+          disabled={false}
+          json={json}
+          title={getIntlContent("SHENYU.COMMON.IMPORT.RESULT")}
+          onCancel={() => this.closeModal(true)}
+          onOk={() => this.closeModal(true)}
+        />
+      )
+    });
+  };
+
+  closeModal = (refresh) => {
+    if (refresh) {
+      this.setState({ popup: "" }, this.query);
+    }
+    this.setState({ popup: "" });
+  };
+
+  // 导出数据
+  exportAllClick = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "common/exportAll"
+    });
+  };
+
   render() {
     const {
       onLogout,
@@ -123,7 +179,7 @@ class GlobalHeader extends PureComponent {
       dispatch,
       loading
     } = this.props;
-    const { userName, visible } = this.state;
+    const { popup, userName, visible } = this.state;
     const menu = (
       <Menu>
         <Menu.Item
@@ -134,6 +190,20 @@ class GlobalHeader extends PureComponent {
         >
           <Icon type="form" />{" "}
           {getIntlContent("SHENYU.GLOBALHEADER.CHANGE.PASSWORD")}
+        </Menu.Item>
+        <Menu.Item
+          key="2"
+          onClick={this.exportAllClick}
+        >
+          <Icon type="export" />{" "}
+          {getIntlContent("SHENYU.COMMON.EXPORT")}
+        </Menu.Item>
+        <Menu.Item
+          key="3"
+          onClick={this.importConfigClick}
+        >
+          <Icon type="import" />{" "}
+          {getIntlContent("SHENYU.COMMON.IMPORT")}
         </Menu.Item>
         <Menu.Item key="0" onClick={onLogout}>
           <Icon type="logout" /> {getIntlContent("SHENYU.GLOBALHEADER.LOGOUT")}
@@ -301,6 +371,7 @@ class GlobalHeader extends PureComponent {
             </Form.Item>
           </Form>
         </Modal>
+        {popup}
       </div>
     );
   }
