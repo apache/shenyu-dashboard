@@ -361,6 +361,26 @@ export default class Common extends Component {
     });
   };
 
+  updateDiscoveryUpstream = (discoveryHandlerId, upstreams) => {
+    const { dispatch } = this.props;
+    const upstreamsWithHandlerId = upstreams.map(item => ({
+      protocol: item.protocol,
+      url: item.url,
+      status: parseInt(item.status, 10),
+      weight: item.weight,
+      props: JSON.stringify({
+        warmupTime: item.warmupTime
+      }),
+      discoveryHandlerId
+    }));
+    dispatch({
+      type: "discovery/updateDiscoveryUpstream",
+      payload: {
+        discoveryHandlerId,
+        upstreams: upstreamsWithHandlerId
+      }
+    })
+  }
 
   editSelector = record => {
     const { dispatch, plugins } = this.props;
@@ -424,23 +444,7 @@ export default class Common extends Component {
                   },
                   callback: () => {
                     const {upstreams} = values
-                    const upstreamsWithHandlerId = upstreams.map(item => ({
-                      protocol: item.protocol,
-                      url: item.url,
-                      status: parseInt(item.status, 10),
-                      weight: item.weight,
-                      props: JSON.stringify({
-                        warmupTime: item.warmupTime
-                      }),
-                      discoveryHandlerId
-                    }));
-                    dispatch({
-                      type: "discovery/updateDiscoveryUpstream",
-                      payload: {
-                        discoveryHandlerId,
-                        upstreams: upstreamsWithHandlerId
-                      }
-                    })
+                    this.updateDiscoveryUpstream(discoveryHandlerId, upstreams);
                     this.closeModal();
                   }
                 });
@@ -483,6 +487,26 @@ export default class Common extends Component {
       }
     });
   };
+
+  enableSelector = ({list, enabled}) => {
+    const { dispatch, plugins } = this.props;
+    const { selectorPage, selectorPageSize } = this.state;
+    let name = this.props.match.params ? this.props.match.params.id : "";
+    const plugin = this.getPlugin(plugins, name);
+    const { id: pluginId } = plugin;
+    dispatch({
+      type: "common/enableSelector",
+      payload: {
+        list,
+        enabled
+      },
+      fetchValue: {
+        pluginId,
+        currentPage: selectorPage,
+        pageSize: selectorPageSize
+      },
+    });
+  }
 
   deleteSelector = record => {
     const { dispatch, plugins } = this.props;
@@ -596,6 +620,24 @@ export default class Common extends Component {
     });
   };
 
+  enableRule = ({list, enabled}) => {
+    const { rulePage, rulePageSize } = this.state;
+    const { dispatch, currentSelector } = this.props;
+    const selectorId = currentSelector ? currentSelector.id : "";
+    dispatch({
+      type: "common/enableRule",
+      payload: {
+        list,
+        enabled
+      },
+      fetchValue: {
+        selectorId,
+        currentPage: rulePage,
+        pageSize: rulePageSize
+      },
+    });
+  }
+
   deleteRule = record => {
     const { dispatch, currentSelector, ruleList } = this.props;
     const { rulePage, rulePageSize } = this.state;
@@ -663,19 +705,16 @@ export default class Common extends Component {
         title: getIntlContent("SHENYU.COMMON.OPEN"),
         dataIndex: "enabled",
         key: "enabled",
-        render: text => {
-          if (text) {
-            return (
-              <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>
-            );
-          } else {
-            return (
-              <div className="close">
-                {getIntlContent("SHENYU.COMMON.CLOSE")}
-              </div>
-            );
-          }
-        }
+        render: (text, row) => (
+          <Switch
+            checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+            unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+            checked={text}
+            onChange={checked => {
+              this.enableSelector({list: [row.id], enabled: checked});
+            }}
+          />
+        )
       },
       {
         align: "center",
@@ -745,19 +784,16 @@ export default class Common extends Component {
         title: getIntlContent("SHENYU.COMMON.OPEN"),
         dataIndex: "enabled",
         key: "enabled",
-        render: text => {
-          if (text) {
-            return (
-              <div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>
-            );
-          } else {
-            return (
-              <div className="close">
-                {getIntlContent("SHENYU.COMMON.CLOSE")}
-              </div>
-            );
-          }
-        }
+        render: (text, row) => (
+          <Switch
+            checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+            unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+            checked={text}
+            onChange={checked => {
+              this.enableRule({list: [row.id], enabled: checked});
+            }}
+          />
+        )
       },
       {
         align: "center",
