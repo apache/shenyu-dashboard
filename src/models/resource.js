@@ -101,8 +101,12 @@ export default {
     *fetchButtons(params, { call }) {
       const { payload, callback } = params;
       const json = yield call(getButtons, payload);
-      const resource = json.data;
-      callback(resource);
+      if (json.code === 200) {
+        const resource = json.data;
+        callback(resource);
+      } else {
+        message.warn(json.message);
+      }
     },
     *fetchMenuTree(_, { call, put }) {
       const json = yield call(getMenuTree);
