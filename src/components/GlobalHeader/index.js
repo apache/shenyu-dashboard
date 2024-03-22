@@ -45,8 +45,9 @@ const TranslationOutlined = props => (
   <Icon component={TranslationOutlinedSvg} {...props} />
 );
 
-@connect(({ manage, loading }) => ({
+@connect(({ global, manage, loading }) => ({
   manage,
+  permissions: global.permissions,
   loading: loading.effects["manage/update"]
 }))
 @Form.create({})
@@ -172,6 +173,13 @@ class GlobalHeader extends PureComponent {
     });
   };
 
+  checkAuth = (perms) => {
+    const { permissions } = this.props;
+    return ((permissions.button ?? []).filter((item) => {
+      return item.perms === perms
+    })).length > 0;
+  }
+
   render() {
     const {
       onLogout,
@@ -191,20 +199,24 @@ class GlobalHeader extends PureComponent {
           <Icon type="form" />{" "}
           {getIntlContent("SHENYU.GLOBALHEADER.CHANGE.PASSWORD")}
         </Menu.Item>
-        <Menu.Item
-          key="2"
-          onClick={this.exportAllClick}
-        >
-          <Icon type="export" />{" "}
-          {getIntlContent("SHENYU.COMMON.EXPORT")}
-        </Menu.Item>
-        <Menu.Item
-          key="3"
-          onClick={this.importConfigClick}
-        >
-          <Icon type="import" />{" "}
-          {getIntlContent("SHENYU.COMMON.IMPORT")}
-        </Menu.Item>
+        {(this.checkAuth("system:manager:exportConfig")) && (
+          <Menu.Item
+            key="2"
+            onClick={this.exportAllClick}
+          >
+            <Icon type="export" />{" "}
+            {getIntlContent("SHENYU.COMMON.EXPORT")}
+          </Menu.Item>
+        )}
+        {(this.checkAuth("system:manager:importConfig")) && (
+          <Menu.Item
+            key="3"
+            onClick={this.importConfigClick}
+          >
+            <Icon type="import" />{" "}
+            {getIntlContent("SHENYU.COMMON.IMPORT")}
+          </Menu.Item>
+        )}
         <Menu.Item key="0" onClick={onLogout}>
           <Icon type="logout" /> {getIntlContent("SHENYU.GLOBALHEADER.LOGOUT")}
         </Menu.Item>
