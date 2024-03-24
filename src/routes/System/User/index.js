@@ -248,24 +248,31 @@ export default class Manage extends Component {
         key: "enabled",
         ellipsis: true,
         render: (text, row) => (
-          <Switch
-            checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-            unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-            checked={text}
-            onChange={checked => {
-              dispatch({
-                type: "manage/updateUserStatus",
-                payload: {
-                  id: row.id,
-                  enabled: checked,
-                  userName: row.userName
-                },
-                callback: () => {
-                  this.getAllUsers();
-                }
-              });
-            }}
-          />
+          <AuthButton
+            perms="system:manager:edit"
+            noAuth={
+            text ? (<div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>) : (<div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>)
+          }
+          >
+            <Switch
+              checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+              unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+              checked={text}
+              onChange={checked => {
+                dispatch({
+                  type: "manage/updateUserStatus",
+                  payload: {
+                    id: row.id,
+                    enabled: checked,
+                    userName: row.userName
+                  },
+                  callback: () => {
+                    this.getAllUsers();
+                  }
+                });
+              }}
+            />
+          </AuthButton>
         )
       },
       {

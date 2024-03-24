@@ -70,7 +70,7 @@ export default class AuthButton extends Component {
   }
 
   render() {
-    const {perms, children, global: {permissions} } = this.props;
+    const {perms, noAuth, children, global: {permissions} } = this.props;
     const authButton = checkButtonAuth(perms, permissions);
     if(authButton){
       if(authButton.icon){
@@ -87,12 +87,17 @@ export default class AuthButton extends Component {
         return children;
       }
     } else {
-      return null;
+      return noAuth || null;
     }
   }
 }
 
 AuthButton.propTypes = {
   perms: PropTypes.string.isRequired,
+  noAuth: PropTypes.element,
   children: PropTypes.element.isRequired
 }
+
+AuthButton.defaultProps = {
+  noAuth: null
+};

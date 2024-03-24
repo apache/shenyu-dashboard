@@ -388,14 +388,21 @@ export default class ShenYuDict extends Component {
           key: "enabled",
           width: 100,
           render: (text, row) => (
-            <Switch
-              checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-              unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-              checked={text}
-              onChange={checked => {
-                this.statusSwitch({list: [row.id], enabled: checked, callback: this.query});
-              }}
-            />
+            <AuthButton
+              perms="system:dict:disable"
+              noAuth={
+              text ? (<div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>) : (<div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>)
+            }
+            >
+              <Switch
+                checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+                unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+                checked={text}
+                onChange={checked => {
+                  this.statusSwitch({list: [row.id], enabled: checked, callback: this.query});
+                }}
+              />
+            </AuthButton>
           )
         },
 

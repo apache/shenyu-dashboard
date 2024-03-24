@@ -403,14 +403,21 @@ openSwitch = ({list, enabled, callback}) => {
           ellipsis:true,
           width: 100,
           render: (text, row) => (
-            <Switch
-              checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-              unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-              checked={text}
-              onChange={checked => {
-                this.openSwitch({list: [row.id], enabled: checked, callback: this.query});
-              }}
-            />
+            <AuthButton
+              perms="system:authen:open"
+              noAuth={
+              text ? (<div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>) : (<div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>)
+            }
+            >
+              <Switch
+                checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+                unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+                checked={text}
+                onChange={checked => {
+                  this.openSwitch({list: [row.id], enabled: checked, callback: this.query});
+                }}
+              />
+            </AuthButton>
           )
         },
         {
@@ -421,14 +428,21 @@ openSwitch = ({list, enabled, callback}) => {
           ellipsis:true,
           width: 100,
           render: (text, row) => (
-            <Switch
-              checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-              unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-              checked={text}
-              onChange={checked => {
-                this.statusSwitch({list: [row.id], enabled: checked, callback: this.query});
-              }}
-            />
+            <AuthButton
+              perms="system:authen:disable"
+              noAuth={
+              text ? (<div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>) : (<div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>)
+            }
+            >
+              <Switch
+                checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+                unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+                checked={text}
+                onChange={checked => {
+                  this.statusSwitch({list: [row.id], enabled: checked, callback: this.query});
+                }}
+              />
+            </AuthButton>
           )
         },
         {
