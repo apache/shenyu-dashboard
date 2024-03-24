@@ -19,7 +19,7 @@ import { stringify } from "qs"
 import request from "../utils/request"
 import download from "../utils/download"
 
-const baseUrl = document.getElementById("httpPath").innerHTML
+const baseUrl = document.getElementById("httpPath").innerHTML || '.';
 
 /* add user */
 export async function addUser (params) {

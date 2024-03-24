@@ -359,7 +359,7 @@ export default class Plugin extends Component {
             (a.enabled || "-1") > (b.enabled || "-1") ? 1 : -1,
           render: (text, row) => (
             <AuthButton
-              perms="system:dict:disable"
+              perms="system:plugin:disable"
               noAuth={
               text ? (<div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>) : (<div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>)
             }
