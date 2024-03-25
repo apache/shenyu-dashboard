@@ -16,29 +16,29 @@
  */
 
 /* eslint-disable import/no-mutable-exports */
-let CURRENT = 'NULL';
+let CURRENT = "NULL";
 /**
  * use  authority or getAuthority
  * @param {string|()=>String} currentAuthority
  */
-const renderAuthorize = Authorized => {
-  return currentAuthority => {
+const renderAuthorize = (Authorized) => {
+  return (currentAuthority) => {
     if (currentAuthority) {
-      if (currentAuthority.constructor.name === 'Function') {
+      if (currentAuthority.constructor.name === "Function") {
         CURRENT = currentAuthority();
       }
       if (
-        currentAuthority.constructor.name === 'String' ||
-        currentAuthority.constructor.name === 'Array'
+        currentAuthority.constructor.name === "String" ||
+        currentAuthority.constructor.name === "Array"
       ) {
         CURRENT = currentAuthority;
       }
     } else {
-      CURRENT = 'NULL';
+      CURRENT = "NULL";
     }
     return Authorized;
   };
 };
 
 export { CURRENT };
-export default Authorized => renderAuthorize(Authorized);
+export default (Authorized) => renderAuthorize(Authorized);

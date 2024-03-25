@@ -16,27 +16,29 @@
  */
 
 import React from "react";
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button } from "antd";
 import { getIntlContent } from "../../../utils/IntlUtils";
-import AuthButton from '../../../utils/AuthButton';
+import AuthButton from "../../../utils/AuthButton";
 import styles from "./index.less";
 
 class InlineSearch extends React.Component {
-
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
-    const searchCont = this.props.form.getFieldsValue()
-    this.props.onClick(searchCont)
-
+    const searchCont = this.props.form.getFieldsValue();
+    this.props.onClick(searchCont);
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
     return (
-      <Form layout="inline" onSubmit={this.handleSubmit} className={styles.form}>
+      <Form
+        layout="inline"
+        onSubmit={this.handleSubmit}
+        className={styles.form}
+      >
         <Form.Item className={styles.formInput}>
-          {getFieldDecorator('appKey', {
-            initialValue: null
+          {getFieldDecorator("appKey", {
+            initialValue: null,
           })(
             <Input
               allowClear
@@ -45,8 +47,8 @@ class InlineSearch extends React.Component {
           )}
         </Form.Item>
         <Form.Item className={styles.formInput}>
-          {getFieldDecorator('phone', {
-            initialValue: null
+          {getFieldDecorator("phone", {
+            initialValue: null,
           })(
             <Input
               allowClear
@@ -67,4 +69,4 @@ class InlineSearch extends React.Component {
   }
 }
 const SearchContent = Form.create({})(InlineSearch);
-export default SearchContent
+export default SearchContent;

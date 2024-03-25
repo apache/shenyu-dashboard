@@ -25,8 +25,7 @@ import {
   fetchShenYuDictByType,
   updateShenYuDictEnabled,
 } from "../services/api";
-import {getIntlContent} from "../utils/IntlUtils";
-
+import { getIntlContent } from "../utils/IntlUtils";
 
 export default {
   namespace: "shenyuDict",
@@ -34,22 +33,22 @@ export default {
   state: {
     shenyuDictList: [],
     shenyuDictMap: {},
-    total: 0
+    total: 0,
   },
 
   effects: {
-    * fetch(params, {call, put}) {
+    *fetch(params, { call, put }) {
       yield put({
         type: "saveShenYuDicts",
         payload: {
-          dataList: []
-        }
+          dataList: [],
+        },
       });
-      const {payload} = params;
+      const { payload } = params;
       const json = yield call(fetchShenYuDicts, payload);
       if (json.code === 200) {
-        let {page, dataList} = json.data;
-        dataList = dataList.map(item => {
+        let { page, dataList } = json.data;
+        dataList = dataList.map((item) => {
           item.key = item.id;
           return item;
         });
@@ -57,8 +56,8 @@ export default {
           type: "saveShenYuDicts",
           payload: {
             total: page.totalCount,
-            dataList
-          }
+            dataList,
+          },
         });
       }
     },
@@ -66,7 +65,7 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(addShenYuDict, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
+        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -85,7 +84,9 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(updateShenYuDict, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -97,34 +98,40 @@ export default {
       const { list } = payload;
       const json = yield call(batchDeleteShenYuDict, { list });
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
+        );
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
       }
     },
-    *updateEn(params, {call, put}) {
-      const {payload,fetchValue,callback} = params;
-      const json = yield call (updateShenYuDictEnabled,payload);
-      if(json.code===200){
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+    *updateEn(params, { call, put }) {
+      const { payload, fetchValue, callback } = params;
+      const json = yield call(updateShenYuDictEnabled, payload);
+      if (json.code === 200) {
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
         callback();
-        yield put({type: "reload", fetchValue});
+        yield put({ type: "reload", fetchValue });
       } else {
-        message.warn(json.message)
+        message.warn(json.message);
       }
     },
-    *fetchByType(params, {call, put, select }) {
-      const {payload} = params;
+    *fetchByType(params, { call, put, select }) {
+      const { payload } = params;
       let callback = payload.callBack;
-      let shenyuDictMap = yield select((state)=>state.shenyuDict.shenyuDictMap || {});
-      if(shenyuDictMap[payload.type]) {
-        callback(shenyuDictMap[payload.type])
+      let shenyuDictMap = yield select(
+        (state) => state.shenyuDict.shenyuDictMap || {},
+      );
+      if (shenyuDictMap[payload.type]) {
+        callback(shenyuDictMap[payload.type]);
       } else {
         const json = yield call(fetchShenYuDictByType, payload);
         if (json.code === 200) {
-          let dataList = json.data.map(item => {
+          let dataList = json.data.map((item) => {
             item.key = item.id;
             return item;
           });
@@ -132,8 +139,8 @@ export default {
           yield put({
             type: "saveShenYuDictMap",
             payload: {
-              shenyuDictMap
-            }
+              shenyuDictMap,
+            },
           });
           callback(dataList);
         }
@@ -145,14 +152,14 @@ export default {
       return {
         ...state,
         shenyuDictList: payload?.dataList ?? state.shenyuDictList,
-        total: payload?.total ?? state.total
+        total: payload?.total ?? state.total,
       };
     },
 
     saveShenYuDictMap(state, { payload }) {
       return {
         ...state,
-        shenyuDictMap: payload.shenyuDictMap
+        shenyuDictMap: payload.shenyuDictMap,
       };
     },
 
@@ -162,5 +169,5 @@ export default {
       const payload = { type, dictCode, dictName, currentPage, pageSize };
       yield put({ type: "fetch", payload });
     },
-  }
+  },
 };

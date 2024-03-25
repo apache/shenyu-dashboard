@@ -15,6 +15,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React from "react";
 
-export default props => <div {...props} />;
+export default (props) => <div {...props} />;

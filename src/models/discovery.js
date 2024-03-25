@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {message} from "antd";
+import { message } from "antd";
 import {
   addProxySelector,
   deleteProxySelector,
@@ -27,9 +27,9 @@ import {
   refreshProxySelector,
   deleteDiscovery,
   bindingSelector,
-  updateDiscoveryUpstream
+  updateDiscoveryUpstream,
 } from "../services/api";
-import {getIntlContent} from "../utils/IntlUtils";
+import { getIntlContent } from "../utils/IntlUtils";
 
 export default {
   namespace: "discovery",
@@ -37,89 +37,95 @@ export default {
   state: {
     typeEnums: [],
     proxySelectorList: [],
-    chosenType: '',
+    chosenType: "",
     totalPage: 0,
     currentPage: 1,
-    pageSize: 6
+    pageSize: 6,
   },
 
   effects: {
-    * fetchProxySelectors(params, {call, put}) {
-      const {payload} = params;
+    *fetchProxySelectors(params, { call, put }) {
+      const { payload } = params;
       const json = yield call(fetchProxySelector, payload);
       if (json.code === 200) {
-        const {page, dataList} = json.data;
+        const { page, dataList } = json.data;
         yield put({
           type: "saveProxySelectors",
-          payload: {total: page.totalCount, dataList}
+          payload: { total: page.totalCount, dataList },
         });
       }
     },
 
-    * fetchEnumType(params, {call, put}) {
-      const {payload} = params;
+    *fetchEnumType(params, { call, put }) {
+      const { payload } = params;
       const json = yield call(getDiscoveryTypeEnums, payload);
       if (json.code === 200) {
         const data = json.data;
         yield put({
           type: "saveEnumTypes",
-          payload: {data}
+          payload: { data },
         });
       }
     },
 
-    * add(params, {call, put}) {
-      const {payload, callback, fetchValue} = params;
+    *add(params, { call, put }) {
+      const { payload, callback, fetchValue } = params;
       const json = yield call(addProxySelector, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
+        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
         callback();
         yield put({
-          type: "reload", fetchValue
-        })
+          type: "reload",
+          fetchValue,
+        });
       } else {
         message.warn(json.message);
       }
     },
 
-    * delete(params, {call, put}) {
-      const {payload, fetchValue} = params;
+    *delete(params, { call, put }) {
+      const { payload, fetchValue } = params;
       const { list } = payload;
       const json = yield call(deleteProxySelector, { list });
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
+        );
         // callback();
-        yield put({type: "reload", fetchValue});
+        yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
       }
     },
 
-    * update(params, {call, put}) {
-      const {payload, callback, fetchValue} = params;
+    *update(params, { call, put }) {
+      const { payload, callback, fetchValue } = params;
       const json = yield call(updateProxySelector, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
         callback();
-        yield put({type: "reload", fetchValue});
+        yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
       }
     },
 
-    * reload(params, {put}) {
-      const {fetchValue} = params;
-      const {name = '', currentPage, pageSize} = fetchValue;
-      const payload = {name, currentPage, pageSize};
-      yield put({type: "fetchProxySelectors", payload});
+    *reload(params, { put }) {
+      const { fetchValue } = params;
+      const { name = "", currentPage, pageSize } = fetchValue;
+      const payload = { name, currentPage, pageSize };
+      yield put({ type: "fetchProxySelectors", payload });
     },
 
-
-    * set(params, {call}) {
-      const {payload, callback} = params;
+    *set(params, { call }) {
+      const { payload, callback } = params;
       const json = yield call(postDiscoveryInsertOrUpdate, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.CONFIGURATION.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.CONFIGURATION.SUCCESS"),
+        );
         const discoveryConfigData = json.data;
         if (callback) {
           callback(discoveryConfigData);
@@ -129,45 +135,48 @@ export default {
       }
     },
 
-
-    * fetchDiscovery(params, {call, put}) {
-      const {payload, callback} = params;
+    *fetchDiscovery(params, { call, put }) {
+      const { payload, callback } = params;
       const json = yield call(getDiscovery, payload);
       if (json.code === 200) {
-        const {data} = json;
+        const { data } = json;
         if (callback) {
           callback(data);
         }
         yield put({
           type: "saveConfig",
-          payload: data
+          payload: data,
         });
       }
     },
 
-    * refresh(params, {call}) {
-      const {payload} = params;
+    *refresh(params, { call }) {
+      const { payload } = params;
       const json = yield call(refreshProxySelector, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.REFRESH.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.REFRESH.SUCCESS"),
+        );
         // callback();
       } else {
         message.warn(json.message);
       }
     },
 
-    * deleteConfig(params, {call}) {
-      const {payload} = params;
+    *deleteConfig(params, { call }) {
+      const { payload } = params;
       const json = yield call(deleteDiscovery, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
+        );
       } else {
         message.warn(json.message);
       }
     },
 
-    * bindSelector(params, {call}) {
-      const {payload} = params;
+    *bindSelector(params, { call }) {
+      const { payload } = params;
       const json = yield call(bindingSelector, payload);
       if (json.code === 200) {
         // message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
@@ -177,20 +186,23 @@ export default {
       }
     },
 
-    * updateDiscoveryUpstream(params, {call}) {
+    *updateDiscoveryUpstream(params, { call }) {
       const { discoveryHandlerId, upstreams } = params.payload;
-      const json = yield call(updateDiscoveryUpstream, discoveryHandlerId, upstreams);
+      const json = yield call(
+        updateDiscoveryUpstream,
+        discoveryHandlerId,
+        upstreams,
+      );
       if (json.code === 200) {
         // message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
       } else {
         message.warn(json.message);
       }
     },
-
   },
 
   reducers: {
-    saveProxySelectors(state, {payload}) {
+    saveProxySelectors(state, { payload }) {
       return {
         ...state,
         totalPage: payload.total,
@@ -198,26 +210,25 @@ export default {
       };
     },
 
-    saveEnumTypes(state, {payload}) {
+    saveEnumTypes(state, { payload }) {
       return {
         ...state,
-        typeEnums: payload.data
-      }
+        typeEnums: payload.data,
+      };
     },
 
-    saveGlobalType(state, {payload}) {
+    saveGlobalType(state, { payload }) {
       return {
         ...state,
-        chosenType: payload.chosenType
-      }
+        chosenType: payload.chosenType,
+      };
     },
-    setCurrentPage(state, {payload}) {
+    setCurrentPage(state, { payload }) {
       return {
         ...state,
         currentPage: payload.currentPage,
-        pageSize: payload.pageSize
-      }
+        pageSize: payload.pageSize,
+      };
     },
-
-  }
+  },
 };

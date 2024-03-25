@@ -16,7 +16,18 @@
  */
 
 import React, { Component } from "react";
-import { Table, Input, Button, message, Popconfirm, Select, Popover, Tag, Typography, Switch } from "antd";
+import {
+  Table,
+  Input,
+  Button,
+  message,
+  Popconfirm,
+  Select,
+  Popover,
+  Tag,
+  Typography,
+  Switch,
+} from "antd";
 import { connect } from "dva";
 import { Link } from "dva/router";
 import { resizableComponents } from "../../../utils/resizable";
@@ -34,7 +45,7 @@ const { Option } = Select;
   plugin,
   authMenu: resource.authMenu,
   language: global.language,
-  loading: loading.effects["plugin/fetch"]
+  loading: loading.effects["plugin/fetch"],
 }))
 export default class Plugin extends Component {
   components = resizableComponents;
@@ -56,7 +67,7 @@ export default class Plugin extends Component {
   }
 
   componentDidMount() {
-    this.query()
+    this.query();
     this.initPluginColumns();
   }
 
@@ -69,18 +80,20 @@ export default class Plugin extends Component {
     }
   }
 
-  handleResize = index => (e, { size }) => {
-    this.setState(({ columns }) => {
-      const nextColumns = [...columns];
-      nextColumns[index] = {
-        ...nextColumns[index],
-        width: size.width
-      };
-      return { columns: nextColumns };
-    });
-  };
+  handleResize =
+    (index) =>
+    (e, { size }) => {
+      this.setState(({ columns }) => {
+        const nextColumns = [...columns];
+        nextColumns[index] = {
+          ...nextColumns[index],
+          width: size.width,
+        };
+        return { columns: nextColumns };
+      });
+    };
 
-  onSelectChange = selectedRowKeys => {
+  onSelectChange = (selectedRowKeys) => {
     this.setState({ selectedRowKeys }, this.query);
   };
 
@@ -91,7 +104,7 @@ export default class Plugin extends Component {
       enabled,
       currentPage,
       pageSize,
-      ...override
+      ...override,
     };
   };
 
@@ -99,27 +112,27 @@ export default class Plugin extends Component {
     const { dispatch } = this.props;
     dispatch({
       type: "plugin/fetch",
-      payload: this.currentQueryPayload()
+      payload: this.currentQueryPayload(),
     });
-  }
+  };
 
-  pageOnchange = page => {
+  pageOnchange = (page) => {
     this.setState({ currentPage: page }, this.query);
   };
 
   onShowSizeChange = (currentPage, pageSize) => {
-    this.setState({ currentPage: 1, pageSize}, this.query);
+    this.setState({ currentPage: 1, pageSize }, this.query);
   };
 
   closeModal = (refresh = false) => {
     if (refresh) {
       this.setState({ popup: "", currentPage: 1 }, this.query);
-      return
+      return;
     }
     this.setState({ popup: "", currentPage: 1 });
   };
 
-  editClick = record => {
+  editClick = (record) => {
     const { dispatch } = this.props;
     getUpdateModal({
       pluginId: record.id,
@@ -141,7 +154,7 @@ export default class Plugin extends Component {
   resourceClick = (record) => {
     // code here...
     const { dispatch } = this.props;
-    const {name, role, sort, config, id, enabled} = record;
+    const { name, role, sort, config, id, enabled } = record;
     dispatch({
       type: "plugin/createPluginResource",
       payload: {
@@ -150,19 +163,19 @@ export default class Plugin extends Component {
         sort,
         config,
         id,
-        enabled
+        enabled,
       },
       callback: () => {
         refreshAuthMenus({ dispatch });
-      }
+      },
     });
   };
 
-  searchOnchange = e => {
+  searchOnchange = (e) => {
     this.setState({ name: e.target.value }, this.query);
   };
 
-  enabledOnchange = e => {
+  enabledOnchange = (e) => {
     this.setState({ enabled: e }, this.query);
   };
 
@@ -177,15 +190,15 @@ export default class Plugin extends Component {
       dispatch({
         type: "plugin/delete",
         payload: {
-          list: selectedRowKeys
+          list: selectedRowKeys,
         },
         fetchValue: this.currentQueryPayload({
-          pageSize: 12
+          pageSize: 12,
         }),
         callback: () => {
           this.setState({ selectedRowKeys: [] });
           refreshAuthMenus({ dispatch });
-        }
+        },
       });
     } else {
       message.destroy();
@@ -198,7 +211,7 @@ export default class Plugin extends Component {
       popup: (
         <AddModal
           disabled={false}
-          handleOk={values => {
+          handleOk={(values) => {
             const { dispatch } = this.props;
             const { name, enabled, role, config, sort, file } = values;
             dispatch({
@@ -209,25 +222,25 @@ export default class Plugin extends Component {
                 role,
                 enabled,
                 sort,
-                file
+                file,
               },
               fetchValue: this.currentQueryPayload(),
               callback: () => {
                 this.closeModal(true);
                 refreshAuthMenus({ dispatch });
-              }
+              },
             });
           }}
           handleCancel={() => {
             this.closeModal();
           }}
         />
-      )
+      ),
     });
   };
 
   // 数据状态切换
-  statusSwitch = ({list, enabled, callback}) => {
+  statusSwitch = ({ list, enabled, callback }) => {
     const { dispatch } = this.props;
     updatePluginsEnabled({
       list,
@@ -236,7 +249,7 @@ export default class Plugin extends Component {
       enabled,
       fetchValue: this.currentQueryPayload(),
     });
-  }
+  };
 
   // 批量启用或禁用
   enableClick = () => {
@@ -246,17 +259,17 @@ export default class Plugin extends Component {
       dispatch({
         type: "plugin/fetchItem",
         payload: {
-          id: selectedRowKeys[0]
+          id: selectedRowKeys[0],
         },
-        callback: user => {
+        callback: (user) => {
           this.statusSwitch({
             list: selectedRowKeys,
             enabled: !user.enabled,
             callback: () => {
               this.setState({ selectedRowKeys: [] });
-            }
+            },
           });
-        }
+        },
       });
     } else {
       message.destroy();
@@ -268,13 +281,13 @@ export default class Plugin extends Component {
   syncAllClick = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: "plugin/asyncAll"
+      type: "plugin/asyncAll",
     });
   };
 
   changeLocale(locale) {
     this.setState({
-      localeName: locale
+      localeName: locale,
     });
     getCurrentLocale(this.state.localeName);
   }
@@ -290,10 +303,24 @@ export default class Plugin extends Component {
           ellipsis: true,
           width: 120,
           render: (text, record) => {
-            return record.url
-              ? <Link to={record.url}><div style={{color: "#1890ff", "fontWeight": "bold", "textDecorationLine": "underline"}}>{text || "----"}</div></Link>
-              : <div style={{color: "#260033", "fontWeight": "bold"}}>{text || "----"}</div>;
-          }
+            return record.url ? (
+              <Link to={record.url}>
+                <div
+                  style={{
+                    color: "#1890ff",
+                    fontWeight: "bold",
+                    textDecorationLine: "underline",
+                  }}
+                >
+                  {text || "----"}
+                </div>
+              </Link>
+            ) : (
+              <div style={{ color: "#260033", fontWeight: "bold" }}>
+                {text || "----"}
+              </div>
+            );
+          },
         },
         {
           align: "center",
@@ -303,9 +330,9 @@ export default class Plugin extends Component {
           key: "role",
           width: 120,
           sorter: (a, b) => (a.role > b.role ? 1 : -1),
-          render: text => {
-            return <div style={{color: "#1f640a"}}>{text || "----"}</div>;
-          }
+          render: (text) => {
+            return <div style={{ color: "#1f640a" }}>{text || "----"}</div>;
+          },
         },
         {
           align: "center",
@@ -315,9 +342,9 @@ export default class Plugin extends Component {
           key: "sort",
           width: 120,
           sorter: (a, b) => (a.role > b.role ? 1 : -1),
-          render: text => {
-            return <div style={{color: "#014955"}}>{text}</div>;
-          }
+          render: (text) => {
+            return <div style={{ color: "#014955" }}>{text}</div>;
+          },
         },
         {
           align: "center",
@@ -333,20 +360,30 @@ export default class Plugin extends Component {
                 <Tag color="#3b9a9c">{record.sort}</Tag>
               </div>
             );
-            const t = JSON.stringify(JSON.parse(text !== null && text.length > 0?text:'{}'), null, 4) ;
+            const t = JSON.stringify(
+              JSON.parse(text !== null && text.length > 0 ? text : "{}"),
+              null,
+              4,
+            );
             const content = (
               <div>
-                <Text type="secondary">{`${getIntlContent("SHENYU.SYSTEM.CREATETIME") }: ${ record.dateCreated}`}</Text>
+                <Text type="secondary">{`${getIntlContent("SHENYU.SYSTEM.CREATETIME")}: ${record.dateCreated}`}</Text>
                 <br />
-                <Text type="secondary">{`${getIntlContent("SHENYU.SYSTEM.UPDATETIME") }: ${ record.dateUpdated}`}</Text>
+                <Text type="secondary">{`${getIntlContent("SHENYU.SYSTEM.UPDATETIME")}: ${record.dateUpdated}`}</Text>
                 <hr />
-                <div style={{ "fontWeight":"bold" }}>
-                  <pre><code>{t}</code></pre>
+                <div style={{ fontWeight: "bold" }}>
+                  <pre>
+                    <code>{t}</code>
+                  </pre>
                 </div>
               </div>
             );
-            return (<Popover content={content} title={tag}><div>{text || "----"}</div></Popover>);
-          }
+            return (
+              <Popover content={content} title={tag}>
+                <div>{text || "----"}</div>
+              </Popover>
+            );
+          },
         },
         {
           align: "center",
@@ -362,11 +399,11 @@ export default class Plugin extends Component {
               checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
               unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
               checked={text}
-              onChange={checked => {
-                this.statusSwitch({list: [row.id], enabled: checked });
+              onChange={(checked) => {
+                this.statusSwitch({ list: [row.id], enabled: checked });
               }}
             />
-          )
+          ),
         },
         {
           align: "center",
@@ -401,29 +438,30 @@ export default class Plugin extends Component {
                 </AuthButton>
               </div>
             );
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
   }
 
   render() {
     const { plugin, loading, authMenu } = this.props;
     const { pluginList, total } = plugin;
-    const { currentPage, pageSize, selectedRowKeys, name, enabled, popup } = this.state;
+    const { currentPage, pageSize, selectedRowKeys, name, enabled, popup } =
+      this.state;
     const columns = this.state.columns.map((col, index) => ({
       ...col,
-      onHeaderCell: column => ({
+      onHeaderCell: (column) => ({
         width: column.width,
-        onResize: this.handleResize(index)
-      })
+        onResize: this.handleResize(index),
+      }),
     }));
     const rowSelection = {
       selectedRowKeys,
-      onChange: this.onSelectChange
+      onChange: this.onSelectChange,
     };
     const flatList = (map, list) => {
-      list.forEach(element => {
+      list.forEach((element) => {
         if (!element.children) {
           map[element.id] = element;
         } else {
@@ -434,7 +472,7 @@ export default class Plugin extends Component {
     };
     const flatAuthMenu = flatList({}, authMenu);
 
-    pluginList.forEach(p => {
+    pluginList.forEach((p) => {
       p.url = (flatAuthMenu[p.id] ?? {}).path;
     });
 
@@ -529,7 +567,7 @@ export default class Plugin extends Component {
             current: currentPage,
             pageSize,
             onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange
+            onChange: this.pageOnchange,
           }}
         />
         {popup}

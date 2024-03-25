@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-import React, {Component} from "react";
-import {Button, Col, Form, Input, Row, Select, Table, Tabs} from "antd";
-import {getIntlContent} from '../../../utils/IntlUtils'
+import React, { Component } from "react";
+import { Button, Col, Form, Input, Row, Select, Table, Tabs } from "antd";
+import { getIntlContent } from "../../../utils/IntlUtils";
 
-const {Option} = Select;
-const {TabPane} = Tabs;
+const { Option } = Select;
+const { TabPane } = Tabs;
 
 const TypeKey = {
-  body: ["addParameterKeys", "replaceParameterKeys", "removeParameterKeys"]
+  body: ["addParameterKeys", "replaceParameterKeys", "removeParameterKeys"],
 };
 
 function ConfigInput(cfProps) {
-  const {code, data, onChange} = cfProps;
+  const { code, data, onChange } = cfProps;
   return (
     <Input
       allowClear
       value={data[code]}
       placeholder={`please enter ${code}`}
       addonBefore={code}
-      onChange={e => {
-        onChange({[code]: e.target.value}, data.id);
+      onChange={(e) => {
+        onChange({ [code]: e.target.value }, data.id);
       }}
     />
   );
@@ -46,43 +46,43 @@ class ParamPluginRuleConfig extends Component {
     super(props);
     this.state = {
       activeKey: "body",
-      body: [{id: (+new Date() + 1).toString()}],
+      body: [{ id: (+new Date() + 1).toString() }],
     };
   }
 
   componentDidMount() {
-    const {value} = this.props;
-    const {body} = this.state;
+    const { value } = this.props;
+    const { body } = this.state;
     if (value) {
       const data = {};
       try {
         Object.assign(data, JSON.parse(value));
       } catch (e) {
         // eslint-disable-next-line no-console
-        console.error(e)
+        console.error(e);
       }
       const bodyData = [];
       const draftData = [];
 
-      Object.keys(data).forEach(type => {
+      Object.keys(data).forEach((type) => {
         if (Array.isArray(data[type])) {
-          data[type].forEach(item => {
+          data[type].forEach((item) => {
             if (typeof item === "string") {
-              draftData.push({type, key: item});
+              draftData.push({ type, key: item });
             } else {
-              draftData.push({type, ...item});
+              draftData.push({ type, ...item });
             }
           });
         }
         if (Object.prototype.toString.call(data[type]) === "[object Object]") {
-          Object.keys(data[type]).forEach(key => {
-            draftData.push({type, key, value: data[type][key]});
+          Object.keys(data[type]).forEach((key) => {
+            draftData.push({ type, key, value: data[type][key] });
           });
         }
       });
       draftData.forEach((item, i) => {
         if (TypeKey.body.includes(item.type)) {
-          bodyData.push({...item, id: i.toString()});
+          bodyData.push({ ...item, id: i.toString() });
         }
       });
       this.setState({
@@ -92,7 +92,7 @@ class ParamPluginRuleConfig extends Component {
   }
 
   componentDidUpdate() {
-    const {onChange, value} = this.props;
+    const { onChange, value } = this.props;
     const data = {};
     const currentData = this.getCurrentData();
     const valueStr = JSON.stringify(currentData);
@@ -101,7 +101,7 @@ class ParamPluginRuleConfig extends Component {
         Object.assign(data, JSON.parse(value));
       } catch (e) {
         // eslint-disable-next-line no-console
-        console.error(e)
+        console.error(e);
       }
     }
 
@@ -111,28 +111,27 @@ class ParamPluginRuleConfig extends Component {
   }
 
   getCurrentData = () => {
-    const {body} = this.state;
+    const { body } = this.state;
     const currentData = {};
 
-    const hanlePathKeyValue = item => {
+    const hanlePathKeyValue = (item) => {
       if (currentData[item.type] === undefined) {
         currentData[item.type] = [];
       }
       currentData[item.type].push({
         path: item.path,
         key: item.key,
-        value: item.value
+        value: item.value,
       });
     };
-    const hanleKeys = item => {
+    const hanleKeys = (item) => {
       if (currentData[item.type] === undefined) {
         currentData[item.type] = [];
       }
       currentData[item.type].push(item.key);
     };
 
-    const handleForEach = item => {
-
+    const handleForEach = (item) => {
       if (["addParameterKeys", "replaceParameterKeys"].includes(item.type)) {
         hanlePathKeyValue(item);
       }
@@ -147,29 +146,29 @@ class ParamPluginRuleConfig extends Component {
   onChangeConfig = (value, id) => {
     const state = this.state;
     const { activeKey } = state;
-    const index = state[activeKey].findIndex(v => v.id === id);
-    const newData = state[activeKey].map(v => {
+    const index = state[activeKey].findIndex((v) => v.id === id);
+    const newData = state[activeKey].map((v) => {
       if (v.id === id) {
         return value.type
-          ? {id: v.id, ...value}
+          ? { id: v.id, ...value }
           : {
-            ...v,
-            ...value
-          };
+              ...v,
+              ...value,
+            };
       }
       return v;
     });
-    this.setState(prevState =>({
+    this.setState((prevState) => ({
       [activeKey]:
         value.type &&
         prevState[activeKey][index].type === undefined &&
         activeKey === "body"
-          ? newData.concat([{id: (+new Date()).toString()}])
-          : newData
-    }))
+          ? newData.concat([{ id: (+new Date()).toString() }])
+          : newData,
+    }));
   };
 
-  renderConfig = data => {
+  renderConfig = (data) => {
     let Comp = null;
     if (!data.type) {
       return Comp;
@@ -225,7 +224,7 @@ class ParamPluginRuleConfig extends Component {
   };
 
   render() {
-    const {activeKey} = this.state;
+    const { activeKey } = this.state;
 
     const columns = [
       {
@@ -236,22 +235,22 @@ class ParamPluginRuleConfig extends Component {
           return (
             <Select
               value={row.type}
-              onChange={type => this.onChangeConfig({type}, row.id)}
+              onChange={(type) => this.onChangeConfig({ type }, row.id)}
             >
-              {TypeKey[activeKey].map(v => (
+              {TypeKey[activeKey].map((v) => (
                 <Option key={v} value={v}>
                   {v}
                 </Option>
               ))}
             </Select>
           );
-        }
+        },
       },
       {
         title: "Config",
         dataIndex: "config",
         align: "center",
-        render: (value, row) => this.renderConfig(row)
+        render: (value, row) => this.renderConfig(row),
       },
       {
         title: "Operater",
@@ -267,8 +266,8 @@ class ParamPluginRuleConfig extends Component {
                   this.setState({
                     // eslint-disable-next-line react/no-access-state-in-setstate
                     [activeKey]: this.state[activeKey].filter(
-                      v => v.id !== row.id
-                    )
+                      (v) => v.id !== row.id,
+                    ),
                   });
                 }}
               >
@@ -276,17 +275,17 @@ class ParamPluginRuleConfig extends Component {
               </Button>
             )
           );
-        }
-      }
+        },
+      },
     ];
 
     return (
       <>
         <Tabs
           activeKey={activeKey}
-          onChange={key =>
+          onChange={(key) =>
             this.setState({
-              activeKey: key
+              activeKey: key,
             })
           }
         >
@@ -312,7 +311,7 @@ export default class ParamPluginRuleHandle extends Component {
 
   getData = () => {
     const {
-      form: {getFieldValue}
+      form: { getFieldValue },
     } = this.props;
     return getFieldValue("handle");
   };
@@ -320,17 +319,17 @@ export default class ParamPluginRuleHandle extends Component {
   render() {
     const {
       handle,
-      form: {getFieldDecorator}
+      form: { getFieldDecorator },
     } = this.props;
 
     return (
       <Form.Item
         label={getIntlContent("SHENYU.COMMON.DEAL")}
-        labelCol={{span: 3}}
-        wrapperCol={{span: 21}}
+        labelCol={{ span: 3 }}
+        wrapperCol={{ span: 21 }}
       >
         {getFieldDecorator("handle", {
-          initialValue: handle
+          initialValue: handle,
         })(<ParamPluginRuleConfig />)}
       </Form.Item>
     );

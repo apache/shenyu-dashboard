@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
 function fixedZero(val) {
   return val * 1 < 10 ? `0${val}` : val;
@@ -25,7 +25,7 @@ function initTime(target) {
   let lastTime = 0;
   let targetTime = 0;
   try {
-    if (Object.prototype.toString.call(target) === '[object Date]') {
+    if (Object.prototype.toString.call(target) === "[object Date]") {
       targetTime = target.getTime();
     } else {
       targetTime = new Date(target).getTime();
@@ -41,10 +41,9 @@ function initTime(target) {
 }
 
 class CountDown extends Component {
-
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.target !== prevState.target) {
-      const {lastTime} = initTime(nextProps.target);
+      const { lastTime } = initTime(nextProps.target);
       return {
         lastTime,
         target: nextProps.target,
@@ -61,7 +60,7 @@ class CountDown extends Component {
   constructor(props) {
     super(props);
 
-    const {lastTime} = initTime(props.target);
+    const { lastTime } = initTime(props.target);
 
     this.state = {
       lastTime,
@@ -74,12 +73,12 @@ class CountDown extends Component {
 
   componentDidUpdate() {
     if (!this.state.resetTimer) {
-      return
+      return;
     }
     clearTimeout(this.timer);
     this.tick();
     // eslint-disable-next-line react/no-did-update-set-state
-    this.setState({resetTimer: false});
+    this.setState({ resetTimer: false });
   }
 
   componentWillUnmount() {
@@ -89,7 +88,7 @@ class CountDown extends Component {
   // defaultFormat = time => (
   //  <span>{moment(time).format('hh:mm:ss')}</span>
   // );
-  defaultFormat = time => {
+  defaultFormat = (time) => {
     const hours = 60 * 60 * 1000;
     const minutes = 60 * 1000;
 
@@ -98,11 +97,7 @@ class CountDown extends Component {
     const s = Math.floor((time - h * hours - m * minutes) / 1000);
     return (
       <span>
-        {fixedZero(h)}
-        :
-        {fixedZero(m)}
-        :
-        {fixedZero(s)}
+        {fixedZero(h)}:{fixedZero(m)}:{fixedZero(s)}
       </span>
     );
   };
@@ -122,7 +117,7 @@ class CountDown extends Component {
             if (onEnd) {
               onEnd();
             }
-          }
+          },
         );
       } else {
         lastTime -= this.interval;
@@ -132,7 +127,7 @@ class CountDown extends Component {
           },
           () => {
             this.tick();
-          }
+          },
         );
       }
     }, this.interval);

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import React, { PureComponent } from 'react';
-import { Button, Spin, Card } from 'antd';
-import { connect } from 'dva';
-import styles from './style.less';
+import React, { PureComponent } from "react";
+import { Button, Spin, Card } from "antd";
+import { connect } from "dva";
+import styles from "./style.less";
 
-@connect(state => ({
+@connect((state) => ({
   isloading: state.error.isloading,
 }))
 export default class TriggerException extends PureComponent {
@@ -28,13 +28,13 @@ export default class TriggerException extends PureComponent {
     isloading: false,
   };
 
-  triggerError = code => {
+  triggerError = (code) => {
     this.setState({
       isloading: true,
     });
     const { dispatch } = this.props;
     dispatch({
-      type: 'error/query',
+      type: "error/query",
       payload: {
         code,
       },

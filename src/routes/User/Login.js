@@ -15,27 +15,32 @@
  * limitations under the License.
  */
 
-import React, {Component} from 'react';
-import CryptoJS from 'crypto-js';
-import {connect} from 'dva';
-import {Alert} from 'antd';
-import Login from 'components/Login';
-import styles from './Login.less';
-import {querySecretInfo} from "../../services/api";
+import React, { Component } from "react";
+import CryptoJS from "crypto-js";
+import { connect } from "dva";
+import { Alert } from "antd";
+import Login from "components/Login";
+import styles from "./Login.less";
+import { querySecretInfo } from "../../services/api";
 
 const { UserName, Password, Submit, VerifyCode, LoginCode } = Login;
 
-let secretKey= ""
-let secretIv = ""
+let secretKey = "";
+let secretIv = "";
 async function initSecret() {
   try {
     let promise = await querySecretInfo();
-    if (typeof promise !== 'undefined') {
+    if (typeof promise !== "undefined") {
       if (promise.status === 200) {
         let body = await promise.json();
         let secret = JSON.parse(atob(body.data));
-        if ((secret.key != null && secret.key !== "") && (secret.iv != null && secret.iv !== "")) {
-          secretKey = secret.key
+        if (
+          secret.key != null &&
+          secret.key !== "" &&
+          secret.iv != null &&
+          secret.iv !== ""
+        ) {
+          secretKey = secret.key;
           secretIv = secret.iv;
         }
       }
@@ -47,14 +52,14 @@ async function initSecret() {
 initSecret().then(() => {});
 @connect(({ login, loading }) => ({
   login,
-  submitting: loading.effects['login/login'],
+  submitting: loading.effects["login/login"],
 }))
 export default class LoginPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
       VCode: "",
-      codeError: true
+      codeError: true,
     };
     this.ChildRef = React.createRef();
   }
@@ -64,7 +69,6 @@ export default class LoginPage extends Component {
   }
 
   handleSubmit = (err, values) => {
-
     const { dispatch } = this.props;
     if (!err) {
       if (values.verifyCode !== this.state.VCode) {
@@ -72,19 +76,23 @@ export default class LoginPage extends Component {
         this.ChildRef.current.handleChange();
         return;
       }
-      if (secretKey !== "" && secretIv !== "" ){
+      if (secretKey !== "" && secretIv !== "") {
         const keyByte = CryptoJS.enc.Utf8.parse(secretKey);
         const ivByte = CryptoJS.enc.Utf8.parse(secretIv);
-        const encryptedPassword = CryptoJS.AES.encrypt(values.password, keyByte, {
-          iv: ivByte,
-          mode: CryptoJS.mode.CBC,
-          padding: CryptoJS.pad.Pkcs7
-        });
+        const encryptedPassword = CryptoJS.AES.encrypt(
+          values.password,
+          keyByte,
+          {
+            iv: ivByte,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7,
+          },
+        );
         values.password = encryptedPassword.toString();
       }
 
       dispatch({
-        type: 'login/login',
+        type: "login/login",
         payload: {
           ...values,
         },
@@ -92,21 +100,32 @@ export default class LoginPage extends Component {
     }
   };
 
-  renderMessage = content => {
-    return <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />;
-  }
+  renderMessage = (content) => {
+    return (
+      <Alert
+        style={{ marginBottom: 24 }}
+        message={content}
+        type="error"
+        showIcon
+      />
+    );
+  };
 
   getCode = (code) => {
     this.setState({
-      VCode: code
-    })
-  }
+      VCode: code,
+    });
+  };
 
   codeError = () => {
-    return this.state.codeError ? <span /> : <span className={styles.codeError} id='codeError'>Please enter correct verify code!</span>
-  }
-
-
+    return this.state.codeError ? (
+      <span />
+    ) : (
+      <span className={styles.codeError} id="codeError">
+        Please enter correct verify code!
+      </span>
+    );
+  };
 
   render() {
     const { submitting } = this.props;
@@ -120,7 +139,10 @@ export default class LoginPage extends Component {
               <VerifyCode name="verifyCode" placeholder="Verification Code" />
               {this.codeError()}
             </div>
-            <LoginCode onRef={this.ChildRef} ChildGetCode={(code) => this.getCode(code)} />
+            <LoginCode
+              onRef={this.ChildRef}
+              ChildGetCode={(code) => this.getCode(code)}
+            />
           </div>
           <Submit loading={submitting}>Login</Submit>
         </Login>

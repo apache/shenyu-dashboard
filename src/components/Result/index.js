@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import classNames from 'classnames';
-import { Icon } from 'antd';
-import styles from './index.less';
+import React from "react";
+import classNames from "classnames";
+import { Icon } from "antd";
+import styles from "./index.less";
 
 export default function Result({
   className,

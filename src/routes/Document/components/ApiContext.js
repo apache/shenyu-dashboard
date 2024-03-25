@@ -23,5 +23,5 @@ export default createContext({
   apiDetail: {},
   apiData: {},
   apiMock: {},
-  tagDetail: {}
+  tagDetail: {},
 });

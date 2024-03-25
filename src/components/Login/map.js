@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Input, Icon } from 'antd';
-import styles from './index.less'
-import { getIntlContent } from '../../utils/IntlUtils';
+import React from "react";
+import { Input, Icon } from "antd";
+import styles from "./index.less";
+import { getIntlContent } from "../../utils/IntlUtils";
 
 const map = {
   VerifyCode: {
     component: Input,
     props: {
-      size: 'large',
+      size: "large",
       allowClear: true,
       prefix: <Icon type="home" className={styles.prefixIcon} />,
     },
@@ -34,15 +34,14 @@ const map = {
         message: getIntlContent("SHENYU.SYSTEM.VERIFICATION.CODE"),
       },
     ],
-  }
-  ,
+  },
   UserName: {
     component: Input,
     props: {
-      size: 'large',
+      size: "large",
       allowClear: true,
       prefix: <Icon type="user" className={styles.prefixIcon} />,
-      placeholder: 'admin',
+      placeholder: "admin",
     },
     rules: [
       {
@@ -54,11 +53,11 @@ const map = {
   Password: {
     component: Input,
     props: {
-      size: 'large',
+      size: "large",
       allowClear: true,
       prefix: <Icon type="lock" className={styles.prefixIcon} />,
-      type: 'password',
-      placeholder: '888888',
+      type: "password",
+      placeholder: "888888",
     },
     rules: [
       {
@@ -70,34 +69,34 @@ const map = {
   Mobile: {
     component: Input,
     props: {
-      size: 'large',
+      size: "large",
       allowClear: true,
       prefix: <Icon type="mobile" className={styles.prefixIcon} />,
-      placeholder: 'mobile number',
+      placeholder: "mobile number",
     },
     rules: [
       {
         required: true,
-        message: 'Please enter mobile number!',
+        message: "Please enter mobile number!",
       },
       {
         pattern: /^1\d{10}$/,
-        message: 'Wrong mobile number format!',
+        message: "Wrong mobile number format!",
       },
     ],
   },
   Captcha: {
     component: Input,
     props: {
-      size: 'large',
+      size: "large",
       allowClear: true,
       prefix: <Icon type="mail" className={styles.prefixIcon} />,
-      placeholder: 'captcha',
+      placeholder: "captcha",
     },
     rules: [
       {
         required: true,
-        message: 'Please enter Captcha!',
+        message: "Please enter Captcha!",
       },
     ],
   },

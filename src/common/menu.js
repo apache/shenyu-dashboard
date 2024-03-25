@@ -24,7 +24,7 @@ export const menuData = [
     icon: "dashboard",
     path: "plug",
     locale: "SHENYU.MENU.PLUGIN.LIST",
-    children: []
+    children: [],
   },
   {
     name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT"),
@@ -35,24 +35,24 @@ export const menuData = [
       {
         name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.ROLE"),
         path: "role",
-        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.ROLE"
+        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.ROLE",
       },
       {
         name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.USER"),
         path: "manage",
-        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.USER"
+        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.USER",
       },
       {
         name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.RESOURCE"),
         path: "resource",
-        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.RESOURCE"
+        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.RESOURCE",
       },
       {
         name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.ALERT"),
         path: "alert",
-        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.ALERT"
-      }
-    ]
+        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.ALERT",
+      },
+    ],
   },
   {
     name: getIntlContent("SHENYU.MENU.CONFIG.MANAGMENT"),
@@ -63,29 +63,29 @@ export const menuData = [
       {
         name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.PLUGIN"),
         path: "plugin",
-        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.PLUGIN"
+        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.PLUGIN",
       },
       {
         name: getIntlContent("SHENYU.PLUGIN.PLUGINHANDLE"),
         path: "pluginhandle",
-        locale: "SHENYU.PLUGIN.PLUGINHANDLE"
+        locale: "SHENYU.PLUGIN.PLUGINHANDLE",
       },
       {
         name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.AUTHEN"),
         path: "auth",
-        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.AUTHEN"
+        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.AUTHEN",
       },
       {
         name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.METADATA"),
         path: "metadata",
-        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.METADATA"
+        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.METADATA",
       },
       {
         name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.DICTIONARY"),
         path: "dict",
-        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.DICTIONARY"
-      }
-    ]
+        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.DICTIONARY",
+      },
+    ],
   },
   {
     name: getIntlContent("SHENYU.MENU.DOCUMENT"),
@@ -96,13 +96,13 @@ export const menuData = [
       {
         name: getIntlContent("SHENYU.MENU.DOCUMENT.APIDOC"),
         path: "apidoc",
-        locale: "SHENYU.MENU.DOCUMENT.APIDOC"
-      }
-    ]
-  }
+        locale: "SHENYU.MENU.DOCUMENT.APIDOC",
+      },
+    ],
+  },
 ];
 function formatter(data, parentPath = "/", parentAuthority) {
-  return data.map(item => {
+  return data.map((item) => {
     let { path } = item;
     if (!isUrl(path)) {
       path = parentPath + item.path;
@@ -110,13 +110,13 @@ function formatter(data, parentPath = "/", parentAuthority) {
     const result = {
       ...item,
       path,
-      authority: item.authority || parentAuthority
+      authority: item.authority || parentAuthority,
     };
     if (item.children) {
       result.children = formatter(
         item.children,
         `${parentPath}${item.path}/`,
-        item.authority
+        item.authority,
       );
     }
 

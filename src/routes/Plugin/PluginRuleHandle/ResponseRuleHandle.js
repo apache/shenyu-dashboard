@@ -26,7 +26,7 @@ import {
   Input,
   Button,
   Table,
-  InputNumber
+  InputNumber,
 } from "antd";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
@@ -39,9 +39,9 @@ const TypeKey = {
     "addHeaders",
     "setHeaders",
     "replaceHeaderKeys",
-    "removeHeaderKeys"
+    "removeHeaderKeys",
   ],
-  body: ["addBodyKeys", "replaceBodyKeys", "removeBodyKeys"]
+  body: ["addBodyKeys", "replaceBodyKeys", "removeBodyKeys"],
 };
 
 function ConfigInput(cfProps) {
@@ -52,7 +52,7 @@ function ConfigInput(cfProps) {
       value={data[code]}
       placeholder={`please enter ${code}`}
       addonBefore={code}
-      onChange={e => {
+      onChange={(e) => {
         onChange({ [code]: e.target.value }, data.id);
       }}
     />
@@ -66,7 +66,7 @@ class ResponseConfig extends Component {
       activeKey: "statusCode",
       headers: [{ id: (+new Date() + 1).toString() }],
       body: [{ id: (+new Date() + 1).toString() }],
-      statusCode: [{ id: (+new Date() + 1).toString(), type: "statusCode" }]
+      statusCode: [{ id: (+new Date() + 1).toString(), type: "statusCode" }],
     };
   }
 
@@ -84,13 +84,13 @@ class ResponseConfig extends Component {
       const headerData = [];
       const bodyData = [];
       const statusCodeData = [
-        { id: (+new Date() + 1).toString(), type: "statusCode" }
+        { id: (+new Date() + 1).toString(), type: "statusCode" },
       ];
       const draftData = [];
 
-      Object.keys(data).forEach(type => {
+      Object.keys(data).forEach((type) => {
         if (Array.isArray(data[type])) {
-          data[type].forEach(item => {
+          data[type].forEach((item) => {
             if (typeof item === "string") {
               draftData.push({ type, key: item });
             } else {
@@ -99,7 +99,7 @@ class ResponseConfig extends Component {
           });
         }
         if (Object.prototype.toString.call(data[type]) === "[object Object]") {
-          Object.keys(data[type]).forEach(key => {
+          Object.keys(data[type]).forEach((key) => {
             draftData.push({ type, key, value: data[type][key] });
           });
         }
@@ -111,7 +111,7 @@ class ResponseConfig extends Component {
         if (TypeKey.headers.includes(item.type)) {
           headerData.push({
             ...item,
-            id: i.toString()
+            id: i.toString(),
           });
         }
         if (TypeKey.body.includes(item.type)) {
@@ -121,7 +121,7 @@ class ResponseConfig extends Component {
       this.setState({
         headers: headerData.concat(headers),
         body: bodyData.concat(body),
-        statusCode: statusCodeData
+        statusCode: statusCodeData,
       });
     }
   }
@@ -148,35 +148,35 @@ class ResponseConfig extends Component {
   getCurrentData = () => {
     const { headers, body, statusCode } = this.state;
     const currentData = {};
-    const hanleKeyValue = item => {
+    const hanleKeyValue = (item) => {
       if (currentData[item.type] === undefined) {
         currentData[item.type] = {};
       }
       currentData[item.type][item.key] = item.value;
     };
-    const hanlePathKeyValue = item => {
+    const hanlePathKeyValue = (item) => {
       if (currentData[item.type] === undefined) {
         currentData[item.type] = [];
       }
       currentData[item.type].push({
         path: item.path,
         key: item.key,
-        value: item.value
+        value: item.value,
       });
     };
-    const hanleKeys = item => {
+    const hanleKeys = (item) => {
       if (currentData[item.type] === undefined) {
         currentData[item.type] = [];
       }
       currentData[item.type].push(item.key);
     };
-    const hanleStatusCode = item => {
+    const hanleStatusCode = (item) => {
       if (currentData[item.type] === undefined) {
         currentData[item.type] = [];
       }
       currentData.statusCode = item.code;
     };
-    const handleForEach = item => {
+    const handleForEach = (item) => {
       if (
         ["addHeaders", "setHeaders", "replaceHeaderKeys"].includes(item.type)
       ) {
@@ -201,14 +201,14 @@ class ResponseConfig extends Component {
   onChangeConfig = (value, id) => {
     const state = this.state;
     const { activeKey } = state;
-    const index = state[activeKey].findIndex(v => v.id === id);
-    const newData = state[activeKey].map(v => {
+    const index = state[activeKey].findIndex((v) => v.id === id);
+    const newData = state[activeKey].map((v) => {
       if (v.id === id) {
         return value.type
           ? { id: v.id, ...value }
           : {
               ...v,
-              ...value
+              ...value,
             };
       }
       return v;
@@ -219,11 +219,11 @@ class ResponseConfig extends Component {
         state[activeKey][index].type === undefined &&
         activeKey !== "statusCode"
           ? newData.concat([{ id: (+new Date()).toString() }])
-          : newData
+          : newData,
     });
   };
 
-  renderConfig = data => {
+  renderConfig = (data) => {
     let Comp = null;
     if (!data.type) {
       return Comp;
@@ -312,22 +312,22 @@ class ResponseConfig extends Component {
           return (
             <Select
               value={row.type}
-              onChange={type => this.onChangeConfig({ type }, row.id)}
+              onChange={(type) => this.onChangeConfig({ type }, row.id)}
             >
-              {TypeKey[activeKey].map(v => (
+              {TypeKey[activeKey].map((v) => (
                 <Option key={v} value={v}>
                   {v}
                 </Option>
               ))}
             </Select>
           );
-        }
+        },
       },
       {
         title: "Config",
         dataIndex: "config",
         align: "center",
-        render: (value, row) => this.renderConfig(row)
+        render: (value, row) => this.renderConfig(row),
       },
       {
         title: "Operater",
@@ -342,8 +342,8 @@ class ResponseConfig extends Component {
                 onClick={() => {
                   this.setState({
                     [activeKey]: this.state[activeKey].filter(
-                      v => v.id !== row.id
-                    )
+                      (v) => v.id !== row.id,
+                    ),
                   });
                 }}
               >
@@ -351,8 +351,8 @@ class ResponseConfig extends Component {
               </Button>
             )
           );
-        }
-      }
+        },
+      },
     ];
 
     const statusCodeColums = [
@@ -367,19 +367,19 @@ class ResponseConfig extends Component {
             max={599}
             placeholder="200~599"
             value={value}
-            onChange={v => this.onChangeConfig({ code: v }, row.id)}
+            onChange={(v) => this.onChangeConfig({ code: v }, row.id)}
           />
-        )
-      }
+        ),
+      },
     ];
 
     return (
       <>
         <Tabs
           activeKey={activeKey}
-          onChange={key =>
+          onChange={(key) =>
             this.setState({
-              activeKey: key
+              activeKey: key,
             })
           }
         >
@@ -407,7 +407,7 @@ export default class ResponseRuleHandle extends Component {
 
   getData = () => {
     const {
-      form: { getFieldValue }
+      form: { getFieldValue },
     } = this.props;
     const value = getFieldValue("handle");
     return value;
@@ -416,7 +416,7 @@ export default class ResponseRuleHandle extends Component {
   render() {
     const {
       handle,
-      form: { getFieldDecorator }
+      form: { getFieldDecorator },
     } = this.props;
 
     return (
@@ -426,7 +426,7 @@ export default class ResponseRuleHandle extends Component {
         wrapperCol={{ span: 21 }}
       >
         {getFieldDecorator("handle", {
-          initialValue: handle
+          initialValue: handle,
         })(<ResponseConfig />)}
       </Form.Item>
     );

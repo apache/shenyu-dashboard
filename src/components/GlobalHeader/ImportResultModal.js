@@ -21,27 +21,27 @@ import { connect } from "dva";
 import { getIntlContent } from "../../utils/IntlUtils";
 
 const keyMap = {
-  metaImportSuccessCount: 'metaImportSuccessCount',
-  metaImportFailMessage: 'metaImportFailMessage',
-  authImportSuccessCount: 'authImportSuccessCount',
-  authImportFailMessage: 'authImportFailMessage',
-  pluginImportSuccessCount: 'pluginImportSuccessCount',
-  pluginImportFailMessage: 'pluginImportFailMessage',
-  proxySelectorImportSuccessCount: 'proxySelectorImportSuccessCount',
-  proxySelectorImportFailMessage: 'proxySelectorImportFailMessage',
-  discoveryImportSuccessCount: 'discoveryImportSuccessCount',
-  discoveryImportFailMessage: 'discoveryImportFailMessage',
-  discoveryUpstreamImportSuccessCount: 'discoveryUpstreamImportSuccessCount',
-  discoveryUpstreamImportFailMessage: 'discoveryUpstreamImportFailMessage',
-  dictImportSuccessCount: 'dictImportSuccessCount',
-  dictImportFailMessage: 'dictImportFailMessage'
+  metaImportSuccessCount: "metaImportSuccessCount",
+  metaImportFailMessage: "metaImportFailMessage",
+  authImportSuccessCount: "authImportSuccessCount",
+  authImportFailMessage: "authImportFailMessage",
+  pluginImportSuccessCount: "pluginImportSuccessCount",
+  pluginImportFailMessage: "pluginImportFailMessage",
+  proxySelectorImportSuccessCount: "proxySelectorImportSuccessCount",
+  proxySelectorImportFailMessage: "proxySelectorImportFailMessage",
+  discoveryImportSuccessCount: "discoveryImportSuccessCount",
+  discoveryImportFailMessage: "discoveryImportFailMessage",
+  discoveryUpstreamImportSuccessCount: "discoveryUpstreamImportSuccessCount",
+  discoveryUpstreamImportFailMessage: "discoveryUpstreamImportFailMessage",
+  dictImportSuccessCount: "dictImportSuccessCount",
+  dictImportFailMessage: "dictImportFailMessage",
 };
 
 @connect(({ global }) => ({
-  platform: global.platform
+  platform: global.platform,
 }))
 class ImportResultModal extends Component {
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     const { form, handleOk } = this.props;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
@@ -58,16 +58,10 @@ class ImportResultModal extends Component {
     const maxLength = 50; // set the max show length
     if (data && data.length > maxLength) {
       return (
-        <Tooltip title={data}>
-          {`${data.substring(0, maxLength)}...`}
-        </Tooltip>
+        <Tooltip title={data}>{`${data.substring(0, maxLength)}...`}</Tooltip>
       );
     }
-    return (
-      <Tooltip title={data}>
-        {data}
-      </Tooltip>
-    );
+    return <Tooltip title={data}>{data}</Tooltip>;
   };
 
   formatKey = (key) => {
@@ -82,13 +76,8 @@ class ImportResultModal extends Component {
     ));
   };
 
-  render () {
-    let {
-      onOk,
-      onCancel,
-      json
-
-    } = this.props;
+  render() {
+    let { onOk, onCancel, json } = this.props;
 
     return (
       <Modal
@@ -97,7 +86,7 @@ class ImportResultModal extends Component {
         onOk={onOk}
         onCancel={onCancel}
       >
-        <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+        <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
           {this.renderContent(json)}
         </pre>
       </Modal>

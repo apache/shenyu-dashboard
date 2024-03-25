@@ -15,29 +15,28 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Tabs } from 'antd';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Tabs } from "antd";
 
 const { TabPane } = Tabs;
 
 const generateId = (() => {
   let i = 0;
-  return (prefix = '') => {
+  return (prefix = "") => {
     i += 1;
     return `${prefix}${i}`;
   };
 })();
 
 export default class LoginTab extends Component {
-
   static contextTypes = {
     tabUtil: PropTypes.object,
   };
 
   constructor(props) {
     super(props);
-    this.uniqueId = generateId('login-tab-');
+    this.uniqueId = generateId("login-tab-");
   }
 
   componentDidMount() {
