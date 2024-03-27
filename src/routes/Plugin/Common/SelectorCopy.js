@@ -20,7 +20,7 @@ import { Modal, TreeSelect } from "antd";
 import {
   getPluginDropDownList,
   getAllSelectors,
-  findSelector
+  findSelector,
 } from "../../../services/api";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
@@ -30,7 +30,7 @@ class SelectorCopy extends Component {
     this.state = {
       selectorTree: [],
       value: undefined,
-      loading: false
+      loading: false,
     };
   }
 
@@ -39,21 +39,19 @@ class SelectorCopy extends Component {
   }
 
   getAllSelectors = async () => {
-    const {
-      code: pluginCode,
-      data: pluginList = []
-    } = await getPluginDropDownList();
+    const { code: pluginCode, data: pluginList = [] } =
+      await getPluginDropDownList();
     const {
       code: selectorCode,
-      data: { dataList: selectorList = [] }
+      data: { dataList: selectorList = [] },
     } = await getAllSelectors({
       currentPage: 1,
-      pageSize: 9999
+      pageSize: 9999,
     });
     const pluginMap = {};
     const selectorTree = [];
     if (pluginCode === 200 && selectorCode === 200) {
-      selectorList.forEach(v => {
+      selectorList.forEach((v) => {
         if (!pluginMap[v.pluginId]) {
           pluginMap[v.pluginId] = [];
         }
@@ -61,20 +59,20 @@ class SelectorCopy extends Component {
       });
     }
     if (Object.keys(pluginMap).length) {
-      Object.keys(pluginMap).forEach(key => {
-        const plugin = pluginList.find(v => v.id === key);
+      Object.keys(pluginMap).forEach((key) => {
+        const plugin = pluginList.find((v) => v.id === key);
         selectorTree.push({
           title: plugin.name,
           value: plugin.id,
           disabled: true,
-          children: pluginMap[key]
+          children: pluginMap[key],
         });
       });
     }
     this.setState({ selectorTree });
   };
 
-  handleChangeSelect = value => {
+  handleChangeSelect = (value) => {
     this.setState({ value });
   };
 
@@ -83,7 +81,7 @@ class SelectorCopy extends Component {
     // eslint-disable-next-line no-unused-expressions
     onCancel && onCancel();
     this.setState({
-      value: undefined
+      value: undefined,
     });
   };
 
@@ -91,11 +89,11 @@ class SelectorCopy extends Component {
     const { onOk } = this.props;
     const { value } = this.state;
     this.setState({
-      loading: true
+      loading: true,
     });
     const { data = {} } = await findSelector({ id: value });
     this.setState({
-      loading: false
+      loading: false,
     });
     // eslint-disable-next-line no-unused-expressions
     onOk && onOk(data);

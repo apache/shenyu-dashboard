@@ -21,30 +21,29 @@ import { connect } from "dva";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 @connect(({ discovery }) => ({
-  discovery
+  discovery,
 }))
-
 class DiscoveryImportModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
       configList: {},
-      loading: false
+      loading: false,
     };
   }
 
   componentDidMount() {
-    const { dispatch, pluginName } = this.props
+    const { dispatch, pluginName } = this.props;
     dispatch({
       type: "discovery/fetchDiscovery",
       payload: {
         pluginName,
-        level: "1"
+        level: "1",
       },
-      callback: discoveryConfigList => {
-        this.setState({configList: discoveryConfigList})
-      }
-    })
+      callback: (discoveryConfigList) => {
+        this.setState({ configList: discoveryConfigList });
+      },
+    });
   }
 
   handleCancel = () => {
@@ -63,12 +62,18 @@ class DiscoveryImportModal extends Component {
   render() {
     const { visible = false } = this.props;
     const { loading, configList } = this.state;
-    const { type = '', serverList =  '', props: discoveryProps = '{}' } = configList || {};
+    const {
+      type = "",
+      serverList = "",
+      props: discoveryProps = "{}",
+    } = configList || {};
     return (
       <Modal
         visible={visible}
         centered
-        title={getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.IMPORT.CONFIRM")}
+        title={getIntlContent(
+          "SHENYU.DISCOVERY.SELECTOR.CONFIG.IMPORT.CONFIRM",
+        )}
         onCancel={this.handleCancel}
         onOk={this.handleOk}
         confirmLoading={loading}
@@ -76,14 +81,25 @@ class DiscoveryImportModal extends Component {
         cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
       >
         <ul>
-          <li style={{ marginBottom: '8px' }}>
-            <strong>{getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE")}:</strong> {type}
+          <li style={{ marginBottom: "8px" }}>
+            <strong>
+              {getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE")}:
+            </strong>{" "}
+            {type}
           </li>
-          <li style={{ marginBottom: '8px' }}>
-            <strong>{getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST")}:</strong> {serverList}
+          <li style={{ marginBottom: "8px" }}>
+            <strong>
+              {getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST")}:
+            </strong>{" "}
+            {serverList}
           </li>
           <li>
-            <strong>{getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS")}:</strong> <pre><code>{JSON.stringify(JSON.parse(discoveryProps), null, 4)}</code></pre>
+            <strong>
+              {getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS")}:
+            </strong>{" "}
+            <pre>
+              <code>{JSON.stringify(JSON.parse(discoveryProps), null, 4)}</code>
+            </pre>
           </li>
         </ul>
       </Modal>

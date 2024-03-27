@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import fetch from 'dva/fetch'
+import fetch from "dva/fetch";
 
 /**
  * Requests a URL, for downloading.
@@ -24,40 +24,40 @@ import fetch from 'dva/fetch'
  * @param  {object} [options] The options we want to pass to "fetch"
  * @return {object}           An object containing either "data" or "err"
  */
-export default async function download (url, options) {
+export default async function download(url, options) {
   const defaultOptions = {
-    method: 'GET',
-  }
+    method: "GET",
+  };
 
-  const newOptions = { ...defaultOptions, ...options }
+  const newOptions = { ...defaultOptions, ...options };
 
   // add token
-  let token = window.sessionStorage.getItem("token")
+  let token = window.sessionStorage.getItem("token");
   if (token) {
     if (!newOptions.headers) {
-      newOptions.headers = {}
+      newOptions.headers = {};
     }
-    newOptions.headers = { ...newOptions.headers, "X-Access-Token": token }
+    newOptions.headers = { ...newOptions.headers, "X-Access-Token": token };
   }
   try {
-    const response = await fetch(url, newOptions)
-    const disposition = response.headers.get('Content-Disposition')
-    const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
-    const matches = filenameRegex.exec(disposition)
-    let filename = 'download'
+    const response = await fetch(url, newOptions);
+    const disposition = response.headers.get("Content-Disposition");
+    const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+    const matches = filenameRegex.exec(disposition);
+    let filename = "download";
     if (matches != null && matches[1]) {
-      filename = matches[1].replace(/['"]/g, '')
+      filename = matches[1].replace(/['"]/g, "");
     }
 
-    const blob = await response.blob()
+    const blob = await response.blob();
 
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob) // use blob obj to create URL
-    a.download = filename // use the file name from backend 
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); // use blob obj to create URL
+    a.download = filename; // use the file name from backend
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   } catch (error) {
-    throw new Error(`下载文件失败：${error}`)
+    throw new Error(`下载文件失败：${error}`);
   }
 }

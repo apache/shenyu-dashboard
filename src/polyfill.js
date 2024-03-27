@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import '@babel/polyfill';
-import 'url-polyfill';
-import setprototypeof from 'setprototypeof';
+import "@babel/polyfill";
+import "url-polyfill";
+import setprototypeof from "setprototypeof";
 
 // React depends on set/map/requestAnimationFrame
 // https://reactjs.org/docs/javascript-environment-requirements.html

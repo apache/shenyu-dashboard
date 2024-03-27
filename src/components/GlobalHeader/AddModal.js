@@ -20,7 +20,6 @@ import { Modal, Form, Button } from "antd";
 import { connect } from "dva";
 import { getIntlContent } from "../../utils/IntlUtils";
 
-
 const FormItem = Form.Item;
 const ChooseFile = forwardRef(({ onChange, file }, ref) => {
   const handleFileInput = (e) => {
@@ -28,17 +27,29 @@ const ChooseFile = forwardRef(({ onChange, file }, ref) => {
   };
   return (
     <>
-
-      <Button onClick={() => { document.getElementById("file").click(); }}>{getIntlContent("SHENYU.COMMON.UPLOAD")}</Button> {file?.name}
-      <input ref={ref} type="file" onChange={handleFileInput} style={{ display: 'none' }} id="file" />
+      <Button
+        onClick={() => {
+          document.getElementById("file").click();
+        }}
+      >
+        {getIntlContent("SHENYU.COMMON.UPLOAD")}
+      </Button>{" "}
+      {file?.name}
+      <input
+        ref={ref}
+        type="file"
+        onChange={handleFileInput}
+        style={{ display: "none" }}
+        id="file"
+      />
     </>
   );
 });
 @connect(({ global }) => ({
-  platform: global.platform
+  platform: global.platform,
 }))
 class AddModal extends Component {
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     const { form, handleOk } = this.props;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
@@ -49,21 +60,16 @@ class AddModal extends Component {
     });
   };
 
-  render () {
-    let {
-      handleCancel,
-      form,
-      config,
-      file
-    } = this.props;
+  render() {
+    let { handleCancel, form, config, file } = this.props;
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 7 }
+        sm: { span: 7 },
       },
       wrapperCol: {
-        sm: { span: 17 }
-      }
+        sm: { span: 17 },
+      },
     };
     if (config) {
       config = JSON.parse(config);
@@ -89,13 +95,11 @@ class AddModal extends Component {
               rules: [
                 {
                   required: true,
-                }
+                },
               ],
               initialValue: file,
-              valuePropName: "file"
-            })(<ChooseFile />)
-
-            }
+              valuePropName: "file",
+            })(<ChooseFile />)}
           </FormItem>
         </Form>
       </Modal>

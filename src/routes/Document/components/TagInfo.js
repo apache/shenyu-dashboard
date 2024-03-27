@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {Typography, Button, Row, Col, Table, Popconfirm} from "antd";
+import { Typography, Button, Row, Col, Table, Popconfirm } from "antd";
 import React, { useContext } from "react";
 import dayjs from "dayjs";
 import ApiContext from "./ApiContext";
@@ -27,47 +27,47 @@ const { Title, Text } = Typography;
 function TagInfo(props) {
   const { handleDelete, handleUpdate } = props;
   const { tagDetail } = useContext(ApiContext);
-  const { apiDataList } = tagDetail
+  const { apiDataList } = tagDetail;
 
   const apiColumns = [
     {
       title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.PATH"),
       dataIndex: "apiPath",
-      render: (_, record) =>(
+      render: (_, record) => (
         <>
           <Text code>{Method?.[record.httpMethod]}</Text>
           <Text>{record.apiPath}</Text>
         </>
-)
+      ),
     },
     {
       title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.TYPE"),
-      dataIndex: "module"
+      dataIndex: "module",
     },
     {
       title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.VERSION"),
-      dataIndex: "version"
+      dataIndex: "version",
     },
     {
       title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.STATE"),
       dataIndex: "state",
-      render: v => STATE_TYPE[v]
+      render: (v) => STATE_TYPE[v],
     },
     {
       title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.SOURCE"),
       dataIndex: "apiSource",
-      render: v => API_SOURCE_TYPE[v]
+      render: (v) => API_SOURCE_TYPE[v],
     },
     {
       title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.CREATETIME"),
       dataIndex: "dateCreated",
-      render: v => dayjs(v).format('YYYY-MM-DD HH:mm:ss')
+      render: (v) => dayjs(v).format("YYYY-MM-DD HH:mm:ss"),
     },
     {
       title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.MODIFYTIME"),
       dataIndex: "dateUpdated",
-      render: v => dayjs(v).format('YYYY-MM-DD HH:mm:ss')
-    }
+      render: (v) => dayjs(v).format("YYYY-MM-DD HH:mm:ss"),
+    },
   ];
 
   return (
@@ -83,12 +83,12 @@ function TagInfo(props) {
         <Popconfirm
           title={getIntlContent("SHENYU.COMMON.DELETE")}
           placement="bottom"
-          onCancel={e => {
+          onCancel={(e) => {
             e.stopPropagation();
           }}
-          onConfirm={e => {
+          onConfirm={(e) => {
             e.stopPropagation();
-            handleDelete(e)
+            handleDelete(e);
           }}
           okText={getIntlContent("SHENYU.COMMON.SURE")}
           cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
@@ -105,10 +105,11 @@ function TagInfo(props) {
       </Col>
       <Col span={12}>
         <Text>
-          {getIntlContent("SHENYU.DOCUMENT.TAG.MODIFYTIME")}: {tagDetail.dateUpdated}
+          {getIntlContent("SHENYU.DOCUMENT.TAG.MODIFYTIME")}:{" "}
+          {tagDetail.dateUpdated}
         </Text>
       </Col>
-      <Col span={24} style={{ marginTop: '20px' }}>
+      <Col span={24} style={{ marginTop: "20px" }}>
         <Table
           size="small"
           rowKey="id"

@@ -26,5 +26,5 @@ export default {
   generalContext: GeneralContextRuleHandle,
   modifyResponse: ResponseRuleHandle,
   hystrix: HystrixRuleHandle,
-  paramMapping: ParamPluginRuleHandle
+  paramMapping: ParamPluginRuleHandle,
 };

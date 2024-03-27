@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import {Resizable} from "react-resizable";
+import { Resizable } from "react-resizable";
 import React from "react";
 
-const ResizableTitle = props => {
+const ResizableTitle = (props) => {
   const { onResize, width, ...restProps } = props;
 
   if (!width) {
@@ -32,7 +32,7 @@ const ResizableTitle = props => {
       handle={
         <span
           className="react-resizable-handle"
-          onClick={e => {
+          onClick={(e) => {
             e.stopPropagation();
           }}
         />

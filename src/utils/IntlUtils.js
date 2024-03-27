@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import intl from 'react-intl-universal'
-import locales from './locales'
+import intl from "react-intl-universal";
+import locales from "./locales";
 
 export function initIntl(lang) {
   intl.init({
     currentLocale: lang,
     locales,
     // eslint-disable-next-line no-unused-vars
-    warningHandler: message => {}
-  })
+    warningHandler: (message) => {},
+  });
 }
 
 export function getIntlContent(key, defaultValue) {
@@ -32,7 +32,7 @@ export function getIntlContent(key, defaultValue) {
 }
 
 export function getCurrentLocale(locale) {
-  if (locale === 'en-US') {
+  if (locale === "en-US") {
     return "English";
   } else {
     return "中文";

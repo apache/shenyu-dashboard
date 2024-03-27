@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import classNames from 'classnames';
-import supportImg from '../../assets/support-apache.png'
-import asfLogo from '../../assets/asf_logo.svg'
-import styles from './index.less';
+import React from "react";
+import classNames from "classnames";
+import supportImg from "../../assets/support-apache.png";
+import asfLogo from "../../assets/asf_logo.svg";
+import styles from "./index.less";
 
 const GlobalFooter = ({ className, links, copyright }) => {
   const imgStyle = classNames(styles.imgStyle, className);
@@ -28,15 +28,24 @@ const GlobalFooter = ({ className, links, copyright }) => {
     <div className={clsString}>
       {links && (
         <div className={styles.links}>
-          {links.map(link => (
-            <a key={link.key} target={link.blankTarget ? '_blank' : '_self'} rel="noreferrer" href={link.href}>
+          {links.map((link) => (
+            <a
+              key={link.key}
+              target={link.blankTarget ? "_blank" : "_self"}
+              rel="noreferrer"
+              href={link.href}
+            >
               {link.title}
             </a>
           ))}
         </div>
       )}
       <img className={imgStyle} src={supportImg} alt="Apache Support Logo" />
-      <img className={imgStyle} src={asfLogo} alt="The Apache Software Foundation" />
+      <img
+        className={imgStyle}
+        src={asfLogo}
+        alt="The Apache Software Foundation"
+      />
       {copyright && <div className={styles.copyright}>{copyright}</div>}
     </div>
   );

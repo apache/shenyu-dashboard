@@ -26,17 +26,23 @@ const { Option } = Select;
 
 const formItemLayout = {
   labelCol: {
-    sm: { span: 3 }
+    sm: { span: 3 },
   },
   wrapperCol: {
-    sm: { span: 21 }
-  }
+    sm: { span: 21 },
+  },
 };
 
 export default class CommonRuleHandle extends Component {
   render() {
     const labelWidth = 160;
-    const { pluginHandleList, multiRuleHandle, onAddPluginHandle, onDeletePluginHandle, form } = this.props;
+    const {
+      pluginHandleList,
+      multiRuleHandle,
+      onAddPluginHandle,
+      onDeletePluginHandle,
+      form,
+    } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
     return (
       <FormItem
@@ -45,13 +51,13 @@ export default class CommonRuleHandle extends Component {
       >
         <FormItem style={{ display: "none" }}>
           {getFieldDecorator("handleType", {
-            initialValue: pluginHandleList.length ? "1" : "2"
+            initialValue: pluginHandleList.length ? "1" : "2",
           })(<Input allowClear />)}
         </FormItem>
         <div
           className={styles.handleWrap}
           style={{
-            display: getFieldValue("handleType") === "1" ? "flex" : "none"
+            display: getFieldValue("handleType") === "1" ? "flex" : "none",
           }}
         >
           <div>
@@ -62,17 +68,17 @@ export default class CommonRuleHandle extends Component {
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    flexDirection: "row"
+                    flexDirection: "row",
                   }}
                 >
                   <ul
                     className={classnames({
                       [styles.handleUl]: true,
-                      [styles.springUl]: true
+                      [styles.springUl]: true,
                     })}
                     style={{ width: "100%" }}
                   >
-                    {handleList.map(item => {
+                    {handleList.map((item) => {
                       let required = item.required === "1";
                       let defaultValue =
                         item.value === 0 || item.value === false
@@ -87,7 +93,7 @@ export default class CommonRuleHandle extends Component {
                           required: { required },
                           message:
                             getIntlContent("SHENYU.COMMON.PLEASEINPUT") +
-                            item.label
+                            item.label,
                         });
                       }
                       if (checkRule) {
@@ -95,8 +101,8 @@ export default class CommonRuleHandle extends Component {
                           // eslint-disable-next-line no-eval
                           pattern: eval(checkRule),
                           message: `${getIntlContent(
-                            "SHENYU.PLUGIN.RULE.INVALID"
-                          )}:(${checkRule})`
+                            "SHENYU.PLUGIN.RULE.INVALID",
+                          )}:(${checkRule})`,
                         });
                       }
                       if (item.dataType === 1) {
@@ -106,7 +112,7 @@ export default class CommonRuleHandle extends Component {
                               <FormItem>
                                 {getFieldDecorator(fieldName, {
                                   rules,
-                                  initialValue: defaultValue
+                                  initialValue: defaultValue,
                                 })(
                                   <Input
                                     allowClear
@@ -117,7 +123,7 @@ export default class CommonRuleHandle extends Component {
                                     }
                                     placeholder={placeholder}
                                     key={fieldName}
-                                  />
+                                  />,
                                 )}
                               </FormItem>
                             </Tooltip>
@@ -130,18 +136,24 @@ export default class CommonRuleHandle extends Component {
                               <FormItem>
                                 {getFieldDecorator(fieldName, {
                                   rules,
-                                  initialValue: defaultValue === true ? "true" :
-                                    defaultValue === false ? "false" :
-                                      defaultValue
+                                  initialValue:
+                                    defaultValue === true
+                                      ? "true"
+                                      : defaultValue === false
+                                        ? "false"
+                                        : defaultValue,
                                 })(
                                   <Select
                                     placeholder={placeholder}
                                     style={{ width: 260 }}
                                   >
-                                    {item.dictOptions.map(option => {
-                                      const optionValue = option.dictValue === true ? "true" :
-                                        option.dictValue === false ? "false" :
-                                          option.dictValue;
+                                    {item.dictOptions.map((option) => {
+                                      const optionValue =
+                                        option.dictValue === true
+                                          ? "true"
+                                          : option.dictValue === false
+                                            ? "false"
+                                            : option.dictValue;
                                       return (
                                         <Option
                                           key={optionValue}
@@ -151,7 +163,7 @@ export default class CommonRuleHandle extends Component {
                                         </Option>
                                       );
                                     })}
-                                  </Select>
+                                  </Select>,
                                 )}
                               </FormItem>
                             </Tooltip>
@@ -164,7 +176,7 @@ export default class CommonRuleHandle extends Component {
                               <FormItem>
                                 {getFieldDecorator(fieldName, {
                                   rules,
-                                  initialValue: defaultValue
+                                  initialValue: defaultValue,
                                 })(
                                   <Input
                                     allowClear
@@ -175,7 +187,7 @@ export default class CommonRuleHandle extends Component {
                                     }
                                     placeholder={placeholder}
                                     key={fieldName}
-                                  />
+                                  />,
                                 )}
                               </FormItem>
                             </Tooltip>
@@ -189,10 +201,10 @@ export default class CommonRuleHandle extends Component {
                       <Popconfirm
                         title={getIntlContent("SHENYU.COMMON.DELETE")}
                         placement="bottom"
-                        onCancel={e => {
+                        onCancel={(e) => {
                           e.stopPropagation();
                         }}
-                        onConfirm={e => {
+                        onConfirm={(e) => {
                           e.stopPropagation();
                           onDeletePluginHandle(index);
                         }}
@@ -210,7 +222,7 @@ export default class CommonRuleHandle extends Component {
             })}
           </div>
           {multiRuleHandle && (
-            <div style={{ width: 80, marginLeft:10 }}>
+            <div style={{ width: 80, marginLeft: 10 }}>
               <Button onClick={onAddPluginHandle} type="primary">
                 {getIntlContent("SHENYU.COMMON.ADD")}
               </Button>
@@ -219,7 +231,7 @@ export default class CommonRuleHandle extends Component {
         </div>
         <FormItem
           style={{
-            display: getFieldValue("handleType") === "2" ? "block" : "none"
+            display: getFieldValue("handleType") === "2" ? "block" : "none",
           }}
         >
           {getFieldDecorator("handleJSON", {
@@ -239,16 +251,18 @@ export default class CommonRuleHandle extends Component {
                         callback();
                       } else {
                         callback(
-                          getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID")
+                          getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID"),
                         );
                       }
                     } catch (e) {
-                      callback(getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID"));
+                      callback(
+                        getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID"),
+                      );
                     }
                   }
-                }
-              }
-            ]
+                },
+              },
+            ],
           })(<Input.TextArea />)}
         </FormItem>
       </FormItem>

@@ -21,7 +21,7 @@ import {
   getPluginDropDownList,
   getAllSelectors,
   getAllRules,
-  findRule
+  findRule,
 } from "../../../services/api";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
@@ -31,7 +31,7 @@ class RuleCopy extends Component {
     this.state = {
       ruleTree: [],
       value: undefined,
-      loading: false
+      loading: false,
     };
   }
 
@@ -40,30 +40,28 @@ class RuleCopy extends Component {
   }
 
   getAllRule = async () => {
-    const {
-      code: pluginCode,
-      data: pluginList = []
-    } = await getPluginDropDownList();
+    const { code: pluginCode, data: pluginList = [] } =
+      await getPluginDropDownList();
     const {
       code: selectorCode,
-      data: { dataList: selectorList = [] }
+      data: { dataList: selectorList = [] },
     } = await getAllSelectors({
       currentPage: 1,
-      pageSize: 9999
+      pageSize: 9999,
     });
     const {
       code: ruleCode,
-      data: { dataList: ruleList = [] }
+      data: { dataList: ruleList = [] },
     } = await getAllRules({
       currentPage: 1,
-      pageSize: 9999
+      pageSize: 9999,
     });
 
     const pluginMap = {};
     const selectorMap = {};
     const ruleTree = [];
     if (ruleCode === 200) {
-      ruleList.forEach(v => {
+      ruleList.forEach((v) => {
         if (!selectorMap[v.selectorId]) {
           selectorMap[v.selectorId] = [];
         }
@@ -71,8 +69,8 @@ class RuleCopy extends Component {
       });
     }
     if (Object.keys(selectorMap).length && selectorCode === 200) {
-      Object.keys(selectorMap).forEach(selectorId => {
-        const currentSelector = selectorList.find(v => v.id === selectorId);
+      Object.keys(selectorMap).forEach((selectorId) => {
+        const currentSelector = selectorList.find((v) => v.id === selectorId);
         if (!pluginMap[currentSelector.pluginId]) {
           pluginMap[currentSelector.pluginId] = [];
         }
@@ -80,25 +78,25 @@ class RuleCopy extends Component {
           title: currentSelector.name,
           value: currentSelector.id,
           disabled: true,
-          children: selectorMap[selectorId]
+          children: selectorMap[selectorId],
         });
       });
     }
     if (Object.keys(pluginMap).length && pluginCode === 200) {
-      Object.keys(pluginMap).forEach(key => {
-        const plugin = pluginList.find(v => v.id === key);
+      Object.keys(pluginMap).forEach((key) => {
+        const plugin = pluginList.find((v) => v.id === key);
         ruleTree.push({
           title: plugin.name,
           value: plugin.id,
           disabled: true,
-          children: pluginMap[key]
+          children: pluginMap[key],
         });
       });
     }
     this.setState({ ruleTree });
   };
 
-  handleChangeRule = value => {
+  handleChangeRule = (value) => {
     this.setState({ value });
   };
 
@@ -107,7 +105,7 @@ class RuleCopy extends Component {
     // eslint-disable-next-line no-unused-expressions
     onCancel && onCancel();
     this.setState({
-      value: undefined
+      value: undefined,
     });
   };
 
@@ -115,11 +113,11 @@ class RuleCopy extends Component {
     const { onOk } = this.props;
     const { value } = this.state;
     this.setState({
-      loading: true
+      loading: true,
     });
     const { data = {} } = await findRule({ id: value });
     this.setState({
-      loading: false
+      loading: false,
     });
     // eslint-disable-next-line no-unused-expressions
     onOk && onOk(data);

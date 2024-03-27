@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -47,11 +46,11 @@ export default {
   },
 
   effects: {
-    *fetchSelector ({ payload }, { call, put }) {
+    *fetchSelector({ payload }, { call, put }) {
       const json = yield call(getAllSelectors, { ...payload });
       if (json.code === 200) {
         let { page, dataList } = json.data;
-        dataList = dataList.map(item => {
+        dataList = dataList.map((item) => {
           item.key = item.id;
           return item;
         });
@@ -59,16 +58,15 @@ export default {
           type: "saveSelector",
           payload: {
             selectorTotal: page.totalCount,
-            selectorList: dataList
-          }
+            selectorList: dataList,
+          },
         });
 
         yield put({
           type: "saveCurrentSelector",
           payload: {
-            currentSelector:
-              dataList && dataList.length > 0 ? dataList[0] : ""
-          }
+            currentSelector: dataList && dataList.length > 0 ? dataList[0] : "",
+          },
         });
         if (dataList && dataList.length > 0) {
           yield put({
@@ -76,26 +74,25 @@ export default {
             payload: {
               currentPage: 1,
               pageSize: 12,
-              selectorId: dataList[0].id
-            }
+              selectorId: dataList[0].id,
+            },
           });
         } else {
           yield put({
             type: "saveRule",
             payload: {
               ruleTotal: 0,
-              ruleList: []
-            }
+              ruleList: [],
+            },
           });
         }
       }
-
     },
-    *fetchRule ({ payload }, { call, put }) {
+    *fetchRule({ payload }, { call, put }) {
       const json = yield call(getAllRules, payload);
       if (json.code === 200) {
         let { page, dataList } = json.data;
-        dataList = dataList.map(item => {
+        dataList = dataList.map((item) => {
           item.key = item.id;
           return item;
         });
@@ -103,16 +100,16 @@ export default {
           type: "saveRule",
           payload: {
             ruleTotal: page.totalCount,
-            ruleList: dataList
-          }
+            ruleList: dataList,
+          },
         });
       }
     },
-    *addSelector (params, { call, put }) {
+    *addSelector(params, { call, put }) {
       const { payload, callback, fetchValue } = params;
       const json = yield call(addSelector, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
+        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
         const selectorId = json.data;
         callback(selectorId);
         yield put({ type: "reload", fetchValue });
@@ -121,11 +118,11 @@ export default {
       }
     },
 
-    *addRule (params, { call, put }) {
+    *addRule(params, { call, put }) {
       const { payload, callback, fetchValue } = params;
       const json = yield call(addRule, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
+        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
         callback();
         yield put({ type: "reloadRule", fetchValue });
       } else {
@@ -133,7 +130,7 @@ export default {
       }
     },
 
-    *fetchSeItem (params, { call }) {
+    *fetchSeItem(params, { call }) {
       const { payload, callback } = params;
       const json = yield call(findSelector, payload);
       if (json.code === 200) {
@@ -141,40 +138,46 @@ export default {
         callback(selector);
       }
     },
-    *deleteSelector (params, { call, put }) {
+    *deleteSelector(params, { call, put }) {
       const { payload, fetchValue } = params;
       const { list } = payload;
       const json = yield call(deleteSelector, { list });
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
+        );
         yield put({
           type: "saveRule",
           payload: {
             ruleTotal: 0,
-            ruleList: []
-          }
+            ruleList: [],
+          },
         });
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
       }
     },
-    *updateSelector (params, { call, put }) {
+    *updateSelector(params, { call, put }) {
       const { payload, callback, fetchValue } = params;
       const json = yield call(updateSelector, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
       }
     },
-    *enableSelector (params, { call, put }) {
+    *enableSelector(params, { call, put }) {
       const { payload, callback, fetchValue } = params;
       const json = yield call(enableSelector, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
         if (callback) {
           callback();
         }
@@ -183,18 +186,20 @@ export default {
         message.warn(json.message);
       }
     },
-    *deleteRule (params, { call, put }) {
+    *deleteRule(params, { call, put }) {
       const { payload, fetchValue } = params;
       const { list } = payload;
       const json = yield call(deleteRule, { list });
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
+        );
         yield put({ type: "reloadRule", fetchValue });
       } else {
         message.warn(json.message);
       }
     },
-    *fetchRuleItem (params, { call }) {
+    *fetchRuleItem(params, { call }) {
       const { payload, callback } = params;
       const json = yield call(findRule, payload);
       if (json.code === 200) {
@@ -202,22 +207,26 @@ export default {
         callback(rule);
       }
     },
-    *updateRule (params, { call, put }) {
+    *updateRule(params, { call, put }) {
       const { payload, callback, fetchValue } = params;
       const json = yield call(updateRule, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
         callback();
         yield put({ type: "reloadRule", fetchValue });
       } else {
         message.warn(json.message);
       }
     },
-    *enableRule (params, { call, put }) {
+    *enableRule(params, { call, put }) {
       const { payload, callback, fetchValue } = params;
       const json = yield call(enableRule, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
         if (callback) {
           callback();
         }
@@ -227,30 +236,32 @@ export default {
       }
     },
 
-    *reload (params, { put }) {
+    *reload(params, { put }) {
       const { fetchValue } = params;
       const { pluginId, currentPage, pageSize } = fetchValue;
       const payload = { pluginId, currentPage, pageSize };
       yield put({ type: "fetchSelector", payload });
     },
 
-    *reloadRule (params, { put }) {
+    *reloadRule(params, { put }) {
       const { fetchValue } = params;
       const { selectorId, currentPage, pageSize } = fetchValue;
       const payload = { selectorId, currentPage, pageSize };
       yield put({ type: "fetchRule", payload });
     },
 
-    *exportAll (_, { call }) {
+    *exportAll(_, { call }) {
       yield call(asyncConfigExport);
     },
 
-    *import (params, { call }) {
+    *import(params, { call }) {
       const { payload, callback } = params;
       const json = yield call(asyncConfigImport, payload);
       if (json.code === 200) {
         if (json.data === null) {
-          message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+          message.success(
+            getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+          );
           callback();
         } else {
           // message.warn(JSON.stringify(json.data));
@@ -260,40 +271,38 @@ export default {
         message.warn(json.message);
       }
     },
-
   },
 
   reducers: {
-    saveSelector (state, { payload }) {
+    saveSelector(state, { payload }) {
       return {
         ...state,
         selectorList: payload.selectorList,
-        selectorTotal: payload.selectorTotal
+        selectorTotal: payload.selectorTotal,
       };
     },
 
-    saveRule (state, { payload }) {
+    saveRule(state, { payload }) {
       return {
         ...state,
         ruleList: payload.ruleList,
-        ruleTotal: payload.ruleTotal
+        ruleTotal: payload.ruleTotal,
       };
     },
-    saveCurrentSelector (state, { payload }) {
+    saveCurrentSelector(state, { payload }) {
       return {
         ...state,
-        currentSelector: payload.currentSelector
+        currentSelector: payload.currentSelector,
       };
     },
-    resetData () {
+    resetData() {
       return {
         selectorList: [],
         ruleList: [],
         selectorTotal: 0,
         ruleTotal: 0,
-        currentSelector: ""
+        currentSelector: "",
       };
-    }
-  }
+    },
+  },
 };
-

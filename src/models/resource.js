@@ -25,7 +25,7 @@ import {
   getButtons,
   getMenuTree,
 } from "../services/api";
-import {getIntlContent} from "../utils/IntlUtils";
+import { getIntlContent } from "../utils/IntlUtils";
 
 export default {
   namespace: "resource",
@@ -34,7 +34,7 @@ export default {
     resourceList: [],
     menuTree: [],
     authMenu: [],
-    total: 0
+    total: 0,
   },
 
   effects: {
@@ -44,7 +44,7 @@ export default {
       if (json.code === 200) {
         let { page, dataList } = json.data;
 
-        dataList = dataList.map(item => {
+        dataList = dataList.map((item) => {
           item.key = item.id;
           return item;
         });
@@ -52,8 +52,8 @@ export default {
           type: "saveResources",
           payload: {
             total: page.totalCount,
-            dataList
-          }
+            dataList,
+          },
         });
       }
     },
@@ -71,7 +71,7 @@ export default {
       const { payload, callback } = params;
       const json = yield call(addResource, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
+        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
         callback();
       } else {
         message.warn(json.message);
@@ -82,7 +82,9 @@ export default {
       const { list } = payload;
       const json = yield call(deleteResource, { list });
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
+        );
         callback();
       } else {
         message.warn(json.message);
@@ -92,7 +94,9 @@ export default {
       const { payload, callback } = params;
       const json = yield call(updateResource, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
         callback();
       } else {
         message.warn(json.message);
@@ -115,8 +119,8 @@ export default {
         yield put({
           type: "saveMenuTree",
           payload: {
-            menuTree
-          }
+            menuTree,
+          },
         });
       }
     },
@@ -125,8 +129,8 @@ export default {
       yield put({
         type: "saveAuthMenu",
         payload: {
-          authMenu: payload.authMenu
-        }
+          authMenu: payload.authMenu,
+        },
       });
     },
   },
@@ -136,20 +140,20 @@ export default {
       return {
         ...state,
         resourceList: payload.dataList,
-        total: payload.total
+        total: payload.total,
       };
     },
     saveMenuTree(state, { payload }) {
       return {
         ...state,
-        menuTree: payload.menuTree
+        menuTree: payload.menuTree,
       };
     },
     saveAuthMenu(state, { payload }) {
       return {
         ...state,
-        authMenu: payload.authMenu
+        authMenu: payload.authMenu,
       };
-    }
-  }
+    },
+  },
 };

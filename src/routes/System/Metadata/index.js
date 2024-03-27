@@ -16,17 +16,26 @@
  */
 
 import React, { Component } from "react";
-import {Table, Input, Button, message, Popconfirm, Tag, Popover, Switch} from "antd";
+import {
+  Table,
+  Input,
+  Button,
+  message,
+  Popconfirm,
+  Tag,
+  Popover,
+  Switch,
+} from "antd";
 import { connect } from "dva";
-import { resizableComponents } from '../../../utils/resizable';
+import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
-import AuthButton from '../../../utils/AuthButton';
+import AuthButton from "../../../utils/AuthButton";
 
 @connect(({ metadata, loading, global }) => ({
   metadata,
   language: global.language,
-  loading: loading.effects["metadata/fetch"]
+  loading: loading.effects["metadata/fetch"],
 }))
 export default class Metadata extends Component {
   components = resizableComponents;
@@ -40,13 +49,15 @@ export default class Metadata extends Component {
       appName: "",
       path: "",
       popup: "",
-      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
+      localeName: window.sessionStorage.getItem("locale")
+        ? window.sessionStorage.getItem("locale")
+        : "en-US",
       columns: [],
     };
   }
 
   componentDidMount() {
-    this.query()
+    this.query();
     this.initPluginColumns();
   }
 
@@ -59,18 +70,20 @@ export default class Metadata extends Component {
     }
   }
 
-  handleResize = index => (e, { size }) => {
-    this.setState(({ columns }) => {
-      const nextColumns = [...columns];
-      nextColumns[index] = {
-        ...nextColumns[index],
-        width: size.width,
-      };
-      return { columns: nextColumns };
-    });
-  };
+  handleResize =
+    (index) =>
+    (e, { size }) => {
+      this.setState(({ columns }) => {
+        const nextColumns = [...columns];
+        nextColumns[index] = {
+          ...nextColumns[index],
+          width: size.width,
+        };
+        return { columns: nextColumns };
+      });
+    };
 
-  onSelectChange = selectedRowKeys => {
+  onSelectChange = (selectedRowKeys) => {
     this.setState({ selectedRowKeys }, this.query);
   };
 
@@ -82,16 +95,16 @@ export default class Metadata extends Component {
       payload: {
         path,
         currentPage,
-        pageSize
-      }
+        pageSize,
+      },
     });
   };
 
-  pageOnchange = page => {
+  pageOnchange = (page) => {
     this.setState({ currentPage: page }, this.query);
   };
 
-  onShowSizeChange = (currentPage,pageSize) => {
+  onShowSizeChange = (currentPage, pageSize) => {
     this.setState({ currentPage: 1, pageSize }, this.query);
   };
 
@@ -101,21 +114,32 @@ export default class Metadata extends Component {
 
   editClick = (record, copy) => {
     const { dispatch } = this.props;
-    const { currentPage,pageSize } = this.state;
+    const { currentPage, pageSize } = this.state;
     const name = this.state.appName;
     dispatch({
       type: "metadata/fetchItem",
       payload: {
-        id: record.id
+        id: record.id,
       },
-      callback: user => {
+      callback: (user) => {
         this.setState({
           popup: (
             <AddModal
               isShow={false}
               {...user}
-              handleOk={values => {
-                const { appName,enabled, methodName,id, parameterTypes,path,pathDesc, rpcExt, rpcType, serviceName } = values;
+              handleOk={(values) => {
+                const {
+                  appName,
+                  enabled,
+                  methodName,
+                  id,
+                  parameterTypes,
+                  path,
+                  pathDesc,
+                  rpcExt,
+                  rpcType,
+                  serviceName,
+                } = values;
                 let payload = {
                   appName,
                   methodName,
@@ -126,36 +150,36 @@ export default class Metadata extends Component {
                   path,
                   rpcExt,
                   rpcType,
-                  serviceName
+                  serviceName,
                 };
                 if (copy) {
                   delete payload.id;
                 }
                 dispatch({
-                  type: `metadata/${copy ? 'add' : 'update'}`,
+                  type: `metadata/${copy ? "add" : "update"}`,
                   payload,
                   fetchValue: {
                     appName: name,
                     currentPage,
-                    pageSize
+                    pageSize,
                   },
                   callback: () => {
                     this.closeModal();
-                  }
+                  },
                 });
               }}
               handleCancel={() => {
                 this.closeModal();
               }}
             />
-          )
+          ),
         });
-      }
+      },
     });
   };
 
-  searchOnchange = e => {
-    this.setState({ path: e.target.value, currentPage: 1 },this.query);
+  searchOnchange = (e) => {
+    this.setState({ path: e.target.value, currentPage: 1 }, this.query);
   };
 
   searchClick = () => {
@@ -164,21 +188,21 @@ export default class Metadata extends Component {
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { appName, currentPage,pageSize, selectedRowKeys } = this.state;
+    const { appName, currentPage, pageSize, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "metadata/delete",
         payload: {
-          list: selectedRowKeys
+          list: selectedRowKeys,
         },
         fetchValue: {
           appName,
           currentPage,
-          pageSize
+          pageSize,
         },
         callback: () => {
           this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
-        }
+        },
       });
     } else {
       message.destroy();
@@ -187,15 +211,25 @@ export default class Metadata extends Component {
   };
 
   addClick = () => {
-    const { currentPage,pageSize } = this.state;
+    const { currentPage, pageSize } = this.state;
     const name = this.state.appName;
     this.setState({
       popup: (
         <AddModal
           isShow={true}
-          handleOk={values => {
+          handleOk={(values) => {
             const { dispatch } = this.props;
-            const { appName, enabled, methodName, parameterTypes,path,pathDesc, rpcExt, rpcType, serviceName } = values;
+            const {
+              appName,
+              enabled,
+              methodName,
+              parameterTypes,
+              path,
+              pathDesc,
+              rpcExt,
+              rpcType,
+              serviceName,
+            } = values;
             dispatch({
               type: "metadata/add",
               payload: {
@@ -207,44 +241,47 @@ export default class Metadata extends Component {
                 pathDesc,
                 rpcExt,
                 rpcType,
-                serviceName
+                serviceName,
               },
               fetchValue: {
                 appName: name,
                 currentPage,
-                pageSize
+                pageSize,
               },
               callback: () => {
-                this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
+                this.setState(
+                  { selectedRowKeys: [], currentPage: 1 },
+                  this.query,
+                );
                 this.closeModal();
-              }
+              },
             });
           }}
           handleCancel={() => {
             this.closeModal();
           }}
         />
-      )
+      ),
     });
   };
 
-  statusSwitch = ({list, enabled, callback}) => {
+  statusSwitch = ({ list, enabled, callback }) => {
     const { dispatch } = this.props;
     const { appName, currentPage, pageSize } = this.state;
     dispatch({
       type: "metadata/updateEn",
       payload: {
         list,
-        enabled
+        enabled,
       },
       fetchValue: {
         appName,
         currentPage,
-        pageSize
+        pageSize,
       },
-      callback
+      callback,
     });
-  }
+  };
 
   enableClick = () => {
     const { dispatch } = this.props;
@@ -253,14 +290,18 @@ export default class Metadata extends Component {
       dispatch({
         type: "metadata/fetchItem",
         payload: {
-          id: selectedRowKeys[0]
+          id: selectedRowKeys[0],
         },
-        callback: user => {
-          this.statusSwitch({list: selectedRowKeys, enabled: !user.enabled, callback: () => {
-            this.setState({ selectedRowKeys: [] }, this.query);
-          }});
-        }
-      })
+        callback: (user) => {
+          this.statusSwitch({
+            list: selectedRowKeys,
+            enabled: !user.enabled,
+            callback: () => {
+              this.setState({ selectedRowKeys: [] }, this.query);
+            },
+          });
+        },
+      });
     } else {
       message.destroy();
       message.warn("Please select data");
@@ -270,14 +311,13 @@ export default class Metadata extends Component {
   syncData = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: "metadata/syncDa"
-
-    })
+      type: "metadata/syncDa",
+    });
   };
 
-  changeLocale(locale){
+  changeLocale(locale) {
     this.setState({
-      localeName: locale
+      localeName: locale,
     });
     getCurrentLocale(this.state.localeName);
   }
@@ -290,63 +330,102 @@ export default class Metadata extends Component {
           title: getIntlContent("SHENYU.AUTH.APPNAME"),
           dataIndex: "appName",
           key: "appName",
-          ellipsis:true,
+          ellipsis: true,
           width: 150,
-          sorter: (a,b) => a.appName > b.appName ? 1 : -1,
-          render: text => {
-            return <div style={{color: "#260033","fontWeight":"bold"}}>{text}</div>
-          }
+          sorter: (a, b) => (a.appName > b.appName ? 1 : -1),
+          render: (text) => {
+            return (
+              <div style={{ color: "#260033", fontWeight: "bold" }}>{text}</div>
+            );
+          },
         },
         {
           align: "center",
           title: getIntlContent("SHENYU.META.PATH"),
           dataIndex: "path",
           key: "path",
-          ellipsis:true,
-          render: (text,record) => {
-            let content =(
+          ellipsis: true,
+          render: (text, record) => {
+            let content = (
               <div>
                 <p>{record.pathDesc}</p>
                 <hr />
                 <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.META.SERVER.INTER")}</span>:
-                  <span style={{color:"#1f640a"}}> {record.serviceName}</span>
+                  <span style={{ color: "#204969" }}>
+                    {getIntlContent("SHENYU.META.SERVER.INTER")}
+                  </span>
+                  :
+                  <span style={{ color: "#1f640a" }}>
+                    {" "}
+                    {record.serviceName}
+                  </span>
                 </p>
                 <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.META.FUNC.NAME")}</span>:
-                  <span style={{color:"#1f640a"}}> {record.methodName}</span>
+                  <span style={{ color: "#204969" }}>
+                    {getIntlContent("SHENYU.META.FUNC.NAME")}
+                  </span>
+                  :
+                  <span style={{ color: "#1f640a" }}> {record.methodName}</span>
                 </p>
                 <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.AUTH.PARAMS")}</span>:
-                  <span style={{color:"#1f640a"}}> {record.parameterTypes}</span>
+                  <span style={{ color: "#204969" }}>
+                    {getIntlContent("SHENYU.AUTH.PARAMS")}
+                  </span>
+                  :
+                  <span style={{ color: "#1f640a" }}>
+                    {" "}
+                    {record.parameterTypes}
+                  </span>
                 </p>
                 <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.META.EXPAND.PARAMS")}</span>:
-                  <span style={{color:"#1f640a"}}> {record.rpcExt}</span>
+                  <span style={{ color: "#204969" }}>
+                    {getIntlContent("SHENYU.META.EXPAND.PARAMS")}
+                  </span>
+                  :<span style={{ color: "#1f640a" }}> {record.rpcExt}</span>
                 </p>
                 <hr />
                 <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.SYSTEM.CREATETIME")}</span>:
-                  <span style={{color:"#1f640a"}}> {record.dateCreated}</span>
+                  <span style={{ color: "#204969" }}>
+                    {getIntlContent("SHENYU.SYSTEM.CREATETIME")}
+                  </span>
+                  :
+                  <span style={{ color: "#1f640a" }}>
+                    {" "}
+                    {record.dateCreated}
+                  </span>
                 </p>
                 <p>
-                  <span style={{color:"#204969"}}>{getIntlContent("SHENYU.SYSTEM.UPDATETIME")}</span>:
-                  <span style={{color:"#1f640a"}}> {record.dateUpdated}</span>
+                  <span style={{ color: "#204969" }}>
+                    {getIntlContent("SHENYU.SYSTEM.UPDATETIME")}
+                  </span>
+                  :
+                  <span style={{ color: "#1f640a" }}>
+                    {" "}
+                    {record.dateUpdated}
+                  </span>
                 </p>
               </div>
             );
-            return <Popover placement="topLeft" content={content} title={getIntlContent("SHENYU.AUTH.PATH.DESCRIBE")}><div style={{color: "#1f640a"}}>{text || "----"}</div></Popover>
-          }
+            return (
+              <Popover
+                placement="topLeft"
+                content={content}
+                title={getIntlContent("SHENYU.AUTH.PATH.DESCRIBE")}
+              >
+                <div style={{ color: "#1f640a" }}>{text || "----"}</div>
+              </Popover>
+            );
+          },
         },
         {
           align: "center",
           title: `Rpc${getIntlContent("SHENYU.COMMON.TYPE")}`,
           dataIndex: "rpcType",
           key: "rpcType",
-          ellipsis:true,
+          ellipsis: true,
           width: 120,
-          sorter: (a,b) => a.rpcType > b.rpcType ? 1 : -1,
-          render: text => {
+          sorter: (a, b) => (a.rpcType > b.rpcType ? 1 : -1),
+          render: (text) => {
             if (text.length < 5) {
               return <Tag color="cyan">{text}</Tag>;
             } else if (text.length < 15) {
@@ -355,7 +434,7 @@ export default class Metadata extends Component {
               return <Tag color="blue">{text}</Tag>;
             }
             return <Tag color="red">{text}</Tag>;
-          }
+          },
         },
 
         {
@@ -363,23 +442,27 @@ export default class Metadata extends Component {
           title: getIntlContent("SHENYU.SYSTEM.STATUS"),
           dataIndex: "enabled",
           key: "enabled",
-          ellipsis:true,
+          ellipsis: true,
           width: 100,
           render: (text, row) => (
             <Switch
               checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
               unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
               checked={text}
-              onChange={checked => {
-                this.statusSwitch({list: [row.id], enabled: checked, callback: this.query});
+              onChange={(checked) => {
+                this.statusSwitch({
+                  list: [row.id],
+                  enabled: checked,
+                  callback: this.query,
+                });
               }}
             />
-          )
+          ),
         },
         {
           align: "center",
           title: getIntlContent("SHENYU.COMMON.OPERAT"),
-          ellipsis:true,
+          ellipsis: true,
           dataIndex: "operate",
           key: "operate",
           width: 80,
@@ -409,10 +492,10 @@ export default class Metadata extends Component {
                 </AuthButton>
               </div>
             );
-          }
-        }
-      ]
-    })
+          },
+        },
+      ],
+    });
   }
 
   render() {
@@ -422,14 +505,14 @@ export default class Metadata extends Component {
     const { currentPage, pageSize, selectedRowKeys, path, popup } = this.state;
     const columns = this.state.columns.map((col, index) => ({
       ...col,
-      onHeaderCell: column => ({
+      onHeaderCell: (column) => ({
         width: column.width,
         onResize: this.handleResize(index),
       }),
     }));
     const rowSelection = {
       selectedRowKeys,
-      onChange: this.onSelectChange
+      onChange: this.onSelectChange,
     };
 
     return (
@@ -454,17 +537,14 @@ export default class Metadata extends Component {
           <AuthButton perms="system:meta:delete">
             <Popconfirm
               title={getIntlContent("SHENYU.COMMON.DELETE")}
-              placement='bottom'
+              placement="bottom"
               onConfirm={() => {
-                this.deleteClick()
+                this.deleteClick();
               }}
               okText={getIntlContent("SHENYU.COMMON.SURE")}
               cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
             >
-              <Button
-                style={{ marginLeft: 20 }}
-                type="danger"
-              >
+              <Button style={{ marginLeft: 20 }} type="danger">
                 {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
               </Button>
             </Popconfirm>
@@ -503,7 +583,7 @@ export default class Metadata extends Component {
           components={this.components}
           style={{ marginTop: 30 }}
           bordered
-          rowKey={record => record.id}
+          rowKey={(record) => record.id}
           loading={loading}
           columns={columns}
           // scroll={{ x: 1350 }}
@@ -517,7 +597,7 @@ export default class Metadata extends Component {
             current: currentPage,
             pageSize,
             onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange
+            onChange: this.pageOnchange,
           }}
         />
         {popup}

@@ -15,45 +15,93 @@
  * limitations under the License.
  */
 
-import React, {Component} from "react";
-import {Modal, Form, Input, InputNumber, Select, Tooltip, Icon, message} from "antd";
-import {connect} from "dva";
+import React, { Component } from "react";
+import {
+  Modal,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Tooltip,
+  Icon,
+  message,
+} from "antd";
+import { connect } from "dva";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Option } = Select;
 const FormItem = Form.Item;
 
-@connect(({global}) => ({
-  platform: global.platform
+@connect(({ global }) => ({
+  platform: global.platform,
 }))
 class AddPluginHandle extends Component {
-  handleSubmit = e => {
-    const { form, handleOk, id = "",} = this.props;
+  handleSubmit = (e) => {
+    const { form, handleOk, id = "" } = this.props;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        let { pluginId, field, label,dataType,type,sort,required,defaultValue,placeholder,rule} = values;
-        if(dataType === "1" && defaultValue && isNaN(defaultValue)){
-          message.warn(getIntlContent("SHENYU.PLUGIN.DEFAULTVALUE") + getIntlContent("SHENYU.COMMON.WARN.INPUT_NUMBER"));
+        let {
+          pluginId,
+          field,
+          label,
+          dataType,
+          type,
+          sort,
+          required,
+          defaultValue,
+          placeholder,
+          rule,
+        } = values;
+        if (dataType === "1" && defaultValue && isNaN(defaultValue)) {
+          message.warn(
+            getIntlContent("SHENYU.PLUGIN.DEFAULTVALUE") +
+              getIntlContent("SHENYU.COMMON.WARN.INPUT_NUMBER"),
+          );
           return;
         }
-        handleOk({ field, label, id, pluginId,dataType,type,sort,required,defaultValue,placeholder,rule});
+        handleOk({
+          field,
+          label,
+          id,
+          pluginId,
+          dataType,
+          type,
+          sort,
+          required,
+          defaultValue,
+          placeholder,
+          rule,
+        });
       }
     });
   };
 
-
   render() {
-    let {handleCancel,  form, pluginId, label="", field="", dataType ="1",type="2",sort=0,required="0",defaultValue=undefined,placeholder=undefined,rule=undefined,pluginDropDownList } = this.props;
-    const {getFieldDecorator} = form;
+    let {
+      handleCancel,
+      form,
+      pluginId,
+      label = "",
+      field = "",
+      dataType = "1",
+      type = "2",
+      sort = 0,
+      required = "0",
+      defaultValue = undefined,
+      placeholder = undefined,
+      rule = undefined,
+      pluginDropDownList,
+    } = this.props;
+    const { getFieldDecorator } = form;
 
     const formItemLayout = {
       labelCol: {
-        sm: {span: 5}
+        sm: { span: 5 },
       },
       wrapperCol: {
-        sm: {span: 19}
-      }
+        sm: { span: 19 },
+      },
     };
 
     return (
@@ -68,97 +116,183 @@ class AddPluginHandle extends Component {
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label={getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME")} {...formItemLayout}>
+          <FormItem
+            label={getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME")}
+            {...formItemLayout}
+          >
             {getFieldDecorator("pluginId", {
-              rules: [{required: true, message: getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME")}],
+              rules: [
+                {
+                  required: true,
+                  message: getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME"),
+                },
+              ],
               initialValue: pluginId,
             })(
-              <Select
-                placeholder={getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME")}
-              >
-                {
-                  pluginDropDownList.map((item,i)=>{
-                    return(
-                      <Option key={i} value={item.id}>{item.name}</Option>
-                    )
-                  })
-                }
-              </Select>
+              <Select placeholder={getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME")}>
+                {pluginDropDownList.map((item, i) => {
+                  return (
+                    <Option key={i} value={item.id}>
+                      {item.name}
+                    </Option>
+                  );
+                })}
+              </Select>,
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SHENYU.PLUGIN.FIELD")} {...formItemLayout}>
+          <FormItem
+            label={getIntlContent("SHENYU.PLUGIN.FIELD")}
+            {...formItemLayout}
+          >
             {getFieldDecorator("field", {
-              rules: [{required: true, message: getIntlContent("SHENYU.PLUGIN.FIELD")}],
+              rules: [
+                {
+                  required: true,
+                  message: getIntlContent("SHENYU.PLUGIN.FIELD"),
+                },
+              ],
               initialValue: field,
             })(
-              <Input allowClear placeholder={getIntlContent("SHENYU.PLUGIN.FIELD")} />
+              <Input
+                allowClear
+                placeholder={getIntlContent("SHENYU.PLUGIN.FIELD")}
+              />,
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SHENYU.PLUGIN.DESCRIBE")} {...formItemLayout}>
+          <FormItem
+            label={getIntlContent("SHENYU.PLUGIN.DESCRIBE")}
+            {...formItemLayout}
+          >
             {getFieldDecorator("label", {
-              rules: [{required: true, message: getIntlContent("SHENYU.PLUGIN.DESCRIBE")}],
+              rules: [
+                {
+                  required: true,
+                  message: getIntlContent("SHENYU.PLUGIN.DESCRIBE"),
+                },
+              ],
               initialValue: label,
             })(
-              <Input allowClear placeholder={getIntlContent("SHENYU.PLUGIN.DESCRIBE")} />
+              <Input
+                allowClear
+                placeholder={getIntlContent("SHENYU.PLUGIN.DESCRIBE")}
+              />,
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SHENYU.PLUGIN.DATATYPE")} {...formItemLayout}>
+          <FormItem
+            label={getIntlContent("SHENYU.PLUGIN.DATATYPE")}
+            {...formItemLayout}
+          >
             {getFieldDecorator("dataType", {
-              rules: [{required: true, message: getIntlContent("SHENYU.PLUGIN.DESCRIBE")}],
+              rules: [
+                {
+                  required: true,
+                  message: getIntlContent("SHENYU.PLUGIN.DESCRIBE"),
+                },
+              ],
               initialValue: `${dataType}` || undefined,
             })(
               <Select>
-                <Option key="1" value="1">{getIntlContent("SHENYU.PLUGIN.DIGITAL")}</Option>
-                <Option key="2" value="2">{getIntlContent("SHENYU.PLUGIN.STRING")}</Option>
-                <Option key="3" value="3">{getIntlContent("SHENYU.PLUGIN.DROPDOWN")}</Option>
-              </Select>
+                <Option key="1" value="1">
+                  {getIntlContent("SHENYU.PLUGIN.DIGITAL")}
+                </Option>
+                <Option key="2" value="2">
+                  {getIntlContent("SHENYU.PLUGIN.STRING")}
+                </Option>
+                <Option key="3" value="3">
+                  {getIntlContent("SHENYU.PLUGIN.DROPDOWN")}
+                </Option>
+              </Select>,
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SHENYU.PLUGIN.FIELDTYPE")} {...formItemLayout}>
+          <FormItem
+            label={getIntlContent("SHENYU.PLUGIN.FIELDTYPE")}
+            {...formItemLayout}
+          >
             {getFieldDecorator("type", {
-              rules: [{required: true, message: getIntlContent("SHENYU.PLUGIN.DESCRIBE")}],
+              rules: [
+                {
+                  required: true,
+                  message: getIntlContent("SHENYU.PLUGIN.DESCRIBE"),
+                },
+              ],
               initialValue: `${type}` || undefined,
             })(
               <Select>
-                <Option key="1" value="1">{getIntlContent("SHENYU.SELECTOR.NAME")}</Option>
-                <Option key="2" value="2">{getIntlContent("SHENYU.PLUGIN.RULES")}</Option>
-                <Option key="3" value="3">{getIntlContent("SHENYU.PLUGIN")}</Option>
-              </Select>
+                <Option key="1" value="1">
+                  {getIntlContent("SHENYU.SELECTOR.NAME")}
+                </Option>
+                <Option key="2" value="2">
+                  {getIntlContent("SHENYU.PLUGIN.RULES")}
+                </Option>
+                <Option key="3" value="3">
+                  {getIntlContent("SHENYU.PLUGIN")}
+                </Option>
+              </Select>,
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SHENYU.PLUGIN.SORT")} {...formItemLayout}>
+          <FormItem
+            label={getIntlContent("SHENYU.PLUGIN.SORT")}
+            {...formItemLayout}
+          >
             {getFieldDecorator("sort", {
-              rules: [{required: true, message: getIntlContent("SHENYU.PLUGIN.INPUTSORT")}],
+              rules: [
+                {
+                  required: true,
+                  message: getIntlContent("SHENYU.PLUGIN.INPUTSORT"),
+                },
+              ],
               initialValue: sort,
             })(
-              <InputNumber precision={0} placeholder={getIntlContent("SHENYU.PLUGIN.SORT")} />
+              <InputNumber
+                precision={0}
+                placeholder={getIntlContent("SHENYU.PLUGIN.SORT")}
+              />,
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SHENYU.PLUGIN.REQUIRED")} {...formItemLayout}>
+          <FormItem
+            label={getIntlContent("SHENYU.PLUGIN.REQUIRED")}
+            {...formItemLayout}
+          >
             {getFieldDecorator("required", {
-              rules: [{required: false}],
+              rules: [{ required: false }],
               initialValue: required,
             })(
               <Select placeholder={getIntlContent("SHENYU.PLUGIN.REQUIRED")}>
-                <Option key="1" value="1">{getIntlContent("SHENYU.COMMON.YES")}</Option>
-                <Option key="0" value="0">{getIntlContent("SHENYU.COMMON.NO")}</Option>
-              </Select>
+                <Option key="1" value="1">
+                  {getIntlContent("SHENYU.COMMON.YES")}
+                </Option>
+                <Option key="0" value="0">
+                  {getIntlContent("SHENYU.COMMON.NO")}
+                </Option>
+              </Select>,
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SHENYU.PLUGIN.DEFAULTVALUE")} {...formItemLayout}>
+          <FormItem
+            label={getIntlContent("SHENYU.PLUGIN.DEFAULTVALUE")}
+            {...formItemLayout}
+          >
             {getFieldDecorator("defaultValue", {
-              rules: [{required: false}],
+              rules: [{ required: false }],
               initialValue: defaultValue,
             })(
-              <Input allowClear placeholder={getIntlContent("SHENYU.PLUGIN.DEFAULTVALUE")} />
+              <Input
+                allowClear
+                placeholder={getIntlContent("SHENYU.PLUGIN.DEFAULTVALUE")}
+              />,
             )}
           </FormItem>
-          <FormItem label={getIntlContent("SHENYU.PLUGIN.PLACEHOLDER")} {...formItemLayout}>
+          <FormItem
+            label={getIntlContent("SHENYU.PLUGIN.PLACEHOLDER")}
+            {...formItemLayout}
+          >
             {getFieldDecorator("placeholder", {
-              rules: [{required: false}],
+              rules: [{ required: false }],
               initialValue: placeholder,
             })(
-              <Input allowClear placeholder={getIntlContent("SHENYU.PLUGIN.PLACEHOLDER")} />
+              <Input
+                allowClear
+                placeholder={getIntlContent("SHENYU.PLUGIN.PLACEHOLDER")}
+              />,
             )}
           </FormItem>
           <FormItem
@@ -173,10 +307,13 @@ class AddPluginHandle extends Component {
             {...formItemLayout}
           >
             {getFieldDecorator("rule", {
-              rules: [{required: false}],
+              rules: [{ required: false }],
               initialValue: rule,
             })(
-              <Input allowClear placeholder={getIntlContent("SHENYU.PLUGIN.RULE")} />
+              <Input
+                allowClear
+                placeholder={getIntlContent("SHENYU.PLUGIN.RULE")}
+              />,
             )}
           </FormItem>
         </Form>

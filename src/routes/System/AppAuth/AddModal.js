@@ -16,64 +16,85 @@
  */
 
 import React, { Component } from "react";
-import {Modal, Button, Form, Input, Switch, message, Table, Popconfirm} from "antd";
+import {
+  Modal,
+  Button,
+  Form,
+  Input,
+  Switch,
+  message,
+  Table,
+  Popconfirm,
+} from "antd";
 import styles from "./index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
 class AddModal extends Component {
- constructor(props) {
-   super(props);
-   const selectorConditions = props.authParamVOList || [{
-    "appName": "",
-    "appParam": ""
-    }];
-   const pathDatas = props.authPathVOList || [{
-     "path": "",
-     "enabled": true,
-   }];
-   this.columns = [
-     {
-       title: getIntlContent("SHENYU.AUTH.RESOUCE.PATH"),
-       dataIndex: 'path',
-       editable: 'true',
-       render: (text,record,index) => (
-         <Input
-           allowClear
-           placeholder="/"
-           value={text}
-           onChange={(e) => this.handleTableInput(e.target.value , index)}
-         />
-       )
-     },
-     {
-       title: getIntlContent("SHENYU.COMMON.OPERAT"),
-       dataIndex: 'operation',
-       render: (text, record,index) =>
-         this.state.pathDatas.length > 1 ? (
-           <Popconfirm title={getIntlContent("SHENYU.COMMON.DELETE")} onConfirm={() => this.handleDeletePath(index)}>
-             <a>{getIntlContent("SHENYU.COMMON.DELETE.NAME")}</a>
-           </Popconfirm>
-         ) : null,
-     },
-   ];
-   this.state = {
-     selectorConditions,
-     pathTableVisible: true,
-     pagination: 1,
-     pathDatas,
-   }
- }
+  constructor(props) {
+    super(props);
+    const selectorConditions = props.authParamVOList || [
+      {
+        appName: "",
+        appParam: "",
+      },
+    ];
+    const pathDatas = props.authPathVOList || [
+      {
+        path: "",
+        enabled: true,
+      },
+    ];
+    this.columns = [
+      {
+        title: getIntlContent("SHENYU.AUTH.RESOUCE.PATH"),
+        dataIndex: "path",
+        editable: "true",
+        render: (text, record, index) => (
+          <Input
+            allowClear
+            placeholder="/"
+            value={text}
+            onChange={(e) => this.handleTableInput(e.target.value, index)}
+          />
+        ),
+      },
+      {
+        title: getIntlContent("SHENYU.COMMON.OPERAT"),
+        dataIndex: "operation",
+        render: (text, record, index) =>
+          this.state.pathDatas.length > 1 ? (
+            <Popconfirm
+              title={getIntlContent("SHENYU.COMMON.DELETE")}
+              onConfirm={() => this.handleDeletePath(index)}
+            >
+              <a>{getIntlContent("SHENYU.COMMON.DELETE.NAME")}</a>
+            </Popconfirm>
+          ) : null,
+      },
+    ];
+    this.state = {
+      selectorConditions,
+      pathTableVisible: true,
+      pagination: 1,
+      pathDatas,
+    };
+  }
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     const { form, handleOk, id = "" } = this.props;
-    const {selectorConditions} = this.state;
-    const {pathDatas} = this.state;
+    const { selectorConditions } = this.state;
+    const { pathDatas } = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        handleOk({ authParamDTOList:selectorConditions,authPathDTOList:pathDatas,id,...values });
+        handleOk({
+          authParamDTOList: selectorConditions,
+          authPathDTOList: pathDatas,
+          id,
+          ...values,
+        });
       }
     });
   };
@@ -84,7 +105,7 @@ class AddModal extends Component {
     this.setState({ selectorConditions });
   };
 
-  handleDelete = index => {
+  handleDelete = (index) => {
     let { selectorConditions } = this.state;
     if (selectorConditions && selectorConditions.length > 1) {
       selectorConditions.splice(index, 1);
@@ -99,30 +120,30 @@ class AddModal extends Component {
     let { selectorConditions } = this.state;
     selectorConditions.push({
       appName: "",
-      appParam: ""
+      appParam: "",
     });
     this.setState({ selectorConditions });
   };
 
   handleOpenChange = (checked) => {
-    this.setState({pathTableVisible: checked});
+    this.setState({ pathTableVisible: checked });
   };
 
   handleAddPath = () => {
-    const pathDatas = this.state.pathDatas
+    const pathDatas = this.state.pathDatas;
     const newData = {
-      path: '',
+      path: "",
       enabled: true,
     };
     this.setState({
-      pathDatas: [...pathDatas, newData]
-    })
+      pathDatas: [...pathDatas, newData],
+    });
   };
 
   handleDeletePath = (index) => {
     let { pathDatas, pagination } = this.state;
     if (pathDatas && pathDatas.length > 1) {
-      pathDatas.splice(index + (pagination-1)*10, 1);
+      pathDatas.splice(index + (pagination - 1) * 10, 1);
     } else {
       message.destroy();
       message.error("At least one app path");
@@ -132,11 +153,11 @@ class AddModal extends Component {
 
   handleTableInput = (value, index) => {
     let { pathDatas, pagination } = this.state;
-    pathDatas[index + (pagination-1)*10].path = value;
+    pathDatas[index + (pagination - 1) * 10].path = value;
     this.setState({ pathDatas });
   };
 
-  handleTableChange = paginationObj => {
+  handleTableChange = (paginationObj) => {
     this.setState({
       pagination: paginationObj.current,
     });
@@ -152,18 +173,18 @@ class AddModal extends Component {
       phone,
       extInfo,
       open = true,
-      enabled = true
+      enabled = true,
     } = this.props;
     const { getFieldDecorator } = form;
     const { pathTableVisible } = this.state;
-    const columns = this.columns
+    const columns = this.columns;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 6 }
+        sm: { span: 6 },
       },
       wrapperCol: {
-        sm: { span: 18 }
-      }
+        sm: { span: 18 },
+      },
     };
     return (
       <Modal
@@ -177,43 +198,106 @@ class AddModal extends Component {
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem label={getIntlContent("SHENYU.AUTH.APPID")} {...formItemLayout}>
+          <FormItem
+            label={getIntlContent("SHENYU.AUTH.APPID")}
+            {...formItemLayout}
+          >
             {getFieldDecorator("appKey", {
-              rules: [{ required: true, message: `${getIntlContent("SHENYU.AUTH.INPUT")}AppKey` }],
-              initialValue: appKey
-            })(<Input allowClear disabled placeholder={`${getIntlContent("SHENYU.AUTH.INPUT")}AppKey`} />)}
-          </FormItem>
-          <FormItem label={getIntlContent("SHENYU.AUTH.APPPASSWORD")} {...formItemLayout}>
-            {getFieldDecorator("appSecret", {
-              rules: [{ required: true, message: `${getIntlContent("SHENYU.AUTH.INPUT")}AppSecret` }],
-              initialValue: appSecret
-            })(<Input allowClear disabled placeholder={`${getIntlContent("SHENYU.AUTH.INPUT")}AppSecret`} />)}
-          </FormItem>
-          <FormItem label={`${getIntlContent("SHENYU.SYSTEM.USER")}Id`} {...formItemLayout}>
-            {getFieldDecorator("userId", {
-              rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.INPUTUSERID")}],
-              initialValue: userId
-            })(<Input allowClear placeholder={getIntlContent("SHENYU.AUTH.INPUTUSERID")} />)}
-          </FormItem>
-          <FormItem label={getIntlContent("SHENYU.AUTH.TEL")} {...formItemLayout}>
-            {getFieldDecorator("phone", {
-              rules: [{ required: true, message: getIntlContent("SHENYU.AUTH.TELPHONE")}],
-              initialValue: phone
-            })(<Input allowClear placeholder={getIntlContent("SHENYU.AUTH.TELPHONE")} />)}
-          </FormItem>
-          <FormItem label={getIntlContent("SHENYU.AUTH.EXPANDINFO")} {...formItemLayout}>
-            {getFieldDecorator("extInfo", {
-              rules: [{  message: getIntlContent("SHENYU.AUTH.EXPANDINFO") }],
-              initialValue: extInfo
-            })(<TextArea placeholder={getIntlContent("SHENYU.AUTH.INPUTEXPANDINFO")} rows={3} />)}
-          </FormItem>
-          <FormItem label={getIntlContent("SHENYU.AUTH.OPENPATH")} {...formItemLayout}>
-            {getFieldDecorator('open', {
-              initialValue: open,
-              valuePropName: 'checked',
+              rules: [
+                {
+                  required: true,
+                  message: `${getIntlContent("SHENYU.AUTH.INPUT")}AppKey`,
+                },
+              ],
+              initialValue: appKey,
             })(
-              <Switch onChange={this.handleOpenChange} />
+              <Input
+                allowClear
+                disabled
+                placeholder={`${getIntlContent("SHENYU.AUTH.INPUT")}AppKey`}
+              />,
             )}
+          </FormItem>
+          <FormItem
+            label={getIntlContent("SHENYU.AUTH.APPPASSWORD")}
+            {...formItemLayout}
+          >
+            {getFieldDecorator("appSecret", {
+              rules: [
+                {
+                  required: true,
+                  message: `${getIntlContent("SHENYU.AUTH.INPUT")}AppSecret`,
+                },
+              ],
+              initialValue: appSecret,
+            })(
+              <Input
+                allowClear
+                disabled
+                placeholder={`${getIntlContent("SHENYU.AUTH.INPUT")}AppSecret`}
+              />,
+            )}
+          </FormItem>
+          <FormItem
+            label={`${getIntlContent("SHENYU.SYSTEM.USER")}Id`}
+            {...formItemLayout}
+          >
+            {getFieldDecorator("userId", {
+              rules: [
+                {
+                  required: true,
+                  message: getIntlContent("SHENYU.AUTH.INPUTUSERID"),
+                },
+              ],
+              initialValue: userId,
+            })(
+              <Input
+                allowClear
+                placeholder={getIntlContent("SHENYU.AUTH.INPUTUSERID")}
+              />,
+            )}
+          </FormItem>
+          <FormItem
+            label={getIntlContent("SHENYU.AUTH.TEL")}
+            {...formItemLayout}
+          >
+            {getFieldDecorator("phone", {
+              rules: [
+                {
+                  required: true,
+                  message: getIntlContent("SHENYU.AUTH.TELPHONE"),
+                },
+              ],
+              initialValue: phone,
+            })(
+              <Input
+                allowClear
+                placeholder={getIntlContent("SHENYU.AUTH.TELPHONE")}
+              />,
+            )}
+          </FormItem>
+          <FormItem
+            label={getIntlContent("SHENYU.AUTH.EXPANDINFO")}
+            {...formItemLayout}
+          >
+            {getFieldDecorator("extInfo", {
+              rules: [{ message: getIntlContent("SHENYU.AUTH.EXPANDINFO") }],
+              initialValue: extInfo,
+            })(
+              <TextArea
+                placeholder={getIntlContent("SHENYU.AUTH.INPUTEXPANDINFO")}
+                rows={3}
+              />,
+            )}
+          </FormItem>
+          <FormItem
+            label={getIntlContent("SHENYU.AUTH.OPENPATH")}
+            {...formItemLayout}
+          >
+            {getFieldDecorator("open", {
+              initialValue: open,
+              valuePropName: "checked",
+            })(<Switch onChange={this.handleOpenChange} />)}
           </FormItem>
 
           {/* 添加删除行 */}
@@ -223,59 +307,78 @@ class AddModal extends Component {
               authParamVOList:{" "}
             </h3> */}
             <div>
-              {
-                this.state.selectorConditions.map((item,index)=>{
-                  return (
-                    <ul key={index}>
-                      <li>
-                        <div className={styles.title}>{getIntlContent("SHENYU.AUTH.APPNAME")}:</div>
-                      </li>
-                      <li>
-                        <Input
-                          allowClear
-                          onChange={e => { this.conditionChange(index,"appName",e.target.value)}}
-                          value={item.appName}
-                          className={styles.appName}
-                        />
-                      </li>
-                      <li>
-                        <div className={styles.title}>{getIntlContent("SHENYU.AUTH.PARAMS")}:</div>
-                      </li>
-                      <li>
-                        <TextArea
-                          rows={3}
-                          onChange={e => { this.conditionChange( index,"appParam", e.target.value ); }}
-                          value={item.appParam}
-                          className={styles.appParam}
-                        />
-                      </li>
-                      <li>
-                        <Button
-                          className={styles.btn}
-                          type="danger"
-                          onClick={() => {
-                            this.handleDelete(index);
-                          }}
-                        >
-                          {getIntlContent( "SHENYU.COMMON.DELETE.NAME")}
-                        </Button>
-                      </li>
-                    </ul>
-                  )
-                })
-              }
+              {this.state.selectorConditions.map((item, index) => {
+                return (
+                  <ul key={index}>
+                    <li>
+                      <div className={styles.title}>
+                        {getIntlContent("SHENYU.AUTH.APPNAME")}:
+                      </div>
+                    </li>
+                    <li>
+                      <Input
+                        allowClear
+                        onChange={(e) => {
+                          this.conditionChange(
+                            index,
+                            "appName",
+                            e.target.value,
+                          );
+                        }}
+                        value={item.appName}
+                        className={styles.appName}
+                      />
+                    </li>
+                    <li>
+                      <div className={styles.title}>
+                        {getIntlContent("SHENYU.AUTH.PARAMS")}:
+                      </div>
+                    </li>
+                    <li>
+                      <TextArea
+                        rows={3}
+                        onChange={(e) => {
+                          this.conditionChange(
+                            index,
+                            "appParam",
+                            e.target.value,
+                          );
+                        }}
+                        value={item.appParam}
+                        className={styles.appParam}
+                      />
+                    </li>
+                    <li>
+                      <Button
+                        className={styles.btn}
+                        type="danger"
+                        onClick={() => {
+                          this.handleDelete(index);
+                        }}
+                      >
+                        {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                      </Button>
+                    </li>
+                  </ul>
+                );
+              })}
             </div>
-            <Button onClick={this.handleAdd} className={styles.btn} type="primary">
+            <Button
+              onClick={this.handleAdd}
+              className={styles.btn}
+              type="primary"
+            >
               {getIntlContent("SHENYU.COMMON.ADD")}
             </Button>
           </div>
 
-
-
-          <FormItem {...formItemLayout} label={getIntlContent("SHENYU.SYSTEM.STATUS")}>
+          <FormItem
+            {...formItemLayout}
+            label={getIntlContent("SHENYU.SYSTEM.STATUS")}
+          >
             {getFieldDecorator("enabled", {
               initialValue: enabled,
-              valuePropName: "checked"
+              valuePropName: "checked",
             })(<Switch />)}
           </FormItem>
 
@@ -287,7 +390,8 @@ class AddModal extends Component {
                 style={{
                   marginBottom: 16,
                 }}
-              >{getIntlContent("SHENYU.AUTH.ADD")}
+              >
+                {getIntlContent("SHENYU.AUTH.ADD")}
               </Button>
               <Table
                 bordered

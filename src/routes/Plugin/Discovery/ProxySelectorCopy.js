@@ -16,10 +16,8 @@
  */
 
 import React, { Component } from "react";
-import {Modal, Select} from "antd";
-import {
-  fetchProxySelector,
-} from "../../../services/api";
+import { Modal, Select } from "antd";
+import { fetchProxySelector } from "../../../services/api";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 class ProxySelectorCopy extends Component {
@@ -28,7 +26,7 @@ class ProxySelectorCopy extends Component {
     this.state = {
       selectorList: [],
       selectedValue: undefined,
-      loading: false
+      loading: false,
     };
   }
 
@@ -38,15 +36,15 @@ class ProxySelectorCopy extends Component {
 
   getAllSelectors = async () => {
     const {
-      data: { dataList: selectors = [] }
+      data: { dataList: selectors = [] },
     } = await fetchProxySelector({
       currentPage: 1,
-      pageSize: 9999
+      pageSize: 9999,
     });
-    this.setState({ selectorList: selectors});
+    this.setState({ selectorList: selectors });
   };
 
-  handleChangeSelect = key => {
+  handleChangeSelect = (key) => {
     this.setState({ selectedValue: key });
   };
 
@@ -55,7 +53,7 @@ class ProxySelectorCopy extends Component {
     // eslint-disable-next-line no-unused-expressions
     onCancel && onCancel();
     this.setState({
-      selectedValue: undefined
+      selectedValue: undefined,
     });
   };
 
@@ -63,20 +61,23 @@ class ProxySelectorCopy extends Component {
     const { onOk } = this.props;
     const { selectedValue, selectorList } = this.state;
     this.setState({
-      loading: true
+      loading: true,
     });
-    const data = selectorList.find(selector => selector.id === selectedValue)
+    const data = selectorList.find((selector) => selector.id === selectedValue);
     this.setState({
-      loading: false
+      loading: false,
     });
     // eslint-disable-next-line no-unused-expressions
     onOk && onOk(data);
   };
 
   handleOptions() {
-    const {Option} = Select;
-    return this.state.selectorList
-      .map(selector => <Option key={selector.id} value={selector.id}>{selector.name}</Option>)
+    const { Option } = Select;
+    return this.state.selectorList.map((selector) => (
+      <Option key={selector.id} value={selector.id}>
+        {selector.name}
+      </Option>
+    ));
   }
 
   render() {
@@ -91,7 +92,6 @@ class ProxySelectorCopy extends Component {
         onOk={this.handleOk}
         confirmLoading={loading}
       >
-
         <Select
           disabled={disabled}
           style={{ width: "100%" }}
@@ -99,7 +99,9 @@ class ProxySelectorCopy extends Component {
           onChange={this.handleChangeSelect}
           placeholder={getIntlContent("SHENYU.SELECTOR.SOURCE.PLACEHOLDER")}
           filterOption={(inputValue, option) =>
-            option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+            option.props.children
+              .toLowerCase()
+              .indexOf(inputValue.toLowerCase()) >= 0
           }
         >
           {this.handleOptions()}

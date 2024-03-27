@@ -59,19 +59,19 @@ export function checkMenuAuth(routeUrl, permissions) {
 
   if (
     routeUrlCopy.startsWith("/exception/") ||
-    notCheckRouteUrl.some(e => e === routeUrlCopy)
+    notCheckRouteUrl.some((e) => e === routeUrlCopy)
   ) {
     return routeUrl;
   }
   if (permissions && permissions.menu && permissions.menu.length > 0) {
     if (!menuCache || menuCache.length === 0) {
-      permissions.menu.forEach(m => {
-        filterTree(m, menuItem => {
+      permissions.menu.forEach((m) => {
+        filterTree(m, (menuItem) => {
           menuCache.push(menuItem);
         });
       });
     }
-    if (menuCache && menuCache.some(e => e.url === routeUrlCopy)) {
+    if (menuCache && menuCache.some((e) => e.url === routeUrlCopy)) {
       return routeUrl;
     } else {
       return false;
@@ -92,7 +92,6 @@ export function checkMenuAuth(routeUrl, permissions) {
  * @param {Boolean} beginCache
  */
 export function getAuthMenus(plugins, menuTree, permissions, beginCache) {
-
   if (beginCache && authMenusCache && Object.keys(authMenusCache).length > 0) {
     let locale = window.sessionStorage.getItem("locale");
     let authCacheMenus = authMenusCache[locale];
@@ -104,30 +103,30 @@ export function getAuthMenus(plugins, menuTree, permissions, beginCache) {
   let menus = getMenuData();
   if (menuTree.length > 0) {
     menus = menus.slice(0, 1);
-    menuTree.forEach(item => {
-      if (item.name !== 'plug') {
+    menuTree.forEach((item) => {
+      if (item.name !== "plug") {
         let title = getIntlContent(item.meta.title);
         menus.push({
-          name : title === '' ? item.meta.title : title,
-          icon : item.meta.icon,
-          path : item.url,
-          locale : item.meta.title,
-          children: item.children.map(child => {
+          name: title === "" ? item.meta.title : title,
+          icon: item.meta.icon,
+          path: item.url,
+          locale: item.meta.title,
+          children: item.children.map((child) => {
             let childTitle = getIntlContent(child.meta.title);
             return {
-              name : childTitle === '' ? child.meta.title : childTitle,
-              icon : child.meta.icon,
-              path : child.url,
-              locale : child.meta.title,
+              name: childTitle === "" ? child.meta.title : childTitle,
+              icon: child.meta.icon,
+              path: child.url,
+              locale: child.meta.title,
             };
-          })
+          }),
         });
       }
     });
   }
 
   const menuMap = {};
-  plugins.forEach(item => {
+  plugins.forEach((item) => {
     if (menuMap[item.role] === undefined) {
       menuMap[item.role] = [];
     }
@@ -139,7 +138,7 @@ export function getAuthMenus(plugins, menuTree, permissions, beginCache) {
       path: `/plug/${menuMap[key][0].role}`,
       authority: undefined,
       icon: "unordered-list",
-      children: menuMap[key].map(item => {
+      children: menuMap[key].map((item) => {
         const { name } = item;
         return {
           name: name.replace(name[0], name[0].toUpperCase()),
@@ -147,9 +146,9 @@ export function getAuthMenus(plugins, menuTree, permissions, beginCache) {
           authority: undefined,
           id: item.id,
           locale: `SHENYU.MENU.PLUGIN.${item.name.toUpperCase()}`,
-          exact: true
+          exact: true,
         };
-      })
+      }),
     });
   });
 
@@ -157,12 +156,12 @@ export function getAuthMenus(plugins, menuTree, permissions, beginCache) {
   if (menus && menus.length > 0) {
     setMenuIconAndSort(menus, permissions);
     authMenus = JSON.parse(JSON.stringify(menus));
-    authMenus.forEach(m => {
+    authMenus.forEach((m) => {
       if (checkMenuAuth(m.path, permissions)) {
-        filterTree(m, menuItem => {
+        filterTree(m, (menuItem) => {
           if (menuItem.children && menuItem.children.length > 0) {
             let newChildren = [];
-            menuItem.children.forEach(menuChildItem => {
+            menuItem.children.forEach((menuChildItem) => {
               if (checkMenuAuth(menuChildItem.path, permissions)) {
                 newChildren.push(menuChildItem);
               }
@@ -174,12 +173,12 @@ export function getAuthMenus(plugins, menuTree, permissions, beginCache) {
         m.deleted = true;
       }
     });
-    authMenus = authMenus.filter(e => !e.deleted);
+    authMenus = authMenus.filter((e) => !e.deleted);
   }
 
   // Filter empty menu
   function removeEmptyMenu(menuArr) {
-    return menuArr.filter(menu => {
+    return menuArr.filter((menu) => {
       if (Array.isArray(menu.children)) {
         if (menu.children.length === 0) {
           return false;
@@ -201,7 +200,6 @@ export function getAuthMenus(plugins, menuTree, permissions, beginCache) {
   }
 
   return authMenus;
-
 }
 
 export function refreshAuthMenus({ dispatch }) {
@@ -215,20 +213,20 @@ export function refreshAuthMenus({ dispatch }) {
             callback: () => {
               resetAuthMenuCache();
               dispatch({
-                type: "resource/fetchMenuTree"
+                type: "resource/fetchMenuTree",
               });
-            }
-          }
+            },
+          },
         });
-      }
-    }
+      },
+    },
   });
 }
 
 const setMenuIconAndSort = (menus, permissions) => {
   if (permissions && Array.isArray(permissions.menu)) {
     const iconAndSortMap = (function getIconAndSortMap(menuArr, mapObj) {
-      menuArr.forEach(menu => {
+      menuArr.forEach((menu) => {
         mapObj[menu.url] = menu;
         if (Array.isArray(menu.children)) {
           getIconAndSortMap(menu.children, mapObj);
@@ -239,7 +237,7 @@ const setMenuIconAndSort = (menus, permissions) => {
 
     (function structureMenu(menuArr) {
       if (Array.isArray(menuArr)) {
-        menuArr.forEach(menu => {
+        menuArr.forEach((menu) => {
           const currentMenu = iconAndSortMap[formatRouteUrl(menu.path)];
           if (
             currentMenu &&
@@ -271,14 +269,14 @@ const setMenuIconAndSort = (menus, permissions) => {
 
 @connect(({ global, loading }) => ({
   global,
-  loading: loading.effects["global/fetchPermission"]
+  loading: loading.effects["global/fetchPermission"],
 }))
 export default class AuthRoute extends Component {
   componentDidMount() {
     const {
       global: { permissions },
       loading,
-      path
+      path,
     } = this.props;
     if (
       (!permissions || !permissions.menu || permissions.menu.length === 0) &&
@@ -296,8 +294,8 @@ export default class AuthRoute extends Component {
       payload: {
         callback: () => {
           resetAuthMenuCache();
-        }
-      }
+        },
+      },
     });
   };
 
@@ -308,7 +306,7 @@ export default class AuthRoute extends Component {
       component,
       global: { permissions },
       redirectPath,
-      location: { pathname }
+      location: { pathname },
     } = this.props;
     if (loading) {
       return (
@@ -325,9 +323,7 @@ export default class AuthRoute extends Component {
       if (checkMenuAuth(paths, permissions)) {
         return <Route path={path} component={component} />;
       } else {
-        return (
-          <Route path={redirectPath} component={null} />
-        );
+        return <Route path={redirectPath} component={null} />;
       }
     }
   }

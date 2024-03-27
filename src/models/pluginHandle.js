@@ -23,7 +23,7 @@ import {
   findPluginHandle,
   updatePluginHandle,
   fetchPluginHandleByPluginId,
-  getPluginDropDownList
+  getPluginDropDownList,
 } from "../services/api";
 import { getIntlContent } from "../utils/IntlUtils";
 
@@ -33,7 +33,7 @@ export default {
   state: {
     pluginDropDownList: [],
     pluginHandleList: [],
-    total: 0
+    total: 0,
   },
 
   effects: {
@@ -42,7 +42,7 @@ export default {
       const json = yield call(getAllPluginHandles, payload);
       if (json.code === 200) {
         let { page, dataList } = json.data;
-        dataList = dataList.map(item => {
+        dataList = dataList.map((item) => {
           item.key = item.id;
           return item;
         });
@@ -50,8 +50,8 @@ export default {
           type: "savePluginHandles",
           payload: {
             total: page.totalCount,
-            dataList
-          }
+            dataList,
+          },
         });
       }
     },
@@ -79,7 +79,7 @@ export default {
       const json = yield call(updatePluginHandle, payload);
       if (json.code === 200) {
         message.success(
-          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS")
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
         );
         callback();
         yield put({ type: "reload", fetchValue });
@@ -93,7 +93,7 @@ export default {
       const json = yield call(batchDeletePluginHandle, { list });
       if (json.code === 200) {
         message.success(
-          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS")
+          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
         );
         callback();
         yield put({ type: "reload", fetchValue });
@@ -102,7 +102,7 @@ export default {
       }
     },
 
-    * fetchByPluginId(params, { call }) {
+    *fetchByPluginId(params, { call }) {
       const { payload } = params;
       let handle = payload.handle;
       let callback = payload.callBack;
@@ -132,7 +132,7 @@ export default {
         let dataList = [];
         let useJSON = false;
         if (json.data && json.data.length > 0) {
-          const fieldArr = json.data.map(v => v.field);
+          const fieldArr = json.data.map((v) => v.field);
           // eslint-disable-next-line no-plusplus
           for (let i = 0; i < length; i++) {
             if (handleData[i]) {
@@ -143,7 +143,7 @@ export default {
                 useJSON = true;
               }
             }
-            let dataItem = json.data.map(data => {
+            let dataItem = json.data.map((data) => {
               let item = { ...data };
               item.key = item.id;
               if (typeof handleData[i] === "undefined") {
@@ -187,18 +187,18 @@ export default {
         yield put({
           type: "savePluginDropDownList",
           payload: {
-            data
-          }
+            data,
+          },
         });
       }
-    }
+    },
   },
   reducers: {
     savePluginHandles(state, { payload }) {
       return {
         ...state,
         pluginHandleList: payload.dataList,
-        total: payload.total
+        total: payload.total,
       };
     },
 
@@ -211,8 +211,8 @@ export default {
     savePluginDropDownList(state, { payload }) {
       return {
         ...state,
-        pluginDropDownList: payload.data
+        pluginDropDownList: payload.data,
       };
-    }
-  }
+    },
+  },
 };

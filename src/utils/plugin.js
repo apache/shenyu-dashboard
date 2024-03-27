@@ -15,66 +15,79 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React from "react";
 import { refreshAuthMenus } from "./AuthRoute";
 import AddModal from "../routes/System/Plugin/AddModal";
 
-export function getUpdateModal({ pluginId, dispatch, fetchValue, callback, updatedCallback, canceledCallback }) {
+export function getUpdateModal({
+  pluginId,
+  dispatch,
+  fetchValue,
+  callback,
+  updatedCallback,
+  canceledCallback,
+}) {
   dispatch({
     type: "plugin/fetchItem",
     payload: {
-      id: pluginId
+      id: pluginId,
     },
-    callback: plugin => {
+    callback: (plugin) => {
       dispatch({
         type: "plugin/fetchByPluginId",
         payload: {
           pluginId: plugin.id,
-          type: "3"
+          type: "3",
         },
-        callback: pluginConfigList => {
+        callback: (pluginConfigList) => {
           callback(
             <AddModal
               disabled={true}
               {...plugin}
               {...pluginConfigList}
-              handleOk={values => {
-                  const { name, enabled, id, role, config, sort, file } = values;
-                  dispatch({
-                    type: "plugin/update",
-                    payload: {
-                      config,
-                      role,
-                      name,
-                      enabled,
-                      id,
-                      sort,
-                      file
-                    },
-                    fetchValue,
-                    callback: () => {
-                      if (updatedCallback) {
-                        updatedCallback(values);
-                      }
-                      refreshAuthMenus({ dispatch });
+              handleOk={(values) => {
+                const { name, enabled, id, role, config, sort, file } = values;
+                dispatch({
+                  type: "plugin/update",
+                  payload: {
+                    config,
+                    role,
+                    name,
+                    enabled,
+                    id,
+                    sort,
+                    file,
+                  },
+                  fetchValue,
+                  callback: () => {
+                    if (updatedCallback) {
+                      updatedCallback(values);
                     }
-                  });
-                }}
+                    refreshAuthMenus({ dispatch });
+                  },
+                });
+              }}
               handleCancel={canceledCallback}
-            />
+            />,
           );
-        }
+        },
       });
-    }
+    },
   });
 }
 
-export function updatePluginsEnabled({ list, enabled, dispatch, fetchValue, callback }) {
+export function updatePluginsEnabled({
+  list,
+  enabled,
+  dispatch,
+  fetchValue,
+  callback,
+}) {
   dispatch({
     type: "plugin/updateEn",
     payload: {
       list,
-      enabled
+      enabled,
     },
     fetchValue,
     callback: () => {
@@ -82,6 +95,6 @@ export function updatePluginsEnabled({ list, enabled, dispatch, fetchValue, call
         callback();
       }
       refreshAuthMenus({ dispatch });
-    }
+    },
   });
 }

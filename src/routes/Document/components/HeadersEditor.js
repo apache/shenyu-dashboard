@@ -16,54 +16,50 @@
  */
 
 import { Col, Input, Row, Button, Icon, Typography } from "antd";
-import React, {Fragment, useEffect, useState} from "react";
+import React, { Fragment, useEffect, useState } from "react";
 
 const { Text } = Typography;
 
 function HeadersEditor(props) {
-  const {value: propsValue, onChange, buttonText} = props;
-  const jsonObj = JSON.parse(propsValue || '[]');
+  const { value: propsValue, onChange, buttonText } = props;
+  const jsonObj = JSON.parse(propsValue || "[]");
   const [value, setValue] = useState(jsonObj);
 
-  useEffect(
-    () => {
-      setValue(jsonObj)
-    },
-    [propsValue]
-  );
+  useEffect(() => {
+    setValue(jsonObj);
+  }, [propsValue]);
 
   const onChangeItem = (e, key, index) => {
-    changeValue(value.map(
-      item => (item.index === index ? { ...item, [key]: e } : item)
-    ));
+    changeValue(
+      value.map((item) =>
+        item.index === index ? { ...item, [key]: e } : item,
+      ),
+    );
   };
 
-  const onDeleteItem = key => {
-    changeValue(value.filter(item => item.key !== key));
+  const onDeleteItem = (key) => {
+    changeValue(value.filter((item) => item.key !== key));
   };
 
   const onAddItem = () => {
-    changeValue([
-      ...value,
-      {index: value.length, key: "", value: ""}
-    ]);
+    changeValue([...value, { index: value.length, key: "", value: "" }]);
   };
 
   const changeValue = (newValue) => {
     setValue(newValue);
     onChange(JSON.stringify(newValue));
-  }
+  };
 
   return (
     <Row gutter={16}>
-      {value.map(item => (
+      {value.map((item) => (
         <Fragment key={item.index}>
           <Col span={6}>
             <Input
               allowClear
               value={item.key}
               readOnly={false}
-              onChange={e => onChangeItem(e.target.value, "key", item.index)}
+              onChange={(e) => onChangeItem(e.target.value, "key", item.index)}
             />
           </Col>
           <Col span={16}>
@@ -71,7 +67,9 @@ function HeadersEditor(props) {
               allowClear
               value={item.value}
               readOnly={false}
-              onChange={e => onChangeItem(e.target.value, "value", item.index)}
+              onChange={(e) =>
+                onChangeItem(e.target.value, "value", item.index)
+              }
             />
           </Col>
           <Col span={2} style={{ textAlign: "center" }}>
