@@ -26,7 +26,7 @@ import AuthButton from "../../../utils/AuthButton";
 @connect(({ manage, role, loading }) => ({
   manage,
   role,
-  loading: loading.effects["manage/fetch"]
+  loading: loading.effects["manage/fetch"],
 }))
 export default class Manage extends Component {
   constructor(props) {
@@ -37,7 +37,7 @@ export default class Manage extends Component {
       selectedRowKeys: [],
       userName: "",
       popup: "",
-      localeName: ""
+      localeName: "",
     };
   }
 
@@ -46,66 +46,66 @@ export default class Manage extends Component {
     this.getAllRoles();
   }
 
-  onSelectChange = selectedRowKeys => {
+  onSelectChange = (selectedRowKeys) => {
     this.setState({ selectedRowKeys });
   };
 
   getAllUsers = () => {
     const { dispatch } = this.props;
-    const { userName,currentPage,pageSize } = this.state;
+    const { userName, currentPage, pageSize } = this.state;
     dispatch({
       type: "manage/fetch",
       payload: {
         userName,
         currentPage,
-        pageSize
-      }
+        pageSize,
+      },
     });
   };
 
   getAllRoles = () => {
     const {
       dispatch,
-      role: { allRoles }
+      role: { allRoles },
     } = this.props;
     if (!allRoles || allRoles.length === 0) {
       dispatch({
-        type: "role/fetchAll"
+        type: "role/fetchAll",
       });
     }
   };
 
-  pageOnchange = page => {
-    this.setState({ currentPage: page },this.getAllUsers);
+  pageOnchange = (page) => {
+    this.setState({ currentPage: page }, this.getAllUsers);
   };
 
-  onShowSizeChange = (currentPage,pageSize) => {
-    this.setState({ currentPage: 1, pageSize}, this.getAllUsers);
+  onShowSizeChange = (currentPage, pageSize) => {
+    this.setState({ currentPage: 1, pageSize }, this.getAllUsers);
   };
 
   closeModal = () => {
     this.setState({ popup: "" });
   };
 
-  editClick = record => {
+  editClick = (record) => {
     const {
       dispatch,
-      role: { allRoles }
+      role: { allRoles },
     } = this.props;
-    const { currentPage,pageSize } = this.state;
+    const { currentPage, pageSize } = this.state;
     const name = this.state.userName;
     dispatch({
       type: "manage/fetchItem",
       payload: {
-        id: record.id
+        id: record.id,
       },
-      callback: user => {
+      callback: (user) => {
         this.setState({
           popup: (
             <AddModal
               {...user}
               allRoles={allRoles}
-              handleOk={values => {
+              handleOk={(values) => {
                 const { userName, password, roles, enabled, id } = values;
                 dispatch({
                   type: "manage/update",
@@ -114,29 +114,29 @@ export default class Manage extends Component {
                     password,
                     roles,
                     enabled,
-                    id
+                    id,
                   },
                   fetchValue: {
                     userName: name,
                     currentPage,
-                    pageSize
+                    pageSize,
                   },
                   callback: () => {
                     this.closeModal();
-                  }
+                  },
                 });
               }}
               handleCancel={() => {
                 this.closeModal();
               }}
             />
-          )
+          ),
         });
-      }
+      },
     });
   };
 
-  permissionConfig = record => {
+  permissionConfig = (record) => {
     this.setState({
       popup: (
         <DataPermModal
@@ -145,11 +145,11 @@ export default class Manage extends Component {
             this.closeModal();
           }}
         />
-      )
+      ),
     });
   };
 
-  searchOnchange = e => {
+  searchOnchange = (e) => {
     const userName = e.target.value;
     this.setState({ userName });
   };
@@ -160,21 +160,21 @@ export default class Manage extends Component {
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { userName, currentPage,pageSize, selectedRowKeys } = this.state;
+    const { userName, currentPage, pageSize, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "manage/delete",
         payload: {
-          list: selectedRowKeys
+          list: selectedRowKeys,
         },
         fetchValue: {
           userName,
           currentPage,
-          pageSize
+          pageSize,
         },
         callback: () => {
           this.setState({ selectedRowKeys: [] });
-        }
+        },
       });
     } else {
       message.destroy();
@@ -184,15 +184,15 @@ export default class Manage extends Component {
 
   addClick = () => {
     const {
-      role: { allRoles }
+      role: { allRoles },
     } = this.props;
-    const { currentPage,pageSize } = this.state;
+    const { currentPage, pageSize } = this.state;
     const name = this.state.userName;
     this.setState({
       popup: (
         <AddModal
           allRoles={allRoles}
-          handleOk={values => {
+          handleOk={(values) => {
             const { dispatch } = this.props;
             const { userName, password, roles, enabled } = values;
             dispatch({
@@ -201,30 +201,30 @@ export default class Manage extends Component {
                 userName,
                 password,
                 roles,
-                enabled
+                enabled,
               },
               fetchValue: {
                 userName: name,
                 currentPage,
-                pageSize
+                pageSize,
               },
               callback: () => {
                 this.setState({ selectedRowKeys: [] });
                 this.closeModal();
-              }
+              },
             });
           }}
           handleCancel={() => {
             this.closeModal();
           }}
         />
-      )
+      ),
     });
   };
 
   changeLocale(locale) {
     this.setState({
-      localeName: locale
+      localeName: locale,
     });
     getCurrentLocale(this.state.localeName);
   }
@@ -232,14 +232,15 @@ export default class Manage extends Component {
   render() {
     const { manage, loading, dispatch } = this.props;
     const { userList, total } = manage;
-    const { currentPage, pageSize, selectedRowKeys, userName, popup } = this.state;
+    const { currentPage, pageSize, selectedRowKeys, userName, popup } =
+      this.state;
     const userColumns = [
       {
         align: "center",
         title: getIntlContent("SHENYU.SYSTEM.USERNAME"),
         dataIndex: "userName",
         key: "userName",
-        ellipsis: true
+        ellipsis: true,
       },
       {
         align: "center",
@@ -251,29 +252,37 @@ export default class Manage extends Component {
           <AuthButton
             perms="system:manager:edit"
             noAuth={
-            text ? (<div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>) : (<div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>)
-          }
+              text ? (
+                <div className="open">
+                  {getIntlContent("SHENYU.COMMON.OPEN")}
+                </div>
+              ) : (
+                <div className="close">
+                  {getIntlContent("SHENYU.COMMON.CLOSE")}
+                </div>
+              )
+            }
           >
             <Switch
               checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
               unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
               checked={text}
-              onChange={checked => {
+              onChange={(checked) => {
                 dispatch({
                   type: "manage/updateUserStatus",
                   payload: {
                     id: row.id,
                     enabled: checked,
-                    userName: row.userName
+                    userName: row.userName,
                   },
                   callback: () => {
                     this.getAllUsers();
-                  }
+                  },
                 });
               }}
             />
           </AuthButton>
-        )
+        ),
       },
       {
         align: "center",
@@ -281,7 +290,7 @@ export default class Manage extends Component {
         dataIndex: "dateCreated",
         key: "dateCreated",
         ellipsis: true,
-        sorter: (a, b) => (a.dateCreated > b.dateCreated ? 1 : -1)
+        sorter: (a, b) => (a.dateCreated > b.dateCreated ? 1 : -1),
       },
       {
         align: "center",
@@ -289,7 +298,7 @@ export default class Manage extends Component {
         dataIndex: "dateUpdated",
         key: "dateUpdated",
         ellipsis: true,
-        sorter: (a, b) => (a.dateUpdated > b.dateUpdated ? 1 : -1)
+        sorter: (a, b) => (a.dateUpdated > b.dateUpdated ? 1 : -1),
       },
       {
         align: "center",
@@ -325,13 +334,13 @@ export default class Manage extends Component {
               )}
             </div>
           );
-        }
-      }
+        },
+      },
     ];
 
     const rowSelection = {
       selectedRowKeys,
-      onChange: this.onSelectChange
+      onChange: this.onSelectChange,
     };
 
     return (
@@ -395,7 +404,7 @@ export default class Manage extends Component {
             current: currentPage,
             pageSize,
             onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange
+            onChange: this.pageOnchange,
           }}
         />
         {popup}

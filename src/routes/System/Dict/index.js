@@ -16,17 +16,26 @@
  */
 
 import React, { Component } from "react";
-import {Table, Input, Button, message, Popconfirm, Popover, Tag, Switch} from "antd";
+import {
+  Table,
+  Input,
+  Button,
+  message,
+  Popconfirm,
+  Popover,
+  Tag,
+  Switch,
+} from "antd";
 import { connect } from "dva";
-import { resizableComponents } from '../../../utils/resizable';
+import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
-import AuthButton from '../../../utils/AuthButton';
+import AuthButton from "../../../utils/AuthButton";
 
 @connect(({ shenyuDict, loading, global }) => ({
   shenyuDict,
   language: global.language,
-  loading: loading.effects["shenyuDict/fetch"]
+  loading: loading.effects["shenyuDict/fetch"],
 }))
 export default class ShenYuDict extends Component {
   components = resizableComponents;
@@ -41,13 +50,15 @@ export default class ShenYuDict extends Component {
       dictName: "",
       dictCode: "",
       popup: "",
-      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
+      localeName: window.sessionStorage.getItem("locale")
+        ? window.sessionStorage.getItem("locale")
+        : "en-US",
       columns: [],
     };
   }
 
   componentDidMount() {
-    this.query()
+    this.query();
     this.initPluginColumns();
   }
 
@@ -60,22 +71,24 @@ export default class ShenYuDict extends Component {
     }
   }
 
-  handleResize = index => (e, { size }) => {
-    this.setState(({ columns }) => {
-      const nextColumns = [...columns];
-      nextColumns[index] = {
-        ...nextColumns[index],
-        width: size.width,
-      };
-      return { columns: nextColumns };
-    });
-  };
+  handleResize =
+    (index) =>
+    (e, { size }) => {
+      this.setState(({ columns }) => {
+        const nextColumns = [...columns];
+        nextColumns[index] = {
+          ...nextColumns[index],
+          width: size.width,
+        };
+        return { columns: nextColumns };
+      });
+    };
 
-  onSelectChange = selectedRowKeys => {
+  onSelectChange = (selectedRowKeys) => {
     this.setState({ selectedRowKeys }, this.query);
   };
 
-  query = () =>{
+  query = () => {
     const { dispatch } = this.props;
     const { type, dictName, dictCode, currentPage, pageSize } = this.state;
     dispatch({
@@ -85,17 +98,17 @@ export default class ShenYuDict extends Component {
         dictName,
         dictCode,
         currentPage,
-        pageSize
-      }
+        pageSize,
+      },
     });
-  }
+  };
 
-  pageOnchange = page => {
+  pageOnchange = (page) => {
     this.setState({ currentPage: page }, this.query);
   };
 
-  onShowSizeChange = (currentPage,pageSize) => {
-    this.setState({ currentPage: 1,pageSize }, this.query);
+  onShowSizeChange = (currentPage, pageSize) => {
+    this.setState({ currentPage: 1, pageSize }, this.query);
   };
 
   closeModal = () => {
@@ -104,23 +117,32 @@ export default class ShenYuDict extends Component {
 
   editClick = (record, copy) => {
     const { dispatch } = this.props;
-    const { currentPage,pageSize } = this.state;
+    const { currentPage, pageSize } = this.state;
     const currentType = this.state.type;
     const currentDictCode = this.state.dictCode;
     const currentDictName = this.state.dictName;
     dispatch({
       type: "shenyuDict/fetchItem",
       payload: {
-        id: record.id
+        id: record.id,
       },
-      callback: user => {
+      callback: (user) => {
         this.setState({
           popup: (
             <AddModal
               isShow={false}
               {...user}
-              handleOk={values => {
-                const { type, dictCode, id, dictName, dictValue, desc, sort, enabled } = values;
+              handleOk={(values) => {
+                const {
+                  type,
+                  dictCode,
+                  id,
+                  dictName,
+                  dictValue,
+                  desc,
+                  sort,
+                  enabled,
+                } = values;
                 let payload = {
                   type,
                   dictCode,
@@ -129,47 +151,47 @@ export default class ShenYuDict extends Component {
                   id,
                   desc,
                   sort,
-                  enabled
+                  enabled,
                 };
                 if (copy) {
                   delete payload.id;
                 }
                 dispatch({
-                  type: `shenyuDict/${copy ? 'add' : 'update'}`,
+                  type: `shenyuDict/${copy ? "add" : "update"}`,
                   payload,
                   fetchValue: {
                     type: currentType,
                     dictCode: currentDictCode,
                     dictName: currentDictName,
                     currentPage,
-                    pageSize
+                    pageSize,
                   },
                   callback: () => {
                     this.closeModal();
-                    this.query()
-                  }
+                    this.query();
+                  },
                 });
               }}
               handleCancel={() => {
                 this.closeModal();
               }}
             />
-          )
+          ),
         });
-      }
+      },
     });
   };
 
-  searchTypeOnchange = e => {
-    this.setState({ type : e.target.value, currentPage: 1}, this.query);
+  searchTypeOnchange = (e) => {
+    this.setState({ type: e.target.value, currentPage: 1 }, this.query);
   };
 
-  searchDictCodeOnchange = e => {
-    this.setState({ dictCode : e.target.value, currentPage: 1}, this.query);
+  searchDictCodeOnchange = (e) => {
+    this.setState({ dictCode: e.target.value, currentPage: 1 }, this.query);
   };
 
-  searchDictNameOnchange = e => {
-    this.setState({ dictName : e.target.value ,currentPage: 1}, this.query);
+  searchDictNameOnchange = (e) => {
+    this.setState({ dictName: e.target.value, currentPage: 1 }, this.query);
   };
 
   searchClick = () => {
@@ -178,23 +200,24 @@ export default class ShenYuDict extends Component {
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { type, dictCode, dictName, currentPage, pageSize, selectedRowKeys } = this.state;
+    const { type, dictCode, dictName, currentPage, pageSize, selectedRowKeys } =
+      this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "shenyuDict/delete",
         payload: {
-          list: selectedRowKeys
+          list: selectedRowKeys,
         },
         fetchValue: {
           type,
           dictCode,
           dictName,
           currentPage,
-          pageSize
+          pageSize,
         },
         callback: () => {
           this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
-        }
+        },
       });
     } else {
       message.destroy();
@@ -203,14 +226,15 @@ export default class ShenYuDict extends Component {
   };
 
   addClick = () => {
-    const { currentPage,pageSize } = this.state;
+    const { currentPage, pageSize } = this.state;
     this.setState({
       popup: (
         <AddModal
           isShow={true}
-          handleOk={values => {
+          handleOk={(values) => {
             const { dispatch } = this.props;
-            const { type, dictCode, dictName, dictValue, desc, sort, enabled } = values;
+            const { type, dictCode, dictName, dictValue, desc, sort, enabled } =
+              values;
             dispatch({
               type: "shenyuDict/add",
               payload: {
@@ -220,54 +244,64 @@ export default class ShenYuDict extends Component {
                 desc,
                 dictValue,
                 sort,
-                enabled
+                enabled,
               },
               fetchValue: {
                 currentPage,
-                pageSize
+                pageSize,
               },
               callback: () => {
                 this.closeModal();
-                this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
-              }
+                this.setState(
+                  { selectedRowKeys: [], currentPage: 1 },
+                  this.query,
+                );
+              },
             });
           }}
           handleCancel={() => {
             this.closeModal();
           }}
         />
-      )
+      ),
     });
   };
 
-  statusSwitch = ({list, enabled, callback}) => {
+  statusSwitch = ({ list, enabled, callback }) => {
     const { dispatch } = this.props;
     dispatch({
       type: "shenyuDict/updateEn",
       payload: {
         list,
-        enabled
+        enabled,
       },
       fetchValue: {},
-      callback
+      callback,
     });
-  }
+  };
 
   enableClick = () => {
     const { dispatch } = this.props;
-    const {selectedRowKeys } = this.state;
+    const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "shenyuDict/fetchItem",
         payload: {
-          id: selectedRowKeys[0]
+          id: selectedRowKeys[0],
         },
-        callback: user => {
-          this.statusSwitch({list: selectedRowKeys, enabled: !user.enabled, callback: () => {
-            this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
-          }});
-        }
-      })
+        callback: (user) => {
+          this.statusSwitch({
+            list: selectedRowKeys,
+            enabled: !user.enabled,
+            callback: () => {
+              this.setState(
+                { selectedRowKeys: [], currentPage: 1 },
+                this.query,
+              );
+            },
+          });
+        },
+      });
     } else {
       message.destroy();
       message.warn("Please select data");
@@ -275,44 +309,66 @@ export default class ShenYuDict extends Component {
   };
 
   commonPopover = (record, value) => {
-    let content =(
+    let content = (
       <div>
         <p>
-          <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.CODE")}</span>:
-          <span style={{color:"#1f640a"}}> {record.dictCode}</span>
+          <span style={{ color: "#204969" }}>
+            {getIntlContent("SHENYU.DIC.CODE")}
+          </span>
+          :<span style={{ color: "#1f640a" }}> {record.dictCode}</span>
         </p>
         <p>
-          <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.TYPE")}</span>:
-          <span style={{color:"#1f640a"}}> {record.type}</span>
+          <span style={{ color: "#204969" }}>
+            {getIntlContent("SHENYU.DIC.TYPE")}
+          </span>
+          :<span style={{ color: "#1f640a" }}> {record.type}</span>
         </p>
         <p>
-          <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.NAME")}</span>:
-          <span style={{color:"#1f640a"}}> {record.dictName}</span>
+          <span style={{ color: "#204969" }}>
+            {getIntlContent("SHENYU.DIC.NAME")}
+          </span>
+          :<span style={{ color: "#1f640a" }}> {record.dictName}</span>
         </p>
         <p>
-          <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.VALUE")}</span>:
-          <span style={{color:"#1f640a"}}> {record.dictValue}</span>
+          <span style={{ color: "#204969" }}>
+            {getIntlContent("SHENYU.DIC.VALUE")}
+          </span>
+          :<span style={{ color: "#1f640a" }}> {record.dictValue}</span>
         </p>
         <p>
-          <span style={{color:"#204969"}}>{getIntlContent("SHENYU.DIC.DESCRIBE")}</span>:
-          <span style={{color:"#1f640a"}}> {record.desc}</span>
+          <span style={{ color: "#204969" }}>
+            {getIntlContent("SHENYU.DIC.DESCRIBE")}
+          </span>
+          :<span style={{ color: "#1f640a" }}> {record.desc}</span>
         </p>
         <p>
-          <span style={{color:"#204969"}}>{getIntlContent("SHENYU.SYSTEM.CREATETIME")}</span>:
-          <span style={{color:"#1f640a"}}> {record.dateCreated}</span>
+          <span style={{ color: "#204969" }}>
+            {getIntlContent("SHENYU.SYSTEM.CREATETIME")}
+          </span>
+          :<span style={{ color: "#1f640a" }}> {record.dateCreated}</span>
         </p>
         <p>
-          <span style={{color:"#204969"}}>{getIntlContent("SHENYU.SYSTEM.UPDATETIME")}</span>:
-          <span style={{color:"#1f640a"}}> {record.dateUpdated}</span>
+          <span style={{ color: "#204969" }}>
+            {getIntlContent("SHENYU.SYSTEM.UPDATETIME")}
+          </span>
+          :<span style={{ color: "#1f640a" }}> {record.dateUpdated}</span>
         </p>
       </div>
     );
-    return <Popover placement="topLeft" content={content} title={getIntlContent("SHENYU.DIC")}>{value}</Popover>
+    return (
+      <Popover
+        placement="topLeft"
+        content={content}
+        title={getIntlContent("SHENYU.DIC")}
+      >
+        {value}
+      </Popover>
+    );
   };
 
   changeLocale(locale) {
     this.setState({
-      localeName: locale
+      localeName: locale,
     });
     getCurrentLocale(this.state.localeName);
   }
@@ -325,10 +381,10 @@ export default class ShenYuDict extends Component {
           title: getIntlContent("SHENYU.DIC.TYPE"),
           dataIndex: "type",
           key: "type",
-          ellipsis:true,
+          ellipsis: true,
           // width: 180,
-          sorter: (a,b) => a.type > b.type ? 1 : -1,
-          render: text => {
+          sorter: (a, b) => (a.type > b.type ? 1 : -1),
+          render: (text) => {
             if (text.length < 5) {
               return <Tag color="cyan">{text}</Tag>;
             } else if (text.length < 15) {
@@ -337,7 +393,7 @@ export default class ShenYuDict extends Component {
               return <Tag color="blue">{text}</Tag>;
             }
             return <Tag color="red">{text}</Tag>;
-          }
+          },
         },
 
         {
@@ -345,9 +401,13 @@ export default class ShenYuDict extends Component {
           title: getIntlContent("SHENYU.DIC.NAME"),
           dataIndex: "dictName",
           key: "dictName",
-          ellipsis:true,
+          ellipsis: true,
           // width: 200,
-          render: (text, record) => this.commonPopover(record, <div style={{color: "#1f640a"}}>{text || "----"}</div>)
+          render: (text, record) =>
+            this.commonPopover(
+              record,
+              <div style={{ color: "#1f640a" }}>{text || "----"}</div>,
+            ),
         },
 
         {
@@ -355,20 +415,29 @@ export default class ShenYuDict extends Component {
           title: getIntlContent("SHENYU.DIC.CODE"),
           dataIndex: "dictCode",
           key: "dictCode",
-          ellipsis:true,
+          ellipsis: true,
           // width: 200,
-          render: (text, record) => this.commonPopover(record, <div style={{color: "#1f640a"}}>{text || "----"}</div>)
+          render: (text, record) =>
+            this.commonPopover(
+              record,
+              <div style={{ color: "#1f640a" }}>{text || "----"}</div>,
+            ),
         },
-
 
         {
           align: "center",
           title: getIntlContent("SHENYU.DIC.VALUE"),
           dataIndex: "dictValue",
           key: "dictValue",
-          ellipsis:true,
+          ellipsis: true,
           // width: 140,
-          render: (text,record) => this.commonPopover(record, <div style={{color: "#260033","fontWeight":"bold"}}>{text || "----"}</div>)
+          render: (text, record) =>
+            this.commonPopover(
+              record,
+              <div style={{ color: "#260033", fontWeight: "bold" }}>
+                {text || "----"}
+              </div>,
+            ),
         },
 
         {
@@ -376,7 +445,7 @@ export default class ShenYuDict extends Component {
           title: getIntlContent("SHENYU.PLUGIN.SORT"),
           dataIndex: "sort",
           key: "sort",
-          ellipsis:true,
+          ellipsis: true,
           width: 80,
         },
 
@@ -384,32 +453,44 @@ export default class ShenYuDict extends Component {
           align: "center",
           title: getIntlContent("SHENYU.SYSTEM.STATUS"),
           dataIndex: "enabled",
-          ellipsis:true,
+          ellipsis: true,
           key: "enabled",
           width: 100,
           render: (text, row) => (
             <AuthButton
               perms="system:dict:disable"
               noAuth={
-              text ? (<div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>) : (<div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>)
-            }
+                text ? (
+                  <div className="open">
+                    {getIntlContent("SHENYU.COMMON.OPEN")}
+                  </div>
+                ) : (
+                  <div className="close">
+                    {getIntlContent("SHENYU.COMMON.CLOSE")}
+                  </div>
+                )
+              }
             >
               <Switch
                 checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
                 unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
                 checked={text}
-                onChange={checked => {
-                  this.statusSwitch({list: [row.id], enabled: checked, callback: this.query});
+                onChange={(checked) => {
+                  this.statusSwitch({
+                    list: [row.id],
+                    enabled: checked,
+                    callback: this.query,
+                  });
                 }}
               />
             </AuthButton>
-          )
+          ),
         },
 
         {
           align: "center",
           title: getIntlContent("SHENYU.COMMON.OPERAT"),
-          ellipsis:true,
+          ellipsis: true,
           dataIndex: "operate",
           key: "operate",
           width: 80,
@@ -439,27 +520,35 @@ export default class ShenYuDict extends Component {
                 </AuthButton>
               </div>
             );
-          }
-        }
-      ]
-    })
+          },
+        },
+      ],
+    });
   }
 
   render() {
     const { shenyuDict, loading } = this.props;
     const { shenyuDictList, total } = shenyuDict;
 
-    const { currentPage, pageSize, selectedRowKeys, type, dictCode, dictName, popup } = this.state;
+    const {
+      currentPage,
+      pageSize,
+      selectedRowKeys,
+      type,
+      dictCode,
+      dictName,
+      popup,
+    } = this.state;
     const columns = this.state.columns.map((col, index) => ({
       ...col,
-      onHeaderCell: column => ({
+      onHeaderCell: (column) => ({
         width: column.width,
         onResize: this.handleResize(index),
       }),
     }));
     const rowSelection = {
       selectedRowKeys,
-      onChange: this.onSelectChange
+      onChange: this.onSelectChange,
     };
 
     return (
@@ -471,14 +560,16 @@ export default class ShenYuDict extends Component {
             placeholder={getIntlContent("SHENYU.DIC.INPUTTYPE")}
             onChange={this.searchTypeOnchange}
             style={{ width: 240 }}
-          />&nbsp;&nbsp;
+          />
+          &nbsp;&nbsp;
           <Input
             allowClear
             value={dictCode}
             placeholder={getIntlContent("SHENYU.DIC.INPUTCODE")}
             onChange={this.searchDictCodeOnchange}
             style={{ width: 240 }}
-          />&nbsp;&nbsp;
+          />
+          &nbsp;&nbsp;
           <Input
             allowClear
             value={dictName}
@@ -498,17 +589,14 @@ export default class ShenYuDict extends Component {
           <AuthButton perms="system:dict:delete">
             <Popconfirm
               title={getIntlContent("SHENYU.COMMON.DELETE")}
-              placement='bottom'
+              placement="bottom"
               onConfirm={() => {
-                this.deleteClick()
+                this.deleteClick();
               }}
               okText={getIntlContent("SHENYU.COMMON.SURE")}
               cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
             >
-              <Button
-                style={{ marginLeft: 20 }}
-                type="danger"
-              >
+              <Button style={{ marginLeft: 20 }} type="danger">
                 {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
               </Button>
             </Popconfirm>
@@ -538,7 +626,7 @@ export default class ShenYuDict extends Component {
           components={this.components}
           style={{ marginTop: 30 }}
           bordered
-          rowKey={record => record.id}
+          rowKey={(record) => record.id}
           loading={loading}
           columns={columns}
           // scroll={{ x: 1350 }}
@@ -552,7 +640,7 @@ export default class ShenYuDict extends Component {
             current: currentPage,
             pageSize,
             onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange
+            onChange: this.pageOnchange,
           }}
         />
         {popup}

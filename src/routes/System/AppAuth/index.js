@@ -19,18 +19,18 @@ import React, { Component } from "react";
 import { Table, Button, message, Popconfirm, Switch } from "antd";
 import { connect } from "dva";
 import dayjs from "dayjs";
-import { resizableComponents } from '../../../utils/resizable';
+import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
-import RelateMetadata from "./RelateMetadata"
-import AddTable from "./AddTable"
-import SearchContent from "./SearchContent"
+import RelateMetadata from "./RelateMetadata";
+import AddTable from "./AddTable";
+import SearchContent from "./SearchContent";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 
 @connect(({ auth, loading, global }) => ({
   auth,
   language: global.language,
-  loading: loading.effects["auth/fetch"]
+  loading: loading.effects["auth/fetch"],
 }))
 export default class Auth extends Component {
   components = resizableComponents;
@@ -44,13 +44,15 @@ export default class Auth extends Component {
       appKey: "",
       phone: "",
       popup: "",
-      localeName: window.sessionStorage.getItem('locale') ? window.sessionStorage.getItem('locale') : 'en-US',
-      columns: []
+      localeName: window.sessionStorage.getItem("locale")
+        ? window.sessionStorage.getItem("locale")
+        : "en-US",
+      columns: [],
     };
   }
 
   componentDidMount() {
-    this.query()
+    this.query();
     this.initPluginColumns();
   }
 
@@ -63,54 +65,56 @@ export default class Auth extends Component {
     }
   }
 
-  handleResize = index => (e, { size }) => {
-    this.setState(({ columns }) => {
-      const nextColumns = [...columns];
-      nextColumns[index] = {
-        ...nextColumns[index],
-        width: size.width,
-      };
-      return { columns: nextColumns };
-    });
-  };
+  handleResize =
+    (index) =>
+    (e, { size }) => {
+      this.setState(({ columns }) => {
+        const nextColumns = [...columns];
+        nextColumns[index] = {
+          ...nextColumns[index],
+          width: size.width,
+        };
+        return { columns: nextColumns };
+      });
+    };
 
-  onSelectChange = selectedRowKeys => {
+  onSelectChange = (selectedRowKeys) => {
     this.setState({ selectedRowKeys }, this.query);
   };
 
-  query = () =>{
+  query = () => {
     const { dispatch } = this.props;
-    const { appKey,phone,currentPage,pageSize} = this.state;
+    const { appKey, phone, currentPage, pageSize } = this.state;
     dispatch({
       type: "auth/fetch",
       payload: {
         appKey,
         phone,
         currentPage,
-        pageSize
-      }
+        pageSize,
+      },
     });
-  }
+  };
 
-  getAllAuths = page => {
+  getAllAuths = (page) => {
     const { dispatch } = this.props;
-    const { appKey,phone,pageSize } = this.state;
+    const { appKey, phone, pageSize } = this.state;
     dispatch({
       type: "auth/fetch",
       payload: {
         appKey,
         phone,
         currentPage: page,
-        pageSize
-      }
+        pageSize,
+      },
     });
   };
 
-  pageOnchange = page => {
+  pageOnchange = (page) => {
     this.setState({ currentPage: page }, this.query);
   };
 
-  onShowSizeChange = (currentPage,pageSize) => {
+  onShowSizeChange = (currentPage, pageSize) => {
     this.setState({ currentPage: 1, pageSize }, this.query);
   };
 
@@ -121,101 +125,103 @@ export default class Auth extends Component {
     this.setState({ popup: "" });
   };
 
-  editClick = record => {
+  editClick = (record) => {
     const { dispatch } = this.props;
     const { currentPage } = this.state;
     dispatch({
       type: "auth/fetchItem",
       payload: {
-        id: record.id
+        id: record.id,
       },
       callback: (auth) => {
         this.setState({
           popup: (
             <AddModal
               {...auth}
-              handleOk={values => {
+              handleOk={(values) => {
                 dispatch({
                   type: "auth/update",
                   payload: {
-                    extInfo:null,
-                    ...values
+                    extInfo: null,
+                    ...values,
                   },
                   fetchValue: {
-
                     currentPage,
-                    pageSize: 20
+                    pageSize: 20,
                   },
                   callback: () => {
                     this.closeModal(true);
-                  }
+                  },
                 });
               }}
               handleCancel={() => {
                 this.closeModal();
               }}
             />
-          )
+          ),
         });
-      }
+      },
     });
   };
 
-  editClickMeta = record => {
+  editClickMeta = (record) => {
     const { currentPage } = this.state;
     const { dispatch } = this.props;
     dispatch({
       type: "auth/fetchItemDel",
       payload: {
-        id: record.id
+        id: record.id,
       },
-      callback: (auth)=>{
-
+      callback: (auth) => {
         dispatch({
           type: "auth/fetchMeta",
           payload: {
             // currentPage,
             // pageSize: 10
           },
-          callback: datas => {
+          callback: (datas) => {
             // remove duplicate elements and add
-            const pathArr =  auth.auth.map(e => e.path);
-            datas.dataList = datas.dataList.filter(item=>!pathArr.includes(item.path)).concat(auth.auth);
+            const pathArr = auth.auth.map((e) => e.path);
+            datas.dataList = datas.dataList
+              .filter((item) => !pathArr.includes(item.path))
+              .concat(auth.auth);
             this.setState({
               popup: (
                 <RelateMetadata
                   {...auth}
                   {...datas}
-                  authName={`appKey:  ${  record.appKey}`}
+                  authName={`appKey:  ${record.appKey}`}
                   id={record.id}
                   handleCancel={() => {
                     this.closeModal();
                   }}
-                  handleOk={values => {
+                  handleOk={(values) => {
                     dispatch({
                       type: "auth/updateDel",
                       payload: values,
                       fetchValue: {
-
                         currentPage,
-                        pageSize: 20
+                        pageSize: 20,
                       },
                       callback: () => {
                         this.closeModal(true);
-                      }
+                      },
                     });
                   }}
                 />
-              )
-            })
-          }
-        })
-      }
-    })
-  }
+              ),
+            });
+          },
+        });
+      },
+    });
+  };
 
-  searchClick = res => {
-    this.setState({ currentPage: 1, appKey : res.appKey, phone: res.phone, }, this.query);
+  searchClick = (res) => {
+    this.setState(
+      { currentPage: 1, appKey: res.appKey, phone: res.phone },
+      this.query,
+    );
   };
 
   deleteClick = () => {
@@ -225,12 +231,12 @@ export default class Auth extends Component {
       dispatch({
         type: "auth/delete",
         payload: {
-          list: selectedRowKeys
+          list: selectedRowKeys,
         },
         fetchValue: {},
         callback: () => {
-          this.setState({ selectedRowKeys: [], currentPage: 1,},this.query)
-        }
+          this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
+        },
       });
     } else {
       message.destroy();
@@ -246,116 +252,124 @@ export default class Auth extends Component {
     dispatch({
       type: "auth/fetchMetaGroup",
       payload: {},
-      callback: (metaGroup)=>{
+      callback: (metaGroup) => {
         this.setState({
           popup: (
             <AddTable
               metaGroup={metaGroup}
-              handleOk={values => {
+              handleOk={(values) => {
                 dispatch({
                   type: "auth/add",
                   payload: values,
                   fetchValue: {
                     currentPage,
-                    pageSize: 20
+                    pageSize: 20,
                   },
                   callback: () => {
-                    this.setState({ selectedRowKeys: [], currentPage : 1 })
+                    this.setState({ selectedRowKeys: [], currentPage: 1 });
                     this.closeModal(true);
-                  }
+                  },
                 });
               }}
               handleCancel={() => {
                 this.closeModal();
               }}
             />
-          )
+          ),
         });
-      }
-    })
+      },
+    });
   };
 
-openSwitch = ({list, enabled, callback}) => {
-    const {dispatch} = this.props;
+  openSwitch = ({ list, enabled, callback }) => {
+    const { dispatch } = this.props;
     dispatch({
       type: "auth/updateOp",
       payload: {
         list,
-        enabled
+        enabled,
       },
       fetchValue: {},
-      callback
+      callback,
     });
-  }
+  };
 
   openClick = () => {
-    const {dispatch} = this.props;
-    const {selectedRowKeys} = this.state;
-    if(selectedRowKeys && selectedRowKeys.length>0) {
+    const { dispatch } = this.props;
+    const { selectedRowKeys } = this.state;
+    if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "auth/fetchItem",
         payload: {
-          id: selectedRowKeys[0]
+          id: selectedRowKeys[0],
         },
-        callback: user => {
-          this.openSwitch({list: selectedRowKeys, enabled: !user.open, callback: () => {
-            this.setState({selectedRowKeys: []}, this.query);
-          }});
-        }
-      })
+        callback: (user) => {
+          this.openSwitch({
+            list: selectedRowKeys,
+            enabled: !user.open,
+            callback: () => {
+              this.setState({ selectedRowKeys: [] }, this.query);
+            },
+          });
+        },
+      });
     } else {
       message.destroy();
       message.warn("Please select data");
     }
-  }
+  };
 
-  statusSwitch = ({list, enabled, callback}) => {
-    const {dispatch} = this.props;
+  statusSwitch = ({ list, enabled, callback }) => {
+    const { dispatch } = this.props;
     dispatch({
       type: "auth/updateEn",
       payload: {
         list,
-        enabled
+        enabled,
       },
       fetchValue: {},
-      callback
-    })
-  }
+      callback,
+    });
+  };
 
   enableClick = () => {
-    const {dispatch} = this.props;
-    const {selectedRowKeys} = this.state;
-    if(selectedRowKeys && selectedRowKeys.length>0) {
+    const { dispatch } = this.props;
+    const { selectedRowKeys } = this.state;
+    if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "auth/fetchItem",
         payload: {
-          id: selectedRowKeys[0]
+          id: selectedRowKeys[0],
         },
-        callback: user => {
-          this.statusSwitch({list: selectedRowKeys, enabled: !user.enabled, callback: () => {
-            this.setState({selectedRowKeys: []}, this.query);
-          }});
-        }
-      })
+        callback: (user) => {
+          this.statusSwitch({
+            list: selectedRowKeys,
+            enabled: !user.enabled,
+            callback: () => {
+              this.setState({ selectedRowKeys: [] }, this.query);
+            },
+          });
+        },
+      });
     } else {
       message.destroy();
       message.warn("Please select data");
     }
-  }
+  };
 
   // 同步数据事件
 
   syncData = () => {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: "auth/syncDa",
-      payload: {}
-    })
-  }
+      payload: {},
+    });
+  };
 
-  changeLocale(locale){
+  changeLocale(locale) {
     this.setState({
-      localeName: locale
+      localeName: locale,
     });
     getCurrentLocale(this.state.localeName);
   }
@@ -368,7 +382,7 @@ openSwitch = ({list, enabled, callback}) => {
           title: "AppKey",
           dataIndex: "appKey",
           key: "appKey",
-          ellipsis:true,
+          ellipsis: true,
           width: 320,
         },
         {
@@ -376,7 +390,7 @@ openSwitch = ({list, enabled, callback}) => {
           title: getIntlContent("SHENYU.AUTH.ENCRYPTKEY"),
           dataIndex: "appSecret",
           key: "appSecret",
-          ellipsis:true,
+          ellipsis: true,
           width: 320,
         },
         {
@@ -384,7 +398,7 @@ openSwitch = ({list, enabled, callback}) => {
           title: `${getIntlContent("SHENYU.SYSTEM.USER")}Id`,
           dataIndex: "userId",
           key: "userId",
-          ellipsis:true,
+          ellipsis: true,
           width: 80,
         },
         {
@@ -392,7 +406,7 @@ openSwitch = ({list, enabled, callback}) => {
           title: getIntlContent("SHENYU.AUTH.TEL"),
           dataIndex: "phone",
           key: "phone",
-          ellipsis:true,
+          ellipsis: true,
           width: 120,
         },
         {
@@ -400,66 +414,91 @@ openSwitch = ({list, enabled, callback}) => {
           title: getIntlContent("SHENYU.AUTH.OPENPATH"),
           dataIndex: "open",
           key: "open",
-          ellipsis:true,
+          ellipsis: true,
           width: 100,
           render: (text, row) => (
             <AuthButton
               perms="system:authen:open"
               noAuth={
-              text ? (<div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>) : (<div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>)
-            }
+                text ? (
+                  <div className="open">
+                    {getIntlContent("SHENYU.COMMON.OPEN")}
+                  </div>
+                ) : (
+                  <div className="close">
+                    {getIntlContent("SHENYU.COMMON.CLOSE")}
+                  </div>
+                )
+              }
             >
               <Switch
                 checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
                 unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
                 checked={text}
-                onChange={checked => {
-                  this.openSwitch({list: [row.id], enabled: checked, callback: this.query});
+                onChange={(checked) => {
+                  this.openSwitch({
+                    list: [row.id],
+                    enabled: checked,
+                    callback: this.query,
+                  });
                 }}
               />
             </AuthButton>
-          )
+          ),
         },
         {
           align: "center",
           title: getIntlContent("SHENYU.SYSTEM.STATUS"),
           dataIndex: "enabled",
           key: "enabled",
-          ellipsis:true,
+          ellipsis: true,
           width: 100,
           render: (text, row) => (
             <AuthButton
               perms="system:authen:disable"
               noAuth={
-              text ? (<div className="open">{getIntlContent("SHENYU.COMMON.OPEN")}</div>) : (<div className="close">{getIntlContent("SHENYU.COMMON.CLOSE")}</div>)
-            }
+                text ? (
+                  <div className="open">
+                    {getIntlContent("SHENYU.COMMON.OPEN")}
+                  </div>
+                ) : (
+                  <div className="close">
+                    {getIntlContent("SHENYU.COMMON.CLOSE")}
+                  </div>
+                )
+              }
             >
               <Switch
                 checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
                 unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
                 checked={text}
-                onChange={checked => {
-                  this.statusSwitch({list: [row.id], enabled: checked, callback: this.query});
+                onChange={(checked) => {
+                  this.statusSwitch({
+                    list: [row.id],
+                    enabled: checked,
+                    callback: this.query,
+                  });
                 }}
               />
             </AuthButton>
-          )
+          ),
         },
         {
           align: "center",
           title: getIntlContent("SHENYU.SYSTEM.UPDATETIME"),
           dataIndex: "dateUpdated",
-          render: dateUpdated => dayjs(dateUpdated).format('YYYY-MM-DD HH:mm:ss' ),
+          render: (dateUpdated) =>
+            dayjs(dateUpdated).format("YYYY-MM-DD HH:mm:ss"),
           key: "dateUpdated",
-          ellipsis:true,
-          sorter: (a,b) => a.dateUpdated > b.dateUpdated ? 1 : -1,
+          ellipsis: true,
+          sorter: (a, b) => (a.dateUpdated > b.dateUpdated ? 1 : -1),
         },
         {
           align: "center",
           title: getIntlContent("SHENYU.COMMON.OPERAT"),
           dataIndex: "operate",
           key: "operate",
-          ellipsis:true,
+          ellipsis: true,
           width: 80,
           fixed: "right",
           render: (text, record) => {
@@ -475,18 +514,18 @@ openSwitch = ({list, enabled, callback}) => {
                 </div>
               </AuthButton>
             );
-          }
+          },
         },
         {
           align: "center",
           title: getIntlContent("SHENYU.AUTH.OPERATPATH"),
           dataIndex: "operates",
           key: "operates",
-          ellipsis:true,
+          ellipsis: true,
           width: 140,
           fixed: "right",
           render: (text, record) => {
-            if(record.open){
+            if (record.open) {
               return (
                 // 弹窗中的编辑事件
                 <AuthButton perms="system:authen:editResourceDetails">
@@ -503,10 +542,10 @@ openSwitch = ({list, enabled, callback}) => {
             } else {
               return null;
             }
-          }
-        }
-      ]
-    })
+          },
+        },
+      ],
+    });
   }
 
   render() {
@@ -515,34 +554,31 @@ openSwitch = ({list, enabled, callback}) => {
     const { currentPage, pageSize, selectedRowKeys, popup } = this.state;
     const columns = this.state.columns.map((col, index) => ({
       ...col,
-      onHeaderCell: column => ({
+      onHeaderCell: (column) => ({
         width: column.width,
         onResize: this.handleResize(index),
       }),
     }));
     const rowSelection = {
       selectedRowKeys,
-      onChange: this.onSelectChange
+      onChange: this.onSelectChange,
     };
 
     return (
       <div className="plug-content-wrap">
-        <div style={{ display: "flex",alignItems: 'center' }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <SearchContent onClick={this.searchClick} />
           <AuthButton perms="system:authen:delete">
             <Popconfirm
               title={getIntlContent("SHENYU.COMMON.DELETE")}
-              placement='bottom'
+              placement="bottom"
               onConfirm={() => {
-                this.deleteClick()
+                this.deleteClick();
               }}
               okText={getIntlContent("SHENYU.COMMON.SURE")}
               cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
             >
-              <Button
-                style={{ marginLeft: 20 }}
-                type="danger"
-              >
+              <Button style={{ marginLeft: 20 }} type="danger">
                 {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
               </Button>
             </Popconfirm>
@@ -590,7 +626,7 @@ openSwitch = ({list, enabled, callback}) => {
           components={this.components}
           style={{ marginTop: 30 }}
           bordered
-          rowKey={record => record.id}
+          rowKey={(record) => record.id}
           loading={loading}
           columns={columns}
           scroll={{ x: 1450 }}
@@ -604,7 +640,7 @@ openSwitch = ({list, enabled, callback}) => {
             current: currentPage,
             pageSize,
             onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange
+            onChange: this.pageOnchange,
           }}
         />
         {popup}
