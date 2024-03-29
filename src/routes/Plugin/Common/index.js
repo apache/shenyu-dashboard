@@ -728,6 +728,7 @@ export default class Common extends Component {
     });
   };
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   changeLocales(locale) {
     this.setState({
       localeName: locale,
@@ -920,6 +921,16 @@ export default class Common extends Component {
       color: this.state.isPluginEnabled ? "green" : "red",
     };
 
+    const expandedRowRender = (record) => (
+      <p
+        style={{
+          maxWidth: document.documentElement.clientWidth * 0.5 - 50,
+        }}
+      >
+        {record.handle}
+      </p>
+    );
+
     return (
       <div className="plug-content-wrap">
         <Row
@@ -1057,15 +1068,7 @@ export default class Common extends Component {
               style={{ marginTop: 30 }}
               bordered
               columns={rulesColumns}
-              expandedRowRender={(record) => (
-                <p
-                  style={{
-                    maxWidth: document.documentElement.clientWidth * 0.5 - 50,
-                  }}
-                >
-                  {record.handle}
-                </p>
-              )}
+              expandedRowRender={expandedRowRender}
               dataSource={ruleList}
               pagination={{
                 total: ruleTotal,

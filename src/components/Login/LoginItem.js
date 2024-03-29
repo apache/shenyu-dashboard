@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+/* eslint-disable react/static-property-placement */
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Form, Button, Row, Col } from "antd";

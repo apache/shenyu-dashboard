@@ -80,6 +80,7 @@ const checkPermissions = (authority, currentAuthority, target, Exception) => {
 
   // Function 处理
   if (typeof authority === "function") {
+    // eslint-disable-next-line no-useless-catch
     try {
       const bool = authority(currentAuthority);
       // 函数执行后返回值是 Promise

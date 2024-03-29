@@ -34,16 +34,6 @@ class ProxySelectorCopy extends Component {
     this.getAllSelectors();
   }
 
-  getAllSelectors = async () => {
-    const {
-      data: { dataList: selectors = [] },
-    } = await fetchProxySelector({
-      currentPage: 1,
-      pageSize: 9999,
-    });
-    this.setState({ selectorList: selectors });
-  };
-
   handleChangeSelect = (key) => {
     this.setState({ selectedValue: key });
   };
@@ -79,6 +69,16 @@ class ProxySelectorCopy extends Component {
       </Option>
     ));
   }
+
+  getAllSelectors = async () => {
+    const {
+      data: { dataList: selectors = [] },
+    } = await fetchProxySelector({
+      currentPage: 1,
+      pageSize: 9999,
+    });
+    this.setState({ selectorList: selectors });
+  };
 
   render() {
     const { visible = false, disabled } = this.props;

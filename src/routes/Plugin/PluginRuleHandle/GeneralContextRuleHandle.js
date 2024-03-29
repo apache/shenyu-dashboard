@@ -71,7 +71,7 @@ export default class GeneralContextRuleHandle extends Component {
     const {
       form: { setFieldsValue, getFieldValue },
     } = this.props;
-    const keys = Object.assign({}, getFieldValue("keys"));
+    const keys = { ...getFieldValue("keys") };
     keys[handler].push(guid());
     setFieldsValue({ keys });
   };
@@ -80,7 +80,7 @@ export default class GeneralContextRuleHandle extends Component {
     const {
       form: { setFieldsValue, getFieldValue },
     } = this.props;
-    const keys = Object.assign({}, getFieldValue("keys"));
+    const keys = { ...getFieldValue("keys") };
     if (keys[handler].length === 1) {
       return;
     }
@@ -88,6 +88,7 @@ export default class GeneralContextRuleHandle extends Component {
     setFieldsValue({ keys });
   };
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   getData = (values) => {
     const { handle, keys } = values;
     const handleData = {};

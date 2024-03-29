@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+/* eslint-disable react/static-property-placement */
 import React, { PureComponent, createElement } from "react";
 import PropTypes from "prop-types";
 import pathToRegexp from "path-to-regexp";
@@ -44,9 +45,12 @@ export default class PageHeader extends PureComponent {
     breadcrumbNameMap: PropTypes.object,
   };
 
-  state = {
-    breadcrumb: null,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      breadcrumb: null,
+    };
+  }
 
   componentDidMount() {
     this.getBreadcrumbDom();

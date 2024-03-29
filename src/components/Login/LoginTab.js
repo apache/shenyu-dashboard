@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+/* eslint-disable react/static-property-placement */
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Tabs } from "antd";
@@ -30,6 +31,8 @@ const generateId = (() => {
 })();
 
 export default class LoginTab extends Component {
+  static __ANT_PRO_LOGIN_TAB = true;
+
   static contextTypes = {
     tabUtil: PropTypes.object,
   };
@@ -45,8 +48,6 @@ export default class LoginTab extends Component {
       tabUtil.addTab(this.uniqueId);
     }
   }
-
-  static __ANT_PRO_LOGIN_TAB = true;
 
   render() {
     return <TabPane {...this.props} />;

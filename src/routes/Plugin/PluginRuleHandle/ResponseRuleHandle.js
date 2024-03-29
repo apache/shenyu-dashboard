@@ -16,6 +16,7 @@
  */
 
 /* eslint-disable react/no-access-state-in-setstate */
+/* eslint-disable max-classes-per-file */
 import React, { Component } from "react";
 import {
   Tabs,
@@ -405,6 +406,7 @@ export default class ResponseRuleHandle extends Component {
     props.onRef(this);
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   getData = () => {
     const {
       form: { getFieldValue },

@@ -401,9 +401,12 @@ const iconMap = {
 };
 
 export default class IconModal extends Component {
-  state = {
-    filterText: null,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      filterText: null,
+    };
+  }
 
   handleSearchTextChange = (e) => {
     if (e.target.value) {

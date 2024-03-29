@@ -59,15 +59,15 @@ export default class PluginHandle extends Component {
     };
   }
 
-  componentDidMount = async () => {
+  async componentDidMount() {
     await this.loadPluginDict();
 
     this.initPluginColumns();
 
     this.query();
-  };
+  }
 
-  componentDidUpdate = async () => {
+  async componentDidUpdate() {
     const { language } = this.props;
     const { localeName } = this.state;
     if (language !== localeName) {
@@ -75,7 +75,7 @@ export default class PluginHandle extends Component {
       this.initPluginColumns();
       this.changeLocale(language);
     }
-  };
+  }
 
   /**
    * condition query page list

@@ -79,6 +79,7 @@ export default class AuthButton extends Component {
   render() {
     const {
       perms,
+      noAuth,
       children,
       global: { permissions },
     } = this.props;
@@ -104,12 +105,17 @@ export default class AuthButton extends Component {
         return children;
       }
     } else {
-      return null;
+      return noAuth || null;
     }
   }
 }
 
 AuthButton.propTypes = {
   perms: PropTypes.string.isRequired,
+  noAuth: PropTypes.element,
   children: PropTypes.element.isRequired,
+};
+
+AuthButton.defaultProps = {
+  noAuth: null,
 };

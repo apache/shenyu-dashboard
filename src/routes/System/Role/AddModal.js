@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import { Modal, Form, Input, Tree, Divider } from "antd";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { filterTree } from "../../../utils/utils";
@@ -24,13 +24,16 @@ const FormItem = Form.Item;
 const { TreeNode } = Tree;
 
 class AddModal extends Component {
-  state = {
-    expandedKeys: [],
-    autoExpandParent: true,
-    checkedKeys: [],
-    selectedKeys: [],
-    searchValue: "",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      expandedKeys: [],
+      autoExpandParent: true,
+      checkedKeys: [],
+      selectedKeys: [],
+      searchValue: "",
+    };
+  }
 
   componentDidMount() {
     let {
@@ -250,12 +253,12 @@ class AddModal extends Component {
           </FormItem>
         </Form>
         {treeList && treeList.length > 0 && (
-          <Fragment>
+          <>
             <Divider>{getIntlContent("SHENYU.SYSTEM.ROLE.CONFIG")}</Divider>
             <div style={{ display: "flex", justifyContent: "space-around" }}>
               {this.renderResourceTree(treeList)}
             </div>
-          </Fragment>
+          </>
         )}
       </Modal>
     );

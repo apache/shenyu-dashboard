@@ -101,7 +101,7 @@ export const menuData = [
     ],
   },
 ];
-function formatter(data, parentPath = "/", parentAuthority) {
+function formatter(data, parentAuthority, parentPath = "/") {
   return data.map((item) => {
     let { path } = item;
     if (!isUrl(path)) {
@@ -115,8 +115,8 @@ function formatter(data, parentPath = "/", parentAuthority) {
     if (item.children) {
       result.children = formatter(
         item.children,
-        `${parentPath}${item.path}/`,
         item.authority,
+        `${parentPath}${item.path}/`,
       );
     }
 

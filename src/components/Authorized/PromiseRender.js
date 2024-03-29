@@ -19,10 +19,13 @@ import React from "react";
 import { Spin } from "antd";
 
 export default class PromiseRender extends React.PureComponent {
-  state = {
-    component: null,
-    prevPropsPromise: null,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      component: null,
+      prevPropsPromise: null,
+    };
+  }
 
   componentDidMount() {
     this.setRenderComponent(this.props);

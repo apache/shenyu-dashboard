@@ -175,6 +175,7 @@ export default class Alert extends Component {
     });
   };
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   changeLocale(locale) {
     this.setState({
       localeName: locale,

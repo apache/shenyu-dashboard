@@ -205,6 +205,7 @@ class ProxySelectorModal extends Component {
     this.setState({ recordCount: newCount });
   };
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   handleChange = (index, value) => {
     this.setState({
       [index]: value,

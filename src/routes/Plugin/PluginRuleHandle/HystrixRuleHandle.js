@@ -77,6 +77,7 @@ export default class HystrixRuleHandle extends Component {
     };
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   getData = () => {
     const {
       requestVolumeThreshold,
@@ -172,7 +173,7 @@ export default class HystrixRuleHandle extends Component {
     };
     // eslint-disable-next-line
     return (
-      <Fragment>
+      <>
         <FormItem
           label={getIntlContent("SHENYU.HYSTRIX.LSOLATION.MODE")}
           {...formItemLayout}
@@ -401,7 +402,7 @@ export default class HystrixRuleHandle extends Component {
             )}
           </ul>
         </div>
-      </Fragment>
+      </>
     );
   }
 }

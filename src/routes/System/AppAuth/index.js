@@ -96,6 +96,7 @@ export default class Auth extends Component {
     });
   };
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   getAllAuths = (page) => {
     const { dispatch } = this.props;
     const { appKey, phone, pageSize } = this.state;
@@ -417,18 +418,33 @@ export default class Auth extends Component {
           ellipsis: true,
           width: 100,
           render: (text, row) => (
-            <Switch
-              checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-              unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-              checked={text}
-              onChange={(checked) => {
-                this.openSwitch({
-                  list: [row.id],
-                  enabled: checked,
-                  callback: this.query,
-                });
-              }}
-            />
+            <AuthButton
+              perms="system:authen:open"
+              noAuth={
+                text ? (
+                  <div className="open">
+                    {getIntlContent("SHENYU.COMMON.OPEN")}
+                  </div>
+                ) : (
+                  <div className="close">
+                    {getIntlContent("SHENYU.COMMON.CLOSE")}
+                  </div>
+                )
+              }
+            >
+              <Switch
+                checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+                unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+                checked={text}
+                onChange={(checked) => {
+                  this.openSwitch({
+                    list: [row.id],
+                    enabled: checked,
+                    callback: this.query,
+                  });
+                }}
+              />
+            </AuthButton>
           ),
         },
         {
@@ -439,18 +455,33 @@ export default class Auth extends Component {
           ellipsis: true,
           width: 100,
           render: (text, row) => (
-            <Switch
-              checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-              unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-              checked={text}
-              onChange={(checked) => {
-                this.statusSwitch({
-                  list: [row.id],
-                  enabled: checked,
-                  callback: this.query,
-                });
-              }}
-            />
+            <AuthButton
+              perms="system:authen:disable"
+              noAuth={
+                text ? (
+                  <div className="open">
+                    {getIntlContent("SHENYU.COMMON.OPEN")}
+                  </div>
+                ) : (
+                  <div className="close">
+                    {getIntlContent("SHENYU.COMMON.CLOSE")}
+                  </div>
+                )
+              }
+            >
+              <Switch
+                checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+                unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+                checked={text}
+                onChange={(checked) => {
+                  this.statusSwitch({
+                    list: [row.id],
+                    enabled: checked,
+                    callback: this.query,
+                  });
+                }}
+              />
+            </AuthButton>
           ),
         },
         {

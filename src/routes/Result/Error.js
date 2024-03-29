@@ -21,7 +21,7 @@ import Result from "components/Result";
 import PageHeaderLayout from "../../layouts/PageHeaderLayout";
 
 const extra = (
-  <Fragment>
+  <>
     <div
       style={{
         fontSize: 16,
@@ -52,7 +52,7 @@ const extra = (
         立即升级 <Icon type="right" />
       </a>
     </div>
-  </Fragment>
+  </>
 );
 
 const actions = <Button type="primary">返回修改</Button>;

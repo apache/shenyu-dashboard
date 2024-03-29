@@ -305,6 +305,7 @@ export default class SiderMenu extends PureComponent {
     }
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   changeLocale(locale) {
     this.setState({
       localeName: locale,

@@ -26,10 +26,13 @@ const FormItem = Form.Item;
   ...discovery,
 }))
 class DiscoveryConfigModal extends Component {
-  state = {
-    discoveryDicts: this.props.discoveryDicts,
-    configPropsJson: {},
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      discoveryDicts: this.props.discoveryDicts,
+      configPropsJson: {},
+    };
+  }
 
   componentDidMount() {
     const { isSetConfig, data, dispatch } = this.props;

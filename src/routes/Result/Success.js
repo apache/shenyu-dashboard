@@ -52,7 +52,7 @@ const desc2 = (
 );
 
 const extra = (
-  <Fragment>
+  <>
     <div
       style={{
         fontSize: 16,
@@ -93,15 +93,15 @@ const extra = (
       <Step title={<span style={{ fontSize: 14 }}>财务复核</span>} />
       <Step title={<span style={{ fontSize: 14 }}>完成</span>} />
     </Steps>
-  </Fragment>
+  </>
 );
 
 const actions = (
-  <Fragment>
+  <>
     <Button type="primary">返回列表</Button>
     <Button>查看项目</Button>
     <Button>打 印</Button>
-  </Fragment>
+  </>
 );
 
 export default () => (

@@ -161,98 +161,6 @@ class AddModal extends Component {
     });
   }
 
-  initSelectorCondition = (props) => {
-    const selectorConditions = props.selectorConditions || [
-      {
-        paramType: "uri",
-        operator: "pathPattern",
-        paramName: "/",
-        paramValue: "",
-      },
-    ];
-    selectorConditions.forEach((item, index) => {
-      const { paramType } = item;
-      let key = `paramTypeValueEn${index}`;
-      if (
-        paramType === "uri" ||
-        paramType === "host" ||
-        paramType === "ip" ||
-        paramType === "req_method" ||
-        paramType === "domain"
-      ) {
-        this.state[key] = true;
-        selectorConditions[index].paramName = "/";
-      } else {
-        this.state[key] = false;
-      }
-    });
-    this.state.selectorConditions = selectorConditions;
-  };
-
-  initDics = () => {
-    this.initDic("operator");
-    this.initDic("matchMode");
-    this.initDic("paramType");
-    this.initDic("discoveryMode");
-  };
-
-  initDic = (type) => {
-    const { dispatch, isAdd = true } = this.props;
-    dispatch({
-      type: "shenyuDict/fetchByType",
-      payload: {
-        type,
-        callBack: (dics) => {
-          this.state[`${type}Dics`] = dics;
-          if (type === "discoveryMode" && isAdd) {
-            let configProps = dics.filter(
-              (item) => item.dictName === "zookeeper",
-            );
-            let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
-            this.setState({ configPropsJson: propsEntries });
-          }
-        },
-      },
-    });
-  };
-
-  setPluginHandleList = (pluginHandles) => {
-    this.setState({ pluginHandleList: pluginHandles });
-  };
-
-  checkConditions = (selectorConditions) => {
-    let result = true;
-    if (selectorConditions) {
-      selectorConditions.forEach((item, index) => {
-        const { paramType, operator, paramName, paramValue } = item;
-        if (
-          !paramType ||
-          !operator ||
-          (operator !== "isBlank" && !paramValue)
-        ) {
-          message.destroy();
-          message.error(`Line ${index + 1} condition is incomplete`);
-          result = false;
-        }
-        if (paramType === "uri" || paramType === "host" || paramType === "ip") {
-          // aaa
-        } else {
-          // eslint-disable-next-line no-lonely-if
-          if (!paramName) {
-            message.destroy();
-            message.error(`Line ${index + 1} condition is incomplete`);
-            result = false;
-          }
-        }
-      });
-    } else {
-      message.destroy();
-      message.error(`Incomplete condition`);
-      result = false;
-    }
-    return result;
-  };
-
   handleSubmit = (e) => {
     e.preventDefault();
     const { form, handleOk, multiSelectorHandle, pluginId, isDiscovery } =
@@ -395,6 +303,18 @@ class AddModal extends Component {
     }
   };
 
+  handleOptions() {
+    const { discovery } = this.props;
+    if (!discovery || !Array.isArray(discovery.typeEnums)) {
+      return [];
+    }
+    return discovery.typeEnums.map((type) => (
+      <Option key={type} value={type.toString()}>
+        {type.toString()}
+      </Option>
+    ));
+  }
+
   conditionChange = (index, name, value) => {
     let { selectorConditions } = this.state;
     selectorConditions[index][name] = value;
@@ -435,6 +355,94 @@ class AddModal extends Component {
     }
 
     this.setState({ selectorConditions });
+  };
+
+  checkConditions = (selectorConditions) => {
+    let result = true;
+    if (selectorConditions) {
+      selectorConditions.forEach((item, index) => {
+        const { paramType, operator, paramName, paramValue } = item;
+        if (
+          !paramType ||
+          !operator ||
+          (operator !== "isBlank" && !paramValue)
+        ) {
+          message.destroy();
+          message.error(`Line ${index + 1} condition is incomplete`);
+          result = false;
+        }
+        if (paramType === "uri" || paramType === "host" || paramType === "ip") {
+          // aaa
+        } else {
+          // eslint-disable-next-line no-lonely-if
+          if (!paramName) {
+            message.destroy();
+            message.error(`Line ${index + 1} condition is incomplete`);
+            result = false;
+          }
+        }
+      });
+    } else {
+      message.destroy();
+      message.error(`Incomplete condition`);
+      result = false;
+    }
+    return result;
+  };
+
+  initSelectorCondition = (props) => {
+    const selectorConditions = props.selectorConditions || [
+      {
+        paramType: "uri",
+        operator: "pathPattern",
+        paramName: "/",
+        paramValue: "",
+      },
+    ];
+    selectorConditions.forEach((item, index) => {
+      const { paramType } = item;
+      let key = `paramTypeValueEn${index}`;
+      if (
+        paramType === "uri" ||
+        paramType === "host" ||
+        paramType === "ip" ||
+        paramType === "req_method" ||
+        paramType === "domain"
+      ) {
+        this.state[key] = true;
+        selectorConditions[index].paramName = "/";
+      } else {
+        this.state[key] = false;
+      }
+    });
+    this.state.selectorConditions = selectorConditions;
+  };
+
+  initDics = () => {
+    this.initDic("operator");
+    this.initDic("matchMode");
+    this.initDic("paramType");
+    this.initDic("discoveryMode");
+  };
+
+  initDic = (type) => {
+    const { dispatch, isAdd = true } = this.props;
+    dispatch({
+      type: "shenyuDict/fetchByType",
+      payload: {
+        type,
+        callBack: (dics) => {
+          this.state[`${type}Dics`] = dics;
+          if (type === "discoveryMode" && isAdd) {
+            let configProps = dics.filter(
+              (item) => item.dictName === "zookeeper",
+            );
+            let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
+            this.setState({ configPropsJson: propsEntries });
+          }
+        },
+      },
+    });
   };
 
   getSelectValue = (value) => {
@@ -864,6 +872,10 @@ class AddModal extends Component {
     return null;
   };
 
+  setPluginHandleList = (pluginHandles) => {
+    this.setState({ pluginHandleList: pluginHandles });
+  };
+
   handleCopyData = (copyData) => {
     if (!copyData) {
       this.setState({ visible: false });
@@ -1073,18 +1085,6 @@ class AddModal extends Component {
     }
   };
 
-  handleOptions() {
-    const { discovery } = this.props;
-    if (!discovery || !Array.isArray(discovery.typeEnums)) {
-      return [];
-    }
-    return discovery.typeEnums.map((type) => (
-      <Option key={type} value={type.toString()}>
-        {type.toString()}
-      </Option>
-    ));
-  }
-
   renderBasicConfig = () => {
     let {
       form,
@@ -1180,7 +1180,7 @@ class AddModal extends Component {
           )}
         </Item>
         {selectValue !== "0" && (
-          <Fragment>
+          <>
             <Item
               label={getIntlContent("SHENYU.COMMON.MATCHTYPE")}
               {...formItemLayout}
@@ -1296,7 +1296,7 @@ class AddModal extends Component {
                 </Button>
               </Item>
             </div>
-          </Fragment>
+          </>
         )}
         <div className={styles.layout}>
           <Item

@@ -24,10 +24,13 @@ const FormItem = Form.Item;
 const { Option } = Select;
 
 class AddModal extends Component {
-  state = {
-    popup: "",
-    icon: undefined,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      popup: "",
+      icon: undefined,
+    };
+  }
 
   handleSubmit = (e) => {
     const { form, handleOk, id = "" } = this.props;

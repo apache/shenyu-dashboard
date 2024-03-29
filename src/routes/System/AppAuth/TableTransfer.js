@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+/* eslint-disable max-classes-per-file */
 import React from "react";
 // import ReactDOM from 'react-dom';
 import "antd/dist/antd.css";
@@ -45,13 +46,16 @@ const columns = [
 ];
 
 class TableTransfer extends React.Component {
-  state = {
-    dataSource: this.props.datalist,
-    pagination: {
-      current: 1,
-      pageSize: 10,
-    },
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      dataSource: this.props.datalist,
+      pagination: {
+        current: 1,
+        pageSize: 10,
+      },
+    };
+  }
 
   render() {
     const { authName } = this.props;
@@ -137,15 +141,18 @@ class TableTransfer extends React.Component {
 }
 
 class TableTransferComponent extends React.Component {
-  state = {
-    targetKeys: this.props.auth.map((item) => item.path),
-    authName: this.props.authName,
-    datalist: this.props.datalist,
-    auth: this.props.auth.map((item) => {
-      item.key = item.id;
-      return item;
-    }),
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      targetKeys: this.props.auth.map((item) => item.path),
+      authName: this.props.authName,
+      datalist: this.props.datalist,
+      auth: this.props.auth.map((item) => {
+        item.key = item.id;
+        return item;
+      }),
+    };
+  }
 
   onChange = (targetKeys) => {
     this.setState({

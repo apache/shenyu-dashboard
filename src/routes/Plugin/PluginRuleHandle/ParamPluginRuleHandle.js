@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+/* eslint-disable max-classes-per-file */
 import React, { Component } from "react";
 import { Button, Col, Form, Input, Row, Select, Table, Tabs } from "antd";
 import { getIntlContent } from "../../../utils/IntlUtils";
@@ -309,6 +310,7 @@ export default class ParamPluginRuleHandle extends Component {
     props.onRef(this);
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   getData = () => {
     const {
       form: { getFieldValue },

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+/* eslint-disable react/static-property-placement */
 import React from "react";
 import PropTypes from "prop-types";
 import { Layout, message } from "antd";
@@ -80,7 +81,7 @@ const getBreadcrumbNameMap = (menuData, routerData) => {
       Object.assign(childResult, getBreadcrumbNameMap(i.children, routerData));
     }
   }
-  return Object.assign({}, routerData, result, childResult);
+  return { ...routerData, ...result, ...childResult };
 };
 
 const query = {

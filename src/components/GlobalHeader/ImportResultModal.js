@@ -41,6 +41,7 @@ const keyMap = {
   platform: global.platform,
 }))
 class ImportResultModal extends Component {
+  // eslint-disable-next-line react/no-unused-class-component-methods
   handleSubmit = (e) => {
     const { form, handleOk } = this.props;
     e.preventDefault();

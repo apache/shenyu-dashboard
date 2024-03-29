@@ -19,8 +19,7 @@ module.exports = {
   parser: 'babel-eslint',
   extends: [
     'airbnb',
-    'prettier',
-    'prettier/react'
+    'prettier'
   ],
   plugins: [
     'prettier',
@@ -65,6 +64,8 @@ module.exports = {
         prop: 'ignore',
       },
     ],
+    'react/jsx-props-no-spreading': 'off',
+    'react/function-component-definition': 'off',
     'no-else-return': [0],
     'no-restricted-syntax': [0],
     'import/no-extraneous-dependencies': [0],

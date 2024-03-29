@@ -24,9 +24,12 @@ import styles from "./style.less";
   isloading: state.error.isloading,
 }))
 export default class TriggerException extends PureComponent {
-  state = {
-    isloading: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      isloading: false,
+    };
+  }
 
   triggerError = (code) => {
     this.setState({

@@ -16,6 +16,7 @@
  */
 
 /* eslint-disable no-unused-expressions */
+/* eslint-disable react/static-property-placement */
 import { Modal, Form, Input, message } from "antd";
 import React, { Component } from "react";
 import PropTypes from "prop-types";

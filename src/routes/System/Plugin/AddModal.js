@@ -140,7 +140,7 @@ class AddModal extends Component {
             )}
           </FormItem>
           {data && data.length > 0 && (
-            <Fragment>
+            <>
               <Divider>
                 {name} {getIntlContent("SHENYU.COMMON.SETTING")}
               </Divider>
@@ -242,7 +242,7 @@ class AddModal extends Component {
                 }
               })}
               <Divider />
-            </Fragment>
+            </>
           )}
           <FormItem
             label={getIntlContent("SHENYU.SYSTEM.ROLE")}

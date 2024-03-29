@@ -512,116 +512,110 @@ export default class DiscoveryProxy extends Component {
       color: this.state.isPluginEnabled ? "green" : "red",
     };
     return (
-      <>
-        <div className={discoveryStyles.main}>
-          <Row
+      <div className={discoveryStyles.main}>
+        <Row
+          style={{
+            marginBottom: "0px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{ display: "flex", alignItems: "end", flex: 1, margin: 0 }}
+          >
+            <Title
+              level={2}
+              style={{ textTransform: "capitalize", margin: "0 20px 0 0" }}
+            >
+              TCP
+            </Title>
+            <Title level={3} type="secondary" style={{ margin: "0 20px 0 0" }}>
+              Proxy
+            </Title>
+            <Tag color={tag.color}>{tag.text}</Tag>
+          </div>
+          <div style={{ display: "flex", alignItems: "end", gap: 10 }}>
+            <Switch
+              checked={this.state.isPluginEnabled ?? false}
+              onChange={this.togglePluginStatus}
+            />
+            <AuthButton perms="system:plugin:edit">
+              <div className="edit" onClick={this.editClick}>
+                {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+              </div>
+            </AuthButton>
+          </div>
+        </Row>
+
+        <Row>
+          <div className={discoveryStyles["header-bar"]}>
+            <h3 style={{ overflow: "visible", margin: 0 }}>
+              {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}
+            </h3>
+            <AuthButton perms="plugin:tcpSelector:add">
+              <Button type="primary" onClick={this.addConfiguration}>
+                {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.CONFIGURATION")}
+              </Button>
+            </AuthButton>
+            {/* <div className={styles.headerSearch}> */}
+            <div>
+              <AuthButton perms="plugin:tcpSelector:query">
+                <Search
+                  placeholder={getIntlContent(
+                    "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME",
+                  )}
+                  enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                  size="default"
+                  onChange={this.searchSelectorOnchange}
+                  onSearch={this.searchSelector}
+                  style={{
+                    marginRight: "20px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                />
+              </AuthButton>
+            </div>
+
+            <AuthButton perms="plugin:tcpSelector:add">
+              <Button
+                type="primary"
+                onClick={this.addSelector}
+                style={{ marginRight: "20px" }}
+              >
+                {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.ADD")}
+              </Button>
+            </AuthButton>
+          </div>
+        </Row>
+
+        <Row>
+          <div
             style={{
-              marginBottom: "0px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
+              margin: "0px 0",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr 1fr",
+              gridAutoFlow: "row",
+              gridGap: "20px",
+              justifyContent: "stretch",
+              alignItems: "stretch",
             }}
           >
-            <div
-              style={{ display: "flex", alignItems: "end", flex: 1, margin: 0 }}
-            >
-              <Title
-                level={2}
-                style={{ textTransform: "capitalize", margin: "0 20px 0 0" }}
-              >
-                TCP
-              </Title>
-              <Title
-                level={3}
-                type="secondary"
-                style={{ margin: "0 20px 0 0" }}
-              >
-                Proxy
-              </Title>
-              <Tag color={tag.color}>{tag.text}</Tag>
-            </div>
-            <div style={{ display: "flex", alignItems: "end", gap: 10 }}>
-              <Switch
-                checked={this.state.isPluginEnabled ?? false}
-                onChange={this.togglePluginStatus}
-              />
-              <AuthButton perms="system:plugin:edit">
-                <div className="edit" onClick={this.editClick}>
-                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                </div>
-              </AuthButton>
-            </div>
-          </Row>
+            {this.renderCards(proxySelectorList)}
+          </div>
+        </Row>
 
-          <Row>
-            <div className={discoveryStyles["header-bar"]}>
-              <h3 style={{ overflow: "visible", margin: 0 }}>
-                {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}
-              </h3>
-              <AuthButton perms="plugin:tcpSelector:add">
-                <Button type="primary" onClick={this.addConfiguration}>
-                  {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.CONFIGURATION")}
-                </Button>
-              </AuthButton>
-              {/* <div className={styles.headerSearch}> */}
-              <div>
-                <AuthButton perms="plugin:tcpSelector:query">
-                  <Search
-                    placeholder={getIntlContent(
-                      "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME",
-                    )}
-                    enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
-                    size="default"
-                    onChange={this.searchSelectorOnchange}
-                    onSearch={this.searchSelector}
-                    style={{
-                      marginRight: "20px",
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  />
-                </AuthButton>
-              </div>
-
-              <AuthButton perms="plugin:tcpSelector:add">
-                <Button
-                  type="primary"
-                  onClick={this.addSelector}
-                  style={{ marginRight: "20px" }}
-                >
-                  {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.ADD")}
-                </Button>
-              </AuthButton>
-            </div>
-          </Row>
-
-          <Row>
-            <div
-              style={{
-                margin: "0px 0",
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr 1fr",
-                gridAutoFlow: "row",
-                gridGap: "20px",
-                justifyContent: "stretch",
-                alignItems: "stretch",
-              }}
-            >
-              {this.renderCards(proxySelectorList)}
-            </div>
-          </Row>
-
-          <Row style={{ marginTop: "20px" }}>
-            <Pagination
-              onChange={this.onPageChange}
-              current={currentPage}
-              pageSize={pageSize}
-              total={totalPage}
-            />
-          </Row>
-          {popup}
-        </div>
-      </>
+        <Row style={{ marginTop: "20px" }}>
+          <Pagination
+            onChange={this.onPageChange}
+            current={currentPage}
+            pageSize={pageSize}
+            total={totalPage}
+          />
+        </Row>
+        {popup}
+      </div>
     );
   }
 }
