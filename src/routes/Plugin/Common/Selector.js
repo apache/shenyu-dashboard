@@ -465,6 +465,7 @@ class AddModal extends Component {
       return;
     }
 
+    // plugin - springCloud
     if (pluginId === "8") {
       getFieldDecorator("keys", {
         initialValue: Array.from({
@@ -1037,7 +1038,7 @@ class AddModal extends Component {
         .concat(date.getDate());
       let day = defaultDay;
       return (
-        <Input.Group compact style={{ width: 213, top: -2 }}>
+        <Input.Group compact style={{ top: -2 }}>
           <DatePicker
             onChange={(e) => {
               day = e
@@ -1079,7 +1080,6 @@ class AddModal extends Component {
             this.conditionChange(index, "paramValue", e.target.value);
           }}
           value={item.paramValue}
-          style={{ width: 160 }}
         />
       );
     }
@@ -1276,7 +1276,6 @@ class AddModal extends Component {
                           onClick={() => {
                             this.handleDelete(index);
                           }}
-                          style={{ marginLeft: 10 }}
                         >
                           {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
                         </Button>
@@ -1298,50 +1297,6 @@ class AddModal extends Component {
             </div>
           </>
         )}
-        <div className={styles.layout}>
-          <Item
-            {...formCheckLayout}
-            label={getIntlContent("SHENYU.SELECTOR.CONTINUE")}
-          >
-            {getFieldDecorator("continued", {
-              initialValue: continued,
-              valuePropName: "checked",
-              rules: [{ required: true }],
-            })(<Switch />)}
-          </Item>
-          <Item
-            style={{ margin: "0 30px" }}
-            {...formCheckLayout}
-            label={getIntlContent("SHENYU.SELECTOR.PRINTLOG")}
-          >
-            {getFieldDecorator("loged", {
-              initialValue: loged,
-              valuePropName: "checked",
-              rules: [{ required: true }],
-            })(<Switch />)}
-          </Item>
-          <Item
-            {...formCheckLayout}
-            label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}
-          >
-            {getFieldDecorator("enabled", {
-              initialValue: enabled,
-              valuePropName: "checked",
-              rules: [{ required: true }],
-            })(<Switch />)}
-          </Item>
-          <Item
-            style={{ margin: "0 30px" }}
-            {...formCheckLayout}
-            label={getIntlContent("SHENYU.SELECTOR.MATCHRESTFUL")}
-          >
-            {getFieldDecorator("matchRestful", {
-              initialValue: matchRestful,
-              valuePropName: "checked",
-              rules: [{ required: true }],
-            })(<Switch />)}
-          </Item>
-        </div>
         {this.renderPluginHandler()}
         <Item
           label={getIntlContent("SHENYU.SELECTOR.EXEORDER")}
@@ -1365,6 +1320,52 @@ class AddModal extends Component {
               placeholder={getIntlContent("SHENYU.SELECTOR.INPUTORDER")}
             />,
           )}
+        </Item>
+        <Item label={" "} colon={false} {...formItemLayout}>
+          <div className={styles.layout}>
+            <Item
+              {...formCheckLayout}
+              label={getIntlContent("SHENYU.SELECTOR.CONTINUE")}
+            >
+              {getFieldDecorator("continued", {
+                initialValue: continued,
+                valuePropName: "checked",
+                rules: [{ required: true }],
+              })(<Switch />)}
+            </Item>
+            <Item
+              style={{ margin: "0 30px" }}
+              {...formCheckLayout}
+              label={getIntlContent("SHENYU.SELECTOR.PRINTLOG")}
+            >
+              {getFieldDecorator("loged", {
+                initialValue: loged,
+                valuePropName: "checked",
+                rules: [{ required: true }],
+              })(<Switch />)}
+            </Item>
+            <Item
+              {...formCheckLayout}
+              label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}
+            >
+              {getFieldDecorator("enabled", {
+                initialValue: enabled,
+                valuePropName: "checked",
+                rules: [{ required: true }],
+              })(<Switch />)}
+            </Item>
+            <Item
+              style={{ margin: "0 30px" }}
+              {...formCheckLayout}
+              label={getIntlContent("SHENYU.SELECTOR.MATCHRESTFUL")}
+            >
+              {getFieldDecorator("matchRestful", {
+                initialValue: matchRestful,
+                valuePropName: "checked",
+                rules: [{ required: true }],
+              })(<Switch />)}
+            </Item>
+          </div>
         </Item>
       </>
     );
