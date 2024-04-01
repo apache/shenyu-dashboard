@@ -51,12 +51,11 @@ const map = {
     ],
   },
   Password: {
-    component: Input,
+    component: Input.Password,
     props: {
       size: "large",
       allowClear: true,
       prefix: <Icon type="lock" className={styles.prefixIcon} />,
-      type: "password",
       placeholder: "888888",
     },
     rules: [
