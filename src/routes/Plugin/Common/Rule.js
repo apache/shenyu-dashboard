@@ -19,6 +19,8 @@ import React, { Component } from "react";
 import {
   Modal,
   Form,
+  Row,
+  Col,
   Select,
   Input,
   Switch,
@@ -406,7 +408,7 @@ class AddModal extends Component {
         .concat(date.getDate());
       let day = defaultDay;
       return (
-        <Input.Group compact style={{ width: 213, top: 0 }}>
+        <Input.Group compact style={{ top: -2 }}>
           <DatePicker
             onChange={(e) => {
               day = e
@@ -448,10 +450,6 @@ class AddModal extends Component {
             this.conditionChange(index, "paramValue", e.target.value);
           }}
           value={item.paramValue}
-          style={{
-            width: 160,
-            display: item.operator === "isBlank" ? "none" : "block",
-          }}
         />
       );
     }
@@ -581,22 +579,21 @@ class AddModal extends Component {
               </Select>,
             )}
           </FormItem>
-          <div className={styles.ruleConditions}>
-            <h3 className={styles.header} style={{ width: 95 }}>
-              <strong>*</strong>
-              {getIntlContent("SHENYU.COMMON.CONDITION")}:
-            </h3>
-            <div className={styles.content} style={{ marginLeft: "2%" }}>
+          <div className={styles.condition}>
+            <FormItem
+              label={getIntlContent("SHENYU.COMMON.CONDITION")}
+              required
+              {...formItemLayout}
+            >
               {ruleConditions.map((item, index) => {
                 return (
-                  <ul key={index}>
-                    <li>
+                  <Row key={index} gutter={8}>
+                    <Col span={5}>
                       <Select
                         onChange={(value) => {
                           this.conditionChange(index, "paramType", value);
                         }}
                         value={item.paramType}
-                        style={{ width: 120 }}
                       >
                         {paramTypeDics &&
                           paramTypeDics.map((type) => {
@@ -610,8 +607,9 @@ class AddModal extends Component {
                             );
                           })}
                       </Select>
-                    </li>
-                    <li
+                    </Col>
+                    <Col
+                      span={4}
                       style={{
                         display: this.state[`paramTypeValueEn${index}`]
                           ? "none"
@@ -628,26 +626,30 @@ class AddModal extends Component {
                           );
                         }}
                         placeholder={item.paramName}
-                        style={{ width: 105 }}
                       />
-                    </li>
-                    <li>
+                    </Col>
+                    <Col span={4}>
                       <Select
                         onChange={(value) => {
                           this.conditionChange(index, "operator", value);
                         }}
                         value={item.operator}
-                        style={{ width: 114 }}
                       >
                         {this.renderOperatorOptions(
                           operatorDics,
                           item.paramType,
                         )}
                       </Select>
-                    </li>
-
-                    <li>{this.getParamValueInput(item, index)}</li>
-                    <li>
+                    </Col>
+                    <Col
+                      span={7}
+                      style={{
+                        display: item.operator === "isBlank" ? "none" : "block",
+                      }}
+                    >
+                      {this.getParamValueInput(item, index)}
+                    </Col>
+                    <Col span={4}>
                       <Button
                         type="danger"
                         onClick={() => {
@@ -656,16 +658,21 @@ class AddModal extends Component {
                       >
                         {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
                       </Button>
-                    </li>
-                  </ul>
+                    </Col>
+                  </Row>
                 );
               })}
-            </div>
-            <div>
-              <Button onClick={this.handleAdd} type="primary">
-                {getIntlContent("SHENYU.COMMON.ADD")}
+            </FormItem>
+            <FormItem label={" "} colon={false} {...formItemLayout}>
+              <Button
+                className={styles.addButton}
+                onClick={this.handleAdd}
+                type="primary"
+              >
+                {getIntlContent("SHENYU.COMMON.ADD")}{" "}
+                {getIntlContent("SHENYU.COMMON.CONDITION")}
               </Button>
-            </div>
+            </FormItem>
           </div>
           {RuleHandleComponent && (
             <RuleHandleComponent
@@ -680,41 +687,6 @@ class AddModal extends Component {
               multiRuleHandle={multiRuleHandle}
             />
           )}
-          <div className={styles.layout}>
-            <FormItem
-              style={{ margin: "0 30px" }}
-              {...formCheckLayout}
-              label={getIntlContent("SHENYU.SELECTOR.PRINTLOG")}
-            >
-              {getFieldDecorator("loged", {
-                initialValue: loged,
-                valuePropName: "checked",
-                rules: [{ required: true }],
-              })(<Switch />)}
-            </FormItem>
-            <FormItem
-              {...formCheckLayout}
-              label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}
-            >
-              {getFieldDecorator("enabled", {
-                initialValue: enabled,
-                valuePropName: "checked",
-                rules: [{ required: true }],
-              })(<Switch />)}
-            </FormItem>
-            <FormItem
-              style={{ margin: "0 30px" }}
-              {...formCheckLayout}
-              label={getIntlContent("SHENYU.SELECTOR.MATCHRESTFUL")}
-            >
-              {getFieldDecorator("matchRestful", {
-                initialValue: matchRestful,
-                valuePropName: "checked",
-                rules: [{ required: true }],
-              })(<Switch />)}
-            </FormItem>
-          </div>
-
           <FormItem
             label={getIntlContent("SHENYU.SELECTOR.EXEORDER")}
             {...formItemLayout}
@@ -737,6 +709,42 @@ class AddModal extends Component {
                 placeholder={getIntlContent("SHENYU.SELECTOR.INPUTORDER")}
               />,
             )}
+          </FormItem>
+          <FormItem label={" "} colon={false} {...formItemLayout}>
+            <div className={styles.layout}>
+              <FormItem
+                style={{ margin: "0 30px" }}
+                {...formCheckLayout}
+                label={getIntlContent("SHENYU.SELECTOR.PRINTLOG")}
+              >
+                {getFieldDecorator("loged", {
+                  initialValue: loged,
+                  valuePropName: "checked",
+                  rules: [{ required: true }],
+                })(<Switch />)}
+              </FormItem>
+              <FormItem
+                {...formCheckLayout}
+                label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}
+              >
+                {getFieldDecorator("enabled", {
+                  initialValue: enabled,
+                  valuePropName: "checked",
+                  rules: [{ required: true }],
+                })(<Switch />)}
+              </FormItem>
+              <FormItem
+                style={{ margin: "0 30px" }}
+                {...formCheckLayout}
+                label={getIntlContent("SHENYU.SELECTOR.MATCHRESTFUL")}
+              >
+                {getFieldDecorator("matchRestful", {
+                  initialValue: matchRestful,
+                  valuePropName: "checked",
+                  rules: [{ required: true }],
+                })(<Switch />)}
+              </FormItem>
+            </div>
           </FormItem>
         </Form>
       </Modal>
