@@ -26,7 +26,7 @@ import {
   Row,
   Col,
   Input,
-  Empty
+  Empty,
 } from "antd";
 import { connect } from "dva";
 import { getIntlContent } from "../../../utils/IntlUtils";
@@ -42,7 +42,7 @@ const { Search } = Input;
   selectorPermisionLoading:
     loading.effects["dataPermission/fetchDataPermisionSelectors"],
   rulePermisionLoading:
-    loading.effects["dataPermission/fetchDataPermisionRules"]
+    loading.effects["dataPermission/fetchDataPermisionRules"],
 }))
 export default class DataPermModal extends Component {
   constructor(props) {
@@ -53,7 +53,7 @@ export default class DataPermModal extends Component {
       selectorData: null,
       pageSize: 12,
       ruleListMap: {},
-      searchValue: ""
+      searchValue: "",
     };
   }
 
@@ -64,14 +64,14 @@ export default class DataPermModal extends Component {
   getPluginTreeData = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: "resource/fetchMenuTree"
+      type: "resource/fetchMenuTree",
     });
     dispatch({
-      type: "global/fetchPlugins"
+      type: "global/fetchPlugins",
     });
   };
 
-  getPermissionSelectorList = page => {
+  getPermissionSelectorList = (page) => {
     const { dispatch, userId } = this.props;
     const { currentPlugin, pageSize } = this.state;
     dispatch({
@@ -80,13 +80,13 @@ export default class DataPermModal extends Component {
         currentPage: page,
         pageSize,
         userId,
-        pluginId: currentPlugin.pluginId
+        pluginId: currentPlugin.pluginId,
       },
-      callback: res => {
+      callback: (res) => {
         this.setState({
-          selectorData: res
+          selectorData: res,
         });
-      }
+      },
     });
   };
 
@@ -100,11 +100,11 @@ export default class DataPermModal extends Component {
         pageSize,
         userId,
         pluginId: currentPlugin.pluginId,
-        selectorId
+        selectorId,
       },
-      callback: res => {
+      callback: (res) => {
         if (res.dataList && res.dataList.length > 0) {
-          res.dataList.forEach(e => {
+          res.dataList.forEach((e) => {
             e.selectorId = selectorId;
           });
         }
@@ -118,9 +118,9 @@ export default class DataPermModal extends Component {
         }
         ruleListMap[selectorId] = res;
         this.setState({
-          ruleListMap
+          ruleListMap,
         });
-      }
+      },
     });
   };
 
@@ -130,15 +130,15 @@ export default class DataPermModal extends Component {
       {
         currentPlugin,
         currentPermissionSelectorPage: 1,
-        ruleListMap: {}
+        ruleListMap: {},
       },
       () => {
         this.getPermissionSelectorList(1);
-      }
+      },
     );
   };
 
-  handleCheckSelector = record => {
+  handleCheckSelector = (record) => {
     const { dispatch, userId } = this.props;
     const { currentPermissionSelectorPage } = this.state;
     let type = record.isChecked
@@ -148,16 +148,16 @@ export default class DataPermModal extends Component {
       type,
       payload: {
         dataId: record.dataId,
-        userId
+        userId,
       },
       callback: () => {
         this.getPermissionSelectorList(currentPermissionSelectorPage);
         this.getPermissionRuleList(record.dataId, 1);
-      }
+      },
     });
   };
 
-  handleCheckRule = record => {
+  handleCheckRule = (record) => {
     const { dispatch, userId } = this.props;
     const { currentPermissionSelectorPage, ruleListMap } = this.state;
     let type = record.isChecked
@@ -167,13 +167,13 @@ export default class DataPermModal extends Component {
       type,
       payload: {
         dataId: record.dataId,
-        userId
+        userId,
       },
       callback: () => {
         this.getPermissionSelectorList(currentPermissionSelectorPage);
         let page = ruleListMap[record.selectorId].currentRulePage || 1;
         this.getPermissionRuleList(record.selectorId, page);
-      }
+      },
     });
   };
 
@@ -181,7 +181,7 @@ export default class DataPermModal extends Component {
     this.getPermissionRuleList(record.dataId, 1);
   };
 
-  selectorPageOnchange = page => {
+  selectorPageOnchange = (page) => {
     this.setState({ currentPermissionSelectorPage: page });
     this.getPermissionSelectorList(page);
   };
@@ -191,25 +191,25 @@ export default class DataPermModal extends Component {
     ruleListMap[selectorId].currentRulePage = page;
     this.setState(
       {
-        ruleListMap
+        ruleListMap,
       },
       () => {
         this.getPermissionRuleList(selectorId, page);
-      }
+      },
     );
   };
 
   filterPlugin = () => {
     let {
       global: { plugins },
-      resource: { menuTree }
+      resource: { menuTree },
     } = this.props;
     const { searchValue } = this.state;
-    let pluginMenuList = menuTree.filter(e => e.url === "/plug");
+    let pluginMenuList = menuTree.filter((e) => e.url === "/plug");
     if (pluginMenuList && pluginMenuList.length > 0) {
       pluginMenuList = pluginMenuList[0].children;
       const treeData = [];
-      pluginMenuList.forEach(plugin => {
+      pluginMenuList.forEach((plugin) => {
         if (
           typeof searchValue === "string" &&
           searchValue.length &&
@@ -219,9 +219,9 @@ export default class DataPermModal extends Component {
         ) {
           return;
         }
-        const currentPluginInfo = plugins.find(v => v.name === plugin.name);
+        const currentPluginInfo = plugins.find((v) => v.name === plugin.name);
         let currentCategory = treeData.find(
-          tree => tree.title === currentPluginInfo.role
+          (tree) => tree.title === currentPluginInfo.role,
         );
         if (!currentCategory) {
           treeData.push({
@@ -230,7 +230,7 @@ export default class DataPermModal extends Component {
             selectable: false,
             icon: "unordered-list",
             sort: plugin.sort,
-            children: []
+            children: [],
           });
           currentCategory = treeData[treeData.length - 1];
         }
@@ -240,7 +240,7 @@ export default class DataPermModal extends Component {
           selectable: true,
           sort: plugin.sort,
           icon: plugin.meta.icon,
-          pluginId: currentPluginInfo.id
+          pluginId: currentPluginInfo.id,
         });
       });
 
@@ -249,10 +249,10 @@ export default class DataPermModal extends Component {
     return pluginMenuList;
   };
 
-  onSearch = e => {
+  onSearch = (e) => {
     const { value } = e.target;
     this.setState({
-      searchValue: value
+      searchValue: value,
     });
   };
 
@@ -286,8 +286,8 @@ export default class DataPermModal extends Component {
     );
   };
 
-  renderTreeNodes = data => {
-    return data.map(item => {
+  renderTreeNodes = (data) => {
+    return data.map((item) => {
       if (item.children && item.children.length > 0) {
         return (
           <TreeNode
@@ -329,15 +329,15 @@ export default class DataPermModal extends Component {
               onClick={this.handleCheckRule.bind(this, record)}
             />
           );
-        }
+        },
       },
       {
         title: getIntlContent("SHENYU.SYSTEM.DATA.PERMISSION.RULENAME"),
         dataIndex: "dataName",
-        key: "dataName"
-      }
+        key: "dataName",
+      },
     ];
-    const expandedRowRender = record => {
+    const expandedRowRender = (record) => {
       let ruleData = ruleListMap && ruleListMap[record.dataId];
       let currentRulePage = ruleData && ruleData.currentRulePage;
       return (
@@ -350,9 +350,9 @@ export default class DataPermModal extends Component {
             total: (ruleData && ruleData.total) || 0,
             current: currentRulePage || 1,
             pageSize,
-            onChange: page => {
+            onChange: (page) => {
               this.rulePageOnchange(page, record.dataId);
-            }
+            },
           }}
         />
       );
@@ -371,13 +371,13 @@ export default class DataPermModal extends Component {
               onClick={this.handleCheckSelector.bind(this, record)}
             />
           );
-        }
+        },
       },
       {
         title: getIntlContent("SHENYU.SYSTEM.DATA.PERMISSION.SELECTORNAME"),
         dataIndex: "dataName",
-        key: "dataName"
-      }
+        key: "dataName",
+      },
     ];
 
     return (
@@ -393,7 +393,7 @@ export default class DataPermModal extends Component {
           total: selectorData && selectorData.total,
           current: currentPermissionSelectorPage,
           pageSize,
-          onChange: this.selectorPageOnchange
+          onChange: this.selectorPageOnchange,
         }}
       />
     );
@@ -412,7 +412,7 @@ export default class DataPermModal extends Component {
         footer={[
           <Button key="back" onClick={handleCancel}>
             {getIntlContent("SHENYU.COMMON.CLOSE")}
-          </Button>
+          </Button>,
         ]}
       >
         <Row gutter={20}>

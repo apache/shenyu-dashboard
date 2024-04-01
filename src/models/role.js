@@ -22,9 +22,9 @@ import {
   findRole,
   updateRole,
   deleteRole,
-  addRole
+  addRole,
 } from "../services/api";
-import {getIntlContent} from "../utils/IntlUtils";
+import { getIntlContent } from "../utils/IntlUtils";
 
 export default {
   namespace: "role",
@@ -32,7 +32,7 @@ export default {
   state: {
     allRoles: [],
     roleList: [],
-    total: 0
+    total: 0,
   },
 
   effects: {
@@ -42,7 +42,7 @@ export default {
       if (json.code === 200) {
         let { page, dataList } = json.data;
 
-        dataList = dataList.map(item => {
+        dataList = dataList.map((item) => {
           item.key = item.id;
           return item;
         });
@@ -50,8 +50,8 @@ export default {
           type: "saveRoles",
           payload: {
             total: page.totalCount,
-            dataList
-          }
+            dataList,
+          },
         });
       }
     },
@@ -62,8 +62,8 @@ export default {
         yield put({
           type: "saveAllRoles",
           payload: {
-            allRoles
-          }
+            allRoles,
+          },
         });
       }
     },
@@ -81,7 +81,7 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(addRole, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
+        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -93,7 +93,9 @@ export default {
       const { list } = payload;
       const json = yield call(deleteRole, { list });
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
+        );
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -104,7 +106,9 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(updateRole, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -118,7 +122,7 @@ export default {
       const payload = { roleName, currentPage, pageSize };
       yield put({ type: "fetch", payload });
       yield put({ type: "fetchAll" });
-    }
+    },
   },
 
   reducers: {
@@ -126,14 +130,14 @@ export default {
       return {
         ...state,
         roleList: payload.dataList,
-        total: payload.total
+        total: payload.total,
       };
     },
     saveAllRoles(state, { payload }) {
       return {
         ...state,
-        allRoles: payload.allRoles
+        allRoles: payload.allRoles,
       };
-    }
-  }
+    },
+  },
 };

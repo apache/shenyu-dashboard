@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import { query as queryUsers } from '../services/user';
+import { query as queryUsers } from "../services/user";
 
 export default {
-  namespace: 'user',
+  namespace: "user",
 
   state: {
     list: [],
@@ -29,7 +29,7 @@ export default {
     *fetch(_, { call, put }) {
       const response = yield call(queryUsers);
       yield put({
-        type: 'save',
+        type: "save",
         payload: response,
       });
     },

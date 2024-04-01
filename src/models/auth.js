@@ -15,16 +15,30 @@
  * limitations under the License.
  */
 
-import { message } from 'antd';
-import { getIntlContent } from '../utils/IntlUtils'
-import { getAllAuths, findAuthData, findAuthDataDel, updateAuthData, updateAuthDel, updateAuthEnabled, updateAuthOpened, deleteAuths, addAuthData, syncAuthsData, getAllMetadata, getAllMetadatas, getfetchMetaGroup } from '../services/api';
+import { message } from "antd";
+import { getIntlContent } from "../utils/IntlUtils";
+import {
+  getAllAuths,
+  findAuthData,
+  findAuthDataDel,
+  updateAuthData,
+  updateAuthDel,
+  updateAuthEnabled,
+  updateAuthOpened,
+  deleteAuths,
+  addAuthData,
+  syncAuthsData,
+  getAllMetadata,
+  getAllMetadatas,
+  getfetchMetaGroup,
+} from "../services/api";
 
 export default {
   namespace: "auth",
 
   state: {
     authList: [],
-    total: 0
+    total: 0,
   },
 
   effects: {
@@ -33,7 +47,7 @@ export default {
       const json = yield call(getAllAuths, payload);
       if (json.code === 200) {
         let { page, dataList } = json.data;
-        dataList = dataList.map(item => {
+        dataList = dataList.map((item) => {
           item.key = item.id;
           return item;
         });
@@ -41,8 +55,8 @@ export default {
           type: "saveAuths",
           payload: {
             total: page.totalCount,
-            dataList
-          }
+            dataList,
+          },
         });
       }
     },
@@ -59,33 +73,37 @@ export default {
       const json = yield call(findAuthDataDel, payload);
       if (json.code === 200) {
         const auth = json.data;
-        callback({auth});
+        callback({ auth });
       }
     },
-    *fetchMeta(params, {call}) {
-        const { payload ,callback} = params;
-        const json = yield call(getAllMetadatas, payload);
-        if (json.code === 200) {
-          let dataList = json.data.map(item => {
-            item = {id:item.id,path:item.path,appName:item.appName,enabled:item.enabled}
-            return item;
-          });
-          callback({dataList});
-        }
+    *fetchMeta(params, { call }) {
+      const { payload, callback } = params;
+      const json = yield call(getAllMetadatas, payload);
+      if (json.code === 200) {
+        let dataList = json.data.map((item) => {
+          item = {
+            id: item.id,
+            path: item.path,
+            appName: item.appName,
+            enabled: item.enabled,
+          };
+          return item;
+        });
+        callback({ dataList });
+      }
     },
-    *fetchMetaGroup(params,{call}) {
-      const {payload,callback} = params;
-      const json = yield call(getfetchMetaGroup,payload);
-      if(json.code === 200) {
-
-        callback(json.data)
+    *fetchMetaGroup(params, { call }) {
+      const { payload, callback } = params;
+      const json = yield call(getfetchMetaGroup, payload);
+      if (json.code === 200) {
+        callback(json.data);
       }
     },
     *add(params, { call, put }) {
       const { payload, callback, fetchValue } = params;
       const json = yield call(addAuthData, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
+        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -95,9 +113,11 @@ export default {
     *delete(params, { call, put }) {
       const { payload, fetchValue, callback } = params;
 
-      const json = yield call(deleteAuths, payload );
+      const json = yield call(deleteAuths, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
+        );
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -109,7 +129,9 @@ export default {
 
       const json = yield call(updateAuthData, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -120,7 +142,9 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(updateAuthDel, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -133,41 +157,45 @@ export default {
       const payload = { name, currentPage, pageSize };
       yield put({ type: "fetch", payload });
     },
-    *updateEn(params, {call, put}) {
-      const {payload,fetchValue,callback} = params;
-      const json = yield call (updateAuthEnabled,payload);
-      if(json.code===200){
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
-        callback();
-        yield put({type: "reload", fetchValue});
-      } else {
-        message.warn(json.message)
-      }
-    },
-    *updateOp(params, {call, put}) {
-      const {payload,fetchValue,callback} = params;
-      const json = yield call (updateAuthOpened, payload);
-      if(json.code===200){
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
-        callback();
-        yield put({type: "reload", fetchValue});
-      } else {
-        message.warn(json.message)
-      }
-    },
-    *syncDa(params,{ call }) {
-      const {payload} = params;
-      const json = yield call( syncAuthsData,payload );
+    *updateEn(params, { call, put }) {
+      const { payload, fetchValue, callback } = params;
+      const json = yield call(updateAuthEnabled, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.SYNC.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
+        callback();
+        yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
       }
     },
-    *getDatas(params, {call}) {
-      const {payload} = params;
-      yield call(getAllMetadata,payload )
-    }
+    *updateOp(params, { call, put }) {
+      const { payload, fetchValue, callback } = params;
+      const json = yield call(updateAuthOpened, payload);
+      if (json.code === 200) {
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
+        callback();
+        yield put({ type: "reload", fetchValue });
+      } else {
+        message.warn(json.message);
+      }
+    },
+    *syncDa(params, { call }) {
+      const { payload } = params;
+      const json = yield call(syncAuthsData, payload);
+      if (json.code === 200) {
+        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.SYNC.SUCCESS"));
+      } else {
+        message.warn(json.message);
+      }
+    },
+    *getDatas(params, { call }) {
+      const { payload } = params;
+      yield call(getAllMetadata, payload);
+    },
   },
 
   reducers: {
@@ -175,7 +203,7 @@ export default {
       return {
         ...state,
         authList: payload.dataList,
-        total: payload.total
+        total: payload.total,
       };
     },
     // saveUsers(state, { payload }) {
@@ -185,5 +213,5 @@ export default {
     //     total: payload.total
     //   };
     // }
-  }
+  },
 };

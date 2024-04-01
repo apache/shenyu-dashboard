@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, Tabs } from 'antd';
-import classNames from 'classnames';
-import LoginItem from './LoginItem';
-import LoginTab from './LoginTab';
-import LoginSubmit from './LoginSubmit';
-import LoginCode from './LoginCode';
-import styles from './index.less';
+/* eslint-disable react/static-property-placement */
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Form, Tabs } from "antd";
+import classNames from "classnames";
+import LoginItem from "./LoginItem";
+import LoginTab from "./LoginTab";
+import LoginSubmit from "./LoginSubmit";
+import LoginCode from "./LoginCode";
+import styles from "./index.less";
 
 class Login extends Component {
   static propTypes = {
@@ -40,10 +41,10 @@ class Login extends Component {
   };
 
   static defaultProps = {
-    className: '',
-    defaultActiveKey: '',
-    onTabChange: () => { },
-    onSubmit: () => { },
+    className: "",
+    defaultActiveKey: "",
+    onTabChange: () => {},
+    onSubmit: () => {},
   };
 
   constructor(props) {
@@ -60,19 +61,19 @@ class Login extends Component {
     const { form } = this.props;
     return {
       tabUtil: {
-        addTab: id => {
+        addTab: (id) => {
           this.setState({
             tabs: [...tabs, id],
           });
         },
-        removeTab: id => {
+        removeTab: (id) => {
           this.setState({
-            tabs: tabs.filter(currentId => currentId !== id),
+            tabs: tabs.filter((currentId) => currentId !== id),
           });
         },
       },
       form,
-      updateActive: activeItem => {
+      updateActive: (activeItem) => {
         const { type, active } = this.state;
         if (active[type]) {
           active[type].push(activeItem);
@@ -86,7 +87,7 @@ class Login extends Component {
     };
   }
 
-  onSwitch = type => {
+  onSwitch = (type) => {
     const { onTabChange } = this.props;
     this.setState({
       type,
@@ -94,7 +95,7 @@ class Login extends Component {
     onTabChange(type);
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
     const { active, type } = this.state;
     const { form, onSubmit } = this.props;
@@ -109,7 +110,7 @@ class Login extends Component {
     const { type, tabs } = this.state;
     const TabChildren = [];
     const otherChildren = [];
-    React.Children.forEach(children, item => {
+    React.Children.forEach(children, (item) => {
       if (!item) {
         return;
       }
@@ -147,7 +148,7 @@ class Login extends Component {
 Login.Tab = LoginTab;
 Login.Submit = LoginSubmit;
 Login.LoginCode = LoginCode;
-Object.keys(LoginItem).forEach(item => {
+Object.keys(LoginItem).forEach((item) => {
   Login[item] = LoginItem[item];
 });
 

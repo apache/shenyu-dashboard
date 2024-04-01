@@ -22,7 +22,7 @@ import {
   updateUser,
   deleteUser,
   addUser,
-  updatePassword
+  updatePassword,
 } from "../services/api";
 import { getIntlContent } from "../utils/IntlUtils";
 
@@ -31,7 +31,7 @@ export default {
 
   state: {
     userList: [],
-    total: 0
+    total: 0,
   },
 
   effects: {
@@ -40,7 +40,7 @@ export default {
       const json = yield call(getAllUsers, payload);
       if (json.code === 200) {
         let { page, dataList } = json.data;
-        dataList = dataList.map(item => {
+        dataList = dataList.map((item) => {
           item.key = item.id;
           return item;
         });
@@ -48,16 +48,16 @@ export default {
           type: "saveUsers",
           payload: {
             total: page.totalCount,
-            dataList
-          }
+            dataList,
+          },
         });
       } else {
         yield put({
           type: "saveUsers",
           payload: {
             total: 0,
-            dataList: []
-          }
+            dataList: [],
+          },
         });
       }
     },
@@ -86,7 +86,7 @@ export default {
       const json = yield call(deleteUser, { list });
       if (json.code === 200) {
         message.success(
-          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS")
+          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
         );
         callback();
         yield put({ type: "reload", fetchValue });
@@ -99,7 +99,7 @@ export default {
       const json = yield call(updateUser, payload);
       if (json.code === 200) {
         message.success(
-          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS")
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
         );
         callback();
         if (fetchValue) {
@@ -114,7 +114,7 @@ export default {
       const json = yield call(updatePassword, payload);
       if (json.code === 200) {
         message.success(
-          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS")
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
         );
         callback();
       } else {
@@ -126,7 +126,7 @@ export default {
       const json = yield call(updateUser, payload);
       if (json.code === 200) {
         message.success(
-          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS")
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
         );
         callback();
       } else {
@@ -138,7 +138,7 @@ export default {
       const { userName, currentPage, pageSize } = fetchValue;
       const payload = { userName, currentPage, pageSize };
       yield put({ type: "fetch", payload });
-    }
+    },
   },
 
   reducers: {
@@ -146,8 +146,8 @@ export default {
       return {
         ...state,
         userList: payload.dataList,
-        total: payload.total
+        total: payload.total,
       };
-    }
-  }
+    },
+  },
 };

@@ -28,7 +28,7 @@ const DEFAULT_ALERT_TYPE = 1;
 
 @connect(({ alert, loading }) => ({
   alert,
-  loading: loading.effects["alert/fetch"]
+  loading: loading.effects["alert/fetch"],
 }))
 export default class Alert extends Component {
   constructor(props) {
@@ -36,7 +36,7 @@ export default class Alert extends Component {
     this.state = {
       currentPage: 1,
       pageSize: 12,
-      selectedRowKeys: []
+      selectedRowKeys: [],
     };
   }
 
@@ -44,7 +44,7 @@ export default class Alert extends Component {
     this.getAllAlerts();
   }
 
-  onSelectChange = selectedRowKeys => {
+  onSelectChange = (selectedRowKeys) => {
     this.setState({ selectedRowKeys });
   };
 
@@ -55,12 +55,12 @@ export default class Alert extends Component {
       type: "alert/fetch",
       payload: {
         currentPage,
-        pageSize
-      }
+        pageSize,
+      },
     });
   };
 
-  pageOnchange = page => {
+  pageOnchange = (page) => {
     this.setState({ currentPage: page }, this.getAllAlerts);
   };
 
@@ -72,34 +72,32 @@ export default class Alert extends Component {
     this.setState({ popup: "" });
   };
 
-  editClick = record => {
-    const {
-      dispatch,
-    } = this.props;
+  editClick = (record) => {
+    const { dispatch } = this.props;
     const { currentPage, pageSize } = this.state;
     dispatch({
       type: "alert/fetchItem",
       payload: {
-        id: record.id
+        id: record.id,
       },
-      callback: alert => {
+      callback: (alert) => {
         this.setState({
           popup: (
             <AddModal
               {...alert}
-              handleOk={values => {
+              handleOk={(values) => {
                 dispatch({
                   type: "alert/update",
                   payload: { ...alert, ...values },
                   fetchValue: {
                     currentPage,
-                    pageSize
+                    pageSize,
                   },
                   callback: () => {
                     this.setState({ selectedRowKeys: [] });
                     this.closeModal();
                     this.getAllAlerts();
-                  }
+                  },
                 });
               }}
               handleCancel={() => {
@@ -108,13 +106,13 @@ export default class Alert extends Component {
               handleSendTest={(values) => {
                 dispatch({
                   type: "alert/sendTest",
-                  payload: values
+                  payload: values,
                 });
               }}
             />
-          )
+          ),
         });
-      }
+      },
     });
   };
 
@@ -125,15 +123,15 @@ export default class Alert extends Component {
       dispatch({
         type: "alert/delete",
         payload: {
-          list: selectedRowKeys
+          list: selectedRowKeys,
         },
         fetchValue: {
           currentPage,
-          pageSize
+          pageSize,
         },
         callback: () => {
           this.setState({ selectedRowKeys: [] });
-        }
+        },
       });
     } else {
       message.destroy();
@@ -147,39 +145,40 @@ export default class Alert extends Component {
       popup: (
         <AddModal
           type={DEFAULT_ALERT_TYPE}
-          handleOk={values => {
+          handleOk={(values) => {
             const { dispatch } = this.props;
             dispatch({
               type: "alert/add",
               payload: values,
               fetchValue: {
                 currentPage,
-                pageSize
+                pageSize,
               },
               callback: () => {
                 this.setState({ selectedRowKeys: [] });
                 this.closeModal();
                 this.getAllAlerts();
-              }
+              },
             });
           }}
           handleCancel={() => {
             this.closeModal();
           }}
-          handleSendTest={values => {
+          handleSendTest={(values) => {
             this.props.dispatch({
               type: "alert/sendTest",
-              payload: values
+              payload: values,
             });
           }}
         />
-      )
+      ),
     });
   };
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   changeLocale(locale) {
     this.setState({
-      localeName: locale
+      localeName: locale,
     });
     getCurrentLocale(this.state.localeName);
   }
@@ -195,16 +194,16 @@ export default class Alert extends Component {
         dataIndex: "name",
         key: "name",
         ellipsis: true,
-        sorter: (a, b) => (a.name > b.name ? 1 : -1)
+        sorter: (a, b) => (a.name > b.name ? 1 : -1),
       },
       {
         align: "center",
         title: getIntlContent("SHENYU.SYSTEM.ALERT.TYPE"),
         dataIndex: "type",
         key: "type",
-        render: type => getIntlContent(Type[type]),
+        render: (type) => getIntlContent(Type[type]),
         ellipsis: true,
-        sorter: (a, b) => (a.type > b.type ? 1 : -1)
+        sorter: (a, b) => (a.type > b.type ? 1 : -1),
       },
       {
         align: "center",
@@ -216,11 +215,12 @@ export default class Alert extends Component {
               return row.email;
             case 5:
               return row.accessToken;
-            default: return null
+            default:
+              return null;
           }
         },
         key: "config",
-        ellipsis: true
+        ellipsis: true,
       },
       {
         align: "center",
@@ -233,29 +233,30 @@ export default class Alert extends Component {
             checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
             unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
             checked={text}
-            onChange={checked => {
+            onChange={(checked) => {
               dispatch({
                 type: "alert/update",
                 payload: {
                   ...row,
-                  enable: checked
+                  enable: checked,
                 },
                 callback: () => {
                   this.getAllAlerts();
-                }
+                },
               });
             }}
           />
-        )
+        ),
       },
       {
         align: "center",
         title: getIntlContent("SHENYU.SYSTEM.UPDATETIME"),
         dataIndex: "dateUpdated",
         key: "dateUpdated",
-        render: dateUpdated => dayjs(dateUpdated).format('YYYY-MM-DD HH:mm:ss'),
+        render: (dateUpdated) =>
+          dayjs(dateUpdated).format("YYYY-MM-DD HH:mm:ss"),
         ellipsis: true,
-        sorter: (a, b) => (a.dateUpdated > b.dateUpdated ? 1 : -1)
+        sorter: (a, b) => (a.dateUpdated > b.dateUpdated ? 1 : -1),
       },
       {
         align: "center",
@@ -278,13 +279,13 @@ export default class Alert extends Component {
               </AuthButton>
             </div>
           );
-        }
-      }
+        },
+      },
     ];
 
     const rowSelection = {
       selectedRowKeys,
-      onChange: this.onSelectChange
+      onChange: this.onSelectChange,
     };
 
     return (
@@ -333,7 +334,7 @@ export default class Alert extends Component {
             current: currentPage,
             pageSize,
             onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange
+            onChange: this.pageOnchange,
           }}
         />
         {popup}

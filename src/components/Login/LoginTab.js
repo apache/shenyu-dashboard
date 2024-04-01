@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Tabs } from 'antd';
+/* eslint-disable react/static-property-placement */
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Tabs } from "antd";
 
 const { TabPane } = Tabs;
 
 const generateId = (() => {
   let i = 0;
-  return (prefix = '') => {
+  return (prefix = "") => {
     i += 1;
     return `${prefix}${i}`;
   };
 })();
 
 export default class LoginTab extends Component {
+  static __ANT_PRO_LOGIN_TAB = true;
 
   static contextTypes = {
     tabUtil: PropTypes.object,
@@ -37,7 +39,7 @@ export default class LoginTab extends Component {
 
   constructor(props) {
     super(props);
-    this.uniqueId = generateId('login-tab-');
+    this.uniqueId = generateId("login-tab-");
   }
 
   componentDidMount() {
@@ -46,8 +48,6 @@ export default class LoginTab extends Component {
       tabUtil.addTab(this.uniqueId);
     }
   }
-
-  static __ANT_PRO_LOGIN_TAB = true;
 
   render() {
     return <TabPane {...this.props} />;

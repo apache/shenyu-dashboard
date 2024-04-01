@@ -16,7 +16,16 @@
  */
 
 import React, { Component, forwardRef, Fragment } from "react";
-import { Modal, Form, Switch, Input, Select, Divider, InputNumber, Button} from "antd";
+import {
+  Modal,
+  Form,
+  Switch,
+  Input,
+  Select,
+  Divider,
+  InputNumber,
+  Button,
+} from "antd";
 import { connect } from "dva";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
@@ -29,16 +38,29 @@ const ChooseFile = forwardRef(({ onChange, file }, ref) => {
 
   return (
     <>
-      <Button onClick={() => { document.getElementById("file").click(); }}>Upload</Button> {file?.name}
-      <input ref={ref} type="file" onChange={handleFileInput} style={{ display: 'none' }} id="file" />
+      <Button
+        onClick={() => {
+          document.getElementById("file").click();
+        }}
+      >
+        Upload
+      </Button>{" "}
+      {file?.name}
+      <input
+        ref={ref}
+        type="file"
+        onChange={handleFileInput}
+        style={{ display: "none" }}
+        id="file"
+      />
     </>
   );
 });
 @connect(({ global }) => ({
-  platform: global.platform
+  platform: global.platform,
 }))
 class AddModal extends Component {
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     const { form, handleOk, id = "", data } = this.props;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
@@ -46,8 +68,8 @@ class AddModal extends Component {
         let { name, role, enabled, config, sort, file } = values;
         if (data && data.length > 0) {
           config = {};
-          data.forEach(item => {
-            let fieldName = `__${  item.field}__`
+          data.forEach((item) => {
+            let fieldName = `__${item.field}__`;
             if (values[fieldName]) {
               config[item.field] = values[fieldName];
             }
@@ -73,17 +95,17 @@ class AddModal extends Component {
       id,
       data,
       sort,
-      file
+      file,
     } = this.props;
     let disable = id !== undefined;
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 7 }
+        sm: { span: 7 },
       },
       wrapperCol: {
-        sm: { span: 17 }
-      }
+        sm: { span: 17 },
+      },
     };
     if (config) {
       config = JSON.parse(config);
@@ -105,121 +127,123 @@ class AddModal extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.PLUGIN.SELECT")
-                }
+                  message: getIntlContent("SHENYU.PLUGIN.SELECT"),
+                },
               ],
-              initialValue: name
+              initialValue: name,
             })(
               <Input
                 allowClear
                 placeholder={getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME")}
                 disabled={disable}
-              />
+              />,
             )}
           </FormItem>
-          {data &&
-            data.length > 0 && (
-              <Fragment>
-                <Divider>
-                  {name} {getIntlContent("SHENYU.COMMON.SETTING")}
-                </Divider>
-                {data.map((eachField, index) => {
-                  let fieldInitialValue = config
-                    ? config[eachField.field]
-                    : undefined;
-                  // Add prefixes to prevent naming conflicts
-                  let fieldName = `__${  eachField.field}__`;
-                  let dataType = eachField.dataType;
-                  let required = "";
-                  let checkRule;
-                  if (eachField.extObj) {
-                    let extObj = JSON.parse(eachField.extObj);
-                    required = extObj.required === "0" ? "" : extObj.required;
-                    if (!fieldInitialValue) {
-                      fieldInitialValue = extObj.defaultValue;
-                    }
-                    if (extObj.rule) {
-                      checkRule = extObj.rule;
-                    }
+          {data && data.length > 0 && (
+            <>
+              <Divider>
+                {name} {getIntlContent("SHENYU.COMMON.SETTING")}
+              </Divider>
+              {data.map((eachField, index) => {
+                let fieldInitialValue = config
+                  ? config[eachField.field]
+                  : undefined;
+                // Add prefixes to prevent naming conflicts
+                let fieldName = `__${eachField.field}__`;
+                let dataType = eachField.dataType;
+                let required = "";
+                let checkRule;
+                if (eachField.extObj) {
+                  let extObj = JSON.parse(eachField.extObj);
+                  required = extObj.required === "0" ? "" : extObj.required;
+                  if (!fieldInitialValue) {
+                    fieldInitialValue = extObj.defaultValue;
                   }
-                  let rules = [];
-                  if (required) {
-                    rules.push({
-                      required: { required },
-                      message: getIntlContent("SHENYU.COMMON.PLEASEINPUT")
-                    });
+                  if (extObj.rule) {
+                    checkRule = extObj.rule;
                   }
-                  if (checkRule) {
-                    rules.push({
-                      // eslint-disable-next-line no-eval
-                      pattern: eval(checkRule),
-                      message: `${getIntlContent(
-                        "SHENYU.PLUGIN.RULE.INVALID"
-                      )}:(${checkRule})`
-                    });
-                  }
-                  if (dataType === 1) {
-                    return (
-                      <FormItem
-                        label={eachField.label}
-                        name={fieldName}
-                        {...formItemLayout}
-                        key={index}
-                      >
-                        {getFieldDecorator(fieldName, {
-                          rules,
-                          initialValue: fieldInitialValue
-                        })(
-                          <InputNumber precision={0} placeholder={eachField.label} />
-                        )}
-                      </FormItem>
-                    );
-                  } else if (dataType === 3 && eachField.dictOptions) {
-                    return (
-                      <FormItem
-                        label={eachField.label}
-                        name={fieldName}
-                        {...formItemLayout}
-                        key={index}
-                      >
-                        {getFieldDecorator(fieldName, {
-                          rules,
-                          initialValue: fieldInitialValue
-                        })(
-                          <Select placeholder={eachField.label}>
-                            {eachField.dictOptions.map(option => {
-                              return (
-                                <Option
-                                  key={option.dictValue}
-                                  value={option.dictValue}
-                                >
-                                  {option.dictName} ({eachField.label})
-                                </Option>
-                              );
-                            })}
-                          </Select>
-                        )}
-                      </FormItem>
-                    );
-                  } else {
-                    return (
-                      <FormItem
-                        label={eachField.label}
-                        name={fieldName}
-                        {...formItemLayout}
-                        key={index}
-                      >
-                        {getFieldDecorator(fieldName, {
-                          rules,
-                          initialValue: fieldInitialValue
-                        })(<Input allowClear placeholder={eachField.label} />)}
-                      </FormItem>
-                    );
-                  }
-                })}
-                <Divider />
-              </Fragment>
-            )}
+                }
+                let rules = [];
+                if (required) {
+                  rules.push({
+                    required: { required },
+                    message: getIntlContent("SHENYU.COMMON.PLEASEINPUT"),
+                  });
+                }
+                if (checkRule) {
+                  rules.push({
+                    // eslint-disable-next-line no-eval
+                    pattern: eval(checkRule),
+                    message: `${getIntlContent(
+                      "SHENYU.PLUGIN.RULE.INVALID",
+                    )}:(${checkRule})`,
+                  });
+                }
+                if (dataType === 1) {
+                  return (
+                    <FormItem
+                      label={eachField.label}
+                      name={fieldName}
+                      {...formItemLayout}
+                      key={index}
+                    >
+                      {getFieldDecorator(fieldName, {
+                        rules,
+                        initialValue: fieldInitialValue,
+                      })(
+                        <InputNumber
+                          precision={0}
+                          placeholder={eachField.label}
+                        />,
+                      )}
+                    </FormItem>
+                  );
+                } else if (dataType === 3 && eachField.dictOptions) {
+                  return (
+                    <FormItem
+                      label={eachField.label}
+                      name={fieldName}
+                      {...formItemLayout}
+                      key={index}
+                    >
+                      {getFieldDecorator(fieldName, {
+                        rules,
+                        initialValue: fieldInitialValue,
+                      })(
+                        <Select placeholder={eachField.label}>
+                          {eachField.dictOptions.map((option) => {
+                            return (
+                              <Option
+                                key={option.dictValue}
+                                value={option.dictValue}
+                              >
+                                {option.dictName} ({eachField.label})
+                              </Option>
+                            );
+                          })}
+                        </Select>,
+                      )}
+                    </FormItem>
+                  );
+                } else {
+                  return (
+                    <FormItem
+                      label={eachField.label}
+                      name={fieldName}
+                      {...formItemLayout}
+                      key={index}
+                    >
+                      {getFieldDecorator(fieldName, {
+                        rules,
+                        initialValue: fieldInitialValue,
+                      })(<Input allowClear placeholder={eachField.label} />)}
+                    </FormItem>
+                  );
+                }
+              })}
+              <Divider />
+            </>
+          )}
           <FormItem
             label={getIntlContent("SHENYU.SYSTEM.ROLE")}
             {...formItemLayout}
@@ -228,10 +252,10 @@ class AddModal extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.SYSTEM.SELECTROLE")
-                }
+                  message: getIntlContent("SHENYU.SYSTEM.SELECTROLE"),
+                },
               ],
-              initialValue: role
+              initialValue: role,
             })(<Input allowClear maxLength={50} />)}
           </FormItem>
           <FormItem
@@ -242,16 +266,11 @@ class AddModal extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.PLUGIN.INPUTSORT")
-                }
+                  message: getIntlContent("SHENYU.PLUGIN.INPUTSORT"),
+                },
               ],
-              initialValue: sort
-            })(
-              <InputNumber
-                precision={0}
-                style={{ width: "100%" }}
-              />
-            )}
+              initialValue: sort,
+            })(<InputNumber precision={0} style={{ width: "100%" }} />)}
           </FormItem>
 
           <FormItem
@@ -262,15 +281,12 @@ class AddModal extends Component {
               rules: [
                 {
                   required: false,
-                }
+                },
               ],
               initialValue: file,
-              valuePropName: "file"
-            })(  <ChooseFile />)
-
-            }
+              valuePropName: "file",
+            })(<ChooseFile />)}
           </FormItem>
-
 
           <FormItem
             {...formItemLayout}
@@ -278,7 +294,7 @@ class AddModal extends Component {
           >
             {getFieldDecorator("enabled", {
               initialValue: enabled,
-              valuePropName: "checked"
+              valuePropName: "checked",
             })(<Switch />)}
           </FormItem>
         </Form>

@@ -35,15 +35,15 @@ export default class GeneralContextRuleHandle extends Component {
     const { handle } = props;
     const keys = {};
     const handleData = {};
-    handlers.forEach(v => {
+    handlers.forEach((v) => {
       keys[v] = [];
     });
     // format handle
     try {
       const handleJSON = JSON.parse(handle);
-      handlers.forEach(handleName => {
+      handlers.forEach((handleName) => {
         if (Array.isArray(handleJSON[handleName])) {
-          keys[handleName] = handleJSON[handleName].map(data => {
+          keys[handleName] = handleJSON[handleName].map((data) => {
             const Guid = guid();
             if (!handleData[handleName]) {
               handleData[handleName] = {};
@@ -56,43 +56,44 @@ export default class GeneralContextRuleHandle extends Component {
         }
       });
     } catch (e) {
-      handlers.forEach(handleName => {
+      handlers.forEach((handleName) => {
         keys[handleName] = [guid()];
       });
     }
     this.keys = keys;
     this.handleData = handleData;
     this.state = {
-      currentType: handlers[0]
+      currentType: handlers[0],
     };
   }
 
-  handleAddRow = handler => {
+  handleAddRow = (handler) => {
     const {
-      form: { setFieldsValue, getFieldValue }
+      form: { setFieldsValue, getFieldValue },
     } = this.props;
-    const keys = Object.assign({}, getFieldValue("keys"));
+    const keys = { ...getFieldValue("keys") };
     keys[handler].push(guid());
     setFieldsValue({ keys });
   };
 
   handleDeleteRow = (handler, key) => {
     const {
-      form: { setFieldsValue, getFieldValue }
+      form: { setFieldsValue, getFieldValue },
     } = this.props;
-    const keys = Object.assign({}, getFieldValue("keys"));
+    const keys = { ...getFieldValue("keys") };
     if (keys[handler].length === 1) {
       return;
     }
-    keys[handler] = keys[handler].filter(v => v !== key);
+    keys[handler] = keys[handler].filter((v) => v !== key);
     setFieldsValue({ keys });
   };
 
-  getData = values => {
+  // eslint-disable-next-line react/no-unused-class-component-methods
+  getData = (values) => {
     const { handle, keys } = values;
     const handleData = {};
-    handlers.forEach(v => {
-      handleData[v] = keys[v].map(key => handle[v][key]);
+    handlers.forEach((v) => {
+      handleData[v] = keys[v].map((key) => handle[v][key]);
     });
     return JSON.stringify(handleData);
   };
@@ -103,7 +104,7 @@ export default class GeneralContextRuleHandle extends Component {
     const { form } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
     getFieldDecorator("keys", {
-      initialValue: this.keys
+      initialValue: this.keys,
     });
     const keys = getFieldValue("keys");
 
@@ -119,7 +120,7 @@ export default class GeneralContextRuleHandle extends Component {
           defaultActiveKey={currentType}
           onChange={this.handleTabChange}
         >
-          {handlers.map(handler => (
+          {handlers.map((handler) => (
             <TabPane tab={titleCase(handler)} key={handler}>
               {keys[handler].map((key, keyIndex) => (
                 <Row gutter={16} key={key}>
@@ -129,20 +130,20 @@ export default class GeneralContextRuleHandle extends Component {
                         `handle['${handler}']['${key}']['generalContextType']`,
                         {
                           initialValue:
-                            handleData?.[handler]?.[key]?.generalContextType
-                        }
+                            handleData?.[handler]?.[key]?.generalContextType,
+                        },
                       )(
                         <Select
                           placeholder={titleCase(
-                            `Select ${handler} Context Type`
+                            `Select ${handler} Context Type`,
                           )}
                         >
-                          {contextType.map(v => (
+                          {contextType.map((v) => (
                             <Option value={v} key={v} title={v}>
                               {v}
                             </Option>
                           ))}
-                        </Select>
+                        </Select>,
                       )}
                     </FormItem>
                   </Col>
@@ -152,15 +153,13 @@ export default class GeneralContextRuleHandle extends Component {
                         `handle['${handler}']['${key}']['generalContextKey']`,
                         {
                           initialValue:
-                            handleData?.[handler]?.[key]?.generalContextKey
-                        }
+                            handleData?.[handler]?.[key]?.generalContextKey,
+                        },
                       )(
                         <Input
                           allowClear
-                          placeholder={titleCase(
-                            `Set ${handler} Context Key`
-                          )}
-                        />
+                          placeholder={titleCase(`Set ${handler} Context Key`)}
+                        />,
                       )}
                     </FormItem>
                   </Col>
@@ -170,15 +169,15 @@ export default class GeneralContextRuleHandle extends Component {
                         `handle['${handler}']['${key}']['generalContextValue']`,
                         {
                           initialValue:
-                            handleData?.[handler]?.[key]?.generalContextValue
-                        }
+                            handleData?.[handler]?.[key]?.generalContextValue,
+                        },
                       )(
                         <Input
                           allowClear
                           placeholder={titleCase(
-                            `Set ${handler} Context Value`
+                            `Set ${handler} Context Value`,
                           )}
-                        />
+                        />,
                       )}
                     </FormItem>
                   </Col>

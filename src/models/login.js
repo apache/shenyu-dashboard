@@ -25,7 +25,7 @@ export default {
   namespace: "login",
 
   state: {
-    status: undefined
+    status: undefined,
   },
 
   effects: {
@@ -38,8 +38,8 @@ export default {
           type: "changeLoginStatus",
           payload: {
             status: true,
-            currentAuthority: "admin"
-          }
+            currentAuthority: "admin",
+          },
         });
         window.sessionStorage.setItem("token", response.data.token);
         window.sessionStorage.setItem("userName", response.data.userName);
@@ -75,29 +75,29 @@ export default {
         type: "changeLoginStatus",
         payload: {
           status: false,
-          currentAuthority: ""
-        }
+          currentAuthority: "",
+        },
       });
       window.sessionStorage.removeItem("token");
       window.sessionStorage.removeItem("userName");
       window.sessionStorage.removeItem("userId");
       yield put(
         routerRedux.push({
-          pathname: "/user/login"
+          pathname: "/user/login",
           /* search: stringify({
             redirect: window.location.href
           }) */
-        })
+        }),
       );
-    }
+    },
   },
 
   reducers: {
     changeLoginStatus(state, { payload }) {
       return {
         ...state,
-        status: payload.status
+        status: payload.status,
       };
-    }
-  }
+    },
+  },
 };

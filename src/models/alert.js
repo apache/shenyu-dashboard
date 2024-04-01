@@ -17,95 +17,98 @@
 
 import { message } from "antd";
 import { getIntlContent } from "../utils/IntlUtils";
-import { getAlertReceivers, getAlertReceiverDetail, updateAlertReceiver, addAlertReceiver, deleteAlertReceivers, fetchAlertReport } from '../services/api';
+import {
+  getAlertReceivers,
+  getAlertReceiverDetail,
+  updateAlertReceiver,
+  addAlertReceiver,
+  deleteAlertReceivers,
+  fetchAlertReport,
+} from "../services/api";
 
 export default {
-    namespace: 'alert',
+  namespace: "alert",
 
-    state: {
-        alertList: [],
-        total: 0,
-    },
+  state: {
+    alertList: [],
+    total: 0,
+  },
 
-    effects: {
-        *fetch({ payload }, { call, put }) {
-            const response = yield call(getAlertReceivers, payload);
-            yield put({
-                type: 'save',
-                payload: response.data,
-            });
-        },
-        *fetchItem({ payload, callback }, { call }) {
-            const json = yield call(getAlertReceiverDetail, payload);
-            if (json.code === 200) {
-                const alert = json.data;
-                callback(alert);
-            }
-        },
-        *update(params, { call }) {
-            const { payload, callback } = params;
-            const json = yield call(updateAlertReceiver, payload);
-            if (json.code === 200) {
-                message.success(
-                    getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS")
-                );
-                callback()
-            } else {
-                message.warn(json.message);
-            }
-        },
-        *add(params, { call }) {
-            const { payload, callback } = params;
-            const json = yield call(addAlertReceiver, payload);
-            if (json.code === 200) {
-                message.success(
-                    getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS")
-                );
-                callback()
-            } else {
-                message.warn(json.message);
-            }
-        },
-        *delete(params, { call, put }) {
-            const { payload, fetchValue, callback } = params;
-            const { list } = payload;
-            const json = yield call(deleteAlertReceivers, { list });
-            if (json.code === 200) {
-                message.success(
-                    getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS")
-                );
-                callback();
-                yield put({ type: "reload", fetchValue });
-            } else {
-                message.warn(json.message);
-            }
-        },
-        *sendTest(params, { call }) {
-            const { payload } = params;
-            const json = yield call(fetchAlertReport, payload);
-            if (json.code === 200) {
-                message.success(
-                    getIntlContent("SHENYU.SYSTEM.ALERT.SEND_SUCCESS")
-                );
-            } else {
-                message.warn(json.message);
-            }
-        },
-        *reload(params, { put }) {
-            const { fetchValue } = params;
-            const { userName, currentPage, pageSize } = fetchValue;
-            const payload = { userName, currentPage, pageSize };
-            yield put({ type: "fetch", payload });
-        }
+  effects: {
+    *fetch({ payload }, { call, put }) {
+      const response = yield call(getAlertReceivers, payload);
+      yield put({
+        type: "save",
+        payload: response.data,
+      });
     },
+    *fetchItem({ payload, callback }, { call }) {
+      const json = yield call(getAlertReceiverDetail, payload);
+      if (json.code === 200) {
+        const alert = json.data;
+        callback(alert);
+      }
+    },
+    *update(params, { call }) {
+      const { payload, callback } = params;
+      const json = yield call(updateAlertReceiver, payload);
+      if (json.code === 200) {
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
+        callback();
+      } else {
+        message.warn(json.message);
+      }
+    },
+    *add(params, { call }) {
+      const { payload, callback } = params;
+      const json = yield call(addAlertReceiver, payload);
+      if (json.code === 200) {
+        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
+        callback();
+      } else {
+        message.warn(json.message);
+      }
+    },
+    *delete(params, { call, put }) {
+      const { payload, fetchValue, callback } = params;
+      const { list } = payload;
+      const json = yield call(deleteAlertReceivers, { list });
+      if (json.code === 200) {
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
+        );
+        callback();
+        yield put({ type: "reload", fetchValue });
+      } else {
+        message.warn(json.message);
+      }
+    },
+    *sendTest(params, { call }) {
+      const { payload } = params;
+      const json = yield call(fetchAlertReport, payload);
+      if (json.code === 200) {
+        message.success(getIntlContent("SHENYU.SYSTEM.ALERT.SEND_SUCCESS"));
+      } else {
+        message.warn(json.message);
+      }
+    },
+    *reload(params, { put }) {
+      const { fetchValue } = params;
+      const { userName, currentPage, pageSize } = fetchValue;
+      const payload = { userName, currentPage, pageSize };
+      yield put({ type: "fetch", payload });
+    },
+  },
 
-    reducers: {
-        save(state, { payload }) {
-            return {
-                ...state,
-                alertList: payload.dataList,
-                total: payload.page.totalCount
-            };
-        },
+  reducers: {
+    save(state, { payload }) {
+      return {
+        ...state,
+        alertList: payload.dataList,
+        total: payload.page.totalCount,
+      };
     },
+  },
 };

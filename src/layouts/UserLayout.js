@@ -28,21 +28,24 @@ import { getRoutes, getPageQuery, getQueryPath } from "../utils/utils";
 message.config({
   top: 200,
   duration: 2,
-  maxCount: 3
+  maxCount: 3,
 });
 const links = [];
 
 const copyright = (
-  <Fragment>
-    Copyright <Icon type="copyright" /> {new Date().getFullYear()} The Apache Software Foundation, Licensed under the Apache License, Version 2.0. Apache ShenYu, Apache, the Apache feather logo, the Apache ShenYu logo are trademarks of The Apache Software Foundation.
-  </Fragment>
+  <>
+    Copyright <Icon type="copyright" /> {new Date().getFullYear()} The Apache
+    Software Foundation, Licensed under the Apache License, Version 2.0. Apache
+    ShenYu, Apache, the Apache feather logo, the Apache ShenYu logo are
+    trademarks of The Apache Software Foundation.
+  </>
 );
 
 function getLoginPathWithRedirectPath() {
   const params = getPageQuery();
   const { redirect } = params;
   return getQueryPath("/user/login", {
-    redirect
+    redirect,
   });
 }
 
@@ -74,7 +77,7 @@ class UserLayout extends React.PureComponent {
               </div>
             </div>
             <Switch>
-              {getRoutes(match.path, routerData).map(item => (
+              {getRoutes(match.path, routerData).map((item) => (
                 <Route
                   key={item.key}
                   path={item.path}
@@ -93,5 +96,5 @@ class UserLayout extends React.PureComponent {
 }
 
 export default connect(({ global = {} }) => ({
-  collapsed: global.collapsed
+  collapsed: global.collapsed,
 }))(UserLayout);

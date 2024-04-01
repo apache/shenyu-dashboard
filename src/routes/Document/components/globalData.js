@@ -23,7 +23,7 @@ export const Method = {
   4: "PATCH",
   5: "DELETE",
   6: "OPTIONS",
-  7: "TRACE"
+  7: "TRACE",
 };
 
 export const RPCTYPE = [
@@ -34,7 +34,7 @@ export const RPCTYPE = [
   "websocket",
   "springCloud",
   "motan",
-  "grpc"
+  "grpc",
 ];
 
 export const API_SOURCE_TYPE = [
@@ -42,11 +42,7 @@ export const API_SOURCE_TYPE = [
   "annotation generation",
   "create manually",
   "import swagger",
-  "import yapi"
+  "import yapi",
 ];
 
-export const STATE_TYPE = [
-  "unpublished",
-  "published",
-  "offline"
-];
+export const STATE_TYPE = ["unpublished", "published", "offline"];

@@ -17,7 +17,13 @@
 
 module.exports = {
   parser: 'babel-eslint',
-  extends: ['airbnb', 'prettier'],
+  extends: [
+    'airbnb',
+    'prettier'
+  ],
+  plugins: [
+    'prettier',
+  ],
   env: {
     browser: true,
     node: true,
@@ -58,6 +64,8 @@ module.exports = {
         prop: 'ignore',
       },
     ],
+    'react/jsx-props-no-spreading': 'off',
+    'react/function-component-definition': 'off',
     'no-else-return': [0],
     'no-restricted-syntax': [0],
     'import/no-extraneous-dependencies': [0],
@@ -75,7 +83,8 @@ module.exports = {
     'object-curly-newline': [0],
     'function-paren-newline': [0],
     'no-restricted-globals': [0],
-    'require-yield': [1]
+    'require-yield': [1],
+    'prettier/prettier': 'error',
   },
   parserOptions: {
     ecmaFeatures: {

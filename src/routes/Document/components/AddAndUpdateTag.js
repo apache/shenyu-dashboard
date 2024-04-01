@@ -1,21 +1,22 @@
 /*
-	* Licensed to the Apache Software Foundation (ASF) under one or more
-	* contributor license agreements. See the NOTICE file distributed with
-	* this work for additional information regarding copyright ownership.
-	* The ASF licenses this file to You under the Apache License, Version 2.0
-	* (the "License"); you may not use this file except in compliance with
-	* the License. You may obtain a copy of the License at
-	*
-	* http://www.apache.org/licenses/LICENSE-2.0
-	*
-	* Unless required by applicable law or agreed to in writing, software
-	* distributed under the License is distributed on an "AS IS" BASIS,
-	* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	* See the License for the specific language governing permissions and
-	* limitations under the License.
-	*/
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 /* eslint-disable no-unused-expressions */
+/* eslint-disable react/static-property-placement */
 import { Modal, Form, Input, message } from "antd";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
@@ -28,7 +29,7 @@ class AddAndUpdateTag extends Component {
     visible: PropTypes.bool,
     formLoaded: PropTypes.func,
     onOk: PropTypes.func,
-    onCancel: PropTypes.func
+    onCancel: PropTypes.func,
   };
 
   componentDidMount() {
@@ -39,7 +40,7 @@ class AddAndUpdateTag extends Component {
   handleSubmit = () => {
     const {
       onOk,
-      form: { validateFieldsAndScroll }
+      form: { validateFieldsAndScroll },
     } = this.props;
     validateFieldsAndScroll(async (err, values) => {
       if (!err) {
@@ -67,11 +68,11 @@ class AddAndUpdateTag extends Component {
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 5 }
+        sm: { span: 5 },
       },
       wrapperCol: {
-        sm: { span: 19 }
-      }
+        sm: { span: 19 },
+      },
     };
 
     return (
@@ -88,12 +89,15 @@ class AddAndUpdateTag extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.TAG.NAME")
-                }
+                  message: getIntlContent("SHENYU.DOCUMENT.TAG.NAME"),
+                },
               ],
-              initialValue: name
+              initialValue: name,
             })(
-              <Input allowClear placeholder={getIntlContent("SHENYU.DOCUMENT.TAG.NAME")} />
+              <Input
+                allowClear
+                placeholder={getIntlContent("SHENYU.DOCUMENT.TAG.NAME")}
+              />,
             )}
           </Form.Item>
 
@@ -102,12 +106,15 @@ class AddAndUpdateTag extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.TAG.DESC")
-                }
+                  message: getIntlContent("SHENYU.DOCUMENT.TAG.DESC"),
+                },
               ],
-              initialValue: tagDesc
+              initialValue: tagDesc,
             })(
-              <Input allowClear placeholder={getIntlContent("SHENYU.DOCUMENT.TAG.DESC")} />
+              <Input
+                allowClear
+                placeholder={getIntlContent("SHENYU.DOCUMENT.TAG.DESC")}
+              />,
             )}
           </Form.Item>
 
@@ -115,7 +122,9 @@ class AddAndUpdateTag extends Component {
             {getFieldDecorator("parentTagId")(<Input allowClear />)}
           </Form.Item>
 
-          <Form.Item hidden>{getFieldDecorator("id")(<Input allowClear />)}</Form.Item>
+          <Form.Item hidden>
+            {getFieldDecorator("id")(<Input allowClear />)}
+          </Form.Item>
         </Form>
       </Modal>
     );

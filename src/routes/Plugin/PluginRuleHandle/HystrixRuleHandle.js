@@ -16,82 +16,82 @@
  */
 
 import React, { Component, Fragment } from "react";
-import { Form, Select, Input} from "antd";
-import classnames from 'classnames';
+import { Form, Select, Input } from "antd";
+import classnames from "classnames";
 import { connect } from "dva";
 import styles from "../index.less";
-import { getIntlContent } from '../../../utils/IntlUtils'
+import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;
 const { Option } = Select;
 
 @connect(({ global }) => ({
-  platform: global.platform
+  platform: global.platform,
 }))
 export default class HystrixRuleHandle extends Component {
-
   constructor(props) {
     super(props);
     props.onRef(this);
     let requestVolumeThreshold = "20",
-        errorThresholdPercentage = "50",
-        maxConcurrentRequests = "100",
-        sleepWindowInMilliseconds = "5000",
-        timeout = "3000",
-        groupKey = "",
-        commandKey = "",
-        callBackUri="",
-        executionIsolationStrategy=1,
-        hystrixThreadPoolConfig = {
-            coreSize: 10,
-            maximumSize: 10,
-            maxQueueSize: 12
-        };
+      errorThresholdPercentage = "50",
+      maxConcurrentRequests = "100",
+      sleepWindowInMilliseconds = "5000",
+      timeout = "3000",
+      groupKey = "",
+      commandKey = "",
+      callBackUri = "",
+      executionIsolationStrategy = 1,
+      hystrixThreadPoolConfig = {
+        coreSize: 10,
+        maximumSize: 10,
+        maxQueueSize: 12,
+      };
     if (props.handle) {
-        const myHandle = JSON.parse(props.handle);
-        requestVolumeThreshold = myHandle.requestVolumeThreshold;
-        errorThresholdPercentage = myHandle.errorThresholdPercentage;
-        maxConcurrentRequests = myHandle.maxConcurrentRequests;
-        sleepWindowInMilliseconds = myHandle.sleepWindowInMilliseconds;
-        timeout = myHandle.timeout
-        groupKey = myHandle.groupKey;
-        commandKey = myHandle.commandKey;
-        if (typeof(myHandle.executionIsolationStrategy) !== 'undefined' ) {
-            executionIsolationStrategy = myHandle.executionIsolationStrategy;
-        }
-        if (myHandle.hystrixThreadPoolConfig) {
-            hystrixThreadPoolConfig = myHandle.hystrixThreadPoolConfig;
-        }
-        callBackUri = myHandle.callBackUri;
+      const myHandle = JSON.parse(props.handle);
+      requestVolumeThreshold = myHandle.requestVolumeThreshold;
+      errorThresholdPercentage = myHandle.errorThresholdPercentage;
+      maxConcurrentRequests = myHandle.maxConcurrentRequests;
+      sleepWindowInMilliseconds = myHandle.sleepWindowInMilliseconds;
+      timeout = myHandle.timeout;
+      groupKey = myHandle.groupKey;
+      commandKey = myHandle.commandKey;
+      if (typeof myHandle.executionIsolationStrategy !== "undefined") {
+        executionIsolationStrategy = myHandle.executionIsolationStrategy;
+      }
+      if (myHandle.hystrixThreadPoolConfig) {
+        hystrixThreadPoolConfig = myHandle.hystrixThreadPoolConfig;
+      }
+      callBackUri = myHandle.callBackUri;
     }
     this.state = {
-        requestVolumeThreshold,
-        errorThresholdPercentage,
-        maxConcurrentRequests,
-        sleepWindowInMilliseconds,
-        timeout,
-        groupKey,
-        commandKey,
-        executionIsolationStrategy,
-        hystrixThreadPoolConfig,
-        callBackUri
+      requestVolumeThreshold,
+      errorThresholdPercentage,
+      maxConcurrentRequests,
+      sleepWindowInMilliseconds,
+      timeout,
+      groupKey,
+      commandKey,
+      executionIsolationStrategy,
+      hystrixThreadPoolConfig,
+      callBackUri,
     };
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   getData = () => {
-      const {
-        requestVolumeThreshold,
-        errorThresholdPercentage,
-        maxConcurrentRequests,
-        sleepWindowInMilliseconds,
-        timeout,
-        groupKey,
-        commandKey,
-        executionIsolationStrategy,
-        hystrixThreadPoolConfig,
-        callBackUri
-      } = this.state;
-      const myRequestVolumeThreshold =
+    const {
+      requestVolumeThreshold,
+      errorThresholdPercentage,
+      maxConcurrentRequests,
+      sleepWindowInMilliseconds,
+      timeout,
+      groupKey,
+      commandKey,
+      executionIsolationStrategy,
+      hystrixThreadPoolConfig,
+      callBackUri,
+    } = this.state;
+    const myRequestVolumeThreshold =
       requestVolumeThreshold > 0 ? requestVolumeThreshold : "0";
     const myErrorThresholdPercentage =
       errorThresholdPercentage > 0 ? errorThresholdPercentage : "0";
@@ -99,31 +99,40 @@ export default class HystrixRuleHandle extends Component {
       maxConcurrentRequests > 0 ? maxConcurrentRequests : "0";
     const mySleepWindowInMilliseconds =
       sleepWindowInMilliseconds > 0 ? sleepWindowInMilliseconds : "0";
-    const myTimeout = timeout>0?timeout:"3000"
-    const myCoreSize = hystrixThreadPoolConfig.coreSize > 0 ? hystrixThreadPoolConfig.coreSize : "0";
-    const myMaximumSize = hystrixThreadPoolConfig.maximumSize > 0 ? hystrixThreadPoolConfig.maximumSize : "0";
-    const myMaxQueueSize = hystrixThreadPoolConfig.maxQueueSize > 0 ? hystrixThreadPoolConfig.maxQueueSize : "0";
+    const myTimeout = timeout > 0 ? timeout : "3000";
+    const myCoreSize =
+      hystrixThreadPoolConfig.coreSize > 0
+        ? hystrixThreadPoolConfig.coreSize
+        : "0";
+    const myMaximumSize =
+      hystrixThreadPoolConfig.maximumSize > 0
+        ? hystrixThreadPoolConfig.maximumSize
+        : "0";
+    const myMaxQueueSize =
+      hystrixThreadPoolConfig.maxQueueSize > 0
+        ? hystrixThreadPoolConfig.maxQueueSize
+        : "0";
     const handle = {
-        requestVolumeThreshold: myRequestVolumeThreshold,
-        errorThresholdPercentage: myErrorThresholdPercentage,
-        sleepWindowInMilliseconds: mySleepWindowInMilliseconds,
-        timeout:myTimeout,
-        executionIsolationStrategy,
-        callBackUri,
-        groupKey,
-        commandKey
+      requestVolumeThreshold: myRequestVolumeThreshold,
+      errorThresholdPercentage: myErrorThresholdPercentage,
+      sleepWindowInMilliseconds: mySleepWindowInMilliseconds,
+      timeout: myTimeout,
+      executionIsolationStrategy,
+      callBackUri,
+      groupKey,
+      commandKey,
+    };
+    if (handle.executionIsolationStrategy === 1) {
+      handle.maxConcurrentRequests = myMaxConcurrentRequests;
+    } else {
+      handle.hystrixThreadPoolConfig = {
+        coreSize: myCoreSize,
+        maximumSize: myMaximumSize,
+        maxQueueSize: myMaxQueueSize,
       };
-      if (handle.executionIsolationStrategy === 1) {
-        handle.maxConcurrentRequests = myMaxConcurrentRequests;
-      } else{
-        handle.hystrixThreadPoolConfig={
-          coreSize: myCoreSize,
-          maximumSize: myMaximumSize,
-          maxQueueSize: myMaxQueueSize
-        }
-      }
-      return JSON.stringify(handle);
-  }
+    }
+    return JSON.stringify(handle);
+  };
 
   onHandleChange = (key, value) => {
     this.setState({ [key]: value });
@@ -135,52 +144,62 @@ export default class HystrixRuleHandle extends Component {
     }
   };
 
-
   render() {
-    const labelWidth = 160
-    const { form, platform: {hystrixIsolationModeEnums} } = this.props;
-    const { getFieldDecorator } = form;;
+    const labelWidth = 160;
     const {
-        requestVolumeThreshold,
-        errorThresholdPercentage,
-        maxConcurrentRequests,
-        sleepWindowInMilliseconds,
-        timeout,
-        groupKey,
-        commandKey,
-        executionIsolationStrategy,
-        hystrixThreadPoolConfig,
-        callBackUri
-      } = this.state;
-      const formItemLayout = {
-        labelCol: {
-          sm: { span: 3 }
-        },
-        wrapperCol: {
-          sm: { span: 21 }
-        }
-      };
+      form,
+      platform: { hystrixIsolationModeEnums },
+    } = this.props;
+    const { getFieldDecorator } = form;
+    const {
+      requestVolumeThreshold,
+      errorThresholdPercentage,
+      maxConcurrentRequests,
+      sleepWindowInMilliseconds,
+      timeout,
+      groupKey,
+      commandKey,
+      executionIsolationStrategy,
+      hystrixThreadPoolConfig,
+      callBackUri,
+    } = this.state;
+    const formItemLayout = {
+      labelCol: {
+        sm: { span: 3 },
+      },
+      wrapperCol: {
+        sm: { span: 21 },
+      },
+    };
     // eslint-disable-next-line
     return (
-      <Fragment>
-        <FormItem label={getIntlContent("SHENYU.HYSTRIX.LSOLATION.MODE")} {...formItemLayout}>
+      <>
+        <FormItem
+          label={getIntlContent("SHENYU.HYSTRIX.LSOLATION.MODE")}
+          {...formItemLayout}
+        >
           {getFieldDecorator("executionIsolationStrategy", {
-            rules: [{ required: true, message: getIntlContent("SHENYU.HYSTRIX.LSOLATION.SELECT") }],
-            initialValue: executionIsolationStrategy
+            rules: [
+              {
+                required: true,
+                message: getIntlContent("SHENYU.HYSTRIX.LSOLATION.SELECT"),
+              },
+            ],
+            initialValue: executionIsolationStrategy,
           })(
             <Select
-              onChange={value => {
+              onChange={(value) => {
                 this.onHandleChange("executionIsolationStrategy", value);
               }}
             >
-              {hystrixIsolationModeEnums.map(item => {
+              {hystrixIsolationModeEnums.map((item) => {
                 return (
                   <Option key={item.code} value={item.code}>
                     {item.name}
                   </Option>
                 );
               })}
-            </Select>
+            </Select>,
           )}
         </FormItem>
         <div className={styles.handleWrap}>
@@ -190,16 +209,20 @@ export default class HystrixRuleHandle extends Component {
           <ul
             className={classnames({
               [styles.handleUl]: true,
-              [styles.springUl]: true
+              [styles.springUl]: true,
             })}
           >
             <li>
               <Input
                 allowClear
-                addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.TRIPPING.REQUEST.NUMBER")}</div>}
+                addonBefore={
+                  <div style={{ width: labelWidth }}>
+                    {getIntlContent("SHENYU.HYSTRIX.TRIPPING.REQUEST.NUMBER")}
+                  </div>
+                }
                 value={requestVolumeThreshold}
                 placeholder="requestVolumeThreshold"
-                onChange={e => {
+                onChange={(e) => {
                   const value = e.target.value;
                   this.onHandleNumberChange("requestVolumeThreshold", value);
                 }}
@@ -208,71 +231,80 @@ export default class HystrixRuleHandle extends Component {
             <li>
               <Input
                 allowClear
-                addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.ERROR.PERCENT")}</div>}
+                addonBefore={
+                  <div style={{ width: labelWidth }}>
+                    {getIntlContent("SHENYU.HYSTRIX.ERROR.PERCENT")}
+                  </div>
+                }
                 value={errorThresholdPercentage}
                 placeholder="errorThresholdPercentage"
-                onChange={e => {
+                onChange={(e) => {
                   const value = e.target.value;
-                  this.onHandleNumberChange(
-                  "errorThresholdPercentage",
-                  value
-                  );
+                  this.onHandleNumberChange("errorThresholdPercentage", value);
                 }}
               />
             </li>
             <li>
               <Input
                 allowClear
-                addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.TIMEOUT")}</div>}
+                addonBefore={
+                  <div style={{ width: labelWidth }}>
+                    {getIntlContent("SHENYU.HYSTRIX.TIMEOUT")}
+                  </div>
+                }
                 value={timeout}
                 placeholder="timeout"
-                onChange={e => {
+                onChange={(e) => {
                   const value = e.target.value;
-                  this.onHandleNumberChange(
-                  "timeout",
-                  value
-                  );
+                  this.onHandleNumberChange("timeout", value);
                 }}
               />
             </li>
-            {
-              this.state.executionIsolationStrategy === 1&&(
+            {this.state.executionIsolationStrategy === 1 && (
               <li>
                 <Input
                   allowClear
-                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.MAX.CONCURRENCY")}</div>}
+                  addonBefore={
+                    <div style={{ width: labelWidth }}>
+                      {getIntlContent("SHENYU.HYSTRIX.MAX.CONCURRENCY")}
+                    </div>
+                  }
                   value={maxConcurrentRequests}
                   placeholder="maxConcurrentRequests"
-                  onChange={e => {
-                  const value = e.target.value;
-                  this.onHandleNumberChange("maxConcurrentRequests", value);
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    this.onHandleNumberChange("maxConcurrentRequests", value);
                   }}
                 />
               </li>
-              )
-            }
+            )}
             <li>
               <Input
                 allowClear
-                addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.TRIPPING.SLEEPTIME")}</div>}
+                addonBefore={
+                  <div style={{ width: labelWidth }}>
+                    {getIntlContent("SHENYU.HYSTRIX.TRIPPING.SLEEPTIME")}
+                  </div>
+                }
                 value={sleepWindowInMilliseconds}
                 placeholder="sleepWindowInMilliseconds"
-                onChange={e => {
+                onChange={(e) => {
                   const value = e.target.value;
-                  this.onHandleNumberChange(
-                  "sleepWindowInMilliseconds",
-                  value
-                  );
+                  this.onHandleNumberChange("sleepWindowInMilliseconds", value);
                 }}
               />
             </li>
             <li>
               <Input
                 allowClear
-                addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.GROUPKEY")}</div>}
+                addonBefore={
+                  <div style={{ width: labelWidth }}>
+                    {getIntlContent("SHENYU.HYSTRIX.GROUPKEY")}
+                  </div>
+                }
                 value={groupKey}
                 placeholder="GroupKey"
-                onChange={e => {
+                onChange={(e) => {
                   const value = e.target.value;
                   this.onHandleChange("groupKey", value);
                 }}
@@ -281,10 +313,14 @@ export default class HystrixRuleHandle extends Component {
             <li>
               <Input
                 allowClear
-                addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.FAILEDDEMOTION")}</div>}
+                addonBefore={
+                  <div style={{ width: labelWidth }}>
+                    {getIntlContent("SHENYU.HYSTRIX.FAILEDDEMOTION")}
+                  </div>
+                }
                 value={callBackUri}
                 placeholder={getIntlContent("SHENYU.HYSTRIX.FAILEDCALLBACK")}
-                onChange={e => {
+                onChange={(e) => {
                   const value = e.target.value;
                   this.onHandleChange("callBackUri", value);
                 }}
@@ -293,67 +329,80 @@ export default class HystrixRuleHandle extends Component {
             <li>
               <Input
                 allowClear
-                addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.COMMANDKEY")}</div>}
+                addonBefore={
+                  <div style={{ width: labelWidth }}>
+                    {getIntlContent("SHENYU.HYSTRIX.COMMANDKEY")}
+                  </div>
+                }
                 value={commandKey}
                 placeholder="CommandKey"
-                onChange={e => {
+                onChange={(e) => {
                   const value = e.target.value;
                   this.onHandleChange("commandKey", value);
                 }}
               />
             </li>
-            {
-                this.state.executionIsolationStrategy === 0 && (
-                <li>
-                  <Input
-                    allowClear
-                    addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.CORETHREADSIZE")}</div>}
-                    value={hystrixThreadPoolConfig.coreSize}
-                    placeholder={getIntlContent("SHENYU.HYSTRIX.CORENUM")}
-                    onChange={e => {
-                    const value = e.target.value;
-                    hystrixThreadPoolConfig.coreSize = value;
-                    this.setState({hystrixThreadPoolConfig})
-                    }}
-                  />
-                </li>
-            )}
-
-            {
-              this.state.executionIsolationStrategy === 0 && (
+            {this.state.executionIsolationStrategy === 0 && (
               <li>
                 <Input
                   allowClear
-                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.MAXSIZE")}</div>}
-                  value={hystrixThreadPoolConfig.maximumSize}
-                  placeholder={getIntlContent("SHENYU.HYSTRIX.MAXTHREADNUM")}
-                  onChange={e => {
-                  const value = e.target.value;
-                  hystrixThreadPoolConfig.maximumSize = value;
-                  this.setState({hystrixThreadPoolConfig})
+                  addonBefore={
+                    <div style={{ width: labelWidth }}>
+                      {getIntlContent("SHENYU.HYSTRIX.CORETHREADSIZE")}
+                    </div>
+                  }
+                  value={hystrixThreadPoolConfig.coreSize}
+                  placeholder={getIntlContent("SHENYU.HYSTRIX.CORENUM")}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    hystrixThreadPoolConfig.coreSize = value;
+                    this.setState({ hystrixThreadPoolConfig });
                   }}
                 />
               </li>
             )}
-            {
-              this.state.executionIsolationStrategy === 0&& (
+
+            {this.state.executionIsolationStrategy === 0 && (
               <li>
                 <Input
                   allowClear
-                  addonBefore={<div style={{width: labelWidth}}>{getIntlContent("SHENYU.HYSTRIX.MAXTHREADQUEUE")}</div>}
+                  addonBefore={
+                    <div style={{ width: labelWidth }}>
+                      {getIntlContent("SHENYU.HYSTRIX.MAXSIZE")}
+                    </div>
+                  }
+                  value={hystrixThreadPoolConfig.maximumSize}
+                  placeholder={getIntlContent("SHENYU.HYSTRIX.MAXTHREADNUM")}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    hystrixThreadPoolConfig.maximumSize = value;
+                    this.setState({ hystrixThreadPoolConfig });
+                  }}
+                />
+              </li>
+            )}
+            {this.state.executionIsolationStrategy === 0 && (
+              <li>
+                <Input
+                  allowClear
+                  addonBefore={
+                    <div style={{ width: labelWidth }}>
+                      {getIntlContent("SHENYU.HYSTRIX.MAXTHREADQUEUE")}
+                    </div>
+                  }
                   value={hystrixThreadPoolConfig.maxQueueSize}
                   placeholder={getIntlContent("SHENYU.HYSTRIX.MAXTHREAD")}
-                  onChange={e => {
-                  const value = e.target.value;
-                  hystrixThreadPoolConfig.maxQueueSize = value;
-                  this.setState({hystrixThreadPoolConfig})
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    hystrixThreadPoolConfig.maxQueueSize = value;
+                    this.setState({ hystrixThreadPoolConfig });
                   }}
                 />
               </li>
             )}
           </ul>
         </div>
-      </Fragment>
-     );
+      </>
+    );
   }
 }

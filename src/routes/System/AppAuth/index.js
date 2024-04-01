@@ -96,6 +96,7 @@ export default class Auth extends Component {
     });
   };
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   getAllAuths = (page) => {
     const { dispatch } = this.props;
     const { appKey, phone, pageSize } = this.state;

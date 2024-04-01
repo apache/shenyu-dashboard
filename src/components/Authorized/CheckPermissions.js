@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import PromiseRender from './PromiseRender';
-import { CURRENT } from './renderAuthorize';
+import React from "react";
+import PromiseRender from "./PromiseRender";
+import { CURRENT } from "./renderAuthorize";
 
 function isPromise(obj) {
   return (
     !!obj &&
-    (typeof obj === 'object' || typeof obj === 'function') &&
-    typeof obj.then === 'function'
+    (typeof obj === "object" || typeof obj === "function") &&
+    typeof obj.then === "function"
   );
 }
 
@@ -58,7 +58,7 @@ const checkPermissions = (authority, currentAuthority, target, Exception) => {
   }
 
   // string 处理
-  if (typeof authority === 'string') {
+  if (typeof authority === "string") {
     if (authority === currentAuthority) {
       return target;
     }
@@ -79,7 +79,8 @@ const checkPermissions = (authority, currentAuthority, target, Exception) => {
   }
 
   // Function 处理
-  if (typeof authority === 'function') {
+  if (typeof authority === "function") {
+    // eslint-disable-next-line no-useless-catch
     try {
       const bool = authority(currentAuthority);
       // 函数执行后返回值是 Promise
@@ -94,7 +95,7 @@ const checkPermissions = (authority, currentAuthority, target, Exception) => {
       throw error;
     }
   }
-  throw new Error('unsupported parameters');
+  throw new Error("unsupported parameters");
 };
 
 export { checkPermissions };

@@ -15,45 +15,46 @@
  * limitations under the License.
  */
 
-import React, {Component} from "react";
-import {Button, Col, Form, Input, Modal, Popconfirm, Row, Select} from "antd";
-import {connect} from "dva";
-import {getIntlContent} from "../../../utils/IntlUtils";
-
+import React, { Component } from "react";
+import { Button, Col, Form, Input, Modal, Popconfirm, Row, Select } from "antd";
+import { connect } from "dva";
+import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;
 
-@connect(({discovery}) => ({
-  ...discovery
+@connect(({ discovery }) => ({
+  ...discovery,
 }))
-
 class DiscoveryConfigModal extends Component {
-
-  state = {
-    discoveryDicts: this.props.discoveryDicts,
-    configPropsJson: {},
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      discoveryDicts: this.props.discoveryDicts,
+      configPropsJson: {},
+    };
+  }
 
   componentDidMount() {
     const { isSetConfig, data, dispatch } = this.props;
     const { discoveryDicts } = this.state;
     if (!isSetConfig) {
-      let configProps = discoveryDicts.filter(item => item.dictName === 'zookeeper');
+      let configProps = discoveryDicts.filter(
+        (item) => item.dictName === "zookeeper",
+      );
       let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
-      this.setState({configPropsJson: propsEntries})
+      this.setState({ configPropsJson: propsEntries });
       dispatch({
-        type: 'discovery/saveGlobalType',
+        type: "discovery/saveGlobalType",
         payload: {
-          chosenType: null
-        }
+          chosenType: null,
+        },
       });
-    }else{
-      this.setState({configPropsJson: JSON.parse(data.props)})
+    } else {
+      this.setState({ configPropsJson: JSON.parse(data.props) });
     }
   }
 
-
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     const { form, handleOk } = this.props;
     const { configPropsJson } = this.state;
     e.preventDefault();
@@ -65,39 +66,48 @@ class DiscoveryConfigModal extends Component {
           propsjson[key] = form.getFieldValue(key);
         });
         const props = JSON.stringify(propsjson);
-        handleOk({ name, serverList, props, discoveryType});
+        handleOk({ name, serverList, props, discoveryType });
       }
     });
   };
 
-
   handleOptions() {
-    const {Option} = Select;
+    const { Option } = Select;
     return this.props.typeEnums
-      .filter(value => value !== "local")
-      .map(value => <Option key={value} value={value.toString()}>{value}</Option>)
+      .filter((value) => value !== "local")
+      .map((value) => (
+        <Option key={value} value={value.toString()}>
+          {value}
+        </Option>
+      ));
   }
 
-
   render() {
-    const { handleCancel, form, data, isSetConfig, handleConfigDelete, dispatch } = this.props
+    const {
+      handleCancel,
+      form,
+      data,
+      isSetConfig,
+      handleConfigDelete,
+      dispatch,
+    } = this.props;
     const { getFieldDecorator } = form;
-    const { name, serverList, type: discoveryType, id} = data || {};
+    const { name, serverList, type: discoveryType, id } = data || {};
     const { configPropsJson, discoveryDicts } = this.state;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 4 }
+        sm: { span: 4 },
       },
       wrapperCol: {
-        sm: { span: 19 }
-      }
+        sm: { span: 19 },
+      },
     };
 
     return (
       <Modal
         visible
         centered
-        width='60%'
+        width="60%"
         title={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.CONFIGURATION")}
         onCancel={handleCancel}
         onOk={this.handleSubmit}
@@ -113,12 +123,20 @@ class DiscoveryConfigModal extends Component {
               cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
               key="popconfirm"
             >
-              <Button key="delete" type="danger" style={{ marginRight: '10px' }}>
+              <Button
+                key="delete"
+                type="danger"
+                style={{ marginRight: "10px" }}
+              >
                 {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
               </Button>
             </Popconfirm>
           ) : null,
-          <Button key="cancel" onClick={handleCancel} style={{marginRight: '5px'}}>
+          <Button
+            key="cancel"
+            onClick={handleCancel}
+            style={{ marginRight: "5px" }}
+          >
             {getIntlContent("SHENYU.COMMON.CALCEL")}
           </Button>,
           <Button key="submit" type="primary" onClick={this.handleSubmit}>
@@ -128,71 +146,127 @@ class DiscoveryConfigModal extends Component {
         destroyOnClose
       >
         <Form onSubmit={this.handleSubmit}>
-          <Form.Item label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE")} {...formItemLayout}>
-            {getFieldDecorator('discoveryType', {
-              rules: [{ required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT") }],
-              initialValue: discoveryType !== "" ? discoveryType : undefined
+          <Form.Item
+            label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE")}
+            {...formItemLayout}
+          >
+            {getFieldDecorator("discoveryType", {
+              rules: [
+                {
+                  required: true,
+                  message: getIntlContent(
+                    "SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT",
+                  ),
+                },
+              ],
+              initialValue: discoveryType !== "" ? discoveryType : undefined,
             })(
               <Select
-                placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT")}
+                placeholder={getIntlContent(
+                  "SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT",
+                )}
                 disabled={isSetConfig}
-                onChange={value => {
+                onChange={(value) => {
                   dispatch({
-                    type: 'discovery/saveGlobalType',
+                    type: "discovery/saveGlobalType",
                     payload: {
-                      chosenType: value
-                    }
+                      chosenType: value,
+                    },
                   });
-                  let configProps = discoveryDicts.filter(item => item.dictName === value);
-                  let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
-                  this.setState({configPropsJson: propsEntries})
-                  }
-                }
+                  let configProps = discoveryDicts.filter(
+                    (item) => item.dictName === value,
+                  );
+                  let propsEntries = JSON.parse(
+                    configProps[0]?.dictValue || "{}",
+                  );
+                  this.setState({ configPropsJson: propsEntries });
+                }}
               >
                 {this.handleOptions()}
               </Select>,
             )}
           </Form.Item>
-          <FormItem label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.NAME")} {...formItemLayout}>
-            {getFieldDecorator('name', {
-              rules: [{ required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.NAME.INPUT") }],
-              initialValue: name
-            })(<Input
-              allowClear
-              placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.NAME.INPUT")}
-            />)}
+          <FormItem
+            label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.NAME")}
+            {...formItemLayout}
+          >
+            {getFieldDecorator("name", {
+              rules: [
+                {
+                  required: true,
+                  message: getIntlContent(
+                    "SHENYU.DISCOVERY.CONFIGURATION.NAME.INPUT",
+                  ),
+                },
+              ],
+              initialValue: name,
+            })(
+              <Input
+                allowClear
+                placeholder={getIntlContent(
+                  "SHENYU.DISCOVERY.CONFIGURATION.NAME.INPUT",
+                )}
+              />,
+            )}
           </FormItem>
 
-          <FormItem label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST")} {...formItemLayout}>
-            {getFieldDecorator('serverList', {
-              rules: [{ required: true, message: getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT") }],
-              initialValue: serverList
-            })(<Input
-              allowClear
-              disabled={isSetConfig}
-              placeholder={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT")}
-            />)}
+          <FormItem
+            label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST")}
+            {...formItemLayout}
+          >
+            {getFieldDecorator("serverList", {
+              rules: [
+                {
+                  required: true,
+                  message: getIntlContent(
+                    "SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT",
+                  ),
+                },
+              ],
+              initialValue: serverList,
+            })(
+              <Input
+                allowClear
+                disabled={isSetConfig}
+                placeholder={getIntlContent(
+                  "SHENYU.DISCOVERY.CONFIGURATION.SERVERLIST.INPUT",
+                )}
+              />,
+            )}
           </FormItem>
 
-          <div style={{ marginLeft: '50px', marginTop: '15px', marginBottom: '15px', fontWeight: '500', }}>
+          <div
+            style={{
+              marginLeft: "50px",
+              marginTop: "15px",
+              marginBottom: "15px",
+              fontWeight: "500",
+            }}
+          >
             {getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.PROPS")}
-            <span style={{ marginLeft: '2px', fontWeight: '500' }}>:</span>
+            <span style={{ marginLeft: "2px", fontWeight: "500" }}>:</span>
           </div>
-          <div style={{ marginLeft: '35px', display: 'flex', alignItems: 'baseline' }}>
-            <div style={{ marginLeft: '8px', width: '100%' }}>
+          <div
+            style={{
+              marginLeft: "35px",
+              display: "flex",
+              alignItems: "baseline",
+            }}
+          >
+            <div style={{ marginLeft: "8px", width: "100%" }}>
               <Row gutter={[16, 4]} justify="center">
                 {Object.entries(configPropsJson).map(([key, value]) => (
                   <Col span={12} key={key}>
                     <FormItem>
                       {getFieldDecorator(key, {
-                        initialValue: value
+                        initialValue: value,
                       })(
                         <Input
                           allowClear
                           disabled={isSetConfig}
-                          placeholder={!isSetConfig ? `Enter ${key}` : ''}
+                          placeholder={!isSetConfig ? `Enter ${key}` : ""}
                           addonBefore={key}
-                        />
+                        />,
                       )}
                     </FormItem>
                   </Col>
@@ -202,7 +276,7 @@ class DiscoveryConfigModal extends Component {
           </div>
         </Form>
       </Modal>
-    )
+    );
   }
 }
 

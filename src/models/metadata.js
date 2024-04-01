@@ -23,16 +23,16 @@ import {
   deleteMetadata,
   addMetadata,
   updateEnabled,
-  syncData
+  syncData,
 } from "../services/api";
-import {getIntlContent} from "../utils/IntlUtils";
+import { getIntlContent } from "../utils/IntlUtils";
 
 export default {
   namespace: "metadata",
 
   state: {
     userList: [],
-    total: 0
+    total: 0,
   },
 
   effects: {
@@ -42,7 +42,7 @@ export default {
       if (json.code === 200) {
         let { page, dataList } = json.data;
 
-        dataList = dataList.map(item => {
+        dataList = dataList.map((item) => {
           item.key = item.id;
           return item;
         });
@@ -50,8 +50,8 @@ export default {
           type: "saveUsers",
           payload: {
             total: page.totalCount,
-            dataList
-          }
+            dataList,
+          },
         });
       }
     },
@@ -69,7 +69,7 @@ export default {
 
       const json = yield call(addMetadata, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.ADD.SUCCESS'));
+        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -81,7 +81,9 @@ export default {
       const { list } = payload;
       const json = yield call(deleteMetadata, { list });
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.DELETE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
+        );
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
@@ -92,30 +94,34 @@ export default {
       const { payload, callback, fetchValue } = params;
       const json = yield call(updateMetadata, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
       }
     },
-    *updateEn(params, {call, put}) {
+    *updateEn(params, { call, put }) {
       const { payload, fetchValue, callback } = params;
 
       const json = yield call(updateEnabled, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS'));
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
         callback();
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
       }
     },
-    *syncDa( params, {call}) {
+    *syncDa(params, { call }) {
       const { payload } = params;
-      const json = yield call(syncData,payload);
+      const json = yield call(syncData, payload);
       if (json.code === 200) {
-        message.success(getIntlContent('SHENYU.COMMON.RESPONSE.SYNC.SUCCESS'));
+        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.SYNC.SUCCESS"));
       } else {
         message.warn(json.message);
       }
@@ -126,8 +132,6 @@ export default {
       const payload = { appName, currentPage, pageSize };
       yield put({ type: "fetch", payload });
     },
-
-
   },
 
   reducers: {
@@ -135,8 +139,8 @@ export default {
       return {
         ...state,
         userList: payload.dataList,
-        total: payload.total
+        total: payload.total,
       };
-    }
-  }
+    },
+  },
 };

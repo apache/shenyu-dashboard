@@ -15,8 +15,27 @@
  * limitations under the License.
  */
 
-import {Button, Col, Empty, Form, Icon, Input, message, Row, Select, Tabs, Typography} from "antd";
-import React, {createRef, forwardRef, useContext, useEffect, useImperativeHandle, useState} from "react";
+import {
+  Button,
+  Col,
+  Empty,
+  Form,
+  Icon,
+  Input,
+  message,
+  Row,
+  Select,
+  Tabs,
+  Typography,
+} from "antd";
+import React, {
+  createRef,
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react";
 import ReactJson from "react-json-view";
 import ReactHtmlParser from "react-html-parser";
 import fetch from "dva/fetch";
@@ -24,13 +43,13 @@ import {
   createOrUpdateMockRequest,
   deleteMockRequest,
   getApiMockRequest,
-  sandboxProxyGateway
+  sandboxProxyGateway,
 } from "../../../services/api";
 import ApiContext from "./ApiContext";
 import HeadersEditor from "./HeadersEditor";
-import {getIntlContent} from "../../../utils/IntlUtils";
+import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
-import {Method} from "./globalData";
+import { Method } from "./globalData";
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -38,8 +57,12 @@ const FormItem = Form.Item;
 const InputGroup = Input.Group;
 
 const objectToArray = (obj) => {
-  return Object.keys(obj ?? {}).map((key, index) => ({index, key, value: obj[key]}));
-}
+  return Object.keys(obj ?? {}).map((key, index) => ({
+    index,
+    key,
+    value: obj[key],
+  }));
+};
 
 const arrayToObject = (arr) => {
   return (arr ?? []).reduce((acc, curr) => {
@@ -48,13 +71,13 @@ const arrayToObject = (arr) => {
     }
     return acc;
   }, {});
-}
+};
 
 const mergeArrays = (arr1, arr2) => {
   let mergedArray = [...arr1];
 
-  arr2.forEach(item2 => {
-    let item1 = mergedArray.find(item => item.key === item2.key);
+  arr2.forEach((item2) => {
+    let item1 = mergedArray.find((item) => item.key === item2.key);
     if (item1) {
       item1.value = item2.value;
     } else {
@@ -63,19 +86,21 @@ const mergeArrays = (arr1, arr2) => {
   });
 
   return mergedArray;
-}
+};
 
 const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   useImperativeHandle(ref, () => ({
-    form
+    form,
   }));
 
   const {
     apiDetail,
     apiMock,
-    apiData: {envProps = []}
+    apiData: { envProps = [] },
   } = useContext(ApiContext);
-  const [questJson, setRequestJson] = useState(JSON.parse(apiMock.body || '{}'));
+  const [questJson, setRequestJson] = useState(
+    JSON.parse(apiMock.body || "{}"),
+  );
   const [initialValue, setInitialValue] = useState({
     id: apiMock.id,
     apiId: apiDetail.id,
@@ -86,80 +111,71 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
     query: apiMock.query,
     header: JSON.stringify(objectToArray(apiMock.header)),
     body: apiMock.body,
-    envId: undefined
+    envId: undefined,
   });
   const [activeKey, setActiveKey] = useState("1");
 
   const getDefaultHeaderByKey = (key) => {
-    return objectToArray({"Content-Type": key === '1' ? "application/json" : "application/x-www-form-urlencoded"});
-  }
+    return objectToArray({
+      "Content-Type":
+        key === "1" ? "application/json" : "application/x-www-form-urlencoded",
+    });
+  };
 
-  useEffect(
-    () => {
-      setInitialValue({
-        id: apiMock.id,
-        apiId: apiDetail.id,
-        host: apiMock.host,
-        port: apiMock.port,
-        url: apiMock.url,
-        pathVariable: apiMock.pathVariable,
-        query: apiMock.query,
-        header: JSON.stringify(objectToArray(apiMock.header)),
-        body: apiMock.body,
-        envId: undefined
-      });
-      form.resetFields("requestUrl");
-      setRequestJson(JSON.parse(apiMock.body || '{}'));
-    },
-    [apiMock.id]
-  );
+  useEffect(() => {
+    setInitialValue({
+      id: apiMock.id,
+      apiId: apiDetail.id,
+      host: apiMock.host,
+      port: apiMock.port,
+      url: apiMock.url,
+      pathVariable: apiMock.pathVariable,
+      query: apiMock.query,
+      header: JSON.stringify(objectToArray(apiMock.header)),
+      body: apiMock.body,
+      envId: undefined,
+    });
+    form.resetFields("requestUrl");
+    setRequestJson(JSON.parse(apiMock.body || "{}"));
+  }, [apiMock.id]);
 
-  useEffect(
-    () => {
-      form.setFieldsValue({httpMethod: Method?.[apiDetail.httpMethod]})
-    },
-    [apiDetail.httpMethod]
-  );
+  useEffect(() => {
+    form.setFieldsValue({ httpMethod: Method?.[apiDetail.httpMethod] });
+  }, [apiDetail.httpMethod]);
 
-  useEffect(
-    () => {
-      setInitialValue({url:apiDetail.apiPath})
-    },
-    [apiDetail.apiPath]
-  )
+  useEffect(() => {
+    setInitialValue({ url: apiDetail.apiPath });
+  }, [apiDetail.apiPath]);
 
-  useEffect(
-    () => {
-      form.setFieldsValue({headers: initialValue.header || JSON.stringify(getDefaultHeaderByKey(activeKey))})
-    },
-    [initialValue.header]
-  );
+  useEffect(() => {
+    form.setFieldsValue({
+      headers:
+        initialValue.header || JSON.stringify(getDefaultHeaderByKey(activeKey)),
+    });
+  }, [initialValue.header]);
 
-  useEffect(
-    () => {
-      form.setFieldsValue({querys: initialValue.query || "[]"})
-    },
-    [initialValue.query]
-  );
+  useEffect(() => {
+    form.setFieldsValue({ querys: initialValue.query || "[]" });
+  }, [initialValue.query]);
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     ref.current.form.validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         onSubmit({
           ...values,
-          bizParam: questJson
+          bizParam: questJson,
         });
       }
     });
-  }
+  };
 
-  const updateJson = obj => {
+  const updateJson = (obj) => {
     setRequestJson(obj.updated_src);
   };
 
-  const handlerSaveOrUpdate  = async () => {
-    ref.current.form.validateFieldsAndScroll( async (errors) => {
+  const handlerSaveOrUpdate = async () => {
+    ref.current.form.validateFieldsAndScroll(async (errors) => {
       if (!errors) {
         const fields = form.getFieldsValue();
         let requestUrl = fields.requestUrl;
@@ -173,19 +189,23 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
           header: fields.headers,
           query: fields.querys,
           body: JSON.stringify(questJson),
-          pathVariable: url.search || ''
-        }
+          pathVariable: url.search || "",
+        };
         let rs = await createOrUpdateMockRequest(params);
         if (rs.code !== 200) {
           message.error(rs.msg);
         } else {
-          const { code, message: msg, data } = await getApiMockRequest(apiDetail.id);
+          const {
+            code,
+            message: msg,
+            data,
+          } = await getApiMockRequest(apiDetail.id);
           if (code !== 200) {
             message.error(msg);
             return;
           }
           message.success(rs.message);
-          setInitialValue({...initialValue, id: data.id});
+          setInitialValue({ ...initialValue, id: data.id });
         }
       }
     });
@@ -200,7 +220,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
         message.success(rs.message);
       }
     }
-    resetContext()
+    resetContext();
   };
 
   const resetContext = () => {
@@ -214,18 +234,21 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
       query: null,
       header: null,
       body: null,
-      envId: null
+      envId: null,
     });
     setRequestJson({});
     form.resetFields("requestUrl");
-  }
+  };
 
   const changeParamTab = (key) => {
     setActiveKey(key);
     let header = form.getFieldsValue().headers;
-    let headerJson = mergeArrays(JSON.parse(header), getDefaultHeaderByKey(key));
-    setInitialValue({...initialValue, header: JSON.stringify(headerJson)});
-  }
+    let headerJson = mergeArrays(
+      JSON.parse(header),
+      getDefaultHeaderByKey(key),
+    );
+    setInitialValue({ ...initialValue, header: JSON.stringify(headerJson) });
+  };
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -234,25 +257,25 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
       </Title>
       <FormItem label={getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS")}>
         {form.getFieldDecorator("requestUrl", {
-          initialValue: initialValue.url || '',
+          initialValue: initialValue.url || "",
           rules: [
             {
               type: "string",
               required: true,
-              pattern: /^https?:\/\/([^:]+):(\d+)(\/.+)$/
-            }
-          ]
+              pattern: /^https?:\/\/([^:]+):(\d+)(\/.+)$/,
+            },
+          ],
         })(
           <InputGroup compact>
             <Select
-              style={{width: '40%'}}
-              onChange={envId => {
+              style={{ width: "40%" }}
+              onChange={(envId) => {
                 const env = Object.values(envProps)[envId];
                 const url = new URL(env.addressUrl);
-                const host = `${url.protocol}//${url.hostname}:${url.port || '80'}`;
-                setInitialValue({...initialValue, host, envId});
+                const host = `${url.protocol}//${url.hostname}:${url.port || "80"}`;
+                setInitialValue({ ...initialValue, host, envId });
                 const requestUrl = `${host}${initialValue.url ?? ""}`;
-                form.setFieldsValue({requestUrl});
+                form.setFieldsValue({ requestUrl });
               }}
               defaultValue={initialValue.envId}
             >
@@ -266,46 +289,44 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
             </Select>
             <Input
               allowClear
-              style={{width: '60%'}}
+              style={{ width: "60%" }}
               value={initialValue.url}
-              onChange={e => {
-                setInitialValue({...initialValue, url: e.target.value})
-                const requestUrl = `${initialValue.host ?? ""}${e.target.value}`
-                form.setFieldsValue({requestUrl})
+              onChange={(e) => {
+                setInitialValue({ ...initialValue, url: e.target.value });
+                const requestUrl = `${initialValue.host ?? ""}${e.target.value}`;
+                form.setFieldsValue({ requestUrl });
               }}
             />
-          </InputGroup>
+          </InputGroup>,
         )}
       </FormItem>
 
       <FormItem label="Headers">
         {form.getFieldDecorator("headers", {
           initialValue: initialValue.header,
-          rules: []
-        })(<HeadersEditor buttonText={getIntlContent("SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.ADD.HEADER")} mockId={apiMock.id} />)}
+          rules: [],
+        })(
+          <HeadersEditor
+            buttonText={getIntlContent(
+              "SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.ADD.HEADER",
+            )}
+            mockId={apiMock.id}
+          />,
+        )}
       </FormItem>
 
       <FormItem label={getIntlContent("SHENYU.COMMON.HTTP.METHOD")}>
         {form.getFieldDecorator("httpMethod", {
           initialValue: Method?.[apiDetail.httpMethod],
-          rules: [{ type: "string", required: true }]
-        })
-        (
-          <Input
-            allowClear
-            readOnly={true}
-          />
-        )}
+          rules: [{ type: "string", required: true }],
+        })(<Input allowClear readOnly={true} />)}
       </FormItem>
       <FormItem
         label={getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.PARAMETERS")}
         required
       />
 
-      <Tabs
-        activeKey={activeKey}
-        onChange={key => changeParamTab(key)}
-      >
+      <Tabs activeKey={activeKey} onChange={(key) => changeParamTab(key)}>
         <Tabs.TabPane
           tab={
             <>
@@ -340,16 +361,21 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
           }
           key="2"
         >
-
           <FormItem>
             {form.getFieldDecorator("querys", {
               initialValue: initialValue.query || "{}",
-              rules: []
-            })(<HeadersEditor buttonText={getIntlContent("SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.ADD.QUERY")} mockId={apiMock.id} />)}
+              rules: [],
+            })(
+              <HeadersEditor
+                buttonText={getIntlContent(
+                  "SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.ADD.QUERY",
+                )}
+                mockId={apiMock.id}
+              />,
+            )}
           </FormItem>
         </Tabs.TabPane>
       </Tabs>
-
 
       <AuthButton perms="document:apirun:send">
         <FormItem label=" " colon={false}>
@@ -374,13 +400,13 @@ const EnhancedFCForm = Form.create()(FCForm);
 
 function ApiDebug() {
   const {
-    apiDetail: { id }
+    apiDetail: { id },
   } = useContext(ApiContext);
   const [responseInfo, setResponseInfo] = useState({});
   const [activeKey, setActiveKey] = useState("2");
   const formRef = createRef();
 
-  const handleSubmit = async values => {
+  const handleSubmit = async (values) => {
     const { headers, requestUrl, ...params } = values;
     params.headers = arrayToObject(JSON.parse(headers));
     params.requestUrl = requestUrl;
@@ -388,16 +414,16 @@ function ApiDebug() {
       method: "POST",
       headers: {
         "X-Access-Token": sessionStorage.token,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(params)
-    }).then(async response => {
+      body: JSON.stringify(params),
+    }).then(async (response) => {
       const textData = await response.text();
       let jsonData = null;
-      let type = 'text';
+      let type = "text";
       try {
         jsonData = JSON.parse(textData);
-        type = 'json';
+        type = "json";
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error(e);
@@ -406,20 +432,16 @@ function ApiDebug() {
         "sandbox-params": response.headers.get("sandbox-params"),
         "sandbox-beforesign": response.headers.get("sandbox-beforesign"),
         "sandbox-sign": response.headers.get("sandbox-sign"),
-        body: type === 'json' ? jsonData : textData,
-        bodyType: type
+        body: type === "json" ? jsonData : textData,
+        bodyType: type,
       });
     });
   };
 
-  useEffect(
-    () => {
-      setResponseInfo({});
-      setActiveKey("2");
-    },
-    [id]
-  );
-
+  useEffect(() => {
+    setResponseInfo({});
+    setActiveKey("2");
+  }, [id]);
 
   return (
     <>
@@ -427,11 +449,11 @@ function ApiDebug() {
       <Tabs
         type="card"
         activeKey={activeKey}
-        onChange={key => setActiveKey(key)}
+        onChange={(key) => setActiveKey(key)}
       >
         <TabPane
           tab={getIntlContent(
-            "SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.INFORMATION"
+            "SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.INFORMATION",
           )}
           key="1"
         >
@@ -440,7 +462,7 @@ function ApiDebug() {
               <Paragraph>
                 <Text strong>
                   {getIntlContent(
-                    "SHENYU.DOCUMENT.APIDOC.CONTENTS.TO.BE.SIGNED"
+                    "SHENYU.DOCUMENT.APIDOC.CONTENTS.TO.BE.SIGNED",
                   )}
                 </Text>
                 <br />
@@ -464,9 +486,12 @@ function ApiDebug() {
           tab={getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.RESULTS")}
           key="2"
         >
-          {responseInfo.bodyType === 'json' && Object.keys(responseInfo).length ? (
+          {responseInfo.bodyType === "json" &&
+          Object.keys(responseInfo).length ? (
             <ReactJson src={responseInfo.body} name={false} />
-          ) : responseInfo.body ? ReactHtmlParser(responseInfo.body) : (
+          ) : responseInfo.body ? (
+            ReactHtmlParser(responseInfo.body)
+          ) : (
             <Empty description={false} />
           )}
         </TabPane>

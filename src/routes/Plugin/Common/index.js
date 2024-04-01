@@ -16,7 +16,18 @@
  */
 
 import React, { Component } from "react";
-import { Table, Row, Col, Button, Input, message, Popconfirm, Switch, Typography, Tag } from "antd";
+import {
+  Table,
+  Row,
+  Col,
+  Button,
+  Input,
+  message,
+  Popconfirm,
+  Switch,
+  Typography,
+  Tag,
+} from "antd";
 import { connect } from "dva";
 import styles from "../index.less";
 import Selector from "./Selector";
@@ -30,7 +41,7 @@ const { Title } = Typography;
 @connect(({ common, global, loading }) => ({
   ...global,
   ...common,
-  loading: loading.effects["global/fetchPlatform"]
+  loading: loading.effects["global/fetchPlatform"],
 }))
 export default class Common extends Component {
   constructor(props) {
@@ -44,7 +55,7 @@ export default class Common extends Component {
       localeName: "",
       selectorName: undefined,
       ruleName: undefined,
-      isPluginEnabled: false
+      isPluginEnabled: false,
     };
   }
 
@@ -57,23 +68,23 @@ export default class Common extends Component {
       dispatch({
         type: "global/fetchPlugins",
         payload: {
-          callback: pluginList => {
+          callback: (pluginList) => {
             this.getAllSelectors(selectorPage, selectorPageSize, pluginList);
-          }
-        }
+          },
+        },
       });
     }
   }
 
   /* eslint-disable no-unused-vars */
-  componentDidUpdate(prevProps,  prevState, snapshot) {
+  componentDidUpdate(prevProps, prevState, snapshot) {
     const preId = prevProps.match.params.id;
     const newId = this.props.match.params.id;
     const { selectorPage, selectorPageSize } = this.state;
     if (newId !== preId) {
       const { dispatch } = this.props;
       dispatch({
-        type: "common/resetData"
+        type: "common/resetData",
       });
 
       if (prevProps.plugins && prevProps.plugins.length > 0) {
@@ -82,10 +93,10 @@ export default class Common extends Component {
         dispatch({
           type: "global/fetchPlugins",
           payload: {
-            callback: pluginList => {
+            callback: (pluginList) => {
               this.getAllSelectors(selectorPage, selectorPageSize, pluginList);
-            }
-          }
+            },
+          },
         });
       }
     }
@@ -95,7 +106,7 @@ export default class Common extends Component {
   componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
-      type: "common/resetData"
+      type: "common/resetData",
     });
   }
 
@@ -104,7 +115,7 @@ export default class Common extends Component {
     const { selectorName } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const tempPlugin = this.getPlugin(plugins, name);
-    const tempPluginId = tempPlugin?.id
+    const tempPluginId = tempPlugin?.id;
     const enabled = tempPlugin?.enabled ?? false;
     this.setState({ pluginId: tempPluginId, isPluginEnabled: enabled });
     dispatch({
@@ -113,8 +124,8 @@ export default class Common extends Component {
         currentPage: page,
         pageSize,
         pluginId: tempPluginId,
-        name: selectorName
-      }
+        name: selectorName,
+      },
     });
   };
 
@@ -128,13 +139,13 @@ export default class Common extends Component {
         selectorId,
         currentPage: page,
         pageSize,
-        name: ruleName
-      }
+        name: ruleName,
+      },
     });
   };
 
   getPlugin = (plugins, name) => {
-    const plugin = plugins.filter(item => {
+    const plugin = plugins.filter((item) => {
       return item.name === name;
     });
     return plugin && plugin.length > 0 ? plugin[0] : null;
@@ -162,7 +173,7 @@ export default class Common extends Component {
     this.setState({ popup: "" });
   };
 
-  searchSelectorOnchange = e => {
+  searchSelectorOnchange = (e) => {
     const selectorName = e.target.value;
     this.setState({ selectorName });
   };
@@ -184,16 +195,20 @@ export default class Common extends Component {
     const isDiscovery = ["5", "15", "26"].includes(pluginId);
     if (isDiscovery) {
       let discoveryConfig = {
-        discoveryType: '',
-        serverList: '',
+        discoveryType: "",
+        serverList: "",
         handler: {},
-        listenerNode: '',
-        props: {}
-      }
+        listenerNode: "",
+        props: {},
+      };
       let typeValue =
-        name === "divide" ? "http" :
-          name === "websocket" ? "ws" :
-            name === "grpc" ? "grpc" : "http";
+        name === "divide"
+          ? "http"
+          : name === "websocket"
+            ? "ws"
+            : name === "grpc"
+              ? "grpc"
+              : "http";
       this.setState({
         popup: (
           <Selector
@@ -203,22 +218,39 @@ export default class Common extends Component {
             isAdd={true}
             discoveryConfig={discoveryConfig}
             isDiscovery={true}
-            handleOk={selector => {
-              const { name: selectorName, listenerNode, serverList, selectedDiscoveryType, discoveryProps, handler, upstreams, importedDiscoveryId } = selector;
-              const upstreamsWithProps = upstreams.map(item => ({
+            handleOk={(selector) => {
+              const {
+                name: selectorName,
+                listenerNode,
+                serverList,
+                selectedDiscoveryType,
+                discoveryProps,
+                handler,
+                upstreams,
+                importedDiscoveryId,
+              } = selector;
+              const upstreamsWithProps = upstreams.map((item) => ({
                 protocol: item.protocol,
                 url: item.url,
                 status: parseInt(item.status, 10),
                 weight: item.weight,
                 startupTime: item.startupTime,
                 props: JSON.stringify({
-                  warmupTime: item.warmupTime
-                })
+                  warmupTime: item.warmupTime,
+                }),
               }));
               dispatch({
                 type: "common/addSelector",
-                payload: { pluginId, ...selector, upstreams: upstreamsWithProps },
-                fetchValue: { pluginId, currentPage: selectorPage, pageSize: selectorPageSize },
+                payload: {
+                  pluginId,
+                  ...selector,
+                  upstreams: upstreamsWithProps,
+                },
+                fetchValue: {
+                  pluginId,
+                  currentPage: selectorPage,
+                  pageSize: selectorPageSize,
+                },
                 callback: (selectorId) => {
                   dispatch({
                     type: "discovery/bindSelector",
@@ -235,19 +267,19 @@ export default class Common extends Component {
                         discoveryType: selectedDiscoveryType,
                         serverList,
                         props: discoveryProps,
-                        name: selectorName
-                      }
-                    }
-                  })
+                        name: selectorName,
+                      },
+                    },
+                  });
                   this.closeModal();
-                }
+                },
               });
             }}
             onCancel={this.closeModal}
           />
-        )
+        ),
       });
-    }else {
+    } else {
       this.setState({
         popup: (
           <Selector
@@ -255,25 +287,28 @@ export default class Common extends Component {
             pluginId={pluginId}
             multiSelectorHandle={multiSelectorHandle}
             isDiscovery={false}
-            handleOk={selector => {
+            handleOk={(selector) => {
               dispatch({
                 type: "common/addSelector",
                 payload: { pluginId, ...selector },
-                fetchValue: { pluginId, currentPage: selectorPage, pageSize: selectorPageSize },
+                fetchValue: {
+                  pluginId,
+                  currentPage: selectorPage,
+                  pageSize: selectorPageSize,
+                },
                 callback: () => {
                   this.closeModal();
-                }
+                },
               });
             }}
             onCancel={this.closeModal}
           />
-        )
+        ),
       });
     }
-
   };
 
-  searchRuleOnchange = e => {
+  searchRuleOnchange = (e) => {
     const ruleName = e.target.value;
     this.setState({ ruleName });
   };
@@ -300,23 +335,23 @@ export default class Common extends Component {
             pluginId={pluginId}
             pluginName={name}
             multiRuleHandle={multiRuleHandle}
-            handleOk={rule => {
+            handleOk={(rule) => {
               dispatch({
                 type: "common/addRule",
                 payload: { selectorId, ...rule },
                 fetchValue: {
                   selectorId,
                   currentPage: rulePage,
-                  pageSize: rulePageSize
+                  pageSize: rulePageSize,
                 },
                 callback: () => {
                   this.closeModal();
-                }
+                },
               });
             }}
             onCancel={this.closeModal}
           />
-        )
+        ),
       });
     } else {
       message.destroy();
@@ -326,25 +361,29 @@ export default class Common extends Component {
 
   togglePluginStatus = () => {
     const { dispatch, plugins } = this.props;
-    const pluginName = this.props.match.params ? this.props.match.params.id : "";
+    const pluginName = this.props.match.params
+      ? this.props.match.params.id
+      : "";
     const plugin = this.getPlugin(plugins, pluginName);
     const enabled = !this.state.isPluginEnabled;
     updatePluginsEnabled({
-      list: [ plugin.id ],
+      list: [plugin.id],
       enabled,
       dispatch,
       callback: () => {
         plugin.enabled = enabled;
-        this.setState({ isPluginEnabled: enabled })
+        this.setState({ isPluginEnabled: enabled });
         this.closeModal();
-      }
+      },
     });
-  }
+  };
 
   editClick = () => {
     const { dispatch, plugins } = this.props;
-    const pluginName = this.props.match.params ? this.props.match.params.id : "";
-    const plugin= this.getPlugin(plugins, pluginName);
+    const pluginName = this.props.match.params
+      ? this.props.match.params.id
+      : "";
+    const plugin = this.getPlugin(plugins, pluginName);
     getUpdateModal({
       pluginId: plugin.id,
       dispatch,
@@ -363,26 +402,26 @@ export default class Common extends Component {
 
   updateDiscoveryUpstream = (discoveryHandlerId, upstreams) => {
     const { dispatch } = this.props;
-    const upstreamsWithHandlerId = upstreams.map(item => ({
+    const upstreamsWithHandlerId = upstreams.map((item) => ({
       protocol: item.protocol,
       url: item.url,
       status: parseInt(item.status, 10),
       weight: item.weight,
       props: JSON.stringify({
-        warmupTime: item.warmupTime
+        warmupTime: item.warmupTime,
       }),
-      discoveryHandlerId
+      discoveryHandlerId,
     }));
     dispatch({
       type: "discovery/updateDiscoveryUpstream",
       payload: {
         discoveryHandlerId,
-        upstreams: upstreamsWithHandlerId
-      }
-    })
-  }
+        upstreams: upstreamsWithHandlerId,
+      },
+    });
+  };
 
-  editSelector = record => {
+  editSelector = (record) => {
     const { dispatch, plugins } = this.props;
     const { selectorPage, selectorPageSize } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
@@ -395,64 +434,85 @@ export default class Common extends Component {
     dispatch({
       type: "common/fetchSeItem",
       payload: {
-        id
+        id,
       },
-      callback: selector => {
-       if ( isDiscovery ){
-        let discoveryConfig = {
-          props: selector.discoveryVO && selector.discoveryVO.props ? selector.discoveryVO.props: "{}",
-          discoveryType: selector.discoveryVO && selector.discoveryVO.type ? selector.discoveryVO.type: 'local',
-          serverList: selector.discoveryVO && selector.discoveryVO.serverList ? selector.discoveryVO.serverList: '',
-          handler: selector.discoveryHandler && selector.discoveryHandler.handler ? selector.discoveryHandler.handler: "{}",
-          listenerNode: selector.discoveryHandler && selector.discoveryHandler.listenerNode ? selector.discoveryHandler.listenerNode : '',
-        }
-        let updateArray = [];
-        if (selector.discoveryUpstreams) {
-          updateArray = selector.discoveryUpstreams.map((item) => {
-            let propsObj = JSON.parse(item.props || "{}");
-            if (item.props === null) {
-              propsObj = {
-                warmupTime: 10,
-              };
-            }
-            return { ...item, key: item.id, warmupTime: propsObj.warmupTime };
+      callback: (selector) => {
+        if (isDiscovery) {
+          let discoveryConfig = {
+            props:
+              selector.discoveryVO && selector.discoveryVO.props
+                ? selector.discoveryVO.props
+                : "{}",
+            discoveryType:
+              selector.discoveryVO && selector.discoveryVO.type
+                ? selector.discoveryVO.type
+                : "local",
+            serverList:
+              selector.discoveryVO && selector.discoveryVO.serverList
+                ? selector.discoveryVO.serverList
+                : "",
+            handler:
+              selector.discoveryHandler && selector.discoveryHandler.handler
+                ? selector.discoveryHandler.handler
+                : "{}",
+            listenerNode:
+              selector.discoveryHandler &&
+              selector.discoveryHandler.listenerNode
+                ? selector.discoveryHandler.listenerNode
+                : "",
+          };
+          let updateArray = [];
+          if (selector.discoveryUpstreams) {
+            updateArray = selector.discoveryUpstreams.map((item) => {
+              let propsObj = JSON.parse(item.props || "{}");
+              if (item.props === null) {
+                propsObj = {
+                  warmupTime: 10,
+                };
+              }
+              return { ...item, key: item.id, warmupTime: propsObj.warmupTime };
+            });
+          }
+          let discoveryHandlerId = selector.discoveryHandler
+            ? selector.discoveryHandler.id
+            : "";
+          this.setState({
+            popup: (
+              <Selector
+                pluginName={name}
+                {...selector}
+                multiSelectorHandle={multiSelectorHandle}
+                discoveryConfig={discoveryConfig}
+                discoveryUpstreams={updateArray}
+                isAdd={false}
+                isDiscovery={true}
+                handleOk={(values) => {
+                  dispatch({
+                    type: "common/updateSelector",
+                    payload: {
+                      pluginId,
+                      ...values,
+                      id,
+                    },
+                    fetchValue: {
+                      pluginId,
+                      currentPage: selectorPage,
+                      pageSize: selectorPageSize,
+                    },
+                    callback: () => {
+                      const { upstreams } = values;
+                      this.updateDiscoveryUpstream(
+                        discoveryHandlerId,
+                        upstreams,
+                      );
+                      this.closeModal();
+                    },
+                  });
+                }}
+                onCancel={this.closeModal}
+              />
+            ),
           });
-        }
-        let discoveryHandlerId = selector.discoveryHandler ? selector.discoveryHandler.id : '';
-        this.setState({
-          popup: (
-            <Selector
-              pluginName={name}
-              {...selector}
-              multiSelectorHandle={multiSelectorHandle}
-              discoveryConfig={discoveryConfig}
-              discoveryUpstreams={updateArray}
-              isAdd={false}
-              isDiscovery={true}
-              handleOk={values => {
-                dispatch({
-                  type: "common/updateSelector",
-                  payload: {
-                    pluginId,
-                    ...values,
-                    id
-                  },
-                  fetchValue: {
-                    pluginId,
-                    currentPage: selectorPage,
-                    pageSize: selectorPageSize
-                  },
-                  callback: () => {
-                    const {upstreams} = values
-                    this.updateDiscoveryUpstream(discoveryHandlerId, upstreams);
-                    this.closeModal();
-                  }
-                });
-              }}
-              onCancel={this.closeModal}
-            />
-          )
-        });
         } else {
           this.setState({
             popup: (
@@ -461,34 +521,34 @@ export default class Common extends Component {
                 {...selector}
                 multiSelectorHandle={multiSelectorHandle}
                 isDiscovery={false}
-                handleOk={values => {
+                handleOk={(values) => {
                   dispatch({
                     type: "common/updateSelector",
                     payload: {
                       pluginId,
                       ...values,
-                      id
+                      id,
                     },
                     fetchValue: {
                       pluginId,
                       currentPage: selectorPage,
-                      pageSize: selectorPageSize
+                      pageSize: selectorPageSize,
                     },
                     callback: () => {
                       this.closeModal();
-                    }
+                    },
                   });
                 }}
                 onCancel={this.closeModal}
               />
-            )
+            ),
           });
         }
-      }
+      },
     });
   };
 
-  enableSelector = ({list, enabled}) => {
+  enableSelector = ({ list, enabled }) => {
     const { dispatch, plugins } = this.props;
     const { selectorPage, selectorPageSize } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
@@ -498,17 +558,17 @@ export default class Common extends Component {
       type: "common/enableSelector",
       payload: {
         list,
-        enabled
+        enabled,
       },
       fetchValue: {
         pluginId,
         currentPage: selectorPage,
-        pageSize: selectorPageSize
+        pageSize: selectorPageSize,
       },
     });
-  }
+  };
 
-  deleteSelector = record => {
+  deleteSelector = (record) => {
     const { dispatch, plugins } = this.props;
     const { selectorPage, selectorPageSize } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
@@ -516,17 +576,17 @@ export default class Common extends Component {
     dispatch({
       type: "common/deleteSelector",
       payload: {
-        list: [record.id]
+        list: [record.id],
       },
       fetchValue: {
         pluginId,
         currentPage: selectorPage,
-        pageSize: selectorPageSize
-      }
+        pageSize: selectorPageSize,
+      },
     });
   };
 
-  pageSelectorChange = page => {
+  pageSelectorChange = (page) => {
     this.setState({ selectorPage: page });
     const { plugins } = this.props;
     const { selectorPageSize } = this.state;
@@ -539,7 +599,7 @@ export default class Common extends Component {
     this.getAllSelectors(1, pageSize, plugins);
   };
 
-  pageRuleChange = page => {
+  pageRuleChange = (page) => {
     this.setState({ rulePage: page });
     const { rulePageSize } = this.state;
     this.getAllRules(page, rulePageSize);
@@ -551,27 +611,27 @@ export default class Common extends Component {
   };
 
   // select
-  rowClick = record => {
+  rowClick = (record) => {
     const { id } = record;
     const { dispatch } = this.props;
     const { selectorPageSize } = this.state;
     dispatch({
       type: "common/saveCurrentSelector",
       payload: {
-        currentSelector: record
-      }
+        currentSelector: record,
+      },
     });
     dispatch({
       type: "common/fetchRule",
       payload: {
         currentPage: 1,
         pageSize: selectorPageSize,
-        selectorId: id
-      }
+        selectorId: id,
+      },
     });
   };
 
-  editRule = record => {
+  editRule = (record) => {
     const { dispatch, currentSelector, plugins } = this.props;
     const { rulePage, rulePageSize, pluginId } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
@@ -584,9 +644,9 @@ export default class Common extends Component {
     dispatch({
       type: "common/fetchRuleItem",
       payload: {
-        id
+        id,
       },
-      callback: rule => {
+      callback: (rule) => {
         this.setState({
           popup: (
             <Rule
@@ -594,33 +654,33 @@ export default class Common extends Component {
               pluginId={pluginId}
               pluginName={name}
               multiRuleHandle={multiRuleHandle}
-              handleOk={values => {
+              handleOk={(values) => {
                 dispatch({
                   type: "common/updateRule",
                   payload: {
                     selectorId,
                     ...values,
-                    id
+                    id,
                   },
                   fetchValue: {
                     selectorId,
                     currentPage: rulePage,
-                    pageSize: rulePageSize
+                    pageSize: rulePageSize,
                   },
                   callback: () => {
                     this.closeModal();
-                  }
+                  },
                 });
               }}
               onCancel={this.closeModal}
             />
-          )
+          ),
         });
-      }
+      },
     });
   };
 
-  enableRule = ({list, enabled}) => {
+  enableRule = ({ list, enabled }) => {
     const { rulePage, rulePageSize } = this.state;
     const { dispatch, currentSelector } = this.props;
     const selectorId = currentSelector ? currentSelector.id : "";
@@ -628,17 +688,17 @@ export default class Common extends Component {
       type: "common/enableRule",
       payload: {
         list,
-        enabled
+        enabled,
       },
       fetchValue: {
         selectorId,
         currentPage: rulePage,
-        pageSize: rulePageSize
+        pageSize: rulePageSize,
       },
     });
-  }
+  };
 
-  deleteRule = record => {
+  deleteRule = (record) => {
     const { dispatch, currentSelector, ruleList } = this.props;
     const { rulePage, rulePageSize } = this.state;
     const currentPage =
@@ -646,13 +706,13 @@ export default class Common extends Component {
     dispatch({
       type: "common/deleteRule",
       payload: {
-        list: [record.id]
+        list: [record.id],
       },
       fetchValue: {
         selectorId: currentSelector.id,
         currentPage,
-        pageSize: rulePageSize
-      }
+        pageSize: rulePageSize,
+      },
     });
   };
 
@@ -663,26 +723,28 @@ export default class Common extends Component {
     dispatch({
       type: "global/asyncPlugin",
       payload: {
-        id
-      }
+        id,
+      },
     });
   };
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   changeLocales(locale) {
     this.setState({
-      localeName: locale
+      localeName: locale,
     });
     getCurrentLocale(this.state.localeName);
   }
 
   render() {
-    const { popup, selectorPage, selectorPageSize, rulePage, rulePageSize } = this.state;
+    const { popup, selectorPage, selectorPageSize, rulePage, rulePageSize } =
+      this.state;
     const {
       selectorList,
       ruleList,
       selectorTotal,
       ruleTotal,
-      currentSelector
+      currentSelector,
     } = this.props;
     const name = this.props.match.params ? this.props.match.params.id : "";
     const role = this.props.match.params ? this.props.match.params.index : "";
@@ -692,13 +754,13 @@ export default class Common extends Component {
         align: "center",
         title: getIntlContent("SHENYU.SELECTOR.EXEORDER"),
         dataIndex: "sort",
-        key: "sort"
+        key: "sort",
       },
       {
         align: "center",
         title: getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"),
         dataIndex: "name",
-        key: "name"
+        key: "name",
       },
       {
         align: "center",
@@ -710,11 +772,11 @@ export default class Common extends Component {
             checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
             unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
             checked={text}
-            onChange={checked => {
-              this.enableSelector({list: [row.id], enabled: checked});
+            onChange={(checked) => {
+              this.enableSelector({ list: [row.id], enabled: checked });
             }}
           />
-        )
+        ),
       },
       {
         align: "center",
@@ -728,7 +790,7 @@ export default class Common extends Component {
                 <span
                   style={{ marginRight: 8 }}
                   className="edit"
-                  onClick={e => {
+                  onClick={(e) => {
                     e.stopPropagation();
                     this.editSelector(record);
                   }}
@@ -740,10 +802,10 @@ export default class Common extends Component {
                 <Popconfirm
                   title={getIntlContent("SHENYU.COMMON.DELETE")}
                   placement="bottom"
-                  onCancel={e => {
+                  onCancel={(e) => {
                     e.stopPropagation();
                   }}
-                  onConfirm={e => {
+                  onConfirm={(e) => {
                     e.stopPropagation();
                     this.deleteSelector(record);
                   }}
@@ -752,7 +814,7 @@ export default class Common extends Component {
                 >
                   <span
                     className="edit"
-                    onClick={e => {
+                    onClick={(e) => {
                       e.stopPropagation();
                     }}
                   >
@@ -762,8 +824,8 @@ export default class Common extends Component {
               </AuthButton>
             </div>
           );
-        }
-      }
+        },
+      },
     ];
 
     const rulesColumns = [
@@ -771,13 +833,13 @@ export default class Common extends Component {
         align: "center",
         title: getIntlContent("SHENYU.SELECTOR.EXEORDER"),
         dataIndex: "sort",
-        key: "sort"
+        key: "sort",
       },
       {
         align: "center",
         title: getIntlContent("SHENYU.COMMON.RULE.NAME"),
         dataIndex: "name",
-        key: "name"
+        key: "name",
       },
       {
         align: "center",
@@ -789,18 +851,18 @@ export default class Common extends Component {
             checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
             unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
             checked={text}
-            onChange={checked => {
-              this.enableRule({list: [row.id], enabled: checked});
+            onChange={(checked) => {
+              this.enableRule({ list: [row.id], enabled: checked });
             }}
           />
-        )
+        ),
       },
       {
         align: "center",
         title: getIntlContent("SHENYU.SYSTEM.UPDATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated",
-        sorter: (a, b) => (a.dateCreated > b.dateCreated ? 1 : -1)
+        sorter: (a, b) => (a.dateCreated > b.dateCreated ? 1 : -1),
       },
       {
         align: "center",
@@ -814,7 +876,7 @@ export default class Common extends Component {
                 <span
                   className="edit"
                   style={{ marginRight: 8 }}
-                  onClick={e => {
+                  onClick={(e) => {
                     e.stopPropagation();
                     this.editRule(record);
                   }}
@@ -826,10 +888,10 @@ export default class Common extends Component {
                 <Popconfirm
                   title={getIntlContent("SHENYU.COMMON.DELETE")}
                   placement="bottom"
-                  onCancel={e => {
+                  onCancel={(e) => {
                     e.stopPropagation();
                   }}
-                  onConfirm={e => {
+                  onConfirm={(e) => {
                     e.stopPropagation();
                     this.deleteRule(record);
                   }}
@@ -838,7 +900,7 @@ export default class Common extends Component {
                 >
                   <span
                     className="edit"
-                    onClick={e => {
+                    onClick={(e) => {
                       e.stopPropagation();
                     }}
                   >
@@ -848,26 +910,52 @@ export default class Common extends Component {
               </AuthButton>
             </div>
           );
-        }
-      }
+        },
+      },
     ];
 
     const tag = {
-      text: this.state.isPluginEnabled ? getIntlContent("SHENYU.COMMON.OPEN") : getIntlContent("SHENYU.COMMON.CLOSE"),
-      color: this.state.isPluginEnabled ? 'green' : 'red'
-    }
+      text: this.state.isPluginEnabled
+        ? getIntlContent("SHENYU.COMMON.OPEN")
+        : getIntlContent("SHENYU.COMMON.CLOSE"),
+      color: this.state.isPluginEnabled ? "green" : "red",
+    };
+
+    const expandedRowRender = (record) => (
+      <p
+        style={{
+          maxWidth: document.documentElement.clientWidth * 0.5 - 50,
+        }}
+      >
+        {record.handle}
+      </p>
+    );
 
     return (
       <div className="plug-content-wrap">
-        <Row style={{ marginBottom: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'end', flex: 1, margin: 0 }}>
-            <Title level={2} style={{ textTransform: 'capitalize', margin: '0 20px 0 0' }}>
+        <Row
+          style={{
+            marginBottom: "5px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{ display: "flex", alignItems: "end", flex: 1, margin: 0 }}
+          >
+            <Title
+              level={2}
+              style={{ textTransform: "capitalize", margin: "0 20px 0 0" }}
+            >
               {name}
             </Title>
-            <Title level={3} type="secondary" style={{ margin: '0 20px 0 0' }}>{role}</Title>
+            <Title level={3} type="secondary" style={{ margin: "0 20px 0 0" }}>
+              {role}
+            </Title>
             <Tag color={tag.color}>{tag.text}</Tag>
           </div>
-          <div style={{ display: 'flex', alignItems: 'end', gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "end", gap: 10 }}>
             <Switch
               checked={this.state.isPluginEnabled ?? false}
               onChange={this.togglePluginStatus}
@@ -882,14 +970,16 @@ export default class Common extends Component {
         <Row gutter={20}>
           <Col span={8}>
             <div className="table-header">
-              <h3 style={{ margin: 0, overflow: "visible" }}>{getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
+              <h3 style={{ margin: 0, overflow: "visible" }}>
+                {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}
+              </h3>
               <div className={styles.headerSearch}>
                 <AuthButton perms={`plugin:${name}Selector:query`}>
                   <Search
                     className={styles.search}
                     style={{ width: "130px" }}
                     placeholder={getIntlContent(
-                      "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME"
+                      "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME",
                     )}
                     enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
                     size="default"
@@ -906,11 +996,11 @@ export default class Common extends Component {
             </div>
             <Table
               size="small"
-              onRow={record => {
+              onRow={(record) => {
                 return {
                   onClick: () => {
                     this.rowClick(record);
-                  }
+                  },
                 };
               }}
               style={{ marginTop: 30 }}
@@ -927,7 +1017,7 @@ export default class Common extends Component {
                 onChange: this.pageSelectorChange,
                 onShowSizeChange: this.pageSelectorChangeSize,
               }}
-              rowClassName={item => {
+              rowClassName={(item) => {
                 if (currentSelector && currentSelector.id === item.id) {
                   return "table-selected";
                 } else {
@@ -958,7 +1048,7 @@ export default class Common extends Component {
                   <Search
                     className={styles.search}
                     placeholder={getIntlContent(
-                      "SHENYU.PLUGIN.SEARCH.RULE.NAME"
+                      "SHENYU.PLUGIN.SEARCH.RULE.NAME",
                     )}
                     enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
                     size="default"
@@ -978,15 +1068,7 @@ export default class Common extends Component {
               style={{ marginTop: 30 }}
               bordered
               columns={rulesColumns}
-              expandedRowRender={record => (
-                <p
-                  style={{
-                    maxWidth: document.documentElement.clientWidth * 0.5 - 50
-                  }}
-                >
-                  {record.handle}
-                </p>
-              )}
+              expandedRowRender={expandedRowRender}
               dataSource={ruleList}
               pagination={{
                 total: ruleTotal,

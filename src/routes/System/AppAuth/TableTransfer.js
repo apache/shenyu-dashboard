@@ -15,55 +15,58 @@
  * limitations under the License.
  */
 
-import React from 'react';
+/* eslint-disable max-classes-per-file */
+import React from "react";
 // import ReactDOM from 'react-dom';
-import 'antd/dist/antd.css';
+import "antd/dist/antd.css";
 
-import { Transfer, Table } from 'antd';
-import difference from 'lodash/difference';
-import {getIntlContent} from "../../../utils/IntlUtils";
+import { Transfer, Table } from "antd";
+import difference from "lodash/difference";
+import { getIntlContent } from "../../../utils/IntlUtils";
 // import uniqBy from 'lodash/uniqBy';
 // import reqwest from 'reqwest';
 
 const columns = [
   {
-    dataIndex: 'path',
-    title: getIntlContent('SHENYU.AUTH.RESOUCE.PATH'),
+    dataIndex: "path",
+    title: getIntlContent("SHENYU.AUTH.RESOUCE.PATH"),
     width: 200,
-    textWrap: 'word-break',
-    align: 'center',
-    ellipsis: true
+    textWrap: "word-break",
+    align: "center",
+    ellipsis: true,
   },
   {
-    dataIndex: 'appName',
-    title: getIntlContent('SHENYU.AUTH.APPNAME'),
+    dataIndex: "appName",
+    title: getIntlContent("SHENYU.AUTH.APPNAME"),
     width: 100,
-    textWrap: 'word-break',
-    align: 'center',
-    ellipsis: true
+    textWrap: "word-break",
+    align: "center",
+    ellipsis: true,
   },
-
 ];
 
 class TableTransfer extends React.Component {
-  state = {
-    dataSource: this.props.datalist,
-    pagination: {
-      current: 1,
-      pageSize: 10,
-    },
-
-  };
-
-
-
-
+  constructor(props) {
+    super(props);
+    this.state = {
+      dataSource: this.props.datalist,
+      pagination: {
+        current: 1,
+        pageSize: 10,
+      },
+    };
+  }
 
   render() {
     const { authName } = this.props;
     const { dataSource, pagination } = this.state;
     return (
-      <Transfer titles={['ALL',authName]} {...this.props} dataSource={dataSource} rowKey={record => record.path}>
+      <Transfer
+        titles={["ALL", authName]}
+        {...this.props}
+        dataSource={dataSource}
+        rowKey={(record) => record.path}
+      >
         {({
           direction, // 渲染列表的方向
           filteredItems,
@@ -73,12 +76,12 @@ class TableTransfer extends React.Component {
           disabled: listDisabled, // 是否禁用列表
         }) => {
           const rowSelection = {
-            getCheckboxProps: item => ({
+            getCheckboxProps: (item) => ({
               disabled: listDisabled || item.disabled,
             }),
             onSelectAll(selected, selectedRows) {
               const treeSelectedKeys = selectedRows
-                .filter(item => !item.disabled)
+                .filter((item) => !item.disabled)
                 .map(({ path }) => path);
               const diffKeys = selected
                 ? difference(treeSelectedKeys, listSelectedKeys)
@@ -91,8 +94,8 @@ class TableTransfer extends React.Component {
             selectedRowKeys: listSelectedKeys,
           };
 
-          const handleTableChange = paginationObj => {
-            if (direction === 'left') {
+          const handleTableChange = (paginationObj) => {
+            if (direction === "left") {
               // eslint-disable-next-line react/no-access-state-in-setstate
               const pager = { ...this.state.pagination };
               pager.current = paginationObj.current;
@@ -116,8 +119,8 @@ class TableTransfer extends React.Component {
             <Table
               rowSelection={rowSelection}
               columns={columns}
-              rowKey={record =>record.path}
-              style={{ pointerEvents: listDisabled ? 'none' : null }}
+              rowKey={(record) => record.path}
+              style={{ pointerEvents: listDisabled ? "none" : null }}
               dataSource={filteredItems}
               // dataSource={direction === 'left' ? leftDataSource : rightDataSource}
               size="small"
@@ -128,7 +131,7 @@ class TableTransfer extends React.Component {
                   onItemSelect(path, !listSelectedKeys.includes(path));
                 },
               })}
-              pagination={direction === 'left' ? pagination : true}
+              pagination={direction === "left" ? pagination : true}
             />
           );
         }}
@@ -138,23 +141,28 @@ class TableTransfer extends React.Component {
 }
 
 class TableTransferComponent extends React.Component {
-  state = {
-    targetKeys: this.props.auth.map(item=>item.path),
-    authName: this.props.authName,
-    datalist: this.props.datalist,
-    auth: this.props.auth.map(item=>{item.key=item.id; return item})
+  constructor(props) {
+    super(props);
+    this.state = {
+      targetKeys: this.props.auth.map((item) => item.path),
+      authName: this.props.authName,
+      datalist: this.props.datalist,
+      auth: this.props.auth.map((item) => {
+        item.key = item.id;
+        return item;
+      }),
+    };
+  }
 
-  };
-
-
-
-  onChange = targetKeys => {
+  onChange = (targetKeys) => {
     this.setState({
       targetKeys,
     });
 
     // 传递更数据
-    let data = this.state.datalist.filter(item=>targetKeys.includes(item.path))
+    let data = this.state.datalist.filter((item) =>
+      targetKeys.includes(item.path),
+    );
 
     this.props.handleGetUpdateMetas(data);
   };
@@ -170,10 +178,11 @@ class TableTransferComponent extends React.Component {
         onChange={this.onChange}
         showSearch={true}
         filterOption={(inputValue, item) =>
-              item.appName.indexOf(inputValue) !== -1 || item.path.indexOf(inputValue) !== -1
-            }
+          item.appName.indexOf(inputValue) !== -1 ||
+          item.path.indexOf(inputValue) !== -1
+        }
       />
-);
+    );
   }
 }
-export default TableTransferComponent
+export default TableTransferComponent;

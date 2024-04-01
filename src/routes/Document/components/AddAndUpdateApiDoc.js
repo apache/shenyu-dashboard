@@ -1,22 +1,23 @@
 /*
-  * Licensed to the Apache Software Foundation (ASF) under one or more
-  * contributor license agreements. See the NOTICE file distributed with
-  * this work for additional information regarding copyright ownership.
-  * The ASF licenses this file to You under the Apache License, Version 2.0
-  * (the "License"); you may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at
-  *
-  * http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  */
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 /* eslint-disable no-unused-expressions */
 /* eslint-disable radix */
+/* eslint-disable react/static-property-placement */
 import { Modal, Form, Input, Select, message, Radio } from "antd";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
@@ -31,7 +32,7 @@ class AddAndUpdateApiDoc extends Component {
     visible: PropTypes.bool,
     formLoaded: PropTypes.func,
     onOk: PropTypes.func,
-    onCancel: PropTypes.func
+    onCancel: PropTypes.func,
   };
 
   componentDidMount() {
@@ -39,14 +40,13 @@ class AddAndUpdateApiDoc extends Component {
     formLoaded?.(form);
   }
 
-
   handleSubmit = () => {
     const { form, onOk, document, ext } = this.props;
     form.validateFieldsAndScroll(async (err, values) => {
       function isJsonStr(str) {
         try {
           let obj = JSON.parse(str);
-          return !!(typeof obj === 'object' && obj);
+          return !!(typeof obj === "object" && obj);
         } catch (e) {
           return false;
         }
@@ -57,8 +57,8 @@ class AddAndUpdateApiDoc extends Component {
         values.state = parseInt(values.state);
         values.apiSource = parseInt(values.apiSource);
         values.httpMethod = parseInt(values.httpMethod);
-        values.document = document
-        values.ext = ext
+        values.document = document;
+        values.ext = ext;
         // validate ext
         if (!isJsonStr(values.ext)) {
           message.error(getIntlContent("SHENYU.DOCUMENT.APIDOC.EXT.INFO"));
@@ -66,11 +66,11 @@ class AddAndUpdateApiDoc extends Component {
         }
         if (!id) {
           res = await addApi({
-            ...values
+            ...values,
           });
         } else {
           res = await updateApi({
-            ...values
+            ...values,
           });
         }
 
@@ -108,11 +108,11 @@ class AddAndUpdateApiDoc extends Component {
     const { getFieldDecorator, getFieldValue } = form;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 6 }
+        sm: { span: 6 },
       },
       wrapperCol: {
-        sm: { span: 18 }
-      }
+        sm: { span: 18 },
+      },
     };
 
     return (
@@ -133,17 +133,17 @@ class AddAndUpdateApiDoc extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.CONTEXTPATH")
-                }
+                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.CONTEXTPATH"),
+                },
               ],
-              initialValue: contextPath
+              initialValue: contextPath,
             })(
               <Input
                 allowClear
                 placeholder={getIntlContent(
-                  "SHENYU.DOCUMENT.APIDOC.CONTEXTPATH"
+                  "SHENYU.DOCUMENT.APIDOC.CONTEXTPATH",
                 )}
-              />
+              />,
             )}
           </Form.Item>
           <Form.Item
@@ -154,15 +154,15 @@ class AddAndUpdateApiDoc extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.APIPATH")
-                }
+                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.APIPATH"),
+                },
               ],
-              initialValue: apiPath
+              initialValue: apiPath,
             })(
               <Input
                 allowClear
                 placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.APIPATH")}
-              />
+              />,
             )}
           </Form.Item>
           <Form.Item
@@ -173,10 +173,10 @@ class AddAndUpdateApiDoc extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.HTTPMETHOD")
-                }
+                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.HTTPMETHOD"),
+                },
               ],
-              initialValue: httpMethod
+              initialValue: httpMethod,
             })(
               <Select>
                 {Object.values(Method).map((e, i) => {
@@ -186,7 +186,7 @@ class AddAndUpdateApiDoc extends Component {
                     </Select.Option>
                   );
                 })}
-              </Select>
+              </Select>,
             )}
           </Form.Item>
           <Form.Item
@@ -197,15 +197,15 @@ class AddAndUpdateApiDoc extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.CONSUME")
-                }
+                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.CONSUME"),
+                },
               ],
-              initialValue: consume
+              initialValue: consume,
             })(
               <Input
                 allowClear
                 placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.CONSUME")}
-              />
+              />,
             )}
           </Form.Item>
           <Form.Item
@@ -216,15 +216,15 @@ class AddAndUpdateApiDoc extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.PRODUCE")
-                }
+                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.PRODUCE"),
+                },
               ],
-              initialValue: produce
+              initialValue: produce,
             })(
               <Input
                 allowClear
                 placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.PRODUCE")}
-              />
+              />,
             )}
           </Form.Item>
           <Form.Item
@@ -235,15 +235,15 @@ class AddAndUpdateApiDoc extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.VERSION")
-                }
+                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.VERSION"),
+                },
               ],
-              initialValue: version
+              initialValue: version,
             })(
               <Input
                 allowClear
                 placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.VERSION")}
-              />
+              />,
             )}
           </Form.Item>
           <Form.Item
@@ -254,10 +254,10 @@ class AddAndUpdateApiDoc extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.RPCTYPE")
-                }
+                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.RPCTYPE"),
+                },
               ],
-              initialValue: rpcType
+              initialValue: rpcType,
             })(
               <Select>
                 {RPCTYPE.map((e, i) => {
@@ -267,7 +267,7 @@ class AddAndUpdateApiDoc extends Component {
                     </Select.Option>
                   );
                 })}
-              </Select>
+              </Select>,
             )}
           </Form.Item>
           <Form.Item
@@ -278,21 +278,24 @@ class AddAndUpdateApiDoc extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.STATE")
-                }
+                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.STATE"),
+                },
               ],
-              initialValue: state
+              initialValue: state,
             })(
               <Radio.Group buttonStyle="solid">
                 {STATE_TYPE.map((e, i) => {
                   return (
-                    <Radio.Button key={`${e} ${i}`} value={i} disabled={!getFieldValue("id") && e === 'offline'}>
+                    <Radio.Button
+                      key={`${e} ${i}`}
+                      value={i}
+                      disabled={!getFieldValue("id") && e === "offline"}
+                    >
                       {e}
                     </Radio.Button>
                   );
                 })}
-
-              </Radio.Group>
+              </Radio.Group>,
             )}
           </Form.Item>
           <Form.Item
@@ -307,7 +310,7 @@ class AddAndUpdateApiDoc extends Component {
               onAdd={updateExt}
               onEdit={updateExt}
               onDelete={updateExt}
-              style={{borderRadius: 4, padding: 16, overflow: 'auto'}}
+              style={{ borderRadius: 4, padding: 16, overflow: "auto" }}
             />
           </Form.Item>
           <Form.Item
@@ -318,15 +321,15 @@ class AddAndUpdateApiDoc extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.APIOWNER")
-                }
+                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.APIOWNER"),
+                },
               ],
-              initialValue: apiOwner
+              initialValue: apiOwner,
             })(
               <Input
                 allowClear
                 placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.APIOWNER")}
-              />
+              />,
             )}
           </Form.Item>
           <Form.Item
@@ -337,15 +340,15 @@ class AddAndUpdateApiDoc extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.APIDESC")
-                }
+                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.APIDESC"),
+                },
               ],
-              initialValue: apiDesc
+              initialValue: apiDesc,
             })(
               <Input
                 allowClear
                 placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.APIDESC")}
-              />
+              />,
             )}
           </Form.Item>
           <Form.Item
@@ -356,10 +359,10 @@ class AddAndUpdateApiDoc extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.APISOURCE")
-                }
+                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.APISOURCE"),
+                },
               ],
-              initialValue: apiSource
+              initialValue: apiSource,
             })(
               <Select>
                 {API_SOURCE_TYPE.map((e, i) => {
@@ -369,7 +372,7 @@ class AddAndUpdateApiDoc extends Component {
                     </Select.Option>
                   );
                 })}
-              </Select>
+              </Select>,
             )}
           </Form.Item>
           <Form.Item
@@ -384,13 +387,17 @@ class AddAndUpdateApiDoc extends Component {
               onAdd={updateDocument}
               onEdit={updateDocument}
               onDelete={updateDocument}
-              style={{borderRadius: 4, padding: 16, overflow: 'auto'}}
+              style={{ borderRadius: 4, padding: 16, overflow: "auto" }}
             />
           </Form.Item>
 
-          <Form.Item hidden>{getFieldDecorator("tagIds")(<Input allowClear />)}</Form.Item>
+          <Form.Item hidden>
+            {getFieldDecorator("tagIds")(<Input allowClear />)}
+          </Form.Item>
 
-          <Form.Item hidden>{getFieldDecorator("id")(<Input allowClear />)}</Form.Item>
+          <Form.Item hidden>
+            {getFieldDecorator("id")(<Input allowClear />)}
+          </Form.Item>
         </Form>
       </Modal>
     );

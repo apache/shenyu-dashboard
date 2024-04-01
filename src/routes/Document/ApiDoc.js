@@ -16,7 +16,7 @@
  */
 
 /* eslint-disable no-unused-expressions */
-
+/* eslint-disable react/jsx-no-constructed-context-values */
 import { Col, Row, Card, BackTop, Empty, message } from "antd";
 import React, { useEffect, useState } from "react";
 import {
@@ -26,7 +26,7 @@ import {
   deleteApi,
   getTagDetail,
   deleteTag,
-  getApiMockRequest
+  getApiMockRequest,
 } from "../../services/api";
 import SearchApi from "./components/SearchApi";
 import ApiInfo from "./components/ApiInfo";
@@ -66,8 +66,8 @@ function ApiDoc() {
   const handleSelectNode = async (_, e) => {
     const {
       node: {
-        props: { id, isLeaf }
-      }
+        props: { id, isLeaf },
+      },
     } = e;
     if (isLeaf) {
       const { code, message: msg, data } = await getApiDetail(id);
@@ -81,7 +81,7 @@ function ApiDoc() {
       const {
         code: mockCode,
         message: mockMsg,
-        data: mockData
+        data: mockData,
       } = await getApiMockRequest(id);
       if (mockCode !== 200) {
         message.error(mockMsg);
@@ -94,7 +94,11 @@ function ApiDoc() {
         message.error(msg);
         return;
       }
-      const { code: apiCode, message: apiMsg, data: apiDataRecords } = await getApi(id);
+      const {
+        code: apiCode,
+        message: apiMsg,
+        data: apiDataRecords,
+      } = await getApi(id);
       if (apiCode !== 200) {
         message.error(apiMsg);
         return;
@@ -120,11 +124,11 @@ function ApiDoc() {
     } else {
       message.success(msg);
       if (tagDetail.id) {
-        searchApiRef.current?.updateTree(null, 'tag');
+        searchApiRef.current?.updateTree(null, "tag");
         setTagDetail({});
       }
       if (apiDetail.id) {
-        searchApiRef.current?.updateTree(null, 'api');
+        searchApiRef.current?.updateTree(null, "api");
       }
     }
   };
@@ -140,9 +144,9 @@ function ApiDoc() {
 
   // eslint-disable-next-line no-unused-vars
   const handleAfterUpdate = (data, refType) => {
-    if (refType === 'tag') {
+    if (refType === "tag") {
       setTagDetail({ ...tagDetail, ...data });
-    } else if (refType === 'api') {
+    } else if (refType === "api") {
       setApiDetail({ ...apiDetail, ...data });
     }
   };
@@ -157,12 +161,12 @@ function ApiDoc() {
         apiDetail,
         apiData,
         apiMock,
-        tagDetail
+        tagDetail,
       }}
     >
       <Row gutter={12}>
         <Col span={6}>
-          <Card style={{ margin: '24px 0 24px 24px' }}>
+          <Card style={{ margin: "24px 0 24px 24px" }}>
             <SearchApi
               onSelect={handleSelectNode}
               ref={searchApiRef}
@@ -171,7 +175,7 @@ function ApiDoc() {
           </Card>
         </Col>
         <Col span={18}>
-          <Card style={{ margin: '24px 24px 24px 0' }}>
+          <Card style={{ margin: "24px 24px 24px 0" }}>
             {tagDetail.id ? (
               <TagInfo
                 handleUpdate={handleUpdate}
@@ -184,10 +188,9 @@ function ApiDoc() {
                 handleDelete={handleDelete}
               />
             ) : null}
-            {!tagDetail.id &&
-              !apiDetail.id && (
-                <Empty description={false} style={{ padding: "160px 0" }} />
-              )}
+            {!tagDetail.id && !apiDetail.id && (
+              <Empty description={false} style={{ padding: "160px 0" }} />
+            )}
           </Card>
         </Col>
       </Row>

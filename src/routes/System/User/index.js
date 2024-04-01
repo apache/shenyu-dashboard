@@ -222,6 +222,7 @@ export default class Manage extends Component {
     });
   };
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   changeLocale(locale) {
     this.setState({
       localeName: locale,
