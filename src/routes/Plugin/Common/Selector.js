@@ -41,7 +41,13 @@ import classnames from "classnames";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import SelectorCopy from "./SelectorCopy";
-import { findKeyByValue } from "../../../utils/utils";
+import {
+  findKeyByValue,
+  formatDate,
+  formatTime,
+  formatDateString,
+  formatTimeString,
+} from "../../../utils/utils";
 import DiscoveryImportModal from "../Discovery/DiscoveryImportModal";
 import EditableFormTable from "../Discovery/DiscoveryUpstreamTable.js";
 
@@ -1036,39 +1042,47 @@ class AddModal extends Component {
         .concat(date.getMonth() + 1)
         .concat("-")
         .concat(date.getDate());
-      let day = defaultDay;
       return (
         <Input.Group compact style={{ top: -2 }}>
           <DatePicker
+            style={{ width: "51%" }}
             onChange={(e) => {
-              day = e
+              let day = e
                 ? e
                     .eraYear()
                     .toString()
                     .concat("-")
                     .concat(e.month() + 1)
                     .concat("-")
-                    .concat(e.date() < 10 ? "0".concat(e.date()) : e.date())
+                    .concat(e.date())
                 : defaultDay;
+              this.conditionChange(
+                index,
+                "paramValue",
+                `${formatDateString(day)} ${formatTimeString(item.paramValue)}`,
+              );
             }}
-            style={{ width: "51%" }}
+            value={formatDate(item.paramValue)}
           />
           <TimePicker
             style={{ width: "49%" }}
             onChange={(e) => {
-              let Time = e
-                ? day
+              let time = e
+                ? ""
                     .concat(" ")
                     .concat(e.hours())
                     .concat(":")
                     .concat(e.minutes())
                     .concat(":")
-                    .concat(
-                      e.seconds() < 10 ? "0".concat(e.seconds()) : e.seconds(),
-                    )
+                    .concat(e.seconds())
                 : "";
-              this.conditionChange(index, "paramValue", Time);
+              this.conditionChange(
+                index,
+                "paramValue",
+                `${formatDateString(item.paramValue)} ${formatTimeString(time)}`,
+              );
             }}
+            value={formatTime(item.paramValue)}
           />
         </Input.Group>
       );
