@@ -110,6 +110,19 @@ function getRenderArr(routes) {
   return renderArr;
 }
 
+function zeroPadding(number, len) {
+  const getZero = (l) => {
+    let z = "";
+    for (let i = 0, j = l; i < j; i += 1) {
+      z += "0";
+    }
+    return z;
+  };
+  return (
+    (`${number}`.length < len ? getZero(len - `${number}`.length) : "") + number
+  );
+}
+
 /**
  * Get router routing configuration
  * { path:{name,...param}}=>Array<{name,path ...param}>
@@ -197,4 +210,36 @@ export function formatTimestamp(timestamp) {
 
 export function findKeyByValue(obj, value) {
   return Object.keys(obj).find((key) => obj[key] === value);
+}
+
+export function formatDate(str) {
+  const d = str.split(" ")[0];
+  const da = d.split("-");
+  if (da.length < 3) return null;
+  return moment(
+    `${da[0]}-${zeroPadding(da[1], 2)}-${zeroPadding(da[2], 2)}`,
+    "YYYY-MM-DD",
+  );
+}
+
+export function formatDateString(str) {
+  const f = formatDate(str);
+  return f ? f.format("YYYY-MM-DD") : "";
+}
+
+export function formatTime(str) {
+  const sa = str.split(" ");
+  if (sa.length < 2) return null;
+  const t = sa[1];
+  const ta = t.split(":");
+  if (ta.length < 3) return null;
+  return moment(
+    `${zeroPadding(ta[0], 2)}:${zeroPadding(ta[1], 2)}:${zeroPadding(ta[2], 2)}`,
+    "HH:mm:ss",
+  );
+}
+
+export function formatTimeString(str) {
+  const f = formatTime(str);
+  return f ? f.format("HH:mm:ss") : "";
 }
