@@ -147,6 +147,8 @@ export default {
           type: "saveConfig",
           payload: data,
         });
+      } else {
+        message.warn(json.message);
       }
     },
 
