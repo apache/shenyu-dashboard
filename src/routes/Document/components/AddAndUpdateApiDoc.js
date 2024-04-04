@@ -120,9 +120,9 @@ class AddAndUpdateApiDoc extends Component {
         visible={visible}
         onCancel={onCancel}
         onOk={this.handleSubmit}
-        closable={false}
         forceRender
         width="100%"
+        title="Api"
       >
         <Form className="login-form">
           <Form.Item
