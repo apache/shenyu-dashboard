@@ -17,7 +17,7 @@
 
 import React from "react";
 import { routerRedux, Route, Switch } from "dva/router";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, BackTop } from "antd";
 import enUS from "antd/lib/locale-provider/en_US";
 import { getRouterData } from "./common/router";
 import AuthRoute from "./utils/AuthRoute";
@@ -41,6 +41,7 @@ function RouterConfig({ history, app }) {
           />
         </Switch>
       </ConnectedRouter>
+      <BackTop />
     </ConfigProvider>
   );
 }
