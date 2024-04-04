@@ -497,7 +497,7 @@ export default class Resource extends Component {
                 <AuthButton perms="system:resource:list">
                   <Search
                     className={styles.search}
-                    style={{ width: "130px" }}
+                    style={{ minWidth: "130px" }}
                     placeholder={getIntlContent(
                       "SHENYU.SYSTEM.RESOURCE.MENU.INPUT.NAME",
                     )}
@@ -506,12 +506,12 @@ export default class Resource extends Component {
                     onSearch={this.searchMenu}
                   />
                 </AuthButton>
+                <AuthButton perms="system:resource:addMenu">
+                  <Button type="primary" onClick={() => this.addClick(1)}>
+                    {getIntlContent("SHENYU.BUTTON.RESOURCE.MENU.ADD")}
+                  </Button>
+                </AuthButton>
               </div>
-              <AuthButton perms="system:resource:addMenu">
-                <Button type="primary" onClick={() => this.addClick(1)}>
-                  {getIntlContent("SHENYU.BUTTON.RESOURCE.MENU.ADD")}
-                </Button>
-              </AuthButton>
             </div>
             {menuTree && menuTree.length > 0 ? (
               <Tree
