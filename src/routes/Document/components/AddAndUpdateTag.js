@@ -80,8 +80,8 @@ class AddAndUpdateTag extends Component {
         visible={visible}
         onCancel={onCancel}
         onOk={this.handleSubmit}
-        closable={false}
         forceRender
+        title={getIntlContent("SHENYU.DOCUMENT.TAG")}
       >
         <Form className="login-form" {...formItemLayout}>
           <Form.Item label={getIntlContent("SHENYU.DOCUMENT.TAG.NAME")}>
