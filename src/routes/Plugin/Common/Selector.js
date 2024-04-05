@@ -484,18 +484,24 @@ class AddModal extends Component {
           required
           key={key}
           {...(index === 0
-            ? { labelCol: { span: 4 }, wrapperCol: { span: 20 } }
-            : { wrapperCol: { span: 20, offset: 4 } })}
+            ? { labelCol: { span: 3 }, wrapperCol: { span: 21 } }
+            : { wrapperCol: { span: 21, offset: 3 } })}
           label={index === 0 ? "divideUpstreams" : ""}
         >
           <Card>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifycontent: "space-between",
+              }}
+            >
+              <div style={{ flex: 1 }}>
                 <Row gutter={30}>
                   <Col span={10}>
                     <Item
                       label="protocol"
-                      {...{ labelCol: { span: 8 }, wrapperCol: { span: 10 } }}
+                      {...{ labelCol: { span: 9 }, wrapperCol: { span: 15 } }}
                     >
                       {getFieldDecorator(`divideUpstreams[${key}].protocol`, {
                         initialValue: divideUpstreams[key]
@@ -536,7 +542,7 @@ class AddModal extends Component {
                   <Col span={10}>
                     <Item
                       label="weight"
-                      {...{ labelCol: { span: 8 }, wrapperCol: { span: 10 } }}
+                      {...{ labelCol: { span: 9 }, wrapperCol: { span: 15 } }}
                     >
                       {getFieldDecorator(`divideUpstreams[${key}].weight`, {
                         initialValue: divideUpstreams[key]
@@ -580,7 +586,7 @@ class AddModal extends Component {
                   <Col span={10}>
                     <Item
                       label="status"
-                      {...{ labelCol: { span: 8 }, wrapperCol: { span: 4 } }}
+                      {...{ labelCol: { span: 9 }, wrapperCol: { span: 15 } }}
                     >
                       {getFieldDecorator(`divideUpstreams[${key}].status`, {
                         initialValue: divideUpstreams[key]
@@ -637,25 +643,25 @@ class AddModal extends Component {
       ));
 
       return (
-        <div style={{ padding: "10px" }}>
-          <Row gutter={16} key="8">
-            <Col span={10}>
-              <Item
-                label="serviceId"
-                {...{ labelCol: { span: 6 }, wrapperCol: { span: 18 } }}
-              >
-                {getFieldDecorator("serviceId", {
-                  initialValue: serviceId,
-                  rules: [
-                    {
-                      required: true,
-                    },
-                  ],
-                })(<Input allowClear placeholder="serviceId" />)}
-              </Item>
-            </Col>
-            <Col span={3}>
-              <Item label="gray" {...formCheckLayout}>
+        <div className={styles.springCloud}>
+          <Item label="serviceId" {...formItemLayout}>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              {getFieldDecorator("serviceId", {
+                initialValue: serviceId,
+                rules: [
+                  {
+                    required: true,
+                  },
+                ],
+              })(
+                <Input
+                  style={{ width: "50%" }}
+                  allowClear
+                  placeholder="serviceId"
+                />,
+              )}
+
+              <Item label="gray" {...formCheckLayout} style={{ margin: 0 }}>
                 {getFieldDecorator("gray", {
                   valuePropName: "checked",
                   initialValue: gray,
@@ -666,28 +672,25 @@ class AddModal extends Component {
                   ],
                 })(<Switch />)}
               </Item>
-            </Col>
-          </Row>
-          <Row gutter={24} key="9">
-            <Col span={24}>
-              {Rule}
-              <Item>
-                <Button
-                  type="dashed"
-                  onClick={() => {
-                    const keysData = getFieldValue("keys");
-                    // eslint-disable-next-line no-plusplus
-                    const nextKeys = keysData.concat(id++);
-                    setFieldsValue({
-                      keys: nextKeys,
-                    });
-                  }}
-                >
-                  <Icon type="plus" /> Add divide upstream
-                </Button>
-              </Item>
-            </Col>
-          </Row>
+            </div>
+          </Item>
+          {Rule}
+          <Item label="" {...{ wrapperCol: { span: 21, offset: 3 } }}>
+            <Button
+              className={styles.addButton}
+              type="primary"
+              onClick={() => {
+                const keysData = getFieldValue("keys");
+                // eslint-disable-next-line no-plusplus
+                const nextKeys = keysData.concat(id++);
+                setFieldsValue({
+                  keys: nextKeys,
+                });
+              }}
+            >
+              Add divide upstream
+            </Button>
+          </Item>
         </div>
       );
     }
