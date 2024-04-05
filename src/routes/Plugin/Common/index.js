@@ -977,7 +977,7 @@ export default class Common extends Component {
                 <AuthButton perms={`plugin:${name}Selector:query`}>
                   <Search
                     className={styles.search}
-                    style={{ width: "130px" }}
+                    style={{ minWidth: "130px" }}
                     placeholder={getIntlContent(
                       "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME",
                     )}
