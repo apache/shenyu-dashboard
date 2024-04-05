@@ -48,6 +48,7 @@ export default class CommonRuleHandle extends Component {
       <FormItem
         label={getIntlContent("SHENYU.COMMON.DEAL")}
         {...formItemLayout}
+        className={styles.rootFormItem}
       >
         <FormItem style={{ display: "none" }}>
           {getFieldDecorator("handleType", {
@@ -58,6 +59,7 @@ export default class CommonRuleHandle extends Component {
           className={styles.handleWrap}
           style={{
             display: getFieldValue("handleType") === "1" ? "flex" : "none",
+            marginTop: 0,
           }}
         >
           <div>
@@ -76,7 +78,7 @@ export default class CommonRuleHandle extends Component {
                       [styles.handleUl]: true,
                       [styles.springUl]: true,
                     })}
-                    style={{ width: "100%" }}
+                    style={{ width: "100%", padding: 0, marginBottom: "-6px" }}
                   >
                     {handleList.map((item) => {
                       let required = item.required === "1";
