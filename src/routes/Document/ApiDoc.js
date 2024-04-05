@@ -17,7 +17,7 @@
 
 /* eslint-disable no-unused-expressions */
 /* eslint-disable react/jsx-no-constructed-context-values */
-import { Col, Row, Card, BackTop, Empty, message } from "antd";
+import { Col, Row, Card, Empty, message } from "antd";
 import React, { useEffect, useState } from "react";
 import {
   getApi,
@@ -194,7 +194,6 @@ function ApiDoc() {
           </Card>
         </Col>
       </Row>
-      <BackTop />
     </ApiContext.Provider>
   );
 }
