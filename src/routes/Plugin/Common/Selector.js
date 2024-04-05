@@ -697,186 +697,199 @@ class AddModal extends Component {
 
     if (Array.isArray(pluginHandleList) && pluginHandleList.length) {
       return (
-        <div className={styles.handleWrap}>
-          <div className={styles.header}>
-            <h3 style={{ width: 100 }}>
-              {getIntlContent("SHENYU.COMMON.DEAL")}:{" "}
-            </h3>
-          </div>
-          <div>
-            {pluginHandleList.map((handleList, index) => {
-              return (
-                <div
-                  key={index}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    flexDirection: "row",
-                  }}
-                >
-                  <ul
-                    className={classnames({
-                      [styles.handleUl]: true,
-                      [styles.handleSelectorUl]: true,
-                      [styles.springUl]: true,
-                    })}
-                    style={{ width: "100%" }}
+        <Item
+          label={getIntlContent("SHENYU.COMMON.DEAL")}
+          {...formItemLayout}
+          className={styles.rootFormItem}
+        >
+          <div
+            className={styles.handleWrap}
+            style={{
+              marginTop: 0,
+            }}
+          >
+            <div>
+              {pluginHandleList.map((handleList, index) => {
+                return (
+                  <div
+                    key={index}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      flexDirection: "row",
+                    }}
                   >
-                    {handleList &&
-                      handleList.map((item) => {
-                        let required = item.required === "1";
-                        let defaultValue =
-                          item.value === 0 || item.value === false
-                            ? item.value
-                            : item.value || item.defaultValue;
-                        let placeholder = item.label || item.placeholder;
-                        let checkRule = item.checkRule;
-                        let fieldName = item.field + index;
-                        let rules = [];
-                        if (required) {
-                          rules.push({
-                            required: { required },
-                            message:
-                              getIntlContent("SHENYU.COMMON.PLEASEINPUT") +
-                              item.label,
-                          });
-                        }
-                        if (checkRule) {
-                          rules.push({
-                            // eslint-disable-next-line no-eval
-                            pattern: eval(checkRule),
-                            message: `${getIntlContent(
-                              "SHENYU.PLUGIN.RULE.INVALID",
-                            )}:(${checkRule})`,
-                          });
-                        }
-                        if (item.dataType === 1) {
-                          return (
-                            <li key={fieldName}>
-                              <Tooltip title={placeholder}>
-                                <Item>
-                                  {getFieldDecorator(fieldName, {
-                                    rules,
-                                    initialValue: defaultValue,
-                                  })(
-                                    <Input
-                                      allowClear
-                                      addonBefore={
-                                        <div style={{ width: labelWidth }}>
-                                          {item.label}
-                                        </div>
-                                      }
-                                      placeholder={placeholder}
-                                      key={fieldName}
-                                    />,
-                                  )}
-                                </Item>
-                              </Tooltip>
-                            </li>
-                          );
-                        } else if (item.dataType === 3 && item.dictOptions) {
-                          return (
-                            <li key={fieldName}>
-                              <Tooltip title={placeholder}>
-                                <Item>
-                                  {getFieldDecorator(fieldName, {
-                                    rules,
-                                    initialValue:
-                                      defaultValue === true
-                                        ? "true"
-                                        : defaultValue === false
-                                          ? "false"
-                                          : defaultValue,
-                                  })(
-                                    <Select
-                                      placeholder={placeholder}
-                                      style={{ width: "100%" }}
-                                    >
-                                      {item.dictOptions.map((option) => {
-                                        const optionValue =
-                                          option.dictValue === true
-                                            ? "true"
-                                            : option.dictValue === false
-                                              ? "false"
-                                              : option.dictValue;
-                                        return (
-                                          <Option
-                                            key={optionValue}
-                                            value={optionValue}
-                                          >
-                                            {option.dictName} ({item.label})
-                                          </Option>
-                                        );
-                                      })}
-                                    </Select>,
-                                  )}
-                                </Item>
-                              </Tooltip>
-                            </li>
-                          );
-                        } else {
-                          return (
-                            <li key={fieldName}>
-                              <Tooltip title={item.label}>
-                                <Item>
-                                  {getFieldDecorator(fieldName, {
-                                    rules,
-                                    initialValue: defaultValue,
-                                  })(
-                                    <Input
-                                      allowClear
-                                      addonBefore={
-                                        <div style={{ width: labelWidth }}>
-                                          {item.label}
-                                        </div>
-                                      }
-                                      placeholder={placeholder}
-                                      key={fieldName}
-                                      onChange={(e) => {
-                                        this.onDealChange(e.target.value, item);
-                                      }}
-                                    />,
-                                  )}
-                                </Item>
-                              </Tooltip>
-                            </li>
-                          );
-                        }
+                    <ul
+                      className={classnames({
+                        [styles.handleUl]: true,
+                        [styles.handleSelectorUl]: true,
+                        [styles.springUl]: true,
                       })}
-                  </ul>
-                  {multiSelectorHandle && (
-                    <div style={{ width: 80, marginTop: 3 }}>
-                      <Popconfirm
-                        title={getIntlContent("SHENYU.COMMON.DELETE")}
-                        placement="bottom"
-                        onCancel={(e) => {
-                          e.stopPropagation();
-                        }}
-                        onConfirm={(e) => {
-                          e.stopPropagation();
-                          this.handleDeleteHandle(index);
-                        }}
-                        okText={getIntlContent("SHENYU.COMMON.SURE")}
-                        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-                      >
-                        <Button type="danger">
-                          {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
-                        </Button>
-                      </Popconfirm>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          {multiSelectorHandle && (
-            <div style={{ width: 80, marginTop: 3, marginLeft: 5 }}>
-              <Button onClick={this.handleAddHandle} type="primary">
-                {getIntlContent("SHENYU.COMMON.ADD")}
-              </Button>
+                      style={{
+                        width: "100%",
+                        padding: 0,
+                        marginBottom: "-6px",
+                      }}
+                    >
+                      {handleList &&
+                        handleList.map((item) => {
+                          let required = item.required === "1";
+                          let defaultValue =
+                            item.value === 0 || item.value === false
+                              ? item.value
+                              : item.value || item.defaultValue;
+                          let placeholder = item.label || item.placeholder;
+                          let checkRule = item.checkRule;
+                          let fieldName = item.field + index;
+                          let rules = [];
+                          if (required) {
+                            rules.push({
+                              required: { required },
+                              message:
+                                getIntlContent("SHENYU.COMMON.PLEASEINPUT") +
+                                item.label,
+                            });
+                          }
+                          if (checkRule) {
+                            rules.push({
+                              // eslint-disable-next-line no-eval
+                              pattern: eval(checkRule),
+                              message: `${getIntlContent(
+                                "SHENYU.PLUGIN.RULE.INVALID",
+                              )}:(${checkRule})`,
+                            });
+                          }
+                          if (item.dataType === 1) {
+                            return (
+                              <li key={fieldName}>
+                                <Tooltip title={placeholder}>
+                                  <Item>
+                                    {getFieldDecorator(fieldName, {
+                                      rules,
+                                      initialValue: defaultValue,
+                                    })(
+                                      <Input
+                                        allowClear
+                                        addonBefore={
+                                          <div style={{ width: labelWidth }}>
+                                            {item.label}
+                                          </div>
+                                        }
+                                        placeholder={placeholder}
+                                        key={fieldName}
+                                      />,
+                                    )}
+                                  </Item>
+                                </Tooltip>
+                              </li>
+                            );
+                          } else if (item.dataType === 3 && item.dictOptions) {
+                            return (
+                              <li key={fieldName}>
+                                <Tooltip title={placeholder}>
+                                  <Item>
+                                    {getFieldDecorator(fieldName, {
+                                      rules,
+                                      initialValue:
+                                        defaultValue === true
+                                          ? "true"
+                                          : defaultValue === false
+                                            ? "false"
+                                            : defaultValue,
+                                    })(
+                                      <Select
+                                        placeholder={placeholder}
+                                        style={{ width: "100%" }}
+                                      >
+                                        {item.dictOptions.map((option) => {
+                                          const optionValue =
+                                            option.dictValue === true
+                                              ? "true"
+                                              : option.dictValue === false
+                                                ? "false"
+                                                : option.dictValue;
+                                          return (
+                                            <Option
+                                              key={optionValue}
+                                              value={optionValue}
+                                            >
+                                              {option.dictName} ({item.label})
+                                            </Option>
+                                          );
+                                        })}
+                                      </Select>,
+                                    )}
+                                  </Item>
+                                </Tooltip>
+                              </li>
+                            );
+                          } else {
+                            return (
+                              <li key={fieldName}>
+                                <Tooltip title={item.label}>
+                                  <Item>
+                                    {getFieldDecorator(fieldName, {
+                                      rules,
+                                      initialValue: defaultValue,
+                                    })(
+                                      <Input
+                                        allowClear
+                                        addonBefore={
+                                          <div style={{ width: labelWidth }}>
+                                            {item.label}
+                                          </div>
+                                        }
+                                        placeholder={placeholder}
+                                        key={fieldName}
+                                        onChange={(e) => {
+                                          this.onDealChange(
+                                            e.target.value,
+                                            item,
+                                          );
+                                        }}
+                                      />,
+                                    )}
+                                  </Item>
+                                </Tooltip>
+                              </li>
+                            );
+                          }
+                        })}
+                    </ul>
+                    {multiSelectorHandle && (
+                      <div style={{ width: 80 }}>
+                        <Popconfirm
+                          title={getIntlContent("SHENYU.COMMON.DELETE")}
+                          placement="bottom"
+                          onCancel={(e) => {
+                            e.stopPropagation();
+                          }}
+                          onConfirm={(e) => {
+                            e.stopPropagation();
+                            this.handleDeleteHandle(index);
+                          }}
+                          okText={getIntlContent("SHENYU.COMMON.SURE")}
+                          cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                        >
+                          <Button type="danger">
+                            {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                          </Button>
+                        </Popconfirm>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          )}
-        </div>
+            {multiSelectorHandle && (
+              <div style={{ width: 80, marginLeft: 5 }}>
+                <Button onClick={this.handleAddHandle} type="primary">
+                  {getIntlContent("SHENYU.COMMON.ADD")}
+                </Button>
+              </div>
+            )}
+          </div>
+        </Item>
       );
     }
     return null;
