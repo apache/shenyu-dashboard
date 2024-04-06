@@ -202,206 +202,215 @@ export default class HystrixRuleHandle extends Component {
             </Select>,
           )}
         </FormItem>
-        <div className={styles.handleWrap}>
-          <div className={styles.header}>
-            <h3>{getIntlContent("SHENYU.COMMON.DEAL")}: </h3>
-          </div>
-          <ul
-            className={classnames({
-              [styles.handleUl]: true,
-              [styles.springUl]: true,
-            })}
-          >
-            <li>
-              <Input
-                allowClear
-                addonBefore={
-                  <div style={{ width: labelWidth }}>
-                    {getIntlContent("SHENYU.HYSTRIX.TRIPPING.REQUEST.NUMBER")}
-                  </div>
-                }
-                value={requestVolumeThreshold}
-                placeholder="requestVolumeThreshold"
-                onChange={(e) => {
-                  const value = e.target.value;
-                  this.onHandleNumberChange("requestVolumeThreshold", value);
-                }}
-              />
-            </li>
-            <li>
-              <Input
-                allowClear
-                addonBefore={
-                  <div style={{ width: labelWidth }}>
-                    {getIntlContent("SHENYU.HYSTRIX.ERROR.PERCENT")}
-                  </div>
-                }
-                value={errorThresholdPercentage}
-                placeholder="errorThresholdPercentage"
-                onChange={(e) => {
-                  const value = e.target.value;
-                  this.onHandleNumberChange("errorThresholdPercentage", value);
-                }}
-              />
-            </li>
-            <li>
-              <Input
-                allowClear
-                addonBefore={
-                  <div style={{ width: labelWidth }}>
-                    {getIntlContent("SHENYU.HYSTRIX.TIMEOUT")}
-                  </div>
-                }
-                value={timeout}
-                placeholder="timeout"
-                onChange={(e) => {
-                  const value = e.target.value;
-                  this.onHandleNumberChange("timeout", value);
-                }}
-              />
-            </li>
-            {this.state.executionIsolationStrategy === 1 && (
+        <FormItem
+          label={getIntlContent("SHENYU.COMMON.DEAL")}
+          {...formItemLayout}
+        >
+          <div className={styles.handleWrap} style={{ marginTop: 0 }}>
+            <ul
+              className={classnames({
+                [styles.handleUl]: true,
+                [styles.springUl]: true,
+              })}
+              style={{ paddingLeft: 0, marginBottom: "-6px" }}
+            >
               <li>
                 <Input
                   allowClear
                   addonBefore={
                     <div style={{ width: labelWidth }}>
-                      {getIntlContent("SHENYU.HYSTRIX.MAX.CONCURRENCY")}
+                      {getIntlContent("SHENYU.HYSTRIX.TRIPPING.REQUEST.NUMBER")}
                     </div>
                   }
-                  value={maxConcurrentRequests}
-                  placeholder="maxConcurrentRequests"
+                  value={requestVolumeThreshold}
+                  placeholder="requestVolumeThreshold"
                   onChange={(e) => {
                     const value = e.target.value;
-                    this.onHandleNumberChange("maxConcurrentRequests", value);
+                    this.onHandleNumberChange("requestVolumeThreshold", value);
                   }}
                 />
               </li>
-            )}
-            <li>
-              <Input
-                allowClear
-                addonBefore={
-                  <div style={{ width: labelWidth }}>
-                    {getIntlContent("SHENYU.HYSTRIX.TRIPPING.SLEEPTIME")}
-                  </div>
-                }
-                value={sleepWindowInMilliseconds}
-                placeholder="sleepWindowInMilliseconds"
-                onChange={(e) => {
-                  const value = e.target.value;
-                  this.onHandleNumberChange("sleepWindowInMilliseconds", value);
-                }}
-              />
-            </li>
-            <li>
-              <Input
-                allowClear
-                addonBefore={
-                  <div style={{ width: labelWidth }}>
-                    {getIntlContent("SHENYU.HYSTRIX.GROUPKEY")}
-                  </div>
-                }
-                value={groupKey}
-                placeholder="GroupKey"
-                onChange={(e) => {
-                  const value = e.target.value;
-                  this.onHandleChange("groupKey", value);
-                }}
-              />
-            </li>
-            <li>
-              <Input
-                allowClear
-                addonBefore={
-                  <div style={{ width: labelWidth }}>
-                    {getIntlContent("SHENYU.HYSTRIX.FAILEDDEMOTION")}
-                  </div>
-                }
-                value={callBackUri}
-                placeholder={getIntlContent("SHENYU.HYSTRIX.FAILEDCALLBACK")}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  this.onHandleChange("callBackUri", value);
-                }}
-              />
-            </li>
-            <li>
-              <Input
-                allowClear
-                addonBefore={
-                  <div style={{ width: labelWidth }}>
-                    {getIntlContent("SHENYU.HYSTRIX.COMMANDKEY")}
-                  </div>
-                }
-                value={commandKey}
-                placeholder="CommandKey"
-                onChange={(e) => {
-                  const value = e.target.value;
-                  this.onHandleChange("commandKey", value);
-                }}
-              />
-            </li>
-            {this.state.executionIsolationStrategy === 0 && (
               <li>
                 <Input
                   allowClear
                   addonBefore={
                     <div style={{ width: labelWidth }}>
-                      {getIntlContent("SHENYU.HYSTRIX.CORETHREADSIZE")}
+                      {getIntlContent("SHENYU.HYSTRIX.ERROR.PERCENT")}
                     </div>
                   }
-                  value={hystrixThreadPoolConfig.coreSize}
-                  placeholder={getIntlContent("SHENYU.HYSTRIX.CORENUM")}
+                  value={errorThresholdPercentage}
+                  placeholder="errorThresholdPercentage"
                   onChange={(e) => {
                     const value = e.target.value;
-                    hystrixThreadPoolConfig.coreSize = value;
-                    this.setState({ hystrixThreadPoolConfig });
+                    this.onHandleNumberChange(
+                      "errorThresholdPercentage",
+                      value,
+                    );
                   }}
                 />
               </li>
-            )}
+              <li>
+                <Input
+                  allowClear
+                  addonBefore={
+                    <div style={{ width: labelWidth }}>
+                      {getIntlContent("SHENYU.HYSTRIX.TIMEOUT")}
+                    </div>
+                  }
+                  value={timeout}
+                  placeholder="timeout"
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    this.onHandleNumberChange("timeout", value);
+                  }}
+                />
+              </li>
+              {this.state.executionIsolationStrategy === 1 && (
+                <li>
+                  <Input
+                    allowClear
+                    addonBefore={
+                      <div style={{ width: labelWidth }}>
+                        {getIntlContent("SHENYU.HYSTRIX.MAX.CONCURRENCY")}
+                      </div>
+                    }
+                    value={maxConcurrentRequests}
+                    placeholder="maxConcurrentRequests"
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      this.onHandleNumberChange("maxConcurrentRequests", value);
+                    }}
+                  />
+                </li>
+              )}
+              <li>
+                <Input
+                  allowClear
+                  addonBefore={
+                    <div style={{ width: labelWidth }}>
+                      {getIntlContent("SHENYU.HYSTRIX.TRIPPING.SLEEPTIME")}
+                    </div>
+                  }
+                  value={sleepWindowInMilliseconds}
+                  placeholder="sleepWindowInMilliseconds"
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    this.onHandleNumberChange(
+                      "sleepWindowInMilliseconds",
+                      value,
+                    );
+                  }}
+                />
+              </li>
+              <li>
+                <Input
+                  allowClear
+                  addonBefore={
+                    <div style={{ width: labelWidth }}>
+                      {getIntlContent("SHENYU.HYSTRIX.GROUPKEY")}
+                    </div>
+                  }
+                  value={groupKey}
+                  placeholder="GroupKey"
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    this.onHandleChange("groupKey", value);
+                  }}
+                />
+              </li>
+              <li>
+                <Input
+                  allowClear
+                  addonBefore={
+                    <div style={{ width: labelWidth }}>
+                      {getIntlContent("SHENYU.HYSTRIX.FAILEDDEMOTION")}
+                    </div>
+                  }
+                  value={callBackUri}
+                  placeholder={getIntlContent("SHENYU.HYSTRIX.FAILEDCALLBACK")}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    this.onHandleChange("callBackUri", value);
+                  }}
+                />
+              </li>
+              <li>
+                <Input
+                  allowClear
+                  addonBefore={
+                    <div style={{ width: labelWidth }}>
+                      {getIntlContent("SHENYU.HYSTRIX.COMMANDKEY")}
+                    </div>
+                  }
+                  value={commandKey}
+                  placeholder="CommandKey"
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    this.onHandleChange("commandKey", value);
+                  }}
+                />
+              </li>
+              {this.state.executionIsolationStrategy === 0 && (
+                <li>
+                  <Input
+                    allowClear
+                    addonBefore={
+                      <div style={{ width: labelWidth }}>
+                        {getIntlContent("SHENYU.HYSTRIX.CORETHREADSIZE")}
+                      </div>
+                    }
+                    value={hystrixThreadPoolConfig.coreSize}
+                    placeholder={getIntlContent("SHENYU.HYSTRIX.CORENUM")}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      hystrixThreadPoolConfig.coreSize = value;
+                      this.setState({ hystrixThreadPoolConfig });
+                    }}
+                  />
+                </li>
+              )}
 
-            {this.state.executionIsolationStrategy === 0 && (
-              <li>
-                <Input
-                  allowClear
-                  addonBefore={
-                    <div style={{ width: labelWidth }}>
-                      {getIntlContent("SHENYU.HYSTRIX.MAXSIZE")}
-                    </div>
-                  }
-                  value={hystrixThreadPoolConfig.maximumSize}
-                  placeholder={getIntlContent("SHENYU.HYSTRIX.MAXTHREADNUM")}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    hystrixThreadPoolConfig.maximumSize = value;
-                    this.setState({ hystrixThreadPoolConfig });
-                  }}
-                />
-              </li>
-            )}
-            {this.state.executionIsolationStrategy === 0 && (
-              <li>
-                <Input
-                  allowClear
-                  addonBefore={
-                    <div style={{ width: labelWidth }}>
-                      {getIntlContent("SHENYU.HYSTRIX.MAXTHREADQUEUE")}
-                    </div>
-                  }
-                  value={hystrixThreadPoolConfig.maxQueueSize}
-                  placeholder={getIntlContent("SHENYU.HYSTRIX.MAXTHREAD")}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    hystrixThreadPoolConfig.maxQueueSize = value;
-                    this.setState({ hystrixThreadPoolConfig });
-                  }}
-                />
-              </li>
-            )}
-          </ul>
-        </div>
+              {this.state.executionIsolationStrategy === 0 && (
+                <li>
+                  <Input
+                    allowClear
+                    addonBefore={
+                      <div style={{ width: labelWidth }}>
+                        {getIntlContent("SHENYU.HYSTRIX.MAXSIZE")}
+                      </div>
+                    }
+                    value={hystrixThreadPoolConfig.maximumSize}
+                    placeholder={getIntlContent("SHENYU.HYSTRIX.MAXTHREADNUM")}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      hystrixThreadPoolConfig.maximumSize = value;
+                      this.setState({ hystrixThreadPoolConfig });
+                    }}
+                  />
+                </li>
+              )}
+              {this.state.executionIsolationStrategy === 0 && (
+                <li>
+                  <Input
+                    allowClear
+                    addonBefore={
+                      <div style={{ width: labelWidth }}>
+                        {getIntlContent("SHENYU.HYSTRIX.MAXTHREADQUEUE")}
+                      </div>
+                    }
+                    value={hystrixThreadPoolConfig.maxQueueSize}
+                    placeholder={getIntlContent("SHENYU.HYSTRIX.MAXTHREAD")}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      hystrixThreadPoolConfig.maxQueueSize = value;
+                      this.setState({ hystrixThreadPoolConfig });
+                    }}
+                  />
+                </li>
+              )}
+            </ul>
+          </div>
+        </FormItem>
       </>
     );
   }
