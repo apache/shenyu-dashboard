@@ -412,24 +412,21 @@ export default class RequestRuleHandle extends Component {
     } = this.state;
     const { form } = this.props;
     const { getFieldDecorator } = form;
+    const rowStyle = { display: "flex", alignItems: "center" };
     return (
-      <div className={styles.handleWrap} style={{ padding: "0px 40px" }}>
-        <div className={styles.header}>
-          <h3 style={{ width: 60, marginTop: 10 }}>
-            {getIntlContent("SHENYU.COMMON.DEAL")}:{" "}
-          </h3>
-        </div>
-        <Tabs
-          style={{ marginLeft: 10 }}
-          defaultActiveKey={currentType}
-          onChange={this.handleTabChange}
-        >
+      <FormItem
+        label={getIntlContent("SHENYU.COMMON.DEAL")}
+        labelCol={{ span: 3 }}
+        wrapperCol={{ span: 21 }}
+        className={styles.rootFormItem}
+      >
+        <Tabs defaultActiveKey={currentType} onChange={this.handleTabChange}>
           <TabPane tab="Params" key="parameter">
             {parameterList &&
               parameterList.length > 0 &&
               parameterList.map((row, rowIndex) => {
                 return (
-                  <Row gutter={24} key={rowIndex}>
+                  <Row gutter={24} key={rowIndex} style={rowStyle}>
                     {row.map((field, i) => {
                       let rules = [];
                       let placeholder = field.fieldLabel;
@@ -509,7 +506,7 @@ export default class RequestRuleHandle extends Component {
               headerList.length > 0 &&
               headerList.map((row, rowIndex) => {
                 return (
-                  <Row gutter={24} key={rowIndex}>
+                  <Row gutter={24} key={rowIndex} style={rowStyle}>
                     {row.map((field, i) => {
                       let rules = [];
                       let placeholder = field.fieldLabel;
@@ -589,7 +586,7 @@ export default class RequestRuleHandle extends Component {
               cookieList.length > 0 &&
               cookieList.map((row, rowIndex) => {
                 return (
-                  <Row gutter={24} key={rowIndex}>
+                  <Row gutter={24} key={rowIndex} style={rowStyle}>
                     {row.map((field, i) => {
                       let rules = [];
                       let placeholder = field.fieldLabel;
@@ -665,7 +662,7 @@ export default class RequestRuleHandle extends Component {
               })}
           </TabPane>
         </Tabs>
-      </div>
+      </FormItem>
     );
   }
 }
