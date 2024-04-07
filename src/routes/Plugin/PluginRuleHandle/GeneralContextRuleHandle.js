@@ -107,23 +107,20 @@ export default class GeneralContextRuleHandle extends Component {
       initialValue: this.keys,
     });
     const keys = getFieldValue("keys");
+    const rowStyle = { display: "flex", alignItems: "center" };
 
     return (
-      <div className={styles.handleWrap} style={{ padding: "0px 40px" }}>
-        <div className={styles.header}>
-          <h3 style={{ width: 60, marginTop: 10 }}>
-            {getIntlContent("SHENYU.COMMON.DEAL")}:{" "}
-          </h3>
-        </div>
-        <Tabs
-          style={{ marginLeft: 10, width: "100%" }}
-          defaultActiveKey={currentType}
-          onChange={this.handleTabChange}
-        >
+      <FormItem
+        label={getIntlContent("SHENYU.COMMON.DEAL")}
+        labelCol={{ span: 3 }}
+        wrapperCol={{ span: 21 }}
+        className={styles.rootFormItem}
+      >
+        <Tabs defaultActiveKey={currentType} onChange={this.handleTabChange}>
           {handlers.map((handler) => (
             <TabPane tab={titleCase(handler)} key={handler}>
               {keys[handler].map((key, keyIndex) => (
-                <Row gutter={16} key={key}>
+                <Row gutter={16} key={key} style={rowStyle}>
                   <Col span={7}>
                     <FormItem>
                       {getFieldDecorator(
@@ -205,7 +202,7 @@ export default class GeneralContextRuleHandle extends Component {
             </TabPane>
           ))}
         </Tabs>
-      </div>
+      </FormItem>
     );
   }
 }
