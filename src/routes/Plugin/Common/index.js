@@ -15,15 +15,26 @@
  * limitations under the License.
  */
 
-import React, {Component} from "react";
-import {Button, Col, Input, message, Popconfirm, Row, Switch, Table, Tag, Typography,} from "antd";
-import {connect} from "dva";
+import React, { Component } from "react";
+import {
+  Table,
+  Row,
+  Col,
+  Button,
+  Input,
+  message,
+  Popconfirm,
+  Switch,
+  Typography,
+  Tag,
+} from "antd";
+import { connect } from "dva";
 import styles from "../index.less";
 import Selector from "./Selector";
 import Rule from "./Rule";
-import {getCurrentLocale, getIntlContent} from "../../../utils/IntlUtils";
+import { getIntlContent, getCurrentLocale } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
-import {getUpdateModal, updatePluginsEnabled} from "../../../utils/plugin";
+import { getUpdateModal, updatePluginsEnabled } from "../../../utils/plugin";
 
 const { Search } = Input;
 const { Title } = Typography;
@@ -753,16 +764,7 @@ export default class Common extends Component {
       },
       {
         align: "center",
-        title: () => (<Switch
-          checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-          unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-          checked={!!selectorList.length && selectorList.every(i => i.enabled)}
-          onChange={(checked) => {
-            if (selectorList.length) {
-              this.enableSelector({list: selectorList.map(i => i.id), enabled: checked});
-            }
-          }}
-        />),
+        title: getIntlContent("SHENYU.COMMON.OPEN"),
         dataIndex: "enabled",
         key: "enabled",
         render: (text, row) => (
@@ -841,16 +843,7 @@ export default class Common extends Component {
       },
       {
         align: "center",
-        title: () => (<Switch
-          checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-          unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-          checked={!!ruleList.length && ruleList.every(i => i.enabled)}
-          onChange={(checked) => {
-            if (ruleList.length) {
-              this.enableRule({list: ruleList.map(i => i.id), enabled: checked});
-            }
-          }}
-        />),
+        title: getIntlContent("SHENYU.COMMON.OPEN"),
         dataIndex: "enabled",
         key: "enabled",
         render: (text, row) => (
