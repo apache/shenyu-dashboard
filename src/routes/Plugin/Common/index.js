@@ -17,22 +17,22 @@
 
 import React, { Component } from "react";
 import {
-  Table,
-  Row,
-  Col,
   Button,
+  Col,
   Input,
   message,
   Popconfirm,
+  Row,
   Switch,
-  Typography,
+  Table,
   Tag,
+  Typography,
 } from "antd";
 import { connect } from "dva";
 import styles from "../index.less";
 import Selector from "./Selector";
 import Rule from "./Rule";
-import { getIntlContent, getCurrentLocale } from "../../../utils/IntlUtils";
+import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { getUpdateModal, updatePluginsEnabled } from "../../../utils/plugin";
 
@@ -49,8 +49,10 @@ export default class Common extends Component {
     this.state = {
       selectorPage: 1,
       selectorPageSize: 12,
+      selectorSelectedRowKeys: [],
       rulePage: 1,
       rulePageSize: 12,
+      ruleSelectedRowKeys: [],
       popup: "",
       localeName: "",
       selectorName: undefined,
@@ -127,6 +129,8 @@ export default class Common extends Component {
         name: selectorName,
       },
     });
+    this.setState({ selectorSelectedRowKeys: [] });
+    this.setState({ ruleSelectedRowKeys: [] });
   };
 
   getAllRules = (page, pageSize) => {
@@ -142,6 +146,8 @@ export default class Common extends Component {
         name: ruleName,
       },
     });
+    this.setState({ selectorSelectedRowKeys: [] });
+    this.setState({ ruleSelectedRowKeys: [] });
   };
 
   getPlugin = (plugins, name) => {
@@ -568,6 +574,10 @@ export default class Common extends Component {
     });
   };
 
+  onSelectorSelectChange = (selectorSelectedRowKeys) => {
+    this.setState({ selectorSelectedRowKeys });
+  };
+
   deleteSelector = (record) => {
     const { dispatch, plugins } = this.props;
     const { selectorPage, selectorPageSize } = this.state;
@@ -698,6 +708,10 @@ export default class Common extends Component {
     });
   };
 
+  onRuleSelectChange = (ruleSelectedRowKeys) => {
+    this.setState({ ruleSelectedRowKeys });
+  };
+
   deleteRule = (record) => {
     const { dispatch, currentSelector, ruleList } = this.props;
     const { rulePage, rulePageSize } = this.state;
@@ -737,8 +751,15 @@ export default class Common extends Component {
   }
 
   render() {
-    const { popup, selectorPage, selectorPageSize, rulePage, rulePageSize } =
-      this.state;
+    const {
+      popup,
+      selectorPage,
+      selectorPageSize,
+      selectorSelectedRowKeys,
+      rulePage,
+      rulePageSize,
+      ruleSelectedRowKeys,
+    } = this.state;
     const {
       selectorList,
       ruleList,
@@ -827,6 +848,15 @@ export default class Common extends Component {
         },
       },
     ];
+    const selectorRowSelection = {
+      selectedRowKeys: selectorSelectedRowKeys,
+      onChange: this.onSelectorSelectChange,
+    };
+
+    const ruleRowSelection = {
+      selectedRowKeys: ruleSelectedRowKeys,
+      onChange: this.onRuleSelectChange,
+    };
 
     const rulesColumns = [
       {
@@ -954,8 +984,84 @@ export default class Common extends Component {
               {role}
             </Title>
             <Tag color={tag.color}>{tag.text}</Tag>
+            <div
+              style={{ margin: "0 10px 0 0" }}
+              className={`fade-enter ${selectorSelectedRowKeys.length ? "fade-enter-active" : "fade-leave fade-leave-active"}`}
+            >
+              <AuthButton perms={`plugin:${name}Selector:edit`}>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    this.enableSelector({
+                      list: selectorSelectedRowKeys,
+                      enabled: true,
+                    });
+                  }}
+                >
+                  {getIntlContent("SHENYU.COMMON.SELECTOR.OPEN")}
+                </Button>
+              </AuthButton>
+            </div>
+            <div
+              className={`fade-enter ${selectorSelectedRowKeys.length ? "fade-enter-active" : "fade-leave fade-leave-active"}`}
+            >
+              <AuthButton perms={`plugin:${name}Selector:edit`}>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    this.enableSelector({
+                      list: selectorSelectedRowKeys,
+                      enabled: false,
+                    });
+                  }}
+                >
+                  {getIntlContent("SHENYU.COMMON.SELECTOR.CLOSE")}
+                </Button>
+              </AuthButton>
+            </div>
           </div>
-          <div style={{ display: "flex", alignItems: "end", gap: 10 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "end",
+              gap: 10,
+              minHeight: 32,
+            }}
+          >
+            <div
+              className={`fade-enter ${ruleSelectedRowKeys.length ? "fade-enter-active" : "fade-leave fade-leave-active"}`}
+            >
+              <AuthButton perms={`plugin:${name}Rule:edit`}>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    this.enableRule({
+                      list: ruleSelectedRowKeys,
+                      enabled: true,
+                    });
+                  }}
+                >
+                  {getIntlContent("SHENYU.COMMON.RULE.OPEN")}
+                </Button>
+              </AuthButton>
+            </div>
+            <div
+              className={`fade-enter ${ruleSelectedRowKeys.length ? "fade-enter-active" : "fade-leave fade-leave-active"}`}
+            >
+              <AuthButton perms={`plugin:${name}Rule:edit`}>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    this.enableRule({
+                      list: ruleSelectedRowKeys,
+                      enabled: false,
+                    });
+                  }}
+                >
+                  {getIntlContent("SHENYU.COMMON.RULE.CLOSE")}
+                </Button>
+              </AuthButton>
+            </div>
             <Switch
               checked={this.state.isPluginEnabled ?? false}
               onChange={this.togglePluginStatus}
@@ -1007,6 +1113,7 @@ export default class Common extends Component {
               bordered
               columns={selectColumns}
               dataSource={selectorList}
+              rowSelection={selectorRowSelection}
               pagination={{
                 total: selectorTotal,
                 showTotal: (showTotal) => `${showTotal}`,
@@ -1070,6 +1177,7 @@ export default class Common extends Component {
               columns={rulesColumns}
               expandedRowRender={expandedRowRender}
               dataSource={ruleList}
+              rowSelection={ruleRowSelection}
               pagination={{
                 total: ruleTotal,
                 showTotal: (showTotal) => `${showTotal}`,
