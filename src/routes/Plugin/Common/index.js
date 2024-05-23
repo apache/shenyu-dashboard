@@ -578,6 +578,24 @@ export default class Common extends Component {
     this.setState({ selectorSelectedRowKeys });
   };
 
+  openSelectorClick = () => {
+    const { selectorSelectedRowKeys } = this.state;
+    const { selectorList } = this.props;
+    if (selectorSelectedRowKeys && selectorSelectedRowKeys.length > 0) {
+      let anyEnabled = selectorList.some(
+        (selector) =>
+          selectorSelectedRowKeys.includes(selector.id) && selector.enabled,
+      );
+      this.enableSelector({
+        list: selectorSelectedRowKeys,
+        enabled: !anyEnabled,
+      });
+    } else {
+      message.destroy();
+      message.warn("Please select data");
+    }
+  };
+
   deleteSelector = (record) => {
     const { dispatch, plugins } = this.props;
     const { selectorPage, selectorPageSize } = this.state;
@@ -710,6 +728,23 @@ export default class Common extends Component {
 
   onRuleSelectChange = (ruleSelectedRowKeys) => {
     this.setState({ ruleSelectedRowKeys });
+  };
+
+  openRuleClick = () => {
+    const { ruleSelectedRowKeys } = this.state;
+    const { ruleList } = this.props;
+    if (ruleSelectedRowKeys && ruleSelectedRowKeys.length > 0) {
+      let anyEnabled = ruleList.some(
+        (rule) => ruleSelectedRowKeys.includes(rule.id) && rule.enabled,
+      );
+      this.enableRule({
+        list: ruleSelectedRowKeys,
+        enabled: !anyEnabled,
+      });
+    } else {
+      message.destroy();
+      message.warn("Please select data");
+    }
   };
 
   deleteRule = (record) => {
@@ -984,41 +1019,6 @@ export default class Common extends Component {
               {role}
             </Title>
             <Tag color={tag.color}>{tag.text}</Tag>
-            <div
-              style={{ margin: "0 10px 0 0" }}
-              className={`fade-enter ${selectorSelectedRowKeys.length ? "fade-enter-active" : "fade-leave fade-leave-active"}`}
-            >
-              <AuthButton perms={`plugin:${name}Selector:edit`}>
-                <Button
-                  type="primary"
-                  onClick={() => {
-                    this.enableSelector({
-                      list: selectorSelectedRowKeys,
-                      enabled: true,
-                    });
-                  }}
-                >
-                  {getIntlContent("SHENYU.COMMON.SELECTOR.OPEN")}
-                </Button>
-              </AuthButton>
-            </div>
-            <div
-              className={`fade-enter ${selectorSelectedRowKeys.length ? "fade-enter-active" : "fade-leave fade-leave-active"}`}
-            >
-              <AuthButton perms={`plugin:${name}Selector:edit`}>
-                <Button
-                  type="primary"
-                  onClick={() => {
-                    this.enableSelector({
-                      list: selectorSelectedRowKeys,
-                      enabled: false,
-                    });
-                  }}
-                >
-                  {getIntlContent("SHENYU.COMMON.SELECTOR.CLOSE")}
-                </Button>
-              </AuthButton>
-            </div>
           </div>
           <div
             style={{
@@ -1028,40 +1028,24 @@ export default class Common extends Component {
               minHeight: 32,
             }}
           >
-            <div
-              className={`fade-enter ${ruleSelectedRowKeys.length ? "fade-enter-active" : "fade-leave fade-leave-active"}`}
-            >
-              <AuthButton perms={`plugin:${name}Rule:edit`}>
-                <Button
-                  type="primary"
-                  onClick={() => {
-                    this.enableRule({
-                      list: ruleSelectedRowKeys,
-                      enabled: true,
-                    });
-                  }}
-                >
-                  {getIntlContent("SHENYU.COMMON.RULE.OPEN")}
-                </Button>
-              </AuthButton>
-            </div>
-            <div
-              className={`fade-enter ${ruleSelectedRowKeys.length ? "fade-enter-active" : "fade-leave fade-leave-active"}`}
-            >
-              <AuthButton perms={`plugin:${name}Rule:edit`}>
-                <Button
-                  type="primary"
-                  onClick={() => {
-                    this.enableRule({
-                      list: ruleSelectedRowKeys,
-                      enabled: false,
-                    });
-                  }}
-                >
-                  {getIntlContent("SHENYU.COMMON.RULE.CLOSE")}
-                </Button>
-              </AuthButton>
-            </div>
+            <AuthButton perms={`plugin:${name}Selector:edit`}>
+              <Button
+                style={{ marginRight: 10 }}
+                type="primary"
+                onClick={this.openSelectorClick}
+              >
+                {getIntlContent("SHENYU.PLUGIN.SELECTOR.BATCH.OPENED")}
+              </Button>
+            </AuthButton>
+            <AuthButton perms={`plugin:${name}Rule:edit`}>
+              <Button
+                style={{ marginRight: 10 }}
+                type="primary"
+                onClick={this.openRuleClick}
+              >
+                {getIntlContent("SHENYU.PLUGIN.SELECTOR.RULE.BATCH.OPENED")}
+              </Button>
+            </AuthButton>
             <Switch
               checked={this.state.isPluginEnabled ?? false}
               onChange={this.togglePluginStatus}
