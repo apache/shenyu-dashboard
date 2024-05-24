@@ -1028,24 +1028,6 @@ export default class Common extends Component {
               minHeight: 32,
             }}
           >
-            <AuthButton perms={`plugin:${name}Selector:edit`}>
-              <Button
-                style={{ marginRight: 10 }}
-                type="primary"
-                onClick={this.openSelectorClick}
-              >
-                {getIntlContent("SHENYU.PLUGIN.SELECTOR.BATCH.OPENED")}
-              </Button>
-            </AuthButton>
-            <AuthButton perms={`plugin:${name}Rule:edit`}>
-              <Button
-                style={{ marginRight: 10 }}
-                type="primary"
-                onClick={this.openRuleClick}
-              >
-                {getIntlContent("SHENYU.PLUGIN.SELECTOR.RULE.BATCH.OPENED")}
-              </Button>
-            </AuthButton>
             <Switch
               checked={this.state.isPluginEnabled ?? false}
               onChange={this.togglePluginStatus}
@@ -1058,7 +1040,7 @@ export default class Common extends Component {
           </div>
         </Row>
         <Row gutter={20}>
-          <Col span={8}>
+          <Col span={10}>
             <div className="table-header">
               <h3 style={{ margin: 0, overflow: "visible" }}>
                 {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}
@@ -1080,6 +1062,23 @@ export default class Common extends Component {
                 <AuthButton perms={`plugin:${name}Selector:add`}>
                   <Button type="primary" onClick={this.addSelector}>
                     {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.ADD")}
+                  </Button>
+                </AuthButton>
+                <AuthButton perms={`plugin:${name}Selector:edit`}>
+                  <Button
+                    type="primary"
+                    onClick={this.openSelectorClick}
+                    style={{ marginLeft: 10 }}
+                  >
+                    {getIntlContent(
+                      selectorList.some(
+                        (selector) =>
+                          selectorSelectedRowKeys.includes(selector.id) &&
+                          selector.enabled,
+                      )
+                        ? "SHENYU.PLUGIN.SELECTOR.BATCH.CLOSED"
+                        : "SHENYU.PLUGIN.SELECTOR.BATCH.OPENED",
+                    )}
                   </Button>
                 </AuthButton>
               </div>
@@ -1117,7 +1116,7 @@ export default class Common extends Component {
               }}
             />
           </Col>
-          <Col span={16}>
+          <Col span={14}>
             <div className="table-header">
               <div style={{ display: "flex", alignItems: "center" }}>
                 <h3 style={{ margin: 0, marginRight: 30 }}>
@@ -1150,6 +1149,22 @@ export default class Common extends Component {
                 <AuthButton perms={`plugin:${name}Rule:add`}>
                   <Button type="primary" onClick={this.addRule}>
                     {getIntlContent("SHENYU.COMMON.ADD.RULE")}
+                  </Button>
+                </AuthButton>
+                <AuthButton perms={`plugin:${name}Rule:edit`}>
+                  <Button
+                    type="primary"
+                    onClick={this.openRuleClick}
+                    style={{ marginLeft: 10 }}
+                  >
+                    {getIntlContent(
+                      ruleList.some(
+                        (rule) =>
+                          ruleSelectedRowKeys.includes(rule.id) && rule.enabled,
+                      )
+                        ? "SHENYU.PLUGIN.SELECTOR.BATCH.CLOSED"
+                        : "SHENYU.PLUGIN.SELECTOR.BATCH.OPENED",
+                    )}
                   </Button>
                 </AuthButton>
               </div>
