@@ -17,22 +17,22 @@
 
 import React, { Component } from "react";
 import {
-  Table,
-  Row,
-  Col,
   Button,
+  Col,
   Input,
   message,
   Popconfirm,
+  Row,
   Switch,
-  Typography,
+  Table,
   Tag,
+  Typography,
 } from "antd";
 import { connect } from "dva";
 import styles from "../index.less";
 import Selector from "./Selector";
 import Rule from "./Rule";
-import { getIntlContent, getCurrentLocale } from "../../../utils/IntlUtils";
+import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { getUpdateModal, updatePluginsEnabled } from "../../../utils/plugin";
 
@@ -49,8 +49,10 @@ export default class Common extends Component {
     this.state = {
       selectorPage: 1,
       selectorPageSize: 12,
+      selectorSelectedRowKeys: [],
       rulePage: 1,
       rulePageSize: 12,
+      ruleSelectedRowKeys: [],
       popup: "",
       localeName: "",
       selectorName: undefined,
@@ -127,6 +129,8 @@ export default class Common extends Component {
         name: selectorName,
       },
     });
+    this.setState({ selectorSelectedRowKeys: [] });
+    this.setState({ ruleSelectedRowKeys: [] });
   };
 
   getAllRules = (page, pageSize) => {
@@ -142,6 +146,8 @@ export default class Common extends Component {
         name: ruleName,
       },
     });
+    this.setState({ selectorSelectedRowKeys: [] });
+    this.setState({ ruleSelectedRowKeys: [] });
   };
 
   getPlugin = (plugins, name) => {
@@ -568,6 +574,28 @@ export default class Common extends Component {
     });
   };
 
+  onSelectorSelectChange = (selectorSelectedRowKeys) => {
+    this.setState({ selectorSelectedRowKeys });
+  };
+
+  openSelectorClick = () => {
+    const { selectorSelectedRowKeys } = this.state;
+    const { selectorList } = this.props;
+    if (selectorSelectedRowKeys && selectorSelectedRowKeys.length > 0) {
+      let anyEnabled = selectorList.some(
+        (selector) =>
+          selectorSelectedRowKeys.includes(selector.id) && selector.enabled,
+      );
+      this.enableSelector({
+        list: selectorSelectedRowKeys,
+        enabled: !anyEnabled,
+      });
+    } else {
+      message.destroy();
+      message.warn("Please select data");
+    }
+  };
+
   deleteSelector = (record) => {
     const { dispatch, plugins } = this.props;
     const { selectorPage, selectorPageSize } = this.state;
@@ -698,6 +726,27 @@ export default class Common extends Component {
     });
   };
 
+  onRuleSelectChange = (ruleSelectedRowKeys) => {
+    this.setState({ ruleSelectedRowKeys });
+  };
+
+  openRuleClick = () => {
+    const { ruleSelectedRowKeys } = this.state;
+    const { ruleList } = this.props;
+    if (ruleSelectedRowKeys && ruleSelectedRowKeys.length > 0) {
+      let anyEnabled = ruleList.some(
+        (rule) => ruleSelectedRowKeys.includes(rule.id) && rule.enabled,
+      );
+      this.enableRule({
+        list: ruleSelectedRowKeys,
+        enabled: !anyEnabled,
+      });
+    } else {
+      message.destroy();
+      message.warn("Please select data");
+    }
+  };
+
   deleteRule = (record) => {
     const { dispatch, currentSelector, ruleList } = this.props;
     const { rulePage, rulePageSize } = this.state;
@@ -737,8 +786,15 @@ export default class Common extends Component {
   }
 
   render() {
-    const { popup, selectorPage, selectorPageSize, rulePage, rulePageSize } =
-      this.state;
+    const {
+      popup,
+      selectorPage,
+      selectorPageSize,
+      selectorSelectedRowKeys,
+      rulePage,
+      rulePageSize,
+      ruleSelectedRowKeys,
+    } = this.state;
     const {
       selectorList,
       ruleList,
@@ -827,6 +883,15 @@ export default class Common extends Component {
         },
       },
     ];
+    const selectorRowSelection = {
+      selectedRowKeys: selectorSelectedRowKeys,
+      onChange: this.onSelectorSelectChange,
+    };
+
+    const ruleRowSelection = {
+      selectedRowKeys: ruleSelectedRowKeys,
+      onChange: this.onRuleSelectChange,
+    };
 
     const rulesColumns = [
       {
@@ -955,7 +1020,14 @@ export default class Common extends Component {
             </Title>
             <Tag color={tag.color}>{tag.text}</Tag>
           </div>
-          <div style={{ display: "flex", alignItems: "end", gap: 10 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "end",
+              gap: 10,
+              minHeight: 32,
+            }}
+          >
             <Switch
               checked={this.state.isPluginEnabled ?? false}
               onChange={this.togglePluginStatus}
@@ -968,7 +1040,7 @@ export default class Common extends Component {
           </div>
         </Row>
         <Row gutter={20}>
-          <Col span={8}>
+          <Col span={10}>
             <div className="table-header">
               <h3 style={{ margin: 0, overflow: "visible" }}>
                 {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}
@@ -992,6 +1064,23 @@ export default class Common extends Component {
                     {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.ADD")}
                   </Button>
                 </AuthButton>
+                <AuthButton perms={`plugin:${name}Selector:edit`}>
+                  <Button
+                    type="primary"
+                    onClick={this.openSelectorClick}
+                    style={{ marginLeft: 10 }}
+                  >
+                    {getIntlContent(
+                      selectorList.some(
+                        (selector) =>
+                          selectorSelectedRowKeys.includes(selector.id) &&
+                          selector.enabled,
+                      )
+                        ? "SHENYU.PLUGIN.SELECTOR.BATCH.CLOSED"
+                        : "SHENYU.PLUGIN.SELECTOR.BATCH.OPENED",
+                    )}
+                  </Button>
+                </AuthButton>
               </div>
             </div>
             <Table
@@ -1007,6 +1096,7 @@ export default class Common extends Component {
               bordered
               columns={selectColumns}
               dataSource={selectorList}
+              rowSelection={selectorRowSelection}
               pagination={{
                 total: selectorTotal,
                 showTotal: (showTotal) => `${showTotal}`,
@@ -1026,7 +1116,7 @@ export default class Common extends Component {
               }}
             />
           </Col>
-          <Col span={16}>
+          <Col span={14}>
             <div className="table-header">
               <div style={{ display: "flex", alignItems: "center" }}>
                 <h3 style={{ margin: 0, marginRight: 30 }}>
@@ -1061,6 +1151,22 @@ export default class Common extends Component {
                     {getIntlContent("SHENYU.COMMON.ADD.RULE")}
                   </Button>
                 </AuthButton>
+                <AuthButton perms={`plugin:${name}Rule:edit`}>
+                  <Button
+                    type="primary"
+                    onClick={this.openRuleClick}
+                    style={{ marginLeft: 10 }}
+                  >
+                    {getIntlContent(
+                      ruleList.some(
+                        (rule) =>
+                          ruleSelectedRowKeys.includes(rule.id) && rule.enabled,
+                      )
+                        ? "SHENYU.PLUGIN.SELECTOR.BATCH.CLOSED"
+                        : "SHENYU.PLUGIN.SELECTOR.BATCH.OPENED",
+                    )}
+                  </Button>
+                </AuthButton>
               </div>
             </div>
             <Table
@@ -1070,6 +1176,7 @@ export default class Common extends Component {
               columns={rulesColumns}
               expandedRowRender={expandedRowRender}
               dataSource={ruleList}
+              rowSelection={ruleRowSelection}
               pagination={{
                 total: ruleTotal,
                 showTotal: (showTotal) => `${showTotal}`,
