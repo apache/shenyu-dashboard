@@ -63,6 +63,10 @@ const formCheckLayout = {
   labelCol: { sm: { span: 18 } },
   wrapperCol: { sm: { span: 4 } },
 };
+const isDivideUpstreamsRequiresForPlugin = (pluginId) => {
+  // 8:   springCloud
+  return ["8"].includes(pluginId);
+};
 
 let id = 0;
 
@@ -95,7 +99,7 @@ class AddModal extends Component {
       discoveryConfig = {},
     } = this.props;
 
-    if (pluginId === "8") {
+    if (isDivideUpstreamsRequiresForPlugin(pluginId)) {
       id = divideUpstreams.length;
     }
 
@@ -219,7 +223,7 @@ class AddModal extends Component {
             pluginHandleList.forEach((handleList, index) => {
               handle[index] = {};
               handleList.forEach((item) => {
-                if (pluginId === "8") {
+                if (isDivideUpstreamsRequiresForPlugin(pluginId)) {
                   const { keys, divideUpstreams } = values;
                   const data = {
                     [item.field]: values[item.field],
@@ -471,8 +475,7 @@ class AddModal extends Component {
       return;
     }
 
-    // plugin - springCloud
-    if (pluginId === "8") {
+    if (isDivideUpstreamsRequiresForPlugin(pluginId)) {
       getFieldDecorator("keys", {
         initialValue: Array.from({
           length: divideUpstreams.length,

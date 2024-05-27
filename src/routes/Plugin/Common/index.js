@@ -190,6 +190,13 @@ export default class Common extends Component {
     this.getAllSelectors(selectorPage, selectorPageSize, plugins);
   };
 
+  isDiscovery = (pluginId) => {
+    // 5:   divide
+    // 15:  grpc
+    // 26:  websocket
+    return ["5", "15", "26"].includes(pluginId);
+  };
+
   addSelector = () => {
     const { selectorPage, selectorPageSize } = this.state;
     const { dispatch, plugins } = this.props;
@@ -198,7 +205,7 @@ export default class Common extends Component {
     const { id: pluginId, config } = plugin;
     const multiSelectorHandle =
       this.getPluginConfigField(config, "multiSelectorHandle") === "1";
-    const isDiscovery = ["5", "15", "26"].includes(pluginId);
+    const isDiscovery = this.isDiscovery(pluginId);
     if (isDiscovery) {
       let discoveryConfig = {
         discoveryType: "",
@@ -435,7 +442,7 @@ export default class Common extends Component {
     const { id: pluginId, config } = plugin;
     const multiSelectorHandle =
       this.getPluginConfigField(config, "multiSelectorHandle") === "1";
-    const isDiscovery = ["5", "15", "26"].includes(pluginId);
+    const isDiscovery = this.isDiscovery(pluginId);
     const { id } = record;
     dispatch({
       type: "common/fetchSeItem",
