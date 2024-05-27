@@ -188,6 +188,14 @@ class AddModal extends Component {
           selectValue !== "0" && this.checkConditions(selectorConditions);
         if (mySubmit || selectValue === "0") {
           if (isDiscovery) {
+            if (
+              new Set(upstreams.map((item) => item.url)).size !==
+              upstreams.length
+            ) {
+              message.destroy();
+              message.error(`Contains duplicate urls`);
+              return;
+            }
             // The discoveryProps refer to the attributes corresponding to each registration center mode
             const discoveryPropsJson = {};
             Object.entries(configPropsJson).forEach(([key]) => {
