@@ -490,9 +490,7 @@ export default class Resource extends Component {
         <Row gutter={20}>
           <Col span={6} style={{ minWidth: 280 }}>
             <div className="table-header">
-              <h3 style={{ margin: 0 }}>
-                {getIntlContent("SHENYU.SYSTEM.RESOURCE.MENULIST.TITLE")}
-              </h3>
+              <h3>{getIntlContent("SHENYU.SYSTEM.RESOURCE.MENULIST.TITLE")}</h3>
               <div className={styles.headerSearch}>
                 <AuthButton perms="system:resource:list">
                   <Search
@@ -527,7 +525,7 @@ export default class Resource extends Component {
           <Col span={18}>
             <div className="table-header">
               <div style={{ display: "flex", alignItems: "center" }}>
-                <h3 style={{ margin: 0, marginRight: 30 }}>
+                <h3>
                   {getIntlContent("SHENYU.SYSTEM.RESOURCE.BUTTONLIST.TITLE")}
                 </h3>
                 <AuthButton perms="system:resource:deleteButton">

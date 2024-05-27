@@ -1042,9 +1042,7 @@ export default class Common extends Component {
         <Row gutter={20}>
           <Col span={10}>
             <div className="table-header">
-              <h3 style={{ margin: 0, overflow: "visible" }}>
-                {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}
-              </h3>
+              <h3>{getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
               <div className={styles.headerSearch}>
                 <AuthButton perms={`plugin:${name}Selector:query`}>
                   <Search
@@ -1119,9 +1117,7 @@ export default class Common extends Component {
           <Col span={14}>
             <div className="table-header">
               <div style={{ display: "flex", alignItems: "center" }}>
-                <h3 style={{ margin: 0, marginRight: 30 }}>
-                  {getIntlContent("SHENYU.PLUGIN.SELECTOR.RULE.LIST")}
-                </h3>
+                <h3>{getIntlContent("SHENYU.PLUGIN.SELECTOR.RULE.LIST")}</h3>
                 <AuthButton perms={`plugin:${name}:modify`}>
                   <Button
                     icon="reload"
