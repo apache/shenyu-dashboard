@@ -214,14 +214,6 @@ export default class Common extends Component {
         listenerNode: "",
         props: {},
       };
-      let typeValue =
-        name === "divide"
-          ? "http"
-          : name === "websocket"
-            ? "ws"
-            : name === "grpc"
-              ? "grpc"
-              : "http";
       this.setState({
         popup: (
           <Selector
@@ -242,16 +234,7 @@ export default class Common extends Component {
                 upstreams,
                 importedDiscoveryId,
               } = selector;
-              const upstreamsWithProps = upstreams.map((item) => ({
-                protocol: item.protocol,
-                url: item.url,
-                status: parseInt(item.status, 10),
-                weight: item.weight,
-                startupTime: item.startupTime,
-                props: JSON.stringify({
-                  warmupTime: item.warmupTime,
-                }),
-              }));
+              const upstreamsWithProps = this.getUpstreamsWithProps(upstreams);
               dispatch({
                 type: "common/addSelector",
                 payload: {
@@ -265,24 +248,18 @@ export default class Common extends Component {
                   pageSize: selectorPageSize,
                 },
                 callback: (selectorId) => {
-                  dispatch({
-                    type: "discovery/bindSelector",
-                    payload: {
-                      selectorId,
-                      name: selectorName,
-                      pluginName: name,
-                      listenerNode,
-                      handler,
-                      type: typeValue,
-                      discoveryUpstreams: upstreamsWithProps,
-                      discovery: {
-                        id: importedDiscoveryId,
-                        discoveryType: selectedDiscoveryType,
-                        serverList,
-                        props: discoveryProps,
-                        name: selectorName,
-                      },
-                    },
+                  this.addDiscoveryUpstream({
+                    selectorId,
+                    selectorName,
+                    pluginName: name,
+                    listenerNode,
+                    handler,
+                    typeValue: this.getTypeValueByPluginName(name),
+                    upstreamsWithProps,
+                    importedDiscoveryId,
+                    selectedDiscoveryType,
+                    serverList,
+                    discoveryProps,
                   });
                   this.closeModal();
                 },
@@ -413,6 +390,64 @@ export default class Common extends Component {
     });
   };
 
+  getTypeValueByPluginName = (name) => {
+    return name === "divide"
+      ? "http"
+      : name === "websocket"
+        ? "ws"
+        : name === "grpc"
+          ? "grpc"
+          : "http";
+  };
+
+  getUpstreamsWithProps = (upstreams) => {
+    return upstreams.map((item) => ({
+      protocol: item.protocol,
+      url: item.url,
+      status: parseInt(item.status, 10),
+      weight: item.weight,
+      startupTime: item.startupTime,
+      props: JSON.stringify({
+        warmupTime: item.warmupTime,
+      }),
+    }));
+  };
+
+  addDiscoveryUpstream = ({
+    selectorId,
+    selectorName,
+    pluginName,
+    listenerNode,
+    handler,
+    typeValue,
+    upstreamsWithProps,
+    importedDiscoveryId,
+    selectedDiscoveryType,
+    serverList,
+    discoveryProps,
+  }) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "discovery/bindSelector",
+      payload: {
+        selectorId,
+        name: selectorName,
+        pluginName,
+        listenerNode,
+        handler,
+        type: typeValue,
+        discoveryUpstreams: upstreamsWithProps,
+        discovery: {
+          id: importedDiscoveryId,
+          discoveryType: selectedDiscoveryType,
+          serverList,
+          props: discoveryProps,
+          name: selectorName,
+        },
+      },
+    });
+  };
+
   updateDiscoveryUpstream = (discoveryHandlerId, upstreams) => {
     const { dispatch } = this.props;
     const upstreamsWithHandlerId = upstreams.map((item) => ({
@@ -513,11 +548,38 @@ export default class Common extends Component {
                       pageSize: selectorPageSize,
                     },
                     callback: () => {
-                      const { upstreams } = values;
-                      this.updateDiscoveryUpstream(
-                        discoveryHandlerId,
+                      const {
+                        name: selectorName,
+                        handler,
                         upstreams,
-                      );
+                        serverList,
+                        listenerNode,
+                        discoveryProps,
+                        importedDiscoveryId,
+                        selectedDiscoveryType,
+                      } = values;
+
+                      if (!discoveryHandlerId) {
+                        this.addDiscoveryUpstream({
+                          selectorId: id,
+                          selectorName,
+                          pluginName: name,
+                          listenerNode,
+                          handler,
+                          typeValue: this.getTypeValueByPluginName(name),
+                          upstreamsWithProps:
+                            this.getUpstreamsWithProps(upstreams),
+                          importedDiscoveryId,
+                          selectedDiscoveryType,
+                          serverList,
+                          discoveryProps,
+                        });
+                      } else {
+                        this.updateDiscoveryUpstream(
+                          discoveryHandlerId,
+                          upstreams,
+                        );
+                      }
                       this.closeModal();
                     },
                   });
