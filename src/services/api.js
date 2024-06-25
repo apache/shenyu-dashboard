@@ -1137,3 +1137,35 @@ export function updateDiscoveryUpstream(discoveryHandlerId, upstreams) {
     body: upstreams,
   });
 }
+
+/* getAllNamespaces */
+export async function getAllNamespaces(params) {
+  return request(`${baseUrl}/namespace/findPageByQuery?${stringify(params)}`, {
+    method: `GET`,
+  });
+}
+/* insertOrUpdateNamespace */
+export async function insertOrUpdateNamespace(params) {
+  return request(`${baseUrl}/namespace/insertOrUpdate`, {
+    method: `POST`,
+    body: {
+      ...params,
+    }
+  });
+}
+
+/* findNamespace */
+export async function findNamespace(params) {
+  return request(`${baseUrl}/namespace/${params.id}`, {
+    method: `GET`,
+  });
+}
+
+/* deleteNamespace */
+export async function deleteNamespace(params) {
+  return request(`${baseUrl}/namespace/batch`, {
+    method: `DELETE`,
+    body: [...params.list],
+  });
+}
+
