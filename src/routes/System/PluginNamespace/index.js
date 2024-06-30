@@ -35,19 +35,19 @@ import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { refreshAuthMenus } from "../../../utils/AuthRoute";
-import { getUpdateModal, updatePluginsEnabled } from "../../../utils/plugin";
+import { getUpdateModal, updatePluginsNamespaceEnabled } from "../../../utils/pluginNamespace";
 
 const { Text } = Typography;
 
 const { Option } = Select;
 
-@connect(({ plugin, resource, loading, global }) => ({
-  plugin,
+@connect(({ pluginNamespace, resource, loading, global }) => ({
+  pluginNamespace,
   authMenu: resource.authMenu,
   language: global.language,
-  loading: loading.effects["plugin/fetch"],
+  loading: loading.effects["pluginNamespace/fetch"],
 }))
-export default class Plugin extends Component {
+export default class PluginNamespace extends Component {
   components = resizableComponents;
 
   constructor(props) {
@@ -55,6 +55,8 @@ export default class Plugin extends Component {
     this.state = {
       currentPage: 1,
       pageSize: 12,
+      //todo:【namespace待改造】暂时写死
+      namespaceId:"649330b6c2d74edcbe8e8a54df9eb385",
       selectedRowKeys: [],
       name: "",
       enabled: null,
@@ -68,14 +70,14 @@ export default class Plugin extends Component {
 
   componentDidMount() {
     this.query();
-    this.initPluginColumns();
+    this.initPluginNamespaceColumns();
   }
 
   componentDidUpdate() {
     const { language } = this.props;
     const { localeName } = this.state;
     if (language !== localeName) {
-      this.initPluginColumns();
+      this.initPluginNamespaceColumns();
       this.changeLocale(language);
     }
   }
@@ -98,10 +100,11 @@ export default class Plugin extends Component {
   };
 
   currentQueryPayload = (override) => {
-    const { name, enabled, currentPage, pageSize } = this.state;
+    const { name, enabled, currentPage, pageSize, namespaceId } = this.state;
     return {
       name,
       enabled,
+      namespaceId,
       currentPage,
       pageSize,
       ...override,
@@ -111,7 +114,7 @@ export default class Plugin extends Component {
   query = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: "plugin/fetch",
+      type: "pluginNamespace/fetch",
       payload: this.currentQueryPayload(),
     });
   };
@@ -135,7 +138,9 @@ export default class Plugin extends Component {
   editClick = (record) => {
     const { dispatch } = this.props;
     getUpdateModal({
-      pluginId: record.id,
+      id: record.id,
+      //todo:【namespace待改造】暂时写死
+      namespaceId:"649330b6c2d74edcbe8e8a54df9eb385",
       dispatch,
       fetchValue: this.currentQueryPayload(),
       callback: (popup) => {
@@ -154,7 +159,7 @@ export default class Plugin extends Component {
   resourceClick = (record) => {
     // code here...
     const { dispatch } = this.props;
-    const { name, role, sort, config, id, enabled } = record;
+    const { name, role, sort, config, pluginId, enabled } = record;
     dispatch({
       type: "plugin/createPluginResource",
       payload: {
@@ -162,7 +167,7 @@ export default class Plugin extends Component {
         role,
         sort,
         config,
-        id,
+        id:pluginId,
         enabled,
       },
       callback: () => {
@@ -188,9 +193,11 @@ export default class Plugin extends Component {
     const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
-        type: "plugin/delete",
+        type: "pluginNamespace/delete",
         payload: {
           list: selectedRowKeys,
+          //todo:【namespace待改造】暂时写死
+          namespaceId:"649330b6c2d74edcbe8e8a54df9eb385",
         },
         fetchValue: this.currentQueryPayload({
           pageSize: 12,
@@ -240,13 +247,14 @@ export default class Plugin extends Component {
   };
 
   // 数据状态切换
-  statusSwitch = ({ list, enabled, callback }) => {
+  statusSwitch = ({ list, enabled, namespaceId, callback }) => {
     const { dispatch } = this.props;
-    updatePluginsEnabled({
+    updatePluginsNamespaceEnabled({
       list,
       dispatch,
       callback,
       enabled,
+      namespaceId,
       fetchValue: this.currentQueryPayload(),
     });
   };
@@ -255,16 +263,21 @@ export default class Plugin extends Component {
   enableClick = () => {
     const { dispatch } = this.props;
     const { selectedRowKeys } = this.state;
+    console.log(selectedRowKeys)
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
-        type: "plugin/fetchItem",
+        type: "pluginNamespace/fetchItem",
         payload: {
           id: selectedRowKeys[0],
+          //todo:【namespace待改造】暂时写死
+          namespaceId:"649330b6c2d74edcbe8e8a54df9eb385",
         },
         callback: (user) => {
           this.statusSwitch({
             list: selectedRowKeys,
             enabled: !user.enabled,
+            //todo:【namespace待改造】暂时写死
+            namespaceId:"649330b6c2d74edcbe8e8a54df9eb385",
             callback: () => {
               this.setState({ selectedRowKeys: [] });
             },
@@ -281,7 +294,7 @@ export default class Plugin extends Component {
   syncAllClick = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: "plugin/asyncAll",
+      type: "pluginNamespace/asyncAll",
     });
   };
 
@@ -292,7 +305,7 @@ export default class Plugin extends Component {
     getCurrentLocale(this.state.localeName);
   }
 
-  initPluginColumns() {
+  initPluginNamespaceColumns() {
     this.setState({
       columns: [
         {
@@ -414,7 +427,7 @@ export default class Plugin extends Component {
                 unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
                 checked={text}
                 onChange={(checked) => {
-                  this.statusSwitch({ list: [row.id], enabled: checked });
+                  this.statusSwitch({ list: [row.id], enabled: checked , namespaceId: row.namespaceId});
                 }}
               />
             </AuthButton>
@@ -431,7 +444,7 @@ export default class Plugin extends Component {
           render: (text, record) => {
             return (
               <div className="optionParts">
-                <AuthButton perms="system:plugin:edit">
+                <AuthButton perms="system:pluginNamespace:edit">
                   <div
                     className="edit"
                     onClick={() => {
@@ -441,7 +454,7 @@ export default class Plugin extends Component {
                     {getIntlContent("SHENYU.SYSTEM.EDITOR")}
                   </div>
                 </AuthButton>
-                <AuthButton perms="system:plugin:resource">
+                <AuthButton perms="system:pluginNamespace:resource">
                   <div
                     className="edit"
                     onClick={() => {
@@ -460,8 +473,8 @@ export default class Plugin extends Component {
   }
 
   render() {
-    const { plugin, loading, authMenu } = this.props;
-    const { pluginList, total } = plugin;
+    const { pluginNamespace, loading, authMenu } = this.props;
+    const { pluginNamespaceList, total } = pluginNamespace;
     const { currentPage, pageSize, selectedRowKeys, name, enabled, popup } =
       this.state;
     const columns = this.state.columns.map((col, index) => ({
@@ -487,7 +500,7 @@ export default class Plugin extends Component {
     };
     const flatAuthMenu = flatList({}, authMenu);
 
-    pluginList.forEach((p) => {
+    pluginNamespaceList.forEach((p) => {
       p.url = (flatAuthMenu[p.id] ?? {}).path;
     });
 
@@ -535,13 +548,23 @@ export default class Plugin extends Component {
               </Button>
             </Popconfirm>
           </AuthButton>
-          <AuthButton perms="system:plugin:add">
+          {/*<AuthButton perms="system:plugin:add">*/}
+          {/*  <Button*/}
+          {/*    style={{ marginLeft: 20 }}*/}
+          {/*    type="primary"*/}
+          {/*    onClick={this.addClick}*/}
+          {/*  >*/}
+          {/*    {getIntlContent("SHENYU.SYSTEM.ADDDATA")}*/}
+          {/*  </Button>*/}
+          {/*</AuthButton>*/}
+          <AuthButton perms="system:plugin:modify">
             <Button
               style={{ marginLeft: 20 }}
+              icon="reload"
               type="primary"
-              onClick={this.addClick}
+              onClick={this.syncAllClick}
             >
-              {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
+              {getIntlContent("SHENYU.PLUGIN.SYNCALLDATA")}
             </Button>
           </AuthButton>
           <AuthButton perms="system:plugin:disable">
@@ -562,7 +585,7 @@ export default class Plugin extends Component {
           bordered
           loading={loading}
           columns={columns}
-          dataSource={pluginList}
+          dataSource={pluginNamespaceList}
           rowSelection={rowSelection}
           pagination={{
             total,

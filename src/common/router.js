@@ -168,6 +168,14 @@ export const getRouterData = (app) => {
         () => import("../routes/System/Plugin"),
       ),
     },
+    "/config/pluginNamespace": {
+      // 插件管理
+      component: dynamicWrapper(
+        app,
+        ["pluginNamespace"],
+        () => import("../routes/System/PluginNamespace"),
+      ),
+    },
     "/config/pluginhandle": {
       // 插件处理管理
       component: dynamicWrapper(

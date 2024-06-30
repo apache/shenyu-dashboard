@@ -1169,3 +1169,63 @@ export async function deleteNamespace(params) {
   });
 }
 
+/* findNamespacePlugin */
+export async function findNamespacePlugin(params) {
+  return request(`${baseUrl}/pluginNamespace/id=${params.id}&namespaceId=${params.namespaceId}`, {
+    method: `GET`,
+  });
+}
+
+/* getAllPluginNamespaces */
+export async function getAllPluginNamespaces(params) {
+  //todo:【namespace待改造】暂时写死
+  params.namespaceId='649330b6c2d74edcbe8e8a54df9eb385';
+  return request(`${baseUrl}/pluginNamespace?${stringify(params)}`, {
+    method: `GET`,
+  });
+}
+
+/* updatepluginEnabled */
+export async function updatePluginNamespaceEnabled(params) {
+  return request(`${baseUrl}/pluginNamespace/enabled`, {
+    method: `POST`,
+    body: {
+      ids: params.list,
+      enabled: params.enabled,
+      namespaceId:params.namespaceId,
+    },
+  });
+}
+
+/* updatePluginNamespace */
+export async function updatePluginNamespace(params) {
+  const formData = new FormData();
+  formData.append("pluginId", params.pluginId);
+  if (params.config) formData.append("config", params.config);
+  formData.append("sort", params.sort);
+  formData.append("enabled", params.enabled);
+  formData.append("name", params.name);
+  formData.append("namespaceId", params.namespaceId);
+  return request(`${baseUrl}/pluginNamespace/pluginId=${params.pluginId}&namespaceId=${params.namespaceId}`, {
+    method: `PUT`,
+    body: formData,
+  });
+}
+
+/* deletePlugin */
+export async function deletePluginNamespace(params) {
+  return request(`${baseUrl}/pluginNamespace/batch`, {
+    method: `DELETE`,
+    body: {
+      ids:[...params.list],
+      namespaceId:params.namespaceId,
+    }
+  });
+}
+
+// sync all plugin
+export async function asyncPluginNamespace() {
+  return request(`${baseUrl}/pluginNamespace/syncPluginAll`, {
+    method: `POST`,
+  });
+}
