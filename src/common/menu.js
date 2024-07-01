@@ -52,6 +52,11 @@ export const menuData = [
         path: "alert",
         locale: "SHENYU.MENU.SYSTEM.MANAGMENT.ALERT",
       },
+      {
+        name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.NAMESPACE"),
+        path: "namespace",
+        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.NAMESPACE",
+      }
     ],
   },
   {
@@ -64,6 +69,11 @@ export const menuData = [
         name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.PLUGIN"),
         path: "plugin",
         locale: "SHENYU.MENU.SYSTEM.MANAGMENT.PLUGIN",
+      },
+      {
+        name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.PLUGINNAMESPACE"),
+        path: "pluginNamespace",
+        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.PLUGINNAMESPACE",
       },
       {
         name: getIntlContent("SHENYU.PLUGIN.PLUGINHANDLE"),
