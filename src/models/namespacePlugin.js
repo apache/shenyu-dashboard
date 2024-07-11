@@ -17,31 +17,30 @@
 
 import { message } from "antd";
 import {
-  updatePlugin,
   addPlugin,
   fetchPluginHandleByPluginId,
   addPluginResource,
   findNamespacePlugin,
-  getAllPluginNamespaces,
-  updatePluginNamespaceEnabled,
-  updatePluginNamespace,
-  deletePluginNamespace,
-  asyncPluginNamespace,
+  getAllNamespacePlugins,
+  updateNamespacePluginEnabled,
+  updateNamespacePlugin,
+  deleteNamespacePlugin,
+  asyncNamespacePlugin,
 } from "../services/api";
 import { getIntlContent } from "../utils/IntlUtils";
 
 export default {
-  namespace: "pluginNamespace",
+  namespace: "namespacePlugin",
 
   state: {
-    pluginNamespaceList: [],
+    namespacePluginList: [],
     total: 0,
   },
 
   effects: {
     *fetch(params, { call, put }) {
       const { payload } = params;
-      const json = yield call(getAllPluginNamespaces, payload);
+      const json = yield call(getAllNamespacePlugins, payload);
       if (json.code === 200) {
         let { page, dataList } = json.data;
         dataList = dataList.map((item) => {
@@ -76,24 +75,10 @@ export default {
         message.warn(json.message);
       }
     },
-    *changeStatus({ payload }, { call, put }) {
-      const json = yield call(updatePlugin, payload);
-      if (json.code === 200) {
-        message.success(
-          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
-        );
-        yield put({
-          type: "updatePlugins",
-          payload,
-        });
-      } else {
-        message.warn(json.message);
-      }
-    },
     *delete(params, { call, put }) {
       const { payload, fetchValue, callback } = params;
       // const { list } = payload;
-      const json = yield call(deletePluginNamespace, payload);
+      const json = yield call(deleteNamespacePlugin, payload);
       if (json.code === 200) {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
@@ -106,7 +91,7 @@ export default {
     },
     *update(params, { call, put }) {
       const { payload, callback, fetchValue } = params;
-      const json = yield call(updatePluginNamespace, payload);
+      const json = yield call(updateNamespacePlugin, payload);
       if (json.code === 200) {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
@@ -121,7 +106,7 @@ export default {
     },
     *updateEn(params, { call, put }) {
       const { payload, fetchValue, callback } = params;
-      const json = yield call(updatePluginNamespaceEnabled, payload);
+      const json = yield call(updateNamespacePluginEnabled, payload);
 
       if (json.code === 200) {
         message.success(
@@ -144,7 +129,7 @@ export default {
     },
 
     *asyncAll(_, { call }) {
-      const json = yield call(asyncPluginNamespace);
+      const json = yield call(asyncNamespacePlugin);
       if (json.code === 200) {
         message.success(getIntlContent("SHENYU.COMMON.RESPONSE.SYNC.SUCCESS"));
       } else {
@@ -176,7 +161,7 @@ export default {
     savePlugins(state, { payload }) {
       return {
         ...state,
-        pluginNamespaceList: payload.dataList,
+        namespacePluginList: payload.dataList,
         total: payload.total,
       };
     },

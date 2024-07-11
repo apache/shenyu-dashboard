@@ -17,7 +17,7 @@
 
 import React from "react";
 import { refreshAuthMenus } from "./AuthRoute";
-import AddModal from "../routes/System/PluginNamespace/AddModal";
+import AddModal from "../routes/System/NamespacePlugin/AddModal";
 
 export function getUpdateModal({
   id,
@@ -30,14 +30,14 @@ export function getUpdateModal({
   canceledCallback,
 }) {
   dispatch({
-    type: "pluginNamespace/fetchItem",
+    type: "namespacePlugin/fetchItem",
     payload: {
       id,
       namespaceId,
     },
     callback: (plugin) => {
       dispatch({
-        type: "pluginNamespace/fetchByPluginId",
+        type: "namespacePlugin/fetchByPluginId",
         payload: {
           pluginId: plugin.pluginId,
           type: "3",
@@ -51,7 +51,7 @@ export function getUpdateModal({
               handleOk={(values) => {
                 const { enabled, name, config, sort } = values;
                 dispatch({
-                  type: "pluginNamespace/update",
+                  type: "namespacePlugin/update",
                   payload: {
                     config,
                     pluginId,
@@ -78,7 +78,7 @@ export function getUpdateModal({
   });
 }
 
-export function updatePluginsNamespaceEnabled({
+export function updateNamespacePluginsEnabled({
   list,
   enabled,
   namespaceId,
@@ -87,7 +87,7 @@ export function updatePluginsNamespaceEnabled({
   callback,
 }) {
   dispatch({
-    type: "pluginNamespace/updateEn",
+    type: "namespacePlugin/updateEn",
     payload: {
       list,
       enabled,

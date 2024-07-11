@@ -36,20 +36,20 @@ import AuthButton from "../../../utils/AuthButton";
 import { refreshAuthMenus } from "../../../utils/AuthRoute";
 import {
   getUpdateModal,
-  updatePluginsNamespaceEnabled,
-} from "../../../utils/pluginNamespace";
+  updateNamespacePluginsEnabled,
+} from "../../../utils/namespacePlugin";
 
 const { Text } = Typography;
 
 const { Option } = Select;
 
-@connect(({ pluginNamespace, resource, loading, global }) => ({
-  pluginNamespace,
+@connect(({ namespacePlugin, resource, loading, global }) => ({
+  namespacePlugin,
   authMenu: resource.authMenu,
   language: global.language,
-  loading: loading.effects["pluginNamespace/fetch"],
+  loading: loading.effects["namespacePlugin/fetch"],
 }))
-export default class PluginNamespace extends Component {
+export default class NamespacePlugin extends Component {
   components = resizableComponents;
 
   constructor(props) {
@@ -72,14 +72,14 @@ export default class PluginNamespace extends Component {
 
   componentDidMount() {
     this.query();
-    this.initPluginNamespaceColumns();
+    this.initNamespacePluginColumns();
   }
 
   componentDidUpdate() {
     const { language } = this.props;
     const { localeName } = this.state;
     if (language !== localeName) {
-      this.initPluginNamespaceColumns();
+      this.initNamespacePluginColumns();
       this.changeLocale(language);
     }
   }
@@ -116,7 +116,7 @@ export default class PluginNamespace extends Component {
   query = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: "pluginNamespace/fetch",
+      type: "namespacePlugin/fetch",
       payload: this.currentQueryPayload(),
     });
   };
@@ -141,7 +141,7 @@ export default class PluginNamespace extends Component {
     const { dispatch } = this.props;
     getUpdateModal({
       id: record.id,
-      // todo:【namespace待改造】暂时写死
+      // todo:[To be refactored with namespace] Temporarily hardcode
       namespaceId: "649330b6c2d74edcbe8e8a54df9eb385",
       dispatch,
       fetchValue: this.currentQueryPayload(),
@@ -195,7 +195,7 @@ export default class PluginNamespace extends Component {
     const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
-        type: "pluginNamespace/delete",
+        type: "namespacePlugin/delete",
         payload: {
           list: selectedRowKeys,
           // todo:[To be refactored with namespace] Temporarily hardcode
@@ -218,7 +218,7 @@ export default class PluginNamespace extends Component {
   // 数据状态切换
   statusSwitch = ({ list, enabled, namespaceId, callback }) => {
     const { dispatch } = this.props;
-    updatePluginsNamespaceEnabled({
+    updateNamespacePluginsEnabled({
       list,
       dispatch,
       callback,
@@ -235,7 +235,7 @@ export default class PluginNamespace extends Component {
     console.log(selectedRowKeys);
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
-        type: "pluginNamespace/fetchItem",
+        type: "namespacePlugin/fetchItem",
         payload: {
           id: selectedRowKeys[0],
           // todo:[To be refactored with namespace] Temporarily hardcode
@@ -263,7 +263,7 @@ export default class PluginNamespace extends Component {
   syncAllClick = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: "pluginNamespace/asyncAll",
+      type: "namespacePlugin/asyncAll",
     });
   };
 
@@ -274,7 +274,7 @@ export default class PluginNamespace extends Component {
     getCurrentLocale(this.state.localeName);
   }
 
-  initPluginNamespaceColumns() {
+  initNamespacePluginColumns() {
     this.setState({
       columns: [
         {
@@ -417,7 +417,7 @@ export default class PluginNamespace extends Component {
           render: (text, record) => {
             return (
               <div className="optionParts">
-                <AuthButton perms="system:pluginNamespace:edit">
+                <AuthButton perms="system:namespacePlugin:edit">
                   <div
                     className="edit"
                     onClick={() => {
@@ -427,7 +427,7 @@ export default class PluginNamespace extends Component {
                     {getIntlContent("SHENYU.SYSTEM.EDITOR")}
                   </div>
                 </AuthButton>
-                <AuthButton perms="system:pluginNamespace:resource">
+                <AuthButton perms="system:namespacePlugin:resource">
                   <div
                     className="edit"
                     onClick={() => {
@@ -446,8 +446,8 @@ export default class PluginNamespace extends Component {
   }
 
   render() {
-    const { pluginNamespace, loading, authMenu } = this.props;
-    const { pluginNamespaceList, total } = pluginNamespace;
+    const { namespacePlugin, loading, authMenu } = this.props;
+    const { namespacePluginList, total } = namespacePlugin;
     const { currentPage, pageSize, selectedRowKeys, name, enabled, popup } =
       this.state;
     const columns = this.state.columns.map((col, index) => ({
@@ -473,7 +473,7 @@ export default class PluginNamespace extends Component {
     };
     const flatAuthMenu = flatList({}, authMenu);
 
-    pluginNamespaceList.forEach((p) => {
+    namespacePluginList.forEach((p) => {
       p.url = (flatAuthMenu[p.id] ?? {}).path;
     });
 
@@ -558,7 +558,7 @@ export default class PluginNamespace extends Component {
           bordered
           loading={loading}
           columns={columns}
-          dataSource={pluginNamespaceList}
+          dataSource={namespacePluginList}
           rowSelection={rowSelection}
           pagination={{
             total,

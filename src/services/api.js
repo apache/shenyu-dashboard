@@ -1172,25 +1172,25 @@ export async function deleteNamespace(params) {
 /* findNamespacePlugin */
 export async function findNamespacePlugin(params) {
   return request(
-    `${baseUrl}/pluginNamespace/id=${params.id}&namespaceId=${params.namespaceId}`,
+    `${baseUrl}/namespacePlugin/id=${params.id}&namespaceId=${params.namespaceId}`,
     {
       method: `GET`,
     },
   );
 }
 
-/* getAllPluginNamespaces */
-export async function getAllPluginNamespaces(params) {
-  // todo:【namespace待改造】暂时写死
+/* getAllNamespacePlugins */
+export async function getAllNamespacePlugins(params) {
+  // todo:[To be refactored with namespace] Temporarily hardcode
   params.namespaceId = "649330b6c2d74edcbe8e8a54df9eb385";
-  return request(`${baseUrl}/pluginNamespace?${stringify(params)}`, {
+  return request(`${baseUrl}/namespacePlugin?${stringify(params)}`, {
     method: `GET`,
   });
 }
 
 /* updatepluginEnabled */
-export async function updatePluginNamespaceEnabled(params) {
-  return request(`${baseUrl}/pluginNamespace/enabled`, {
+export async function updateNamespacePluginEnabled(params) {
+  return request(`${baseUrl}/namespacePlugin/enabled`, {
     method: `POST`,
     body: {
       ids: params.list,
@@ -1200,8 +1200,8 @@ export async function updatePluginNamespaceEnabled(params) {
   });
 }
 
-/* updatePluginNamespace */
-export async function updatePluginNamespace(params) {
+/* updateNamespacePlugin */
+export async function updateNamespacePlugin(params) {
   const formData = new FormData();
   formData.append("pluginId", params.pluginId);
   if (params.config) formData.append("config", params.config);
@@ -1210,7 +1210,7 @@ export async function updatePluginNamespace(params) {
   formData.append("name", params.name);
   formData.append("namespaceId", params.namespaceId);
   return request(
-    `${baseUrl}/pluginNamespace/pluginId=${params.pluginId}&namespaceId=${params.namespaceId}`,
+    `${baseUrl}/namespacePlugin/pluginId=${params.pluginId}&namespaceId=${params.namespaceId}`,
     {
       method: `PUT`,
       body: formData,
@@ -1219,8 +1219,8 @@ export async function updatePluginNamespace(params) {
 }
 
 /* deletePlugin */
-export async function deletePluginNamespace(params) {
-  return request(`${baseUrl}/pluginNamespace/batch`, {
+export async function deleteNamespacePlugin(params) {
+  return request(`${baseUrl}/namespacePlugin/batch`, {
     method: `DELETE`,
     body: {
       ids: [...params.list],
@@ -1230,8 +1230,8 @@ export async function deletePluginNamespace(params) {
 }
 
 // sync all plugin
-export async function asyncPluginNamespace() {
-  return request(`${baseUrl}/pluginNamespace/syncPluginAll`, {
+export async function asyncNamespacePlugin() {
+  return request(`${baseUrl}/namespacePlugin/syncPluginAll`, {
     method: `POST`,
   });
 }
