@@ -54,7 +54,7 @@ export function getUpdateModal({
                   type: "namespacePlugin/update",
                   payload: {
                     config,
-                    pluginId,
+                    pluginId:plugin.pluginId,
                     enabled,
                     namespaceId,
                     sort,

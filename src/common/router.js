@@ -113,7 +113,6 @@ export const getRouterData = (app) => {
       ),
     },
     "/system/role": {
-      // 角色管理
       component: dynamicWrapper(
         app,
         ["role"],
@@ -121,7 +120,6 @@ export const getRouterData = (app) => {
       ),
     },
     "/system/manage": {
-      // 用户管理
       component: dynamicWrapper(
         app,
         ["manage", "dataPermission"],
@@ -129,7 +127,6 @@ export const getRouterData = (app) => {
       ),
     },
     "/system/resource": {
-      // 资源管理
       component: dynamicWrapper(
         app,
         ["resource"],
@@ -137,7 +134,6 @@ export const getRouterData = (app) => {
       ),
     },
     "/system/alert": {
-      // 告警管理
       component: dynamicWrapper(
         app,
         ["alert"],
@@ -145,7 +141,6 @@ export const getRouterData = (app) => {
       ),
     },
     "/config/namespace": {
-      // 命名空间管理
       component: dynamicWrapper(
         app,
         ["namespace"],
@@ -153,7 +148,6 @@ export const getRouterData = (app) => {
       ),
     },
     "/config/metadata": {
-      // 元数据管理
       component: dynamicWrapper(
         app,
         ["metadata"],
@@ -161,7 +155,6 @@ export const getRouterData = (app) => {
       ),
     },
     "/config/plugin": {
-      // 插件管理
       component: dynamicWrapper(
         app,
         ["plugin"],
@@ -169,7 +162,6 @@ export const getRouterData = (app) => {
       ),
     },
     "/config/namespacePlugin": {
-      // 插件管理
       component: dynamicWrapper(
         app,
         ["namespacePlugin"],
@@ -177,7 +169,6 @@ export const getRouterData = (app) => {
       ),
     },
     "/config/pluginhandle": {
-      // 插件处理管理
       component: dynamicWrapper(
         app,
         ["pluginHandle"],
@@ -185,7 +176,6 @@ export const getRouterData = (app) => {
       ),
     },
     "/config/auth": {
-      // 认证管理
       component: dynamicWrapper(
         app,
         ["auth"],
@@ -193,7 +183,6 @@ export const getRouterData = (app) => {
       ),
     },
     "/config/dict": {
-      // 字典管理
       component: dynamicWrapper(
         app,
         ["shenyuDict"],
