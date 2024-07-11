@@ -144,7 +144,7 @@ export const getRouterData = (app) => {
         () => import("../routes/System/Alert"),
       ),
     },
-    "/system/namespace": {
+    "/config/namespace": {
       // 告警管理
       component: dynamicWrapper(
         app,

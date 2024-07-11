@@ -135,14 +135,12 @@ export default class Namespace extends Component {
                 dispatch({
                   type: "namespace/update",
                   payload: {
-                    name,
-                    description,
-                  },
-                  fetchValue: {
+                    id: record.id,
                     name,
                     description,
                     namespaceId: record.namespaceId,
                   },
+                  fetchValue: this.currentQueryPayload(),
                   callback: () => {
                     this.closeModal();
                   },
