@@ -145,7 +145,7 @@ export const getRouterData = (app) => {
       ),
     },
     "/config/namespace": {
-      // 告警管理
+      // 命名空间管理
       component: dynamicWrapper(
         app,
         ["namespace"],
