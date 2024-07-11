@@ -19,14 +19,14 @@ import { message } from "antd";
 import {
   updatePlugin,
   addPlugin,
-  asyncPlugin,
   fetchPluginHandleByPluginId,
   addPluginResource,
   findNamespacePlugin,
   getAllPluginNamespaces,
   updatePluginNamespaceEnabled,
   updatePluginNamespace,
-  deletePluginNamespace, asyncPluginNamespace,
+  deletePluginNamespace,
+  asyncPluginNamespace,
 } from "../services/api";
 import { getIntlContent } from "../utils/IntlUtils";
 
@@ -93,7 +93,7 @@ export default {
     *delete(params, { call, put }) {
       const { payload, fetchValue, callback } = params;
       // const { list } = payload;
-      const json = yield call(deletePluginNamespace, payload );
+      const json = yield call(deletePluginNamespace, payload);
       if (json.code === 200) {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),

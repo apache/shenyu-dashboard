@@ -32,8 +32,8 @@ export function getUpdateModal({
   dispatch({
     type: "pluginNamespace/fetchItem",
     payload: {
-      id: id,
-      namespaceId:namespaceId,
+      id,
+      namespaceId,
     },
     callback: (plugin) => {
       dispatch({

@@ -21,7 +21,7 @@ import {
   queryPlatform,
   getAllPlugins,
   asyncOnePlugin,
-  getUserPermissionByToken, getAllPluginNamespaces,
+  getUserPermissionByToken,
 } from "../services/api";
 import { getIntlContent } from "../utils/IntlUtils";
 

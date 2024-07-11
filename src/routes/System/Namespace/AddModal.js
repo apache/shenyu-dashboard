@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Modal, Form, Input} from "antd";
+import { Modal, Form, Input } from "antd";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;
@@ -117,7 +117,9 @@ class AddModal extends Component {
               <Input
                 allowClear
                 disabled={true}
-                placeholder={getIntlContent("SHENYU.NAMESPACE.ALERTNAMESPACEID")}
+                placeholder={getIntlContent(
+                  "SHENYU.NAMESPACE.ALERTNAMESPACEID",
+                )}
               />,
             )}
           </FormItem>

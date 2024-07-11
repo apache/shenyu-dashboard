@@ -18,12 +18,9 @@
 import { message } from "antd";
 import {
   getAllNamespaces,
-  updatePlugin,
-  asyncPlugin,
-  updatepluginEnabled,
-  fetchPluginHandleByPluginId,
-  addPluginResource,
-  findNamespace, insertOrUpdateNamespace, deleteNamespace,
+  findNamespace,
+  insertOrUpdateNamespace,
+  deleteNamespace,
 } from "../services/api";
 import { getIntlContent } from "../utils/IntlUtils";
 
@@ -109,7 +106,6 @@ export default {
       const payload = { name, enabled, currentPage, pageSize };
       yield put({ type: "fetch", payload });
     },
-
   },
 
   reducers: {

@@ -277,14 +277,6 @@ export default class Plugin extends Component {
     }
   };
 
-  // 同步插件数据
-  syncAllClick = () => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "plugin/asyncAll",
-    });
-  };
-
   changeLocale(locale) {
     this.setState({
       localeName: locale,

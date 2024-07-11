@@ -31,11 +31,13 @@ import {
 import { connect } from "dva";
 import { Link } from "dva/router";
 import { resizableComponents } from "../../../utils/resizable";
-import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { refreshAuthMenus } from "../../../utils/AuthRoute";
-import { getUpdateModal, updatePluginsNamespaceEnabled } from "../../../utils/pluginNamespace";
+import {
+  getUpdateModal,
+  updatePluginsNamespaceEnabled,
+} from "../../../utils/pluginNamespace";
 
 const { Text } = Typography;
 
@@ -55,8 +57,8 @@ export default class PluginNamespace extends Component {
     this.state = {
       currentPage: 1,
       pageSize: 12,
-      //todo:【namespace待改造】暂时写死
-      namespaceId:"649330b6c2d74edcbe8e8a54df9eb385",
+      // todo:[To be refactored with namespace] Temporarily hardcode
+      namespaceId: "649330b6c2d74edcbe8e8a54df9eb385",
       selectedRowKeys: [],
       name: "",
       enabled: null,
@@ -139,8 +141,8 @@ export default class PluginNamespace extends Component {
     const { dispatch } = this.props;
     getUpdateModal({
       id: record.id,
-      //todo:【namespace待改造】暂时写死
-      namespaceId:"649330b6c2d74edcbe8e8a54df9eb385",
+      // todo:【namespace待改造】暂时写死
+      namespaceId: "649330b6c2d74edcbe8e8a54df9eb385",
       dispatch,
       fetchValue: this.currentQueryPayload(),
       callback: (popup) => {
@@ -167,7 +169,7 @@ export default class PluginNamespace extends Component {
         role,
         sort,
         config,
-        id:pluginId,
+        id: pluginId,
         enabled,
       },
       callback: () => {
@@ -196,8 +198,8 @@ export default class PluginNamespace extends Component {
         type: "pluginNamespace/delete",
         payload: {
           list: selectedRowKeys,
-          //todo:【namespace待改造】暂时写死
-          namespaceId:"649330b6c2d74edcbe8e8a54df9eb385",
+          // todo:[To be refactored with namespace] Temporarily hardcode
+          namespaceId: "649330b6c2d74edcbe8e8a54df9eb385",
         },
         fetchValue: this.currentQueryPayload({
           pageSize: 12,
@@ -211,39 +213,6 @@ export default class PluginNamespace extends Component {
       message.destroy();
       message.warn("Please select data");
     }
-  };
-
-  addClick = () => {
-    this.setState({
-      popup: (
-        <AddModal
-          disabled={false}
-          handleOk={(values) => {
-            const { dispatch } = this.props;
-            const { name, enabled, role, config, sort, file } = values;
-            dispatch({
-              type: "plugin/add",
-              payload: {
-                name,
-                config,
-                role,
-                enabled,
-                sort,
-                file,
-              },
-              fetchValue: this.currentQueryPayload(),
-              callback: () => {
-                this.closeModal(true);
-                refreshAuthMenus({ dispatch });
-              },
-            });
-          }}
-          handleCancel={() => {
-            this.closeModal();
-          }}
-        />
-      ),
-    });
   };
 
   // 数据状态切换
@@ -263,21 +232,21 @@ export default class PluginNamespace extends Component {
   enableClick = () => {
     const { dispatch } = this.props;
     const { selectedRowKeys } = this.state;
-    console.log(selectedRowKeys)
+    console.log(selectedRowKeys);
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "pluginNamespace/fetchItem",
         payload: {
           id: selectedRowKeys[0],
-          //todo:【namespace待改造】暂时写死
-          namespaceId:"649330b6c2d74edcbe8e8a54df9eb385",
+          // todo:[To be refactored with namespace] Temporarily hardcode
+          namespaceId: "649330b6c2d74edcbe8e8a54df9eb385",
         },
         callback: (user) => {
           this.statusSwitch({
             list: selectedRowKeys,
             enabled: !user.enabled,
-            //todo:【namespace待改造】暂时写死
-            namespaceId:"649330b6c2d74edcbe8e8a54df9eb385",
+            // todo:[To be refactored with namespace] Temporarily hardcode
+            namespaceId: "649330b6c2d74edcbe8e8a54df9eb385",
             callback: () => {
               this.setState({ selectedRowKeys: [] });
             },
@@ -427,7 +396,11 @@ export default class PluginNamespace extends Component {
                 unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
                 checked={text}
                 onChange={(checked) => {
-                  this.statusSwitch({ list: [row.id], enabled: checked , namespaceId: row.namespaceId});
+                  this.statusSwitch({
+                    list: [row.id],
+                    enabled: checked,
+                    namespaceId: row.namespaceId,
+                  });
                 }}
               />
             </AuthButton>
@@ -548,15 +521,15 @@ export default class PluginNamespace extends Component {
               </Button>
             </Popconfirm>
           </AuthButton>
-          {/*<AuthButton perms="system:plugin:add">*/}
-          {/*  <Button*/}
-          {/*    style={{ marginLeft: 20 }}*/}
-          {/*    type="primary"*/}
-          {/*    onClick={this.addClick}*/}
-          {/*  >*/}
-          {/*    {getIntlContent("SHENYU.SYSTEM.ADDDATA")}*/}
-          {/*  </Button>*/}
-          {/*</AuthButton>*/}
+          {/* <AuthButton perms="system:plugin:add"> */}
+          {/*  <Button */}
+          {/*    style={{ marginLeft: 20 }} */}
+          {/*    type="primary" */}
+          {/*    onClick={this.addClick} */}
+          {/*  > */}
+          {/*    {getIntlContent("SHENYU.SYSTEM.ADDDATA")} */}
+          {/*  </Button> */}
+          {/* </AuthButton> */}
           <AuthButton perms="system:plugin:modify">
             <Button
               style={{ marginLeft: 20 }}

@@ -56,7 +56,7 @@ export const menuData = [
         name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.NAMESPACE"),
         path: "namespace",
         locale: "SHENYU.MENU.SYSTEM.MANAGMENT.NAMESPACE",
-      }
+      },
     ],
   },
   {

@@ -16,19 +16,14 @@
  */
 
 import React, { Component } from "react";
-import {
-  Table,
-  Input,
-  Button,
-  message,
-  Popconfirm,
-} from "antd";
+import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
 import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { refreshAuthMenus } from "../../../utils/AuthRoute";
+
 @connect(({ namespace, resource, loading, global }) => ({
   namespace,
   authMenu: resource.authMenu,
@@ -46,6 +41,7 @@ export default class Namespace extends Component {
       selectedRowKeys: [],
       name: "",
       namespaceId: "",
+      // eslint-disable-next-line react/no-unused-state
       enabled: null,
       popup: "",
       localeName: window.sessionStorage.getItem("locale")
@@ -122,9 +118,7 @@ export default class Namespace extends Component {
   };
 
   editClick = (record) => {
-    const {
-      dispatch,
-    } = this.props;
+    const { dispatch } = this.props;
 
     dispatch({
       type: "namespace/fetchItem",
@@ -137,7 +131,7 @@ export default class Namespace extends Component {
             <AddModal
               {...namespace}
               handleOk={(values) => {
-                const { name, description} = values;
+                const { name, description } = values;
                 dispatch({
                   type: "namespace/update",
                   payload: {
@@ -147,7 +141,7 @@ export default class Namespace extends Component {
                   fetchValue: {
                     name,
                     description,
-                    namespaceId:record.namespaceId,
+                    namespaceId: record.namespaceId,
                   },
                   callback: () => {
                     this.closeModal();
@@ -163,7 +157,6 @@ export default class Namespace extends Component {
       },
     });
   };
-
 
   searchOnchange = (e) => {
     this.setState({ name: e.target.value }, this.query);
@@ -229,8 +222,6 @@ export default class Namespace extends Component {
     });
   };
 
-
-
   changeLocale(locale) {
     this.setState({
       localeName: locale,
@@ -282,7 +273,9 @@ export default class Namespace extends Component {
           width: 160,
           fixed: "right",
           render: (text, record) => {
-            return record.namespaceId==="649330b6c2d74edcbe8e8a54df9eb385"?'':(
+            return record.namespaceId === "649330b6c2d74edcbe8e8a54df9eb385" ? (
+              ""
+            ) : (
               <div className="optionParts">
                 <AuthButton perms="system:namespace:edit">
                   <div
@@ -308,14 +301,14 @@ export default class Namespace extends Component {
                     okText={getIntlContent("SHENYU.COMMON.SURE")}
                     cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
                   >
-                  <span
-                    className="edit"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
-                  </span>
+                    <span
+                      className="edit"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                    </span>
                   </Popconfirm>
                 </AuthButton>
               </div>

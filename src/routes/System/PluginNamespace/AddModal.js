@@ -15,17 +15,8 @@
  * limitations under the License.
  */
 
-import React, { Component, forwardRef, Fragment } from "react";
-import {
-  Modal,
-  Form,
-  Switch,
-  Input,
-  Select,
-  Divider,
-  InputNumber,
-  Button,
-} from "antd";
+import React, { Component, Fragment } from "react";
+import { Modal, Form, Switch, Input, Select, Divider, InputNumber } from "antd";
 import { connect } from "dva";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
