@@ -232,7 +232,6 @@ export default class NamespacePlugin extends Component {
   enableClick = () => {
     const { dispatch } = this.props;
     const { selectedRowKeys } = this.state;
-    console.log(selectedRowKeys);
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "namespacePlugin/fetchItem",

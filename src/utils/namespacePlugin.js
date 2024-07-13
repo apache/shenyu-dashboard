@@ -21,7 +21,6 @@ import AddModal from "../routes/System/NamespacePlugin/AddModal";
 
 export function getUpdateModal({
   id,
-  pluginId,
   namespaceId,
   dispatch,
   fetchValue,
@@ -54,7 +53,7 @@ export function getUpdateModal({
                   type: "namespacePlugin/update",
                   payload: {
                     config,
-                    pluginId:plugin.pluginId,
+                    pluginId: plugin.pluginId,
                     enabled,
                     namespaceId,
                     sort,
