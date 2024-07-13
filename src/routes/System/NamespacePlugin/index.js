@@ -58,7 +58,7 @@ export default class NamespacePlugin extends Component {
       currentPage: 1,
       pageSize: 12,
       // todo:[To be refactored with namespace] Temporarily hardcode
-      namespaceId: "649330b6c2d74edcbe8e8a54df9eb385",
+      namespaceId: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
       selectedRowKeys: [],
       name: "",
       enabled: null,
@@ -142,7 +142,7 @@ export default class NamespacePlugin extends Component {
     getUpdateModal({
       id: record.id,
       // todo:[To be refactored with namespace] Temporarily hardcode
-      namespaceId: "649330b6c2d74edcbe8e8a54df9eb385",
+      namespaceId: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
       dispatch,
       fetchValue: this.currentQueryPayload(),
       callback: (popup) => {
@@ -199,7 +199,7 @@ export default class NamespacePlugin extends Component {
         payload: {
           list: selectedRowKeys,
           // todo:[To be refactored with namespace] Temporarily hardcode
-          namespaceId: "649330b6c2d74edcbe8e8a54df9eb385",
+          namespaceId: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
         },
         fetchValue: this.currentQueryPayload({
           pageSize: 12,
@@ -239,14 +239,14 @@ export default class NamespacePlugin extends Component {
         payload: {
           id: selectedRowKeys[0],
           // todo:[To be refactored with namespace] Temporarily hardcode
-          namespaceId: "649330b6c2d74edcbe8e8a54df9eb385",
+          namespaceId: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
         },
         callback: (user) => {
           this.statusSwitch({
             list: selectedRowKeys,
             enabled: !user.enabled,
             // todo:[To be refactored with namespace] Temporarily hardcode
-            namespaceId: "649330b6c2d74edcbe8e8a54df9eb385",
+            namespaceId: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
             callback: () => {
               this.setState({ selectedRowKeys: [] });
             },

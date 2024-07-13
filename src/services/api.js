@@ -1182,7 +1182,7 @@ export async function findNamespacePlugin(params) {
 /* getAllNamespacePlugins */
 export async function getAllNamespacePlugins(params) {
   // todo:[To be refactored with namespace] Temporarily hardcode
-  params.namespaceId = "649330b6c2d74edcbe8e8a54df9eb385";
+  params.namespaceId = "649330b6-c2d7-4edc-be8e-8a54df9eb385";
   return request(`${baseUrl}/namespacePlugin?${stringify(params)}`, {
     method: `GET`,
   });
