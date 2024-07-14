@@ -271,7 +271,8 @@ export default class Namespace extends Component {
           width: 160,
           fixed: "right",
           render: (text, record) => {
-            return record.namespaceId === "649330b6-c2d7-4edc-be8e-8a54df9eb385" ? (
+            return record.namespaceId ===
+            "649330b6-c2d7-4edc-be8e-8a54df9eb385" ? (
               ""
             ) : (
               <div className="optionParts">
