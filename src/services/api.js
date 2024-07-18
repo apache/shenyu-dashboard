@@ -1137,3 +1137,101 @@ export function updateDiscoveryUpstream(discoveryHandlerId, upstreams) {
     body: upstreams,
   });
 }
+
+/* getAllNamespaces */
+export async function getAllNamespaces(params) {
+  return request(`${baseUrl}/namespace/findPageByQuery?${stringify(params)}`, {
+    method: `GET`,
+  });
+}
+/* insertOrUpdateNamespace */
+export async function insertOrUpdateNamespace(params) {
+  return request(`${baseUrl}/namespace/insertOrUpdate`, {
+    method: `POST`,
+    body: {
+      ...params,
+    },
+  });
+}
+
+/* findNamespace */
+export async function findNamespace(params) {
+  return request(`${baseUrl}/namespace/${params.id}`, {
+    method: `GET`,
+  });
+}
+
+/* deleteNamespace */
+export async function deleteNamespace(params) {
+  return request(`${baseUrl}/namespace/batch`, {
+    method: `DELETE`,
+    body: [...params.list],
+  });
+}
+
+/* findNamespacePlugin */
+export async function findNamespacePlugin(params) {
+  return request(
+    `${baseUrl}/namespacePlugin/id=${params.id}&namespaceId=${params.namespaceId}`,
+    {
+      method: `GET`,
+    },
+  );
+}
+
+/* getAllNamespacePlugins */
+export async function getAllNamespacePlugins(params) {
+  // todo:[To be refactored with namespace] Temporarily hardcode
+  params.namespaceId = "649330b6-c2d7-4edc-be8e-8a54df9eb385";
+  return request(`${baseUrl}/namespacePlugin?${stringify(params)}`, {
+    method: `GET`,
+  });
+}
+
+/* updatepluginEnabled */
+export async function updateNamespacePluginEnabled(params) {
+  return request(`${baseUrl}/namespacePlugin/enabled`, {
+    method: `POST`,
+    body: {
+      ids: params.list,
+      enabled: params.enabled,
+      namespaceId: params.namespaceId,
+    },
+  });
+}
+
+/* updateNamespacePlugin */
+export async function updateNamespacePlugin(params) {
+  const formData = new FormData();
+  formData.append("pluginId", params.pluginId);
+  if (params.config) formData.append("config", params.config);
+  formData.append("sort", params.sort);
+  formData.append("enabled", params.enabled);
+  formData.append("name", params.name);
+  formData.append("namespaceId", params.namespaceId);
+  return request(
+    `${baseUrl}/namespacePlugin/pluginId=${params.pluginId}&namespaceId=${params.namespaceId}`,
+    {
+      method: `PUT`,
+      body: formData,
+    },
+  );
+}
+
+/* deletePlugin */
+export async function deleteNamespacePlugin(params) {
+  return request(`${baseUrl}/namespacePlugin/batch`, {
+    method: `DELETE`,
+    body: {
+      ids: [...params.list],
+      namespaceId: params.namespaceId,
+    },
+  });
+}
+
+// sync all plugin
+export async function asyncNamespacePlugin() {
+  return request(`${baseUrl}/namespacePlugin/syncPluginAll`, {
+    method: `POST`,
+  });
+}

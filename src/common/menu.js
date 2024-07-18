@@ -66,6 +66,16 @@ export const menuData = [
         locale: "SHENYU.MENU.SYSTEM.MANAGMENT.PLUGIN",
       },
       {
+        name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.NAMESPACEPLUGIN"),
+        path: "namespacePlugin",
+        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.NAMESPACEPLUGIN",
+      },
+      {
+        name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.NAMESPACE"),
+        path: "namespace",
+        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.NAMESPACE",
+      },
+      {
         name: getIntlContent("SHENYU.PLUGIN.PLUGINHANDLE"),
         path: "pluginhandle",
         locale: "SHENYU.PLUGIN.PLUGINHANDLE",

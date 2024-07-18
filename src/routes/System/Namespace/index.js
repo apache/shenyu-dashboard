@@ -16,38 +16,21 @@
  */
 
 import React, { Component } from "react";
-import {
-  Table,
-  Input,
-  Button,
-  message,
-  Popconfirm,
-  Select,
-  Popover,
-  Tag,
-  Typography,
-  Switch,
-} from "antd";
+import { Table, Input, Button, message, Popconfirm } from "antd";
 import { connect } from "dva";
-import { Link } from "dva/router";
 import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { refreshAuthMenus } from "../../../utils/AuthRoute";
-import { getUpdateModal, updatePluginsEnabled } from "../../../utils/plugin";
 
-const { Text } = Typography;
-
-const { Option } = Select;
-
-@connect(({ plugin, resource, loading, global }) => ({
-  plugin,
+@connect(({ namespace, resource, loading, global }) => ({
+  namespace,
   authMenu: resource.authMenu,
   language: global.language,
-  loading: loading.effects["plugin/fetch"],
+  loading: loading.effects["namespace/fetch"],
 }))
-export default class Plugin extends Component {
+export default class Namespace extends Component {
   components = resizableComponents;
 
   constructor(props) {
@@ -57,6 +40,8 @@ export default class Plugin extends Component {
       pageSize: 12,
       selectedRowKeys: [],
       name: "",
+      namespaceId: "",
+      // eslint-disable-next-line react/no-unused-state
       enabled: null,
       popup: "",
       localeName: window.sessionStorage.getItem("locale")
@@ -68,14 +53,14 @@ export default class Plugin extends Component {
 
   componentDidMount() {
     this.query();
-    this.initPluginColumns();
+    this.initNamespaceColumns();
   }
 
   componentDidUpdate() {
     const { language } = this.props;
     const { localeName } = this.state;
     if (language !== localeName) {
-      this.initPluginColumns();
+      this.initNamespaceColumns();
       this.changeLocale(language);
     }
   }
@@ -98,10 +83,10 @@ export default class Plugin extends Component {
   };
 
   currentQueryPayload = (override) => {
-    const { name, enabled, currentPage, pageSize } = this.state;
+    const { name, namespaceId, currentPage, pageSize } = this.state;
     return {
       name,
-      enabled,
+      namespaceId,
       currentPage,
       pageSize,
       ...override,
@@ -111,7 +96,7 @@ export default class Plugin extends Component {
   query = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: "plugin/fetch",
+      type: "namespace/fetch",
       payload: this.currentQueryPayload(),
     });
   };
@@ -134,39 +119,39 @@ export default class Plugin extends Component {
 
   editClick = (record) => {
     const { dispatch } = this.props;
-    getUpdateModal({
-      pluginId: record.id,
-      dispatch,
-      fetchValue: this.currentQueryPayload(),
-      callback: (popup) => {
-        this.setState({ popup });
-      },
-      updatedCallback: () => {
-        this.setState({ selectedRowKeys: [] });
-        this.closeModal(true);
-      },
-      canceledCallback: () => {
-        this.closeModal();
-      },
-    });
-  };
 
-  resourceClick = (record) => {
-    // code here...
-    const { dispatch } = this.props;
-    const { name, role, sort, config, id, enabled } = record;
     dispatch({
-      type: "plugin/createPluginResource",
+      type: "namespace/fetchItem",
       payload: {
-        name,
-        role,
-        sort,
-        config,
-        id,
-        enabled,
+        id: record.namespaceId,
       },
-      callback: () => {
-        refreshAuthMenus({ dispatch });
+      callback: (namespace) => {
+        this.setState({
+          popup: (
+            <AddModal
+              {...namespace}
+              handleOk={(values) => {
+                const { name, description } = values;
+                dispatch({
+                  type: "namespace/update",
+                  payload: {
+                    id: record.id,
+                    name,
+                    description,
+                    namespaceId: record.namespaceId,
+                  },
+                  fetchValue: this.currentQueryPayload(),
+                  callback: () => {
+                    this.closeModal();
+                  },
+                });
+              }}
+              handleCancel={() => {
+                this.closeModal();
+              }}
+            />
+          ),
+        });
       },
     });
   };
@@ -175,8 +160,8 @@ export default class Plugin extends Component {
     this.setState({ name: e.target.value }, this.query);
   };
 
-  enabledOnchange = (e) => {
-    this.setState({ enabled: e }, this.query);
+  searchNamespaceIdOnchange = (e) => {
+    this.setState({ namespaceId: e.target.value }, this.query);
   };
 
   searchClick = () => {
@@ -188,7 +173,7 @@ export default class Plugin extends Component {
     const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
-        type: "plugin/delete",
+        type: "namespace/delete",
         payload: {
           list: selectedRowKeys,
         },
@@ -213,16 +198,12 @@ export default class Plugin extends Component {
           disabled={false}
           handleOk={(values) => {
             const { dispatch } = this.props;
-            const { name, enabled, role, config, sort, file } = values;
+            const { name, description } = values;
             dispatch({
-              type: "plugin/add",
+              type: "namespace/add",
               payload: {
                 name,
-                config,
-                role,
-                enabled,
-                sort,
-                file,
+                description,
               },
               fetchValue: this.currentQueryPayload(),
               callback: () => {
@@ -239,44 +220,6 @@ export default class Plugin extends Component {
     });
   };
 
-  // 数据状态切换
-  statusSwitch = ({ list, enabled, callback }) => {
-    const { dispatch } = this.props;
-    updatePluginsEnabled({
-      list,
-      dispatch,
-      callback,
-      enabled,
-      fetchValue: this.currentQueryPayload(),
-    });
-  };
-
-  // 批量启用或禁用
-  enableClick = () => {
-    const { dispatch } = this.props;
-    const { selectedRowKeys } = this.state;
-    if (selectedRowKeys && selectedRowKeys.length > 0) {
-      dispatch({
-        type: "plugin/fetchItem",
-        payload: {
-          id: selectedRowKeys[0],
-        },
-        callback: (user) => {
-          this.statusSwitch({
-            list: selectedRowKeys,
-            enabled: !user.enabled,
-            callback: () => {
-              this.setState({ selectedRowKeys: [] });
-            },
-          });
-        },
-      });
-    } else {
-      message.destroy();
-      message.warn("Please select data");
-    }
-  };
-
   changeLocale(locale) {
     this.setState({
       localeName: locale,
@@ -284,133 +227,40 @@ export default class Plugin extends Component {
     getCurrentLocale(this.state.localeName);
   }
 
-  initPluginColumns() {
+  initNamespaceColumns() {
     this.setState({
       columns: [
         {
           align: "center",
-          title: getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME"),
-          dataIndex: "name",
-          key: "name",
+          title: getIntlContent("SHENYU.SYSTEM.NAMESPACE.NAMESPACEID"),
+          dataIndex: "namespaceId",
+          key: "namespaceId",
           ellipsis: true,
-          width: 120,
-          render: (text, record) => {
-            return record.url ? (
-              <Link to={record.url}>
-                <div
-                  style={{
-                    color: "#1890ff",
-                    fontWeight: "bold",
-                    textDecorationLine: "underline",
-                  }}
-                >
-                  {text || "----"}
-                </div>
-              </Link>
-            ) : (
-              <div style={{ color: "#260033", fontWeight: "bold" }}>
-                {text || "----"}
-              </div>
-            );
-          },
-        },
-        {
-          align: "center",
-          title: getIntlContent("SHENYU.SYSTEM.ROLE"),
-          dataIndex: "role",
-          ellipsis: true,
-          key: "role",
-          width: 120,
-          sorter: (a, b) => (a.role > b.role ? 1 : -1),
+          width: 300,
           render: (text) => {
             return <div style={{ color: "#1f640a" }}>{text || "----"}</div>;
           },
         },
         {
           align: "center",
-          title: getIntlContent("SHENYU.PLUGIN.SORT"),
-          dataIndex: "sort",
+          title: getIntlContent("SHENYU.SYSTEM.NAMESPACE.NAME"),
+          dataIndex: "name",
           ellipsis: true,
-          key: "sort",
-          width: 120,
-          sorter: (a, b) => (a.role > b.role ? 1 : -1),
+          key: "name",
+          width: 240,
+          render: (text) => {
+            return <div style={{ color: "#1f640a" }}>{text || "----"}</div>;
+          },
+        },
+        {
+          align: "center",
+          title: getIntlContent("SHENYU.SYSTEM.NAMESPACE.DESC"),
+          dataIndex: "description",
+          ellipsis: true,
+          key: "desc",
           render: (text) => {
             return <div style={{ color: "#014955" }}>{text}</div>;
           },
-        },
-        {
-          align: "center",
-          title: getIntlContent("SHENYU.COMMON.SETTING"),
-          dataIndex: "config",
-          key: "config",
-          ellipsis: true,
-          render: (text, record) => {
-            const tag = (
-              <div>
-                <Tag color="#9dd3a8">{record.name}</Tag>
-                <Tag color="#CCCC99">{record.role}</Tag>
-                <Tag color="#3b9a9c">{record.sort}</Tag>
-              </div>
-            );
-            const t = JSON.stringify(
-              JSON.parse(text !== null && text.length > 0 ? text : "{}"),
-              null,
-              4,
-            );
-            const content = (
-              <div>
-                <Text type="secondary">{`${getIntlContent("SHENYU.SYSTEM.CREATETIME")}: ${record.dateCreated}`}</Text>
-                <br />
-                <Text type="secondary">{`${getIntlContent("SHENYU.SYSTEM.UPDATETIME")}: ${record.dateUpdated}`}</Text>
-                <hr />
-                <div style={{ fontWeight: "bold" }}>
-                  <pre>
-                    <code>{t}</code>
-                  </pre>
-                </div>
-              </div>
-            );
-            return (
-              <Popover content={content} title={tag}>
-                <div>{text || "----"}</div>
-              </Popover>
-            );
-          },
-        },
-        {
-          align: "center",
-          title: getIntlContent("SHENYU.SYSTEM.STATUS"),
-          dataIndex: "enabled",
-          key: "enabled",
-          ellipsis: true,
-          width: 80,
-          sorter: (a, b) =>
-            (a.enabled || "-1") > (b.enabled || "-1") ? 1 : -1,
-          render: (text, row) => (
-            <AuthButton
-              perms="system:plugin:disable"
-              noAuth={
-                text ? (
-                  <div className="open">
-                    {getIntlContent("SHENYU.COMMON.OPEN")}
-                  </div>
-                ) : (
-                  <div className="close">
-                    {getIntlContent("SHENYU.COMMON.CLOSE")}
-                  </div>
-                )
-              }
-            >
-              <Switch
-                checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-                unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-                checked={text}
-                onChange={(checked) => {
-                  this.statusSwitch({ list: [row.id], enabled: checked });
-                }}
-              />
-            </AuthButton>
-          ),
         },
         {
           align: "center",
@@ -421,9 +271,12 @@ export default class Plugin extends Component {
           width: 160,
           fixed: "right",
           render: (text, record) => {
-            return (
+            return record.namespaceId ===
+              "649330b6-c2d7-4edc-be8e-8a54df9eb385" ? (
+              ""
+            ) : (
               <div className="optionParts">
-                <AuthButton perms="system:plugin:edit">
+                <AuthButton perms="system:namespace:edit">
                   <div
                     className="edit"
                     onClick={() => {
@@ -433,15 +286,29 @@ export default class Plugin extends Component {
                     {getIntlContent("SHENYU.SYSTEM.EDITOR")}
                   </div>
                 </AuthButton>
-                <AuthButton perms="system:plugin:resource">
-                  <div
-                    className="edit"
-                    onClick={() => {
-                      this.resourceClick(record);
+                <AuthButton perms="system:namespace:delete">
+                  <Popconfirm
+                    title={getIntlContent("SHENYU.COMMON.DELETE")}
+                    placement="bottom"
+                    onCancel={(e) => {
+                      e.stopPropagation();
                     }}
+                    onConfirm={(e) => {
+                      e.stopPropagation();
+                      this.deleteClick(record);
+                    }}
+                    okText={getIntlContent("SHENYU.COMMON.SURE")}
+                    cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
                   >
-                    {getIntlContent("SHENYU.BUTTON.SYSTEM.RESOURCE")}
-                  </div>
+                    <span
+                      className="edit"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                    </span>
+                  </Popconfirm>
                 </AuthButton>
               </div>
             );
@@ -452,9 +319,9 @@ export default class Plugin extends Component {
   }
 
   render() {
-    const { plugin, loading, authMenu } = this.props;
-    const { pluginList, total } = plugin;
-    const { currentPage, pageSize, selectedRowKeys, name, enabled, popup } =
+    const { namespace, loading, authMenu } = this.props;
+    const { namespaceList, total } = namespace;
+    const { currentPage, pageSize, selectedRowKeys, name, namespaceId, popup } =
       this.state;
     const columns = this.state.columns.map((col, index) => ({
       ...col,
@@ -479,7 +346,7 @@ export default class Plugin extends Component {
     };
     const flatAuthMenu = flatList({}, authMenu);
 
-    pluginList.forEach((p) => {
+    namespaceList.forEach((p) => {
       p.url = (flatAuthMenu[p.id] ?? {}).path;
     });
 
@@ -490,19 +357,16 @@ export default class Plugin extends Component {
             allowClear
             value={name}
             onChange={this.searchOnchange}
-            placeholder={getIntlContent("SHENYU.PLUGIN.INPUTNAME")}
+            placeholder={getIntlContent("SHENYU.NAMESPACE.INPUTNAME")}
             style={{ width: 240 }}
           />
-          <Select
-            value={enabled != null ? enabled : undefined}
-            onChange={this.enabledOnchange}
-            placeholder={getIntlContent("SHENYU.PLUGIN.SELECT.STATUS")}
-            style={{ width: 150, marginLeft: 20 }}
+          <Input
             allowClear
-          >
-            <Option value="0">{getIntlContent("SHENYU.COMMON.CLOSE")}</Option>
-            <Option value="1">{getIntlContent("SHENYU.COMMON.OPEN")}</Option>
-          </Select>
+            value={namespaceId}
+            onChange={this.searchNamespaceIdOnchange}
+            placeholder={getIntlContent("SHENYU.NAMESPACE.INPUTNAMESPACEID")}
+            style={{ width: 300, marginLeft: 20 }}
+          />
           <AuthButton perms="system:plugin:list">
             <Button
               type="primary"
@@ -536,15 +400,6 @@ export default class Plugin extends Component {
               {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
             </Button>
           </AuthButton>
-          <AuthButton perms="system:plugin:disable">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.enableClick}
-            >
-              {getIntlContent("SHENYU.PLUGIN.BATCH")}
-            </Button>
-          </AuthButton>
         </div>
 
         <Table
@@ -554,7 +409,7 @@ export default class Plugin extends Component {
           bordered
           loading={loading}
           columns={columns}
-          dataSource={pluginList}
+          dataSource={namespaceList}
           rowSelection={rowSelection}
           pagination={{
             total,

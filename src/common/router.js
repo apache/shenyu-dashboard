@@ -113,7 +113,6 @@ export const getRouterData = (app) => {
       ),
     },
     "/system/role": {
-      // 角色管理
       component: dynamicWrapper(
         app,
         ["role"],
@@ -121,7 +120,6 @@ export const getRouterData = (app) => {
       ),
     },
     "/system/manage": {
-      // 用户管理
       component: dynamicWrapper(
         app,
         ["manage", "dataPermission"],
@@ -129,7 +127,6 @@ export const getRouterData = (app) => {
       ),
     },
     "/system/resource": {
-      // 资源管理
       component: dynamicWrapper(
         app,
         ["resource"],
@@ -137,15 +134,20 @@ export const getRouterData = (app) => {
       ),
     },
     "/system/alert": {
-      // 告警管理
       component: dynamicWrapper(
         app,
         ["alert"],
         () => import("../routes/System/Alert"),
       ),
     },
+    "/config/namespace": {
+      component: dynamicWrapper(
+        app,
+        ["namespace"],
+        () => import("../routes/System/Namespace"),
+      ),
+    },
     "/config/metadata": {
-      // 元数据管理
       component: dynamicWrapper(
         app,
         ["metadata"],
@@ -153,15 +155,20 @@ export const getRouterData = (app) => {
       ),
     },
     "/config/plugin": {
-      // 插件管理
       component: dynamicWrapper(
         app,
         ["plugin"],
         () => import("../routes/System/Plugin"),
       ),
     },
+    "/config/namespacePlugin": {
+      component: dynamicWrapper(
+        app,
+        ["namespacePlugin"],
+        () => import("../routes/System/NamespacePlugin"),
+      ),
+    },
     "/config/pluginhandle": {
-      // 插件处理管理
       component: dynamicWrapper(
         app,
         ["pluginHandle"],
@@ -169,7 +176,6 @@ export const getRouterData = (app) => {
       ),
     },
     "/config/auth": {
-      // 认证管理
       component: dynamicWrapper(
         app,
         ["auth"],
@@ -177,7 +183,6 @@ export const getRouterData = (app) => {
       ),
     },
     "/config/dict": {
-      // 字典管理
       component: dynamicWrapper(
         app,
         ["shenyuDict"],
