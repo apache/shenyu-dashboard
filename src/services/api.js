@@ -533,13 +533,6 @@ export async function querySecretInfo() {
   return fetch(`${baseUrl}/platform/secretInfo`).catch(() => {});
 }
 
-// sync all plugin
-export async function asyncPlugin() {
-  return request(`${baseUrl}/plugin/syncPluginAll`, {
-    method: `POST`,
-  });
-}
-
 // export all config
 export async function asyncConfigExport() {
   return download(`${baseUrl}/configs/export`, {
@@ -559,7 +552,8 @@ export async function asyncConfigImport(params) {
 
 // 同步单个插件
 export async function asyncOnePlugin(params) {
-  return request(`${baseUrl}/plugin/syncPluginData/${params.id}`, {
+  // todo:[To be refactored with namespace] Temporarily hardcode
+  return request(`${baseUrl}/namespacePlugin/syncPluginData/id=${params.id}&namespaceId=649330b6-c2d7-4edc-be8e-8a54df9eb385`, {
     method: `PUT`,
   });
 }

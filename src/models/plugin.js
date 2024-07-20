@@ -141,15 +141,6 @@ export default {
       yield put({ type: "fetch", payload });
     },
 
-    *asyncAll(_, { call }) {
-      const json = yield call(asyncPlugin);
-      if (json.code === 200) {
-        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.SYNC.SUCCESS"));
-      } else {
-        message.warn(json.message);
-      }
-    },
-
     *fetchByPluginId(params, { call }) {
       const { payload, callback } = params;
       const json = yield call(fetchPluginHandleByPluginId, payload);
