@@ -22,7 +22,6 @@ import {
   updatePlugin,
   deletePlugin,
   addPlugin,
-  asyncPlugin,
   updatepluginEnabled,
   fetchPluginHandleByPluginId,
   addPluginResource,

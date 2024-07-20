@@ -553,9 +553,12 @@ export async function asyncConfigImport(params) {
 // 同步单个插件
 export async function asyncOnePlugin(params) {
   // todo:[To be refactored with namespace] Temporarily hardcode
-  return request(`${baseUrl}/namespacePlugin/syncPluginData/id=${params.id}&namespaceId=649330b6-c2d7-4edc-be8e-8a54df9eb385`, {
-    method: `PUT`,
-  });
+  return request(
+    `${baseUrl}/namespacePlugin/syncPluginData/id=${params.id}&namespaceId=649330b6-c2d7-4edc-be8e-8a54df9eb385`,
+    {
+      method: `PUT`,
+    },
+  );
 }
 
 // get plugin dropdown list
