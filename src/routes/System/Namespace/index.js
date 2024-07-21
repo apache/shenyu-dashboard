@@ -170,13 +170,16 @@ export default class Namespace extends Component {
     this.setState({ currentPage: 1 }, this.query);
   };
 
-  deleteClick = () => {
+  deleteClick = (record) => {
     const {
       dispatch,
       currentNamespaceId,
       namespace: { namespaceList },
     } = this.props;
     const { selectedRowKeys } = this.state;
+    if (record) {
+      selectedRowKeys.push(record.id);
+    }
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "namespace/delete",
