@@ -835,13 +835,14 @@ export default class Common extends Component {
   };
 
   asyncClick = () => {
-    const { dispatch, plugins } = this.props;
+    const { dispatch, plugins, currentNamespaceId } = this.props;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const id = this.getPluginId(plugins, name);
     dispatch({
       type: "global/asyncPlugin",
       payload: {
         id,
+        namespaceId: currentNamespaceId,
       },
     });
   };
