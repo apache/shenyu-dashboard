@@ -20,6 +20,7 @@ import { routerRedux } from "dva/router";
 import {
   queryPlatform,
   getAllPlugins,
+  getNamespaceList,
   asyncOnePlugin,
   getUserPermissionByToken,
 } from "../services/api";
@@ -35,6 +36,8 @@ export default {
     currentRouter: {},
     permissions: {},
     language: "",
+    namespaces: [],
+    currentNamespaceId: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
   },
 
   effects: {
@@ -43,6 +46,15 @@ export default {
       if (json.code === 200) {
         yield put({
           type: "savePlatform",
+          payload: json.data,
+        });
+      }
+    },
+    *fetchNamespaces(_, { call, put }) {
+      const json = yield call(getNamespaceList);
+      if (json.code === 200) {
+        yield put({
+          type: "saveNamespaces",
           payload: json.data,
         });
       }
@@ -151,6 +163,18 @@ export default {
       return {
         ...state,
         platform: payload,
+      };
+    },
+    saveNamespaces(state, { payload }) {
+      return {
+        ...state,
+        namespaces: payload,
+      };
+    },
+    saveCurrentNamespaceId(state, { payload }) {
+      return {
+        ...state,
+        currentNamespaceId: payload,
       };
     },
     savePlugins(state, { payload }) {

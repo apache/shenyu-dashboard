@@ -16,12 +16,21 @@
  */
 
 import React, { PureComponent } from "react";
-import { Dropdown, Form, Icon, Input, Menu, Modal, Button } from "antd";
+import {
+  Button,
+  Divider,
+  Dropdown,
+  Form,
+  Icon,
+  Input,
+  Menu,
+  Modal,
+} from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
 import ImportResultModal from "./ImportResultModal";
 import styles from "./index.less";
-import { getIntlContent, getCurrentLocale } from "../../utils/IntlUtils";
+import { getCurrentLocale, getIntlContent } from "../../utils/IntlUtils";
 import { checkUserPassword } from "../../services/api";
 import { emit } from "../../utils/emit";
 
@@ -48,6 +57,8 @@ const TranslationOutlined = (props) => (
 @connect(({ global, manage, loading }) => ({
   manage,
   permissions: global.permissions,
+  namespaces: global.namespaces,
+  currentNamespaceId: global.currentNamespaceId,
   loading: loading.effects["manage/update"],
 }))
 @Form.create({})
@@ -110,11 +121,19 @@ class GlobalHeader extends PureComponent {
         }
       });
     }
+    this.fetchNamespaces();
   }
 
   componentWillUnmount() {
     this.setState = () => false;
   }
+
+  fetchNamespaces = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "global/fetchNamespaces",
+    });
+  };
 
   handleLocalesValueChange = (value) => {
     const { changeLocalName } = this.props;
@@ -204,6 +223,8 @@ class GlobalHeader extends PureComponent {
       form: { getFieldDecorator, resetFields, validateFields, getFieldValue },
       dispatch,
       loading,
+      namespaces,
+      currentNamespaceId,
     } = this.props;
     const { popup, userName, visible } = this.state;
     const menu = (
@@ -237,6 +258,34 @@ class GlobalHeader extends PureComponent {
         <span className={styles.text}>
           Apache ShenYu Gateway Management System
         </span>
+        <div className={styles.item}>
+          {namespaces.map((namespace, index) => {
+            let isCurrentNamespace =
+              currentNamespaceId === namespace.namespaceId;
+            return (
+              <span key={namespace.id}>
+                <a
+                  onClick={() => {
+                    dispatch({
+                      type: "global/saveCurrentNamespaceId",
+                      payload: namespace.namespaceId,
+                    });
+                  }}
+                  className={
+                    isCurrentNamespace
+                      ? styles.currentNamespace
+                      : styles.namespace
+                  }
+                >
+                  {namespace.name}
+                </a>
+                {index === namespaces.length - 1 ? null : (
+                  <Divider type="vertical" />
+                )}
+              </span>
+            );
+          })}
+        </div>
         <div>
           <div className={styles.item}>
             <Dropdown placement="bottomCenter" overlay={this.state.help}>

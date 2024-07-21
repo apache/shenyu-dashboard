@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Table, Input, Button, message, Popconfirm } from "antd";
+import { Button, Input, message, Popconfirm, Table } from "antd";
 import { connect } from "dva";
 import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
@@ -28,6 +28,7 @@ import { refreshAuthMenus } from "../../../utils/AuthRoute";
   namespace,
   authMenu: resource.authMenu,
   language: global.language,
+  currentNamespaceId: global.currentNamespaceId,
   loading: loading.effects["namespace/fetch"],
 }))
 export default class Namespace extends Component {
@@ -40,7 +41,6 @@ export default class Namespace extends Component {
       pageSize: 12,
       selectedRowKeys: [],
       name: "",
-      namespaceId: "",
       // eslint-disable-next-line react/no-unused-state
       enabled: null,
       popup: "",
@@ -83,7 +83,8 @@ export default class Namespace extends Component {
   };
 
   currentQueryPayload = (override) => {
-    const { name, namespaceId, currentPage, pageSize } = this.state;
+    const { name, currentPage, pageSize } = this.state;
+    const { namespaceId } = this.props;
     return {
       name,
       namespaceId,
@@ -142,6 +143,7 @@ export default class Namespace extends Component {
                   },
                   fetchValue: this.currentQueryPayload(),
                   callback: () => {
+                    dispatch({ type: "global/fetchNamespaces" });
                     this.closeModal();
                   },
                 });
@@ -169,7 +171,11 @@ export default class Namespace extends Component {
   };
 
   deleteClick = () => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      currentNamespaceId,
+      namespace: { namespaceList },
+    } = this.props;
     const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
@@ -183,6 +189,19 @@ export default class Namespace extends Component {
         callback: () => {
           this.setState({ selectedRowKeys: [] });
           refreshAuthMenus({ dispatch });
+          let deletedCurrentNamespace =
+            namespaceList.find((namespace) =>
+              selectedRowKeys.some(
+                (namespaceId) => namespaceId === namespace.id,
+              ),
+            )?.namespaceId === currentNamespaceId;
+          if (deletedCurrentNamespace) {
+            dispatch({
+              type: "global/saveCurrentNamespaceId",
+              payload: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
+            });
+          }
+          dispatch({ type: "global/fetchNamespaces" });
         },
       });
     } else {
@@ -209,6 +228,7 @@ export default class Namespace extends Component {
               callback: () => {
                 this.closeModal(true);
                 refreshAuthMenus({ dispatch });
+                dispatch({ type: "global/fetchNamespaces" });
               },
             });
           }}

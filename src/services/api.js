@@ -1138,6 +1138,12 @@ export function updateDiscoveryUpstream(discoveryHandlerId, upstreams) {
   });
 }
 
+/* getNamespaceList */
+export async function getNamespaceList() {
+  return request(`${baseUrl}/namespace/list`, {
+    method: `GET`,
+  });
+}
 /* getAllNamespaces */
 export async function getAllNamespaces(params) {
   return request(`${baseUrl}/namespace/findPageByQuery?${stringify(params)}`, {
@@ -1181,8 +1187,6 @@ export async function findNamespacePlugin(params) {
 
 /* getAllNamespacePlugins */
 export async function getAllNamespacePlugins(params) {
-  // todo:[To be refactored with namespace] Temporarily hardcode
-  params.namespaceId = "649330b6-c2d7-4edc-be8e-8a54df9eb385";
   return request(`${baseUrl}/namespacePlugin?${stringify(params)}`, {
     method: `GET`,
   });
