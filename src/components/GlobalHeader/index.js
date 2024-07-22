@@ -286,13 +286,13 @@ class GlobalHeader extends PureComponent {
               </Menu>
             }
           >
-            <div>
+            <Button>
               {
                 namespaces.find(
                   (namespace) => currentNamespaceId === namespace.namespaceId,
                 )?.name
               }
-            </div>
+            </Button>
           </Dropdown>
         </div>
         <div>
