@@ -155,6 +155,14 @@ class GlobalHeader extends PureComponent {
     getCurrentLocale(this.state.localeName);
   };
 
+  handleNamespacesValueChange = (value) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "global/saveCurrentNamespaceId",
+      payload: value.key,
+    });
+  };
+
   importConfigClick = () => {
     this.setState({
       popup: (
@@ -259,32 +267,33 @@ class GlobalHeader extends PureComponent {
           Apache ShenYu Gateway Management System
         </span>
         <div className={styles.item}>
-          {namespaces.map((namespace, index) => {
-            let isCurrentNamespace =
-              currentNamespaceId === namespace.namespaceId;
-            return (
-              <span key={namespace.id}>
-                <a
-                  onClick={() => {
-                    dispatch({
-                      type: "global/saveCurrentNamespaceId",
-                      payload: namespace.namespaceId,
-                    });
-                  }}
-                  className={
-                    isCurrentNamespace
-                      ? styles.currentNamespace
-                      : styles.namespace
-                  }
-                >
-                  {namespace.name}
-                </a>
-                {index === namespaces.length - 1 ? null : (
-                  <Divider type="vertical" />
-                )}
-              </span>
-            );
-          })}
+          <Dropdown
+            placement="bottomCenter"
+            overlay={
+              <Menu onClick={this.handleNamespacesValueChange}>
+                {namespaces.map((namespace) => {
+                  let isCurrentNamespace =
+                    currentNamespaceId === namespace.namespaceId;
+                  return (
+                    <Menu.Item
+                      key={namespace.namespaceId}
+                      disabled={isCurrentNamespace}
+                    >
+                      <span>{namespace.name}</span>
+                    </Menu.Item>
+                  );
+                })}
+              </Menu>
+            }
+          >
+            <div>
+              {
+                namespaces.find(
+                  (namespace) => currentNamespaceId === namespace.namespaceId,
+                )?.name
+              }
+            </div>
+          </Dropdown>
         </div>
         <div>
           <div className={styles.item}>
