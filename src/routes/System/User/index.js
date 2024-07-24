@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Table, Input, Button, message, Popconfirm, Switch } from "antd";
+import { Button, Input, message, Popconfirm, Switch, Table } from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
 import DataPermModal from "./DataPermModal";
@@ -309,29 +309,31 @@ export default class Manage extends Component {
         ellipsis: true,
         render: (text, record) => {
           return (
-            <div>
-              <AuthButton perms="system:manager:edit">
-                <span
-                  className="edit"
-                  onClick={() => {
-                    this.editClick(record);
-                  }}
-                >
-                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                </span>
-              </AuthButton>
-              <AuthButton perms="system:manager:configureDataPermission">
-                &nbsp;&nbsp;&nbsp;
-                <span
-                  className="edit"
-                  onClick={() => {
-                    this.permissionConfig(record);
-                  }}
-                >
-                  {getIntlContent("SHENYU.BUTTON.DATA.PERMISSION.CONFIG")}
-                </span>
-              </AuthButton>
-            </div>
+            record.userName !== "admin" && (
+              <div>
+                <AuthButton perms="system:manager:edit">
+                  <span
+                    className="edit"
+                    onClick={() => {
+                      this.editClick(record);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                  </span>
+                </AuthButton>
+                <AuthButton perms="system:manager:configureDataPermission">
+                  &nbsp;&nbsp;&nbsp;
+                  <span
+                    className="edit"
+                    onClick={() => {
+                      this.permissionConfig(record);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.BUTTON.DATA.PERMISSION.CONFIG")}
+                  </span>
+                </AuthButton>
+              </div>
+            )
           );
         },
       },
