@@ -320,19 +320,17 @@ export default class Manage extends Component {
                   {getIntlContent("SHENYU.SYSTEM.EDITOR")}
                 </span>
               </AuthButton>
-              {record.userName !== "admin" && (
-                <AuthButton perms="system:manager:configureDataPermission">
-                  &nbsp;&nbsp;&nbsp;
-                  <span
-                    className="edit"
-                    onClick={() => {
-                      this.permissionConfig(record);
-                    }}
-                  >
-                    {getIntlContent("SHENYU.BUTTON.DATA.PERMISSION.CONFIG")}
-                  </span>
-                </AuthButton>
-              )}
+              <AuthButton perms="system:manager:configureDataPermission">
+                &nbsp;&nbsp;&nbsp;
+                <span
+                  className="edit"
+                  onClick={() => {
+                    this.permissionConfig(record);
+                  }}
+                >
+                  {getIntlContent("SHENYU.BUTTON.DATA.PERMISSION.CONFIG")}
+                </span>
+              </AuthButton>
             </div>
           );
         },
