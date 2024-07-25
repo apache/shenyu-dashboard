@@ -17,16 +17,16 @@
 
 import React, { Component } from "react";
 import {
-  Table,
-  Input,
   Button,
+  Input,
   message,
   Popconfirm,
-  Select,
   Popover,
+  Select,
+  Switch,
+  Table,
   Tag,
   Typography,
-  Switch,
 } from "antd";
 import { connect } from "dva";
 import { Link } from "dva/router";
@@ -47,6 +47,7 @@ const { Option } = Select;
   namespacePlugin,
   authMenu: resource.authMenu,
   language: global.language,
+  currentNamespaceId: global.currentNamespaceId,
   loading: loading.effects["namespacePlugin/fetch"],
 }))
 export default class NamespacePlugin extends Component {
@@ -57,8 +58,6 @@ export default class NamespacePlugin extends Component {
     this.state = {
       currentPage: 1,
       pageSize: 12,
-      // todo:[To be refactored with namespace] Temporarily hardcode
-      namespaceId: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
       selectedRowKeys: [],
       name: "",
       enabled: null,
@@ -75,12 +74,15 @@ export default class NamespacePlugin extends Component {
     this.initNamespacePluginColumns();
   }
 
-  componentDidUpdate() {
-    const { language } = this.props;
+  componentDidUpdate(prevProps) {
+    const { language, currentNamespaceId } = this.props;
     const { localeName } = this.state;
     if (language !== localeName) {
       this.initNamespacePluginColumns();
       this.changeLocale(language);
+    }
+    if (prevProps.currentNamespaceId !== currentNamespaceId) {
+      this.query();
     }
   }
 
@@ -98,15 +100,16 @@ export default class NamespacePlugin extends Component {
     };
 
   onSelectChange = (selectedRowKeys) => {
-    this.setState({ selectedRowKeys }, this.query);
+    this.setState({ selectedRowKeys });
   };
 
   currentQueryPayload = (override) => {
-    const { name, enabled, currentPage, pageSize, namespaceId } = this.state;
+    const { name, enabled, currentPage, pageSize } = this.state;
+    const { currentNamespaceId } = this.props;
     return {
       name,
       enabled,
-      namespaceId,
+      namespaceId: currentNamespaceId,
       currentPage,
       pageSize,
       ...override,
@@ -138,11 +141,10 @@ export default class NamespacePlugin extends Component {
   };
 
   editClick = (record) => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     getUpdateModal({
       id: record.id,
-      // todo:[To be refactored with namespace] Temporarily hardcode
-      namespaceId: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
+      namespaceId: currentNamespaceId,
       dispatch,
       fetchValue: this.currentQueryPayload(),
       callback: (popup) => {
@@ -191,15 +193,14 @@ export default class NamespacePlugin extends Component {
   };
 
   deleteClick = () => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "namespacePlugin/delete",
         payload: {
           list: selectedRowKeys,
-          // todo:[To be refactored with namespace] Temporarily hardcode
-          namespaceId: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
+          namespaceId: currentNamespaceId,
         },
         fetchValue: this.currentQueryPayload({
           pageSize: 12,
@@ -230,22 +231,20 @@ export default class NamespacePlugin extends Component {
 
   // 批量启用或禁用
   enableClick = () => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "namespacePlugin/fetchItem",
         payload: {
           id: selectedRowKeys[0],
-          // todo:[To be refactored with namespace] Temporarily hardcode
-          namespaceId: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
+          namespaceId: currentNamespaceId,
         },
         callback: (user) => {
           this.statusSwitch({
             list: selectedRowKeys,
             enabled: !user.enabled,
-            // todo:[To be refactored with namespace] Temporarily hardcode
-            namespaceId: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
+            namespaceId: currentNamespaceId,
             callback: () => {
               this.setState({ selectedRowKeys: [] });
             },
