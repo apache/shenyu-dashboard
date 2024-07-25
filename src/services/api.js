@@ -553,7 +553,7 @@ export async function asyncConfigImport(params) {
 // 同步单个插件
 export async function asyncOnePlugin(params) {
   return request(
-    `${baseUrl}/namespacePlugin/syncPluginData/id=${params.id}&namespaceId=649330b6-c2d7-4edc-be8e-8a54df9eb385`,
+    `${baseUrl}/namespacePlugin/syncPluginData/id=${params.id}&namespaceId=${params.namespaceId}`,
     {
       method: `PUT`,
     },
