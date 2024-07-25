@@ -22,7 +22,6 @@ import {
   updatePlugin,
   deletePlugin,
   addPlugin,
-  asyncPlugin,
   updatepluginEnabled,
   fetchPluginHandleByPluginId,
   addPluginResource,
@@ -139,15 +138,6 @@ export default {
       const { name, currentPage, enabled, pageSize } = fetchValue;
       const payload = { name, enabled, currentPage, pageSize };
       yield put({ type: "fetch", payload });
-    },
-
-    *asyncAll(_, { call }) {
-      const json = yield call(asyncPlugin);
-      if (json.code === 200) {
-        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.SYNC.SUCCESS"));
-      } else {
-        message.warn(json.message);
-      }
     },
 
     *fetchByPluginId(params, { call }) {
