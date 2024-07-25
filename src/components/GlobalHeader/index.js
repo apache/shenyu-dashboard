@@ -257,36 +257,44 @@ class GlobalHeader extends PureComponent {
         <span className={styles.text}>
           Apache ShenYu Gateway Management System
         </span>
-        <div className={styles.item}>
-          <Dropdown
-            placement="bottomCenter"
-            overlay={
-              <Menu onClick={this.handleNamespacesValueChange}>
-                {namespaces.map((namespace) => {
-                  let isCurrentNamespace =
-                    currentNamespaceId === namespace.namespaceId;
-                  return (
-                    <Menu.Item
-                      key={namespace.namespaceId}
-                      disabled={isCurrentNamespace}
-                    >
-                      <span>{namespace.name}</span>
-                    </Menu.Item>
-                  );
-                })}
-              </Menu>
-            }
-          >
-            <Button>
-              {
-                namespaces.find(
-                  (namespace) => currentNamespaceId === namespace.namespaceId,
-                )?.name
-              }
-            </Button>
-          </Dropdown>
-        </div>
         <div>
+          <div className={styles.item}>
+            <Dropdown
+              placement="bottomCenter"
+              overlay={
+                <Menu onClick={this.handleNamespacesValueChange}>
+                  {namespaces.map((namespace) => {
+                    let isCurrentNamespace =
+                      currentNamespaceId === namespace.namespaceId;
+                    return (
+                      <Menu.Item
+                        key={namespace.namespaceId}
+                        disabled={isCurrentNamespace}
+                      >
+                        <span>{namespace.name}</span>
+                      </Menu.Item>
+                    );
+                  })}
+                </Menu>
+              }
+            >
+              <Button>
+                <a
+                  className="ant-dropdown-link"
+                  style={{ fontWeight: "bold" }}
+                  onClick={(e) => e.preventDefault()}
+                >
+                  {`${getIntlContent("SHENYU.SYSTEM.NAMESPACE")} / ${
+                    namespaces.find(
+                      (namespace) =>
+                        currentNamespaceId === namespace.namespaceId,
+                    )?.name
+                  } `}
+                </a>
+                <Icon type="down" />
+              </Button>
+            </Dropdown>
+          </div>
           <div className={styles.item}>
             <Dropdown placement="bottomCenter" overlay={this.state.help}>
               <Button>
