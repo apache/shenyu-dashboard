@@ -58,20 +58,22 @@ export default class LoginPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      VCode: "",
+      VCode: undefined,
       codeError: true,
+      needCode: false,
     };
     this.ChildRef = React.createRef();
   }
 
   componentDidMount() {
-    this.ChildRef.current.handleChange();
+    this.ChildRef.current?.handleChange();
   }
 
   handleSubmit = (err, values) => {
     const { dispatch } = this.props;
+    const { needCode } = this.state;
     if (!err) {
-      if (values.verifyCode !== this.state.VCode) {
+      if (needCode && values.verifyCode !== this.state.VCode) {
         this.setState({ codeError: false });
         this.ChildRef.current.handleChange();
         return;
@@ -95,6 +97,11 @@ export default class LoginPage extends Component {
         type: "login/login",
         payload: {
           ...values,
+          callback: (res) => {
+            if (res.code === 500) {
+              this.setState({ needCode: true });
+            }
+          },
         },
       });
     }
@@ -130,20 +137,28 @@ export default class LoginPage extends Component {
 
   render() {
     const { submitting } = this.props;
+    const { needCode } = this.state;
     return (
       <div className={styles.main}>
         <Login onSubmit={this.handleSubmit}>
           <div>
             <UserName name="userName" placeholder="Account" />
             <Password name="password" placeholder="Password" />
-            <div className={styles.verify}>
-              <VerifyCode name="verifyCode" placeholder="Verification Code" />
-              {this.codeError()}
-            </div>
-            <LoginCode
-              onRef={this.ChildRef}
-              ChildGetCode={(code) => this.getCode(code)}
-            />
+            {needCode && (
+              <>
+                <div className={styles.verify}>
+                  <VerifyCode
+                    name="verifyCode"
+                    placeholder="Verification Code"
+                  />
+                  {this.codeError()}
+                </div>
+                <LoginCode
+                  onRef={this.ChildRef}
+                  ChildGetCode={(code) => this.getCode(code)}
+                />
+              </>
+            )}
           </div>
           <Submit loading={submitting}>Login</Submit>
         </Login>
