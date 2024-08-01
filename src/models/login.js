@@ -30,7 +30,9 @@ export default {
 
   effects: {
     *login({ payload }, { call, put }) {
+      const { callback } = payload;
       const response = yield call(queryLogin, payload);
+      yield call(callback, response);
 
       // Login successfully
       if (response.data) {
