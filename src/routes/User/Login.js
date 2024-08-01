@@ -19,6 +19,7 @@ import React, { Component } from "react";
 import CryptoJS from "crypto-js";
 import { connect } from "dva";
 import { Alert } from "antd";
+import UUID from "uuid";
 import Login from "components/Login";
 import styles from "./Login.less";
 import { querySecretInfo } from "../../services/api";
@@ -97,6 +98,7 @@ export default class LoginPage extends Component {
         type: "login/login",
         payload: {
           ...values,
+          clientId: UUID.v4().replaceAll("-", ""),
           callback: (res) => {
             if (res.code === 500) {
               this.setState({ needCode: true });
