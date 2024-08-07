@@ -1,6 +1,7 @@
 # Apache ShenYu Dashboard
 
 ![build](https://github.com/apache/shenyu-dashboard/workflows/build/badge.svg)
+[![Contribute with Gitpod](https://img.shields.io/badge/Contribute%20with-Gitpod-908a85?logo=gitpod&color=green)](https://gitpod.io/#https://github.com/apache/shenyu-dashboard)
 
 
 ## Overview
