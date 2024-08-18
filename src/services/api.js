@@ -417,7 +417,6 @@ export async function findAuth(params) {
 
 /* add selector */
 export async function addSelector(params) {
-  params.namespaceId='649330b6-c2d7-4edc-be8e-8a54df9eb385'
   return request(`${baseUrl}/selector`, {
     method: `POST`,
     body: {
@@ -428,7 +427,6 @@ export async function addSelector(params) {
 
 /* delete selector */
 export async function deleteSelector(params) {
-  params.namespaceId='649330b6-c2d7-4edc-be8e-8a54df9eb385'
   return request(`${baseUrl}/selector/batch`, {
     method: `DELETE`,
     body: {
@@ -440,7 +438,6 @@ export async function deleteSelector(params) {
 
 /* update selector */
 export async function updateSelector(params) {
-  params.namespaceId='649330b6-c2d7-4edc-be8e-8a54df9eb385'
   return request(`${baseUrl}/selector/${params.id}`, {
     method: `PUT`,
     body: {
@@ -456,14 +453,13 @@ export async function enableSelector(params) {
     body: {
       ids: params.list,
       enabled: params.enabled,
-      namespaceId: '649330b6-c2d7-4edc-be8e-8a54df9eb385'
+      namespaceId: params.namespaceId,
     },
   });
 }
 
 /* get all selectors */
 export async function getAllSelectors(params) {
-  params.namespaceId="649330b6-c2d7-4edc-be8e-8a54df9eb385"
   return request(`${baseUrl}/selector?${stringify(params)}`, {
     method: `GET`,
   });
@@ -471,7 +467,7 @@ export async function getAllSelectors(params) {
 
 /* get single selector */
 export async function findSelector(params) {
-  return request(`${baseUrl}/selector/${params.id}/649330b6-c2d7-4edc-be8e-8a54df9eb385`, {
+  return request(`${baseUrl}/selector/${params.id}/${params.namespaceId}`, {
     method: `GET`,
   });
 }
