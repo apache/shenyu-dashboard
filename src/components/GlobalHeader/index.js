@@ -16,7 +16,16 @@
  */
 
 import React, { PureComponent } from "react";
-import { Button, Dropdown, Form, Icon, Input, Menu, Modal } from "antd";
+import {
+  Button,
+  Dropdown,
+  Form,
+  Icon,
+  Input,
+  Menu,
+  message,
+  Modal,
+} from "antd";
 import { connect } from "dva";
 import AddModal from "./AddModal";
 import ImportResultModal from "./ImportResultModal";
@@ -152,6 +161,9 @@ class GlobalHeader extends PureComponent {
       type: "global/saveCurrentNamespaceId",
       payload: value.key,
     });
+    if (value.key !== "649330b6-c2d7-4edc-be8e-8a54df9eb385") {
+      message.warn(getIntlContent("SHENYU.NAMESPACE.ALERTNAMESPACEID.CHANGED"));
+    }
   };
 
   importConfigClick = () => {
