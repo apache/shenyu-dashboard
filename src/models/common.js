@@ -140,8 +140,8 @@ export default {
     },
     *deleteSelector(params, { call, put }) {
       const { payload, fetchValue } = params;
-      const { list } = payload;
-      const json = yield call(deleteSelector, { list });
+      const { list, namespaceId } = payload;
+      const json = yield call(deleteSelector, { list, namespaceId });
       if (json.code === 200) {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
@@ -238,8 +238,8 @@ export default {
 
     *reload(params, { put }) {
       const { fetchValue } = params;
-      const { pluginId, currentPage, pageSize } = fetchValue;
-      const payload = { pluginId, currentPage, pageSize };
+      const { pluginId, currentPage, pageSize, namespaceId } = fetchValue;
+      const payload = { pluginId, currentPage, pageSize, namespaceId };
       yield put({ type: "fetchSelector", payload });
     },
 

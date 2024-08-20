@@ -429,7 +429,10 @@ export async function addSelector(params) {
 export async function deleteSelector(params) {
   return request(`${baseUrl}/selector/batch`, {
     method: `DELETE`,
-    body: [...params.list],
+    body: {
+      ids: [...params.list],
+      namespaceId: params.namespaceId,
+    },
   });
 }
 
@@ -450,6 +453,7 @@ export async function enableSelector(params) {
     body: {
       ids: params.list,
       enabled: params.enabled,
+      namespaceId: params.namespaceId,
     },
   });
 }
@@ -463,7 +467,7 @@ export async function getAllSelectors(params) {
 
 /* get single selector */
 export async function findSelector(params) {
-  return request(`${baseUrl}/selector/${params.id}`, {
+  return request(`${baseUrl}/selector/${params.id}/${params.namespaceId}`, {
     method: `GET`,
   });
 }

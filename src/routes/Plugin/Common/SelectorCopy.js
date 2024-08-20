@@ -17,6 +17,7 @@
 
 import React, { Component } from "react";
 import { Modal, TreeSelect } from "antd";
+import { connect } from "dva";
 import {
   getPluginDropDownList,
   getAllSelectors,
@@ -24,6 +25,9 @@ import {
 } from "../../../services/api";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
+@connect(({ global }) => ({
+  currentNamespaceId: global.currentNamespaceId,
+}))
 class SelectorCopy extends Component {
   constructor(props) {
     super(props);
@@ -39,6 +43,7 @@ class SelectorCopy extends Component {
   }
 
   getAllSelectors = async () => {
+    const { currentNamespaceId } = this.props;
     const { code: pluginCode, data: pluginList = [] } =
       await getPluginDropDownList();
     const {
@@ -47,6 +52,7 @@ class SelectorCopy extends Component {
     } = await getAllSelectors({
       currentPage: 1,
       pageSize: 9999,
+      namespaceId: currentNamespaceId,
     });
     const pluginMap = {};
     const selectorTree = [];
@@ -86,12 +92,15 @@ class SelectorCopy extends Component {
   };
 
   handleOk = async () => {
-    const { onOk } = this.props;
+    const { onOk, currentNamespaceId } = this.props;
     const { value } = this.state;
     this.setState({
       loading: true,
     });
-    const { data = {} } = await findSelector({ id: value });
+    const { data = {} } = await findSelector({
+      id: value,
+      namespaceId: currentNamespaceId,
+    });
     this.setState({
       loading: false,
     });

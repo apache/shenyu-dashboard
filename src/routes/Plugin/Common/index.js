@@ -83,8 +83,8 @@ export default class Common extends Component {
     const preId = prevProps.match.params.id;
     const newId = this.props.match.params.id;
     const { selectorPage, selectorPageSize } = this.state;
+    const { dispatch, plugins, currentNamespaceId } = this.props;
     if (newId !== preId) {
-      const { dispatch } = this.props;
       dispatch({
         type: "common/resetData",
       });
@@ -102,6 +102,11 @@ export default class Common extends Component {
         });
       }
     }
+    if (prevProps.currentNamespaceId !== currentNamespaceId) {
+      if (plugins) {
+        this.getAllSelectors(selectorPage, selectorPageSize, plugins);
+      }
+    }
   }
   /* eslint-enable no-unused-vars */
 
@@ -113,7 +118,7 @@ export default class Common extends Component {
   }
 
   getAllSelectors = (page, pageSize, plugins) => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const { selectorName } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const tempPlugin = this.getPlugin(plugins, name);
@@ -127,6 +132,7 @@ export default class Common extends Component {
         pageSize,
         pluginId: tempPluginId,
         name: selectorName,
+        namespaceId: currentNamespaceId,
       },
     });
     this.setState({ selectorSelectedRowKeys: [] });
@@ -199,7 +205,7 @@ export default class Common extends Component {
 
   addSelector = () => {
     const { selectorPage, selectorPageSize } = this.state;
-    const { dispatch, plugins } = this.props;
+    const { dispatch, plugins, currentNamespaceId } = this.props;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
     const { id: pluginId, config } = plugin;
@@ -241,11 +247,13 @@ export default class Common extends Component {
                   pluginId,
                   ...selector,
                   upstreams: upstreamsWithProps,
+                  namespaceId: currentNamespaceId,
                 },
                 fetchValue: {
                   pluginId,
                   currentPage: selectorPage,
                   pageSize: selectorPageSize,
+                  namespaceId: currentNamespaceId,
                 },
                 callback: (selectorId) => {
                   this.addDiscoveryUpstream({
@@ -280,11 +288,16 @@ export default class Common extends Component {
             handleOk={(selector) => {
               dispatch({
                 type: "common/addSelector",
-                payload: { pluginId, ...selector },
+                payload: {
+                  pluginId,
+                  ...selector,
+                  namespaceId: currentNamespaceId,
+                },
                 fetchValue: {
                   pluginId,
                   currentPage: selectorPage,
                   pageSize: selectorPageSize,
+                  namespaceId: currentNamespaceId,
                 },
                 callback: () => {
                   this.closeModal();
@@ -470,7 +483,7 @@ export default class Common extends Component {
   };
 
   editSelector = (record) => {
-    const { dispatch, plugins } = this.props;
+    const { dispatch, plugins, currentNamespaceId } = this.props;
     const { selectorPage, selectorPageSize } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
@@ -483,6 +496,7 @@ export default class Common extends Component {
       type: "common/fetchSeItem",
       payload: {
         id,
+        namespaceId: currentNamespaceId,
       },
       callback: (selector) => {
         if (isDiscovery) {
@@ -541,11 +555,13 @@ export default class Common extends Component {
                       pluginId,
                       ...values,
                       id,
+                      namespaceId: currentNamespaceId,
                     },
                     fetchValue: {
                       pluginId,
                       currentPage: selectorPage,
                       pageSize: selectorPageSize,
+                      namespaceId: currentNamespaceId,
                     },
                     callback: () => {
                       const {
@@ -603,11 +619,13 @@ export default class Common extends Component {
                       pluginId,
                       ...values,
                       id,
+                      namespaceId: currentNamespaceId,
                     },
                     fetchValue: {
                       pluginId,
                       currentPage: selectorPage,
                       pageSize: selectorPageSize,
+                      namespaceId: currentNamespaceId,
                     },
                     callback: () => {
                       this.closeModal();
@@ -624,7 +642,7 @@ export default class Common extends Component {
   };
 
   enableSelector = ({ list, enabled }) => {
-    const { dispatch, plugins } = this.props;
+    const { dispatch, plugins, currentNamespaceId } = this.props;
     const { selectorPage, selectorPageSize } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
@@ -634,11 +652,13 @@ export default class Common extends Component {
       payload: {
         list,
         enabled,
+        namespaceId: currentNamespaceId,
       },
       fetchValue: {
         pluginId,
         currentPage: selectorPage,
         pageSize: selectorPageSize,
+        namespaceId: currentNamespaceId,
       },
     });
   };
@@ -666,7 +686,7 @@ export default class Common extends Component {
   };
 
   deleteSelector = (record) => {
-    const { dispatch, plugins } = this.props;
+    const { dispatch, plugins, currentNamespaceId } = this.props;
     const { selectorPage, selectorPageSize } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const pluginId = this.getPluginId(plugins, name);
@@ -674,11 +694,13 @@ export default class Common extends Component {
       type: "common/deleteSelector",
       payload: {
         list: [record.id],
+        namespaceId: currentNamespaceId,
       },
       fetchValue: {
         pluginId,
         currentPage: selectorPage,
         pageSize: selectorPageSize,
+        namespaceId: currentNamespaceId,
       },
     });
   };

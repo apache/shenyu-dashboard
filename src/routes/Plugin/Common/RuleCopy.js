@@ -17,6 +17,7 @@
 
 import React, { Component } from "react";
 import { Modal, TreeSelect } from "antd";
+import { connect } from "dva";
 import {
   getPluginDropDownList,
   getAllSelectors,
@@ -25,6 +26,9 @@ import {
 } from "../../../services/api";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
+@connect(({ global }) => ({
+  currentNamespaceId: global.currentNamespaceId,
+}))
 class RuleCopy extends Component {
   constructor(props) {
     super(props);
@@ -40,6 +44,7 @@ class RuleCopy extends Component {
   }
 
   getAllRule = async () => {
+    const { currentNamespaceId } = this.props;
     const { code: pluginCode, data: pluginList = [] } =
       await getPluginDropDownList();
     const {
@@ -48,6 +53,7 @@ class RuleCopy extends Component {
     } = await getAllSelectors({
       currentPage: 1,
       pageSize: 9999,
+      namespaceId: currentNamespaceId,
     });
     const {
       code: ruleCode,
