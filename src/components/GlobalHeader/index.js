@@ -120,8 +120,8 @@ class GlobalHeader extends PureComponent {
           this.setState({ visible: true, display: "block" });
         }
       });
+      this.fetchNamespaces();
     }
-    this.fetchNamespaces();
   }
 
   componentWillUnmount() {
