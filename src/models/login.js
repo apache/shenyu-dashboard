@@ -29,10 +29,11 @@ export default {
   },
 
   effects: {
-    *login({ payload }, { call, put }) {
+    *login({ payload }, { call, put, select }) {
       const { callback } = payload;
       const response = yield call(queryLogin, payload);
       yield call(callback, response);
+      const namespaces = yield select((state) => state.global.namespaces);
 
       // Login successfully
       if (response.data) {
@@ -46,6 +47,11 @@ export default {
         window.sessionStorage.setItem("token", response.data.token);
         window.sessionStorage.setItem("userName", response.data.userName);
         window.sessionStorage.setItem("userId", response.data.id);
+        if (!namespaces?.length) {
+          yield put({
+            type: "global/fetchNamespaces",
+          });
+        }
         /* const urlParams = new URL(window.location.href);
          const params = getPageQuery();
          let { redirect } = params;

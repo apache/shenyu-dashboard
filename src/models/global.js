@@ -52,7 +52,7 @@ export default {
     },
     *fetchNamespaces(_, { call, put }) {
       const json = yield call(getNamespaceList);
-      if (json.code === 200) {
+      if (json?.code === 200) {
         yield put({
           type: "saveNamespaces",
           payload: json.data,
