@@ -490,12 +490,12 @@ export async function addRule(params) {
 export async function deleteRule(params) {
   return request(`${baseUrl}/rule/batch`, {
     method: `DELETE`,
-    body: [...params.list],
+    body: { ids: [...params.list], namespaceId: params.namespaceId },
   });
 }
 
 export async function findRule(params) {
-  return request(`${baseUrl}/rule/${params.id}`, {
+  return request(`${baseUrl}/rule/${params.id}/${params.namespaceId}`, {
     method: `GET`,
   });
 }
@@ -515,6 +515,7 @@ export async function enableRule(params) {
     body: {
       ids: params.list,
       enabled: params.enabled,
+      namespaceId: params.namespaceId,
     },
   });
 }

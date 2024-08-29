@@ -45,9 +45,10 @@ import {
 const FormItem = Form.Item;
 const { Option } = Select;
 
-@connect(({ pluginHandle, shenyuDict }) => ({
+@connect(({ pluginHandle, shenyuDict, global }) => ({
   pluginHandle,
   shenyuDict,
+  currentNamespaceId: global.currentNamespaceId,
 }))
 class AddModal extends Component {
   constructor(props) {
@@ -71,6 +72,7 @@ class AddModal extends Component {
       handle,
       multiRuleHandle,
       form: { setFieldsValue },
+      currentNamespaceId,
     } = this.props;
     this.setState({ pluginHandleList: [] });
     let type = 2;
@@ -81,6 +83,7 @@ class AddModal extends Component {
         type,
         handle,
         isHandleArray: multiRuleHandle,
+        namespaceId: currentNamespaceId,
         callBack: (pluginHandles, useJSON) => {
           this.setState({ pluginHandleList: pluginHandles }, () => {
             if (useJSON) {

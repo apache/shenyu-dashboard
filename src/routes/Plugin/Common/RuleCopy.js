@@ -61,6 +61,7 @@ class RuleCopy extends Component {
     } = await getAllRules({
       currentPage: 1,
       pageSize: 9999,
+      namespaceId: currentNamespaceId,
     });
 
     const pluginMap = {};
