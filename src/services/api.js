@@ -75,10 +75,10 @@ export async function updatePassword(params) {
 
 /* get all metadata */
 export async function getAllMetadata(params) {
-  const { path, currentPage, pageSize } = params;
+  const { path, currentPage, pageSize, namespaceId } = params;
   return request(
     `${baseUrl}/meta-data/queryList?${stringify(
-      path ? params : { currentPage, pageSize },
+      path ? params : { currentPage, pageSize, namespaceId },
     )}`,
     {
       method: `GET`,
@@ -87,7 +87,7 @@ export async function getAllMetadata(params) {
 }
 
 export async function findMetadata(params) {
-  return request(`${baseUrl}/meta-data/${params.id}`, {
+  return request(`${baseUrl}/meta-data/${params.id}/${params.namespaceId}`, {
     method: `GET`,
   });
 }
@@ -117,6 +117,7 @@ export async function updateMetadata(params) {
       rpcExt: params.rpcExt,
       rpcType: params.rpcType,
       serviceName: params.serviceName,
+      namespaceId: params.namespaceId,
     },
   });
 }
@@ -139,8 +140,8 @@ export async function getfetchMetaGroup() {
 /* deleteMetadata */
 export async function deleteMetadata(params) {
   return request(`${baseUrl}/meta-data/batchDeleted`, {
-    method: `POST`,
-    body: [...params.list],
+    method: `DELETE`,
+    body: { ids: [...params.list], namespaceId: params.namespaceId },
   });
 }
 
@@ -151,6 +152,7 @@ export async function updateEnabled(params) {
     body: {
       ids: params.list,
       enabled: params.enabled,
+      namespaceId: params.namespaceId,
     },
   });
 }

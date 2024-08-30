@@ -78,8 +78,8 @@ export default {
     },
     *delete(params, { call, put }) {
       const { payload, fetchValue, callback } = params;
-      const { list } = payload;
-      const json = yield call(deleteMetadata, { list });
+      const { list, namespaceId } = payload;
+      const json = yield call(deleteMetadata, { list, namespaceId });
       if (json.code === 200) {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
@@ -128,8 +128,8 @@ export default {
     },
     *reload(params, { put }) {
       const { fetchValue } = params;
-      const { appName, currentPage, pageSize } = fetchValue;
-      const payload = { appName, currentPage, pageSize };
+      const { appName, currentPage, pageSize, namespaceId } = fetchValue;
+      const payload = { appName, currentPage, pageSize, namespaceId };
       yield put({ type: "fetch", payload });
     },
   },
