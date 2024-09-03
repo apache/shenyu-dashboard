@@ -47,6 +47,7 @@ export default {
 
   effects: {
     *fetchSelector({ payload }, { call, put }) {
+      const { namespaceId } = payload;
       const json = yield call(getAllSelectors, { ...payload });
       if (json.code === 200) {
         let { page, dataList } = json.data;
@@ -75,6 +76,7 @@ export default {
               currentPage: 1,
               pageSize: 12,
               selectorId: dataList[0].id,
+              namespaceId,
             },
           });
         } else {
@@ -188,8 +190,8 @@ export default {
     },
     *deleteRule(params, { call, put }) {
       const { payload, fetchValue } = params;
-      const { list } = payload;
-      const json = yield call(deleteRule, { list });
+      const { list, namespaceId } = payload;
+      const json = yield call(deleteRule, { list, namespaceId });
       if (json.code === 200) {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
@@ -245,8 +247,8 @@ export default {
 
     *reloadRule(params, { put }) {
       const { fetchValue } = params;
-      const { selectorId, currentPage, pageSize } = fetchValue;
-      const payload = { selectorId, currentPage, pageSize };
+      const { selectorId, currentPage, pageSize, namespaceId } = fetchValue;
+      const payload = { selectorId, currentPage, pageSize, namespaceId };
       yield put({ type: "fetchRule", payload });
     },
 

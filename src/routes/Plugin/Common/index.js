@@ -140,7 +140,7 @@ export default class Common extends Component {
   };
 
   getAllRules = (page, pageSize) => {
-    const { dispatch, currentSelector } = this.props;
+    const { dispatch, currentSelector, currentNamespaceId } = this.props;
     const { ruleName } = this.state;
     const selectorId = currentSelector ? currentSelector.id : "";
     dispatch({
@@ -150,6 +150,7 @@ export default class Common extends Component {
         currentPage: page,
         pageSize,
         name: ruleName,
+        namespaceId: currentNamespaceId,
       },
     });
     this.setState({ selectorSelectedRowKeys: [] });
@@ -324,7 +325,8 @@ export default class Common extends Component {
 
   addRule = () => {
     const { rulePage, rulePageSize, pluginId } = this.state;
-    const { dispatch, currentSelector, plugins } = this.props;
+    const { dispatch, currentSelector, plugins, currentNamespaceId } =
+      this.props;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
     const { config } = plugin;
@@ -341,11 +343,16 @@ export default class Common extends Component {
             handleOk={(rule) => {
               dispatch({
                 type: "common/addRule",
-                payload: { selectorId, ...rule },
+                payload: {
+                  selectorId,
+                  ...rule,
+                  namespaceId: currentNamespaceId,
+                },
                 fetchValue: {
                   selectorId,
                   currentPage: rulePage,
                   pageSize: rulePageSize,
+                  namespaceId: currentNamespaceId,
                 },
                 callback: () => {
                   this.closeModal();
@@ -751,7 +758,8 @@ export default class Common extends Component {
   };
 
   editRule = (record) => {
-    const { dispatch, currentSelector, plugins } = this.props;
+    const { dispatch, currentSelector, plugins, currentNamespaceId } =
+      this.props;
     const { rulePage, rulePageSize, pluginId } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
@@ -764,6 +772,7 @@ export default class Common extends Component {
       type: "common/fetchRuleItem",
       payload: {
         id,
+        namespaceId: currentNamespaceId,
       },
       callback: (rule) => {
         this.setState({
@@ -780,11 +789,13 @@ export default class Common extends Component {
                     selectorId,
                     ...values,
                     id,
+                    namespaceId: currentNamespaceId,
                   },
                   fetchValue: {
                     selectorId,
                     currentPage: rulePage,
                     pageSize: rulePageSize,
+                    namespaceId: currentNamespaceId,
                   },
                   callback: () => {
                     this.closeModal();
@@ -801,18 +812,20 @@ export default class Common extends Component {
 
   enableRule = ({ list, enabled }) => {
     const { rulePage, rulePageSize } = this.state;
-    const { dispatch, currentSelector } = this.props;
+    const { dispatch, currentSelector, currentNamespaceId } = this.props;
     const selectorId = currentSelector ? currentSelector.id : "";
     dispatch({
       type: "common/enableRule",
       payload: {
         list,
         enabled,
+        namespaceId: currentNamespaceId,
       },
       fetchValue: {
         selectorId,
         currentPage: rulePage,
         pageSize: rulePageSize,
+        namespaceId: currentNamespaceId,
       },
     });
   };
@@ -839,7 +852,8 @@ export default class Common extends Component {
   };
 
   deleteRule = (record) => {
-    const { dispatch, currentSelector, ruleList } = this.props;
+    const { dispatch, currentSelector, ruleList, currentNamespaceId } =
+      this.props;
     const { rulePage, rulePageSize } = this.state;
     const currentPage =
       rulePage > 1 && ruleList.length === 1 ? rulePage - 1 : rulePage;
@@ -847,11 +861,13 @@ export default class Common extends Component {
       type: "common/deleteRule",
       payload: {
         list: [record.id],
+        namespaceId: currentNamespaceId,
       },
       fetchValue: {
         selectorId: currentSelector.id,
         currentPage,
         pageSize: rulePageSize,
+        namespaceId: currentNamespaceId,
       },
     });
   };

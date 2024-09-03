@@ -35,6 +35,7 @@ import AuthButton from "../../../utils/AuthButton";
 @connect(({ metadata, loading, global }) => ({
   metadata,
   language: global.language,
+  currentNamespaceId: global.currentNamespaceId,
   loading: loading.effects["metadata/fetch"],
 }))
 export default class Metadata extends Component {
@@ -61,12 +62,15 @@ export default class Metadata extends Component {
     this.initPluginColumns();
   }
 
-  componentDidUpdate() {
-    const { language } = this.props;
+  componentDidUpdate(prevProps) {
+    const { language, currentNamespaceId } = this.props;
     const { localeName } = this.state;
     if (language !== localeName) {
       this.initPluginColumns();
       this.changeLocale(language);
+    }
+    if (prevProps.currentNamespaceId !== currentNamespaceId) {
+      this.query();
     }
   }
 
@@ -88,7 +92,7 @@ export default class Metadata extends Component {
   };
 
   query = () => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const { path, currentPage, pageSize } = this.state;
     dispatch({
       type: "metadata/fetch",
@@ -96,6 +100,7 @@ export default class Metadata extends Component {
         path,
         currentPage,
         pageSize,
+        namespaceId: currentNamespaceId,
       },
     });
   };
@@ -113,13 +118,14 @@ export default class Metadata extends Component {
   };
 
   editClick = (record, copy) => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const { currentPage, pageSize } = this.state;
     const name = this.state.appName;
     dispatch({
       type: "metadata/fetchItem",
       payload: {
         id: record.id,
+        namespaceId: currentNamespaceId,
       },
       callback: (user) => {
         this.setState({
@@ -151,6 +157,7 @@ export default class Metadata extends Component {
                   rpcExt,
                   rpcType,
                   serviceName,
+                  namespaceId: currentNamespaceId,
                 };
                 if (copy) {
                   delete payload.id;
@@ -162,6 +169,7 @@ export default class Metadata extends Component {
                     appName: name,
                     currentPage,
                     pageSize,
+                    namespaceId: currentNamespaceId,
                   },
                   callback: () => {
                     this.closeModal();
@@ -187,18 +195,20 @@ export default class Metadata extends Component {
   };
 
   deleteClick = () => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const { appName, currentPage, pageSize, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "metadata/delete",
         payload: {
           list: selectedRowKeys,
+          namespaceId: currentNamespaceId,
         },
         fetchValue: {
           appName,
           currentPage,
           pageSize,
+          namespaceId: currentNamespaceId,
         },
         callback: () => {
           this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
@@ -218,7 +228,7 @@ export default class Metadata extends Component {
         <AddModal
           isShow={true}
           handleOk={(values) => {
-            const { dispatch } = this.props;
+            const { dispatch, currentNamespaceId } = this.props;
             const {
               appName,
               enabled,
@@ -242,11 +252,13 @@ export default class Metadata extends Component {
                 rpcExt,
                 rpcType,
                 serviceName,
+                namespaceId: currentNamespaceId,
               },
               fetchValue: {
                 appName: name,
                 currentPage,
                 pageSize,
+                namespaceId: currentNamespaceId,
               },
               callback: () => {
                 this.setState(
@@ -266,31 +278,34 @@ export default class Metadata extends Component {
   };
 
   statusSwitch = ({ list, enabled, callback }) => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const { appName, currentPage, pageSize } = this.state;
     dispatch({
       type: "metadata/updateEn",
       payload: {
         list,
         enabled,
+        namespaceId: currentNamespaceId,
       },
       fetchValue: {
         appName,
         currentPage,
         pageSize,
+        namespaceId: currentNamespaceId,
       },
       callback,
     });
   };
 
   enableClick = () => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "metadata/fetchItem",
         payload: {
           id: selectedRowKeys[0],
+          namespaceId: currentNamespaceId,
         },
         callback: (user) => {
           this.statusSwitch({
