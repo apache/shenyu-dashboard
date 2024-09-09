@@ -58,6 +58,7 @@ export default class DataPermModal extends Component {
       ruleListMap: {},
       searchValue: "",
       currentNamespaceId: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
+      selectorExpandedRowKeys: [],
     };
   }
 
@@ -183,6 +184,20 @@ export default class DataPermModal extends Component {
   };
 
   handleExpandRuleTable = (expanded, record) => {
+    let { selectorExpandedRowKeys } = this.state;
+    if (expanded) {
+      selectorExpandedRowKeys.push(record.dataId);
+      this.setState({
+        selectorExpandedRowKeys,
+      });
+    } else {
+      selectorExpandedRowKeys = selectorExpandedRowKeys.filter(
+        (e) => e !== record.dataId,
+      );
+      this.setState({
+        selectorExpandedRowKeys,
+      });
+    }
     this.getPermissionRuleList(record.dataId, 1);
   };
 
@@ -320,7 +335,7 @@ export default class DataPermModal extends Component {
 
   renderSelectorRuleTable = () => {
     const { currentPermissionSelectorPage, pageSize } = this.state;
-    const { selectorData, ruleListMap } = this.state;
+    const { selectorData, ruleListMap, selectorExpandedRowKeys } = this.state;
     const ruleColumns = [
       {
         title: getIntlContent("SHENYU.SYSTEM.DATA.PERMISSION.CHECKED"),
@@ -393,6 +408,8 @@ export default class DataPermModal extends Component {
         columns={columns}
         expandedRowRender={expandedRowRender}
         dataSource={selectorData && selectorData.dataList}
+        rowKey="dataId"
+        expandedRowKeys={selectorExpandedRowKeys}
         onExpand={this.handleExpandRuleTable}
         pagination={{
           total: selectorData && selectorData.total,
@@ -408,7 +425,8 @@ export default class DataPermModal extends Component {
     const { currentPlugin } = this.state;
     this.setState({ currentNamespaceId: value.key }, () => {
       if (currentPlugin) {
-        this.selectorPageOnchange(1);
+        this.setState({ selectorExpandedRowKeys: [] });
+        this.getPermissionSelectorList(1);
       }
     });
   };
