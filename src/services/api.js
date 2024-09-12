@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { stringify } from "qs";
+import {stringify} from "qs";
 import request from "../utils/request";
 import download from "../utils/download";
 
@@ -75,10 +75,10 @@ export async function updatePassword(params) {
 
 /* get all metadata */
 export async function getAllMetadata(params) {
-  const { path, currentPage, pageSize, namespaceId } = params;
+  const {path, currentPage, pageSize, namespaceId} = params;
   return request(
     `${baseUrl}/meta-data/queryList?${stringify(
-      path ? params : { currentPage, pageSize, namespaceId },
+      path ? params : {currentPage, pageSize, namespaceId},
     )}`,
     {
       method: `GET`,
@@ -141,7 +141,7 @@ export async function getfetchMetaGroup() {
 export async function deleteMetadata(params) {
   return request(`${baseUrl}/meta-data/batchDeleted`, {
     method: `DELETE`,
-    body: { ids: [...params.list], namespaceId: params.namespaceId },
+    body: {ids: [...params.list], namespaceId: params.namespaceId},
   });
 }
 
@@ -159,8 +159,8 @@ export async function updateEnabled(params) {
 
 /* getAllUsers */
 export async function getAllUsers(params) {
-  const { userName, currentPage, pageSize } = params;
-  const myParams = userName ? params : { currentPage, pageSize };
+  const {userName, currentPage, pageSize} = params;
+  const myParams = userName ? params : {currentPage, pageSize};
   return request(`${baseUrl}/dashboardUser?${stringify(myParams)}`, {
     method: `GET`,
   });
@@ -307,8 +307,8 @@ export async function updateAuth(params) {
 
 /* getAllAuth */
 export async function getAllAuth(params) {
-  const { appKey, currentPage, pageSize } = params;
-  let myParams = appKey ? params : { currentPage, pageSize };
+  const {appKey, currentPage, pageSize} = params;
+  let myParams = appKey ? params : {currentPage, pageSize};
   return request(`${baseUrl}/appAuth?${stringify(myParams)}`, {
     method: `GET`,
   });
@@ -324,8 +324,8 @@ export async function syncAuthsData() {
 
 /* getAllAuths */
 export async function getAllAuths(params) {
-  const { appKey, phone, currentPage, pageSize } = params;
-  const myParams = appKey || phone ? params : { currentPage, pageSize };
+  const {appKey, phone, currentPage, pageSize} = params;
+  const myParams = appKey || phone ? params : {currentPage, pageSize};
   return request(`${baseUrl}/appAuth/findPageByQuery?${stringify(myParams)}`, {
     method: `GET`,
   });
@@ -475,7 +475,7 @@ export async function findSelector(params) {
 }
 
 export async function getAllRules(params) {
-  params.namespaceId='649330b6-c2d7-4edc-be8e-8a54df9eb385'
+  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385'
   return request(`${baseUrl}/rule?${stringify(params)}`, {
     method: `GET`,
   });
@@ -493,7 +493,7 @@ export async function addRule(params) {
 export async function deleteRule(params) {
   return request(`${baseUrl}/rule/batch`, {
     method: `DELETE`,
-    body: { ids: [...params.list], namespaceId: params.namespaceId },
+    body: {ids: [...params.list], namespaceId: params.namespaceId},
   });
 }
 
@@ -538,7 +538,8 @@ export async function queryLogin(params) {
 }
 
 export async function querySecretInfo() {
-  return fetch(`${baseUrl}/platform/secretInfo`).catch(() => {});
+  return fetch(`${baseUrl}/platform/secretInfo`).catch(() => {
+  });
 }
 
 // export all config
@@ -701,10 +702,10 @@ export async function getAllRoles() {
 
 /* get roles by page */
 export async function getRoleList(params) {
-  const { roleName, currentPage, pageSize } = params;
-  let myParams = { ...params };
+  const {roleName, currentPage, pageSize} = params;
+  let myParams = {...params};
   if (!roleName) {
-    myParams = { currentPage, pageSize };
+    myParams = {currentPage, pageSize};
   }
   return request(`${baseUrl}/role?${stringify(myParams)}`, {
     method: `GET`,
@@ -750,10 +751,10 @@ export async function updateRole(params) {
 
 /* get resources by page */
 export async function getAllResources(params) {
-  const { title, currentPage, pageSize } = params;
-  let myParams = { ...params };
+  const {title, currentPage, pageSize} = params;
+  let myParams = {...params};
   if (!title) {
-    myParams = { currentPage, pageSize };
+    myParams = {currentPage, pageSize};
   }
   return request(`${baseUrl}/resource?${stringify(myParams)}`, {
     method: `GET`,
@@ -852,6 +853,7 @@ export async function addDataPermisionRule(params) {
     },
   });
 }
+
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and
 /* delete dataPermision's selector */
 export async function deleteDataPermisionSelector(params) {
@@ -1014,14 +1016,14 @@ export function deleteApi(params) {
 }
 
 export function fetchProxySelector(params) {
-  params.namespaceId='649330b6-c2d7-4edc-be8e-8a54df9eb385'
+  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385'
   return request(`${baseUrl}/proxy-selector?${stringify(params)}`, {
     method: `GET`,
   });
 }
 
 export function addProxySelector(params) {
-  params.namespaceId='649330b6-c2d7-4edc-be8e-8a54df9eb385'
+  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385'
   return request(`${baseUrl}/proxy-selector/addProxySelector`, {
     method: `POST`,
     body: params,
@@ -1036,7 +1038,7 @@ export function deleteProxySelector(params) {
 }
 
 export function updateProxySelector(params) {
-  params.namespaceId='649330b6-c2d7-4edc-be8e-8a54df9eb385'
+  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385'
   return request(`${baseUrl}/proxy-selector/${params.id}`, {
     method: `PUT`,
     body: {
@@ -1052,7 +1054,7 @@ export function getDiscoveryTypeEnums() {
 }
 
 export function postDiscoveryInsertOrUpdate(params) {
-  params.namespaceId='649330b6-c2d7-4edc-be8e-8a54df9eb385'
+  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385'
   return request(`${baseUrl}/discovery/insertOrUpdate`, {
     method: `POST`,
     body: params,
@@ -1060,7 +1062,7 @@ export function postDiscoveryInsertOrUpdate(params) {
 }
 
 export function getDiscovery(params) {
-  params.namespaceId='649330b6-c2d7-4edc-be8e-8a54df9eb385'
+  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385'
   return request(`${baseUrl}/discovery?${stringify(params)}`, {
     method: `GET`,
   });
@@ -1134,7 +1136,7 @@ export function fetchAlertReport(params) {
 }
 
 export function bindingSelector(params) {
-  params.namespaceId='649330b6-c2d7-4edc-be8e-8a54df9eb385'
+  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385'
   return request(`${baseUrl}/proxy-selector/binding`, {
     method: `POST`,
     body: params,
@@ -1155,12 +1157,14 @@ export async function getNamespaceList() {
     method: `GET`,
   });
 }
+
 /* getAllNamespaces */
 export async function getAllNamespaces(params) {
   return request(`${baseUrl}/namespace/findPageByQuery?${stringify(params)}`, {
     method: `GET`,
   });
 }
+
 /* insertOrUpdateNamespace */
 export async function insertOrUpdateNamespace(params) {
   return request(`${baseUrl}/namespace/insertOrUpdate`, {
