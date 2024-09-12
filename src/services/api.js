@@ -475,7 +475,7 @@ export async function findSelector(params) {
 }
 
 export async function getAllRules(params) {
-  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385'
+  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385';
   return request(`${baseUrl}/rule?${stringify(params)}`, {
     method: `GET`,
   });
@@ -1014,14 +1014,14 @@ export function deleteApi(params) {
 }
 
 export function fetchProxySelector(params) {
-  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385'
+  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385';
   return request(`${baseUrl}/proxy-selector?${stringify(params)}`, {
     method: `GET`,
   });
 }
 
 export function addProxySelector(params) {
-  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385'
+  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385';
   return request(`${baseUrl}/proxy-selector/addProxySelector`, {
     method: `POST`,
     body: params,
@@ -1036,7 +1036,7 @@ export function deleteProxySelector(params) {
 }
 
 export function updateProxySelector(params) {
-  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385'
+  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385';
   return request(`${baseUrl}/proxy-selector/${params.id}`, {
     method: `PUT`,
     body: {
@@ -1052,7 +1052,7 @@ export function getDiscoveryTypeEnums() {
 }
 
 export function postDiscoveryInsertOrUpdate(params) {
-  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385'
+  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385';
   return request(`${baseUrl}/discovery/insertOrUpdate`, {
     method: `POST`,
     body: params,
@@ -1060,7 +1060,7 @@ export function postDiscoveryInsertOrUpdate(params) {
 }
 
 export function getDiscovery(params) {
-  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385'
+  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385';
   return request(`${baseUrl}/discovery?${stringify(params)}`, {
     method: `GET`,
   });
@@ -1134,7 +1134,7 @@ export function fetchAlertReport(params) {
 }
 
 export function bindingSelector(params) {
-  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385'
+  params.namespaceId = '649330b6-c2d7-4edc-be8e-8a54df9eb385';
   return request(`${baseUrl}/proxy-selector/binding`, {
     method: `POST`,
     body: params,
@@ -1142,7 +1142,6 @@ export function bindingSelector(params) {
 }
 
 export function updateDiscoveryUpstream(discoveryHandlerId, upstreams) {
-
   return request(`${baseUrl}/discovery-upstream/${discoveryHandlerId}`, {
     method: `PUT`,
     body: upstreams,
