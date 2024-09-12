@@ -430,6 +430,7 @@ export default class Common extends Component {
       props: JSON.stringify({
         warmupTime: item.warmupTime,
       }),
+      namespaceId: '649330b6-c2d7-4edc-be8e-8a54df9eb385'
     }));
   };
 
@@ -478,6 +479,7 @@ export default class Common extends Component {
       props: JSON.stringify({
         warmupTime: item.warmupTime,
       }),
+      namespaceId: '649330b6-c2d7-4edc-be8e-8a54df9eb385',
       discoveryHandlerId,
     }));
     dispatch({
