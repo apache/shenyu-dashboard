@@ -17,9 +17,13 @@
 
 import React, { Component } from "react";
 import { Modal, Select } from "antd";
+import { connect } from "dva";
 import { fetchProxySelector } from "../../../services/api";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
+@connect(({ global }) => ({
+  currentNamespaceId: global.currentNamespaceId,
+}))
 class ProxySelectorCopy extends Component {
   constructor(props) {
     super(props);
@@ -71,11 +75,13 @@ class ProxySelectorCopy extends Component {
   }
 
   getAllSelectors = async () => {
+    const { currentNamespaceId } = this.props;
     const {
       data: { dataList: selectors = [] },
     } = await fetchProxySelector({
       currentPage: 1,
       pageSize: 9999,
+      namespaceId: currentNamespaceId,
     });
     this.setState({ selectorList: selectors });
   };

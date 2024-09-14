@@ -19,13 +19,13 @@ import React, { Component } from "react";
 import { connect } from "dva";
 import {
   Button,
+  Input,
+  message,
   Pagination,
   Row,
   Switch,
   Tag,
-  Input,
   Typography,
-  message,
 } from "antd";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import discoveryStyles from "./discovery.less";
@@ -78,13 +78,14 @@ export default class DiscoveryProxy extends Component {
   }
 
   componentDidMount() {
-    const { dispatch, currentPage, pageSize } = this.props;
+    const { dispatch, currentPage, pageSize, currentNamespaceId } = this.props;
     dispatch({
       type: "discovery/fetchProxySelectors",
       payload: {
         name: "",
         currentPage,
         pageSize,
+        namespaceId: currentNamespaceId,
       },
     });
 
@@ -117,6 +118,7 @@ export default class DiscoveryProxy extends Component {
   }
 
   onPageChange = (page, pageSize) => {
+    const { currentNamespaceId } = this.props;
     this.props.dispatch({
       type: "discovery/setCurrentPage",
       payload: {
@@ -131,6 +133,7 @@ export default class DiscoveryProxy extends Component {
         currentPage: page,
         pageSize,
         name: searchKey,
+        namespaceId: currentNamespaceId,
       },
     });
   };
@@ -184,13 +187,14 @@ export default class DiscoveryProxy extends Component {
   };
 
   addConfiguration = () => {
-    const { dispatch, typeEnums } = this.props;
+    const { dispatch, typeEnums, currentNamespaceId } = this.props;
     const { discoveryDics, pluginName } = this.state;
     dispatch({
       type: "discovery/fetchDiscovery",
       payload: {
         pluginName,
         level: "1",
+        namespaceId: currentNamespaceId,
       },
       callback: (discoveryConfigList) => {
         let discoveryId = "";
@@ -219,6 +223,7 @@ export default class DiscoveryProxy extends Component {
                     pluginName,
                     level: 1,
                     id: discoveryId,
+                    namespaceId: currentNamespaceId,
                   },
                   callback: () => {
                     this.closeModal();
@@ -262,19 +267,27 @@ export default class DiscoveryProxy extends Component {
 
   searchSelector = () => {
     const { searchKey } = this.state;
-    const { currentPage, pageSize } = this.props;
+    const { currentPage, pageSize, currentNamespaceId } = this.props;
     this.props.dispatch({
       type: "discovery/fetchProxySelectors",
       payload: {
         currentPage,
         pageSize,
         name: searchKey,
+        namespaceId: currentNamespaceId,
       },
     });
   };
 
   addSelector = () => {
-    const { dispatch, currentPage, pageSize, plugins, typeEnums } = this.props;
+    const {
+      dispatch,
+      currentPage,
+      pageSize,
+      plugins,
+      typeEnums,
+      currentNamespaceId,
+    } = this.props;
     const { cardData, discoveryDics, pluginName } = this.state;
     const plugin = this.getPlugin(plugins, pluginName);
     dispatch({
@@ -282,6 +295,7 @@ export default class DiscoveryProxy extends Component {
       payload: {
         pluginName,
         level: "1",
+        namespaceId: currentNamespaceId,
       },
       callback: (discoveryConfigList) => {
         let discoveryType = "";
@@ -345,6 +359,7 @@ export default class DiscoveryProxy extends Component {
                       props: discoveryProps,
                     },
                     discoveryUpstreams: upstreamsWithProps,
+                    namespaceId: currentNamespaceId,
                   },
                   callback: () => {
                     this.closeModal();
@@ -374,6 +389,7 @@ export default class DiscoveryProxy extends Component {
       pageSize,
       plugins,
       typeEnums,
+      currentNamespaceId,
     } = this.props;
     const { discoveryDics, pluginName } = this.state;
     const data = proxySelectorList.find((value) => value.id === id);
@@ -444,6 +460,7 @@ export default class DiscoveryProxy extends Component {
                   props: discoveryProps,
                 },
                 discoveryUpstreams: upstreamsWithProps,
+                namespaceId: currentNamespaceId,
               },
               callback: () => {
                 this.closeUpdateModal();
@@ -451,6 +468,7 @@ export default class DiscoveryProxy extends Component {
               fetchValue: {
                 currentPage,
                 pageSize,
+                namespaceId: currentNamespaceId,
               },
             });
           }}
