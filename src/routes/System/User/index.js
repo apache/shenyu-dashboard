@@ -265,6 +265,7 @@ export default class Manage extends Component {
             }
           >
             <Switch
+              disabled={row.userName === "admin"}
               checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
               unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
               checked={text}
@@ -342,6 +343,9 @@ export default class Manage extends Component {
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
+      getCheckboxProps: (record) => ({
+        disabled: record.userName === "admin",
+      }),
     };
 
     return (
