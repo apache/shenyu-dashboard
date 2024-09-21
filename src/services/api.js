@@ -1217,7 +1217,7 @@ export async function updateNamespacePlugin(params) {
   formData.append("name", params.name);
   formData.append("namespaceId", params.namespaceId);
   return request(
-    `${baseUrl}/namespacePlugin/pluginId=${params.pluginId}&namespaceId=${params.namespaceId}`,
+    `${baseUrl}/namespacePlugin?pluginId=${params.pluginId}&namespaceId=${params.namespaceId}`,
     {
       method: `PUT`,
       body: formData,
