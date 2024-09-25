@@ -27,6 +27,8 @@ import {
   Col,
   Input,
   Empty,
+  Dropdown,
+  Menu,
 } from "antd";
 import { connect } from "dva";
 import { getIntlContent } from "../../../utils/IntlUtils";
@@ -39,6 +41,7 @@ const { Search } = Input;
   dataPermission,
   resource,
   global,
+  namespaces: global.namespaces,
   selectorPermisionLoading:
     loading.effects["dataPermission/fetchDataPermisionSelectors"],
   rulePermisionLoading:
@@ -54,6 +57,8 @@ export default class DataPermModal extends Component {
       pageSize: 12,
       ruleListMap: {},
       searchValue: "",
+      currentNamespaceId: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
+      selectorExpandedRowKeys: [],
     };
   }
 
@@ -73,7 +78,7 @@ export default class DataPermModal extends Component {
 
   getPermissionSelectorList = (page) => {
     const { dispatch, userId } = this.props;
-    const { currentPlugin, pageSize } = this.state;
+    const { currentPlugin, pageSize, currentNamespaceId } = this.state;
     dispatch({
       type: "dataPermission/fetchDataPermisionSelectors",
       payload: {
@@ -81,6 +86,7 @@ export default class DataPermModal extends Component {
         pageSize,
         userId,
         pluginId: currentPlugin.pluginId,
+        namespaceId: currentNamespaceId,
       },
       callback: (res) => {
         this.setState({
@@ -178,6 +184,20 @@ export default class DataPermModal extends Component {
   };
 
   handleExpandRuleTable = (expanded, record) => {
+    let { selectorExpandedRowKeys } = this.state;
+    if (expanded) {
+      selectorExpandedRowKeys.push(record.dataId);
+      this.setState({
+        selectorExpandedRowKeys,
+      });
+    } else {
+      selectorExpandedRowKeys = selectorExpandedRowKeys.filter(
+        (e) => e !== record.dataId,
+      );
+      this.setState({
+        selectorExpandedRowKeys,
+      });
+    }
     this.getPermissionRuleList(record.dataId, 1);
   };
 
@@ -315,7 +335,7 @@ export default class DataPermModal extends Component {
 
   renderSelectorRuleTable = () => {
     const { currentPermissionSelectorPage, pageSize } = this.state;
-    const { selectorData, ruleListMap } = this.state;
+    const { selectorData, ruleListMap, selectorExpandedRowKeys } = this.state;
     const ruleColumns = [
       {
         title: getIntlContent("SHENYU.SYSTEM.DATA.PERMISSION.CHECKED"),
@@ -388,6 +408,8 @@ export default class DataPermModal extends Component {
         columns={columns}
         expandedRowRender={expandedRowRender}
         dataSource={selectorData && selectorData.dataList}
+        rowKey="dataId"
+        expandedRowKeys={selectorExpandedRowKeys}
         onExpand={this.handleExpandRuleTable}
         pagination={{
           total: selectorData && selectorData.total,
@@ -399,13 +421,72 @@ export default class DataPermModal extends Component {
     );
   };
 
+  handleNamespacesValueChange = (value) => {
+    const { currentPlugin } = this.state;
+    this.setState({ currentNamespaceId: value.key }, () => {
+      if (currentPlugin) {
+        this.setState({ selectorExpandedRowKeys: [] });
+        this.getPermissionSelectorList(1);
+      }
+    });
+  };
+
   render() {
-    let { handleCancel } = this.props;
+    let { handleCancel, namespaces } = this.props;
+    let { currentNamespaceId } = this.state;
     return (
       <Modal
         width={800}
         centered
-        title={getIntlContent("SHENYU.SYSTEM.DATA.PERMISSION.CONFIG")}
+        title={
+          <div
+            style={{
+              height: 24,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <div>{getIntlContent("SHENYU.SYSTEM.DATA.PERMISSION.CONFIG")}</div>
+            <div style={{ marginRight: 30 }}>
+              <Dropdown
+                placement="bottomCenter"
+                overlay={
+                  <Menu onClick={this.handleNamespacesValueChange}>
+                    {namespaces.map((namespace) => {
+                      let isCurrentNamespace =
+                        currentNamespaceId === namespace.namespaceId;
+                      return (
+                        <Menu.Item
+                          key={namespace.namespaceId}
+                          disabled={isCurrentNamespace}
+                        >
+                          <span>{namespace.name}</span>
+                        </Menu.Item>
+                      );
+                    })}
+                  </Menu>
+                }
+              >
+                <Button>
+                  <a
+                    className="ant-dropdown-link"
+                    style={{ fontWeight: "bold" }}
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    {`${getIntlContent("SHENYU.SYSTEM.NAMESPACE")} / ${
+                      namespaces.find(
+                        (namespace) =>
+                          currentNamespaceId === namespace.namespaceId,
+                      )?.name
+                    } `}
+                  </a>
+                  <Icon type="down" />
+                </Button>
+              </Dropdown>
+            </div>
+          </div>
+        }
         visible
         cancelText={getIntlContent("SHENYU.COMMON.CLOSE")}
         onCancel={handleCancel}

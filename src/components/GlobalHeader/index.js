@@ -27,6 +27,7 @@ import {
   Modal,
 } from "antd";
 import { connect } from "dva";
+import { withRouter } from "dva/router";
 import AddModal from "./AddModal";
 import ImportResultModal from "./ImportResultModal";
 import styles from "./index.less";
@@ -236,8 +237,17 @@ class GlobalHeader extends PureComponent {
       loading,
       namespaces,
       currentNamespaceId,
+      location: { pathname },
     } = this.props;
     const { popup, userName, visible } = this.state;
+    const showNamespaces = !~[
+      "/config/dict",
+      "/config/namespace",
+      "/config/pluginhandle",
+      "/system/resource",
+      "/system/role",
+      "/system/manage",
+    ].indexOf(pathname);
     const menu = (
       <Menu>
         <Menu.Item
@@ -270,43 +280,45 @@ class GlobalHeader extends PureComponent {
           Apache ShenYu Gateway Management System
         </span>
         <div>
-          <div className={styles.item}>
-            <Dropdown
-              placement="bottomCenter"
-              overlay={
-                <Menu onClick={this.handleNamespacesValueChange}>
-                  {namespaces.map((namespace) => {
-                    let isCurrentNamespace =
-                      currentNamespaceId === namespace.namespaceId;
-                    return (
-                      <Menu.Item
-                        key={namespace.namespaceId}
-                        disabled={isCurrentNamespace}
-                      >
-                        <span>{namespace.name}</span>
-                      </Menu.Item>
-                    );
-                  })}
-                </Menu>
-              }
-            >
-              <Button>
-                <a
-                  className="ant-dropdown-link"
-                  style={{ fontWeight: "bold" }}
-                  onClick={(e) => e.preventDefault()}
-                >
-                  {`${getIntlContent("SHENYU.SYSTEM.NAMESPACE")} / ${
-                    namespaces.find(
-                      (namespace) =>
-                        currentNamespaceId === namespace.namespaceId,
-                    )?.name
-                  } `}
-                </a>
-                <Icon type="down" />
-              </Button>
-            </Dropdown>
-          </div>
+          {showNamespaces && (
+            <div className={styles.item}>
+              <Dropdown
+                placement="bottomCenter"
+                overlay={
+                  <Menu onClick={this.handleNamespacesValueChange}>
+                    {namespaces.map((namespace) => {
+                      let isCurrentNamespace =
+                        currentNamespaceId === namespace.namespaceId;
+                      return (
+                        <Menu.Item
+                          key={namespace.namespaceId}
+                          disabled={isCurrentNamespace}
+                        >
+                          <span>{namespace.name}</span>
+                        </Menu.Item>
+                      );
+                    })}
+                  </Menu>
+                }
+              >
+                <Button>
+                  <a
+                    className="ant-dropdown-link"
+                    style={{ fontWeight: "bold" }}
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    {`${getIntlContent("SHENYU.SYSTEM.NAMESPACE")} / ${
+                      namespaces.find(
+                        (namespace) =>
+                          currentNamespaceId === namespace.namespaceId,
+                      )?.name
+                    } `}
+                  </a>
+                  <Icon type="down" />
+                </Button>
+              </Dropdown>
+            </div>
+          )}
           <div className={styles.item}>
             <Dropdown placement="bottomCenter" overlay={this.state.help}>
               <Button>
@@ -472,4 +484,4 @@ class GlobalHeader extends PureComponent {
   }
 }
 
-export default GlobalHeader;
+export default withRouter(GlobalHeader);
