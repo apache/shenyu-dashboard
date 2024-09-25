@@ -551,12 +551,9 @@ export async function asyncConfigImport(params) {
 
 // 同步单个插件
 export async function asyncOnePlugin(params) {
-  return request(
-    `${baseUrl}/namespacePlugin/syncPluginData?id=${params.id}&namespaceId=${params.namespaceId}`,
-    {
-      method: `PUT`,
-    },
-  );
+  return request(`${baseUrl}/namespacePlugin/syncPluginData?id=${params.id}`, {
+    method: `PUT`,
+  });
 }
 
 // get plugin dropdown list
@@ -1172,12 +1169,9 @@ export async function deleteNamespace(params) {
 
 /* findNamespacePlugin */
 export async function findNamespacePlugin(params) {
-  return request(
-    `${baseUrl}/namespacePlugin/${params.pluginId}/${params.namespaceId}`,
-    {
-      method: `GET`,
-    },
-  );
+  return request(`${baseUrl}/namespacePlugin/${params.id}`, {
+    method: `GET`,
+  });
 }
 
 /* getAllNamespacePlugins */
@@ -1194,27 +1188,16 @@ export async function updateNamespacePluginEnabled(params) {
     body: {
       ids: params.list,
       enabled: params.enabled,
-      namespaceId: params.namespaceId,
     },
   });
 }
 
 /* updateNamespacePlugin */
 export async function updateNamespacePlugin(params) {
-  const formData = new FormData();
-  formData.append("pluginId", params.pluginId);
-  if (params.config) formData.append("config", params.config);
-  formData.append("sort", params.sort);
-  formData.append("enabled", params.enabled);
-  formData.append("name", params.name);
-  formData.append("namespaceId", params.namespaceId);
-  return request(
-    `${baseUrl}/namespacePlugin?pluginId=${params.pluginId}&namespaceId=${params.namespaceId}`,
-    {
-      method: `PUT`,
-      body: formData,
-    },
-  );
+  return request(`${baseUrl}/namespacePlugin/${params.id}`, {
+    method: `PUT`,
+    body: params,
+  });
 }
 
 /* deletePlugin */

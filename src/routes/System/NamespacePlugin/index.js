@@ -143,7 +143,7 @@ export default class NamespacePlugin extends Component {
   editClick = (record) => {
     const { dispatch, currentNamespaceId } = this.props;
     getUpdateModal({
-      pluginId: record.pluginId,
+      id: record.id,
       namespaceId: currentNamespaceId,
       dispatch,
       fetchValue: this.currentQueryPayload(),
@@ -231,20 +231,12 @@ export default class NamespacePlugin extends Component {
 
   // 批量启用或禁用
   enableClick = () => {
-    const {
-      dispatch,
-      currentNamespaceId,
-      namespacePlugin: { namespacePluginList },
-    } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "namespacePlugin/fetchItem",
-        payload: {
-          pluginId: namespacePluginList.find((i) => i.id === selectedRowKeys[0])
-            ?.pluginId,
-          namespaceId: currentNamespaceId,
-        },
+        payload: { id: selectedRowKeys[0] },
         callback: (user) => {
           this.statusSwitch({
             list: selectedRowKeys,
