@@ -305,15 +305,6 @@ export async function updateAuth(params) {
   });
 }
 
-/* getAllAuth */
-export async function getAllAuth(params) {
-  const { appKey, currentPage, pageSize } = params;
-  let myParams = appKey ? params : { currentPage, pageSize };
-  return request(`${baseUrl}/appAuth?${stringify(myParams)}`, {
-    method: `GET`,
-  });
-}
-
 /* syncAuthsData */
 export async function syncAuthsData() {
   return request(`${baseUrl}/appAuth/syncData`, {
@@ -324,8 +315,9 @@ export async function syncAuthsData() {
 
 /* getAllAuths */
 export async function getAllAuths(params) {
-  const { appKey, phone, currentPage, pageSize } = params;
-  const myParams = appKey || phone ? params : { currentPage, pageSize };
+  const { appKey, phone, currentPage, pageSize, namespaceId } = params;
+  const myParams =
+    appKey || phone ? params : { currentPage, pageSize, namespaceId };
   return request(`${baseUrl}/appAuth/findPageByQuery?${stringify(myParams)}`, {
     method: `GET`,
   });

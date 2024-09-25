@@ -34,13 +34,13 @@ const { TextArea } = Input;
 class AddModal extends Component {
   constructor(props) {
     super(props);
-    const selectorConditions = props.authParamVOList || [
+    const selectorConditions = props.authParamList || [
       {
         appName: "",
         appParam: "",
       },
     ];
-    const pathDatas = props.authPathVOList || [
+    const pathDatas = props.authPathList || [
       {
         path: "",
         enabled: true,
@@ -90,8 +90,8 @@ class AddModal extends Component {
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         handleOk({
-          authParamDTOList: selectorConditions,
-          authPathDTOList: pathDatas,
+          authParamList: selectorConditions,
+          authPathList: pathDatas,
           id,
           ...values,
         });

@@ -30,6 +30,7 @@ import AuthButton from "../../../utils/AuthButton";
 @connect(({ auth, loading, global }) => ({
   auth,
   language: global.language,
+  currentNamespaceId: global.currentNamespaceId,
   loading: loading.effects["auth/fetch"],
 }))
 export default class Auth extends Component {
@@ -83,7 +84,7 @@ export default class Auth extends Component {
   };
 
   query = () => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const { appKey, phone, currentPage, pageSize } = this.state;
     dispatch({
       type: "auth/fetch",
@@ -92,13 +93,14 @@ export default class Auth extends Component {
         phone,
         currentPage,
         pageSize,
+        namespaceId: currentNamespaceId,
       },
     });
   };
 
   // eslint-disable-next-line react/no-unused-class-component-methods
   getAllAuths = (page) => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const { appKey, phone, pageSize } = this.state;
     dispatch({
       type: "auth/fetch",
@@ -107,6 +109,7 @@ export default class Auth extends Component {
         phone,
         currentPage: page,
         pageSize,
+        namespaceId: currentNamespaceId,
       },
     });
   };
@@ -127,7 +130,7 @@ export default class Auth extends Component {
   };
 
   editClick = (record) => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const { currentPage } = this.state;
     dispatch({
       type: "auth/fetchItem",
@@ -145,10 +148,12 @@ export default class Auth extends Component {
                   payload: {
                     extInfo: null,
                     ...values,
+                    namespaceId: currentNamespaceId,
                   },
                   fetchValue: {
                     currentPage,
                     pageSize: 20,
+                    namespaceId: currentNamespaceId,
                   },
                   callback: () => {
                     this.closeModal(true);
@@ -167,7 +172,7 @@ export default class Auth extends Component {
 
   editClickMeta = (record) => {
     const { currentPage } = this.state;
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     dispatch({
       type: "auth/fetchItemDel",
       payload: {
@@ -203,6 +208,7 @@ export default class Auth extends Component {
                       fetchValue: {
                         currentPage,
                         pageSize: 20,
+                        namespaceId: currentNamespaceId,
                       },
                       callback: () => {
                         this.closeModal(true);
@@ -226,7 +232,7 @@ export default class Auth extends Component {
   };
 
   deleteClick = () => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
@@ -234,7 +240,9 @@ export default class Auth extends Component {
         payload: {
           list: selectedRowKeys,
         },
-        fetchValue: {},
+        fetchValue: {
+          namespaceId: currentNamespaceId,
+        },
         callback: () => {
           this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
         },
@@ -249,7 +257,7 @@ export default class Auth extends Component {
 
   addClick = () => {
     const { currentPage } = this.state;
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     dispatch({
       type: "auth/fetchMetaGroup",
       payload: {},
@@ -261,10 +269,11 @@ export default class Auth extends Component {
               handleOk={(values) => {
                 dispatch({
                   type: "auth/add",
-                  payload: values,
+                  payload: { ...values, namespaceId: currentNamespaceId },
                   fetchValue: {
                     currentPage,
                     pageSize: 20,
+                    namespaceId: currentNamespaceId,
                   },
                   callback: () => {
                     this.setState({ selectedRowKeys: [], currentPage: 1 });
@@ -283,14 +292,16 @@ export default class Auth extends Component {
   };
 
   openSwitch = ({ list, enabled, callback }) => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     dispatch({
       type: "auth/updateOp",
       payload: {
         list,
         enabled,
       },
-      fetchValue: {},
+      fetchValue: {
+        namespaceId: currentNamespaceId,
+      },
       callback,
     });
   };
@@ -321,14 +332,16 @@ export default class Auth extends Component {
   };
 
   statusSwitch = ({ list, enabled, callback }) => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     dispatch({
       type: "auth/updateEn",
       payload: {
         list,
         enabled,
       },
-      fetchValue: {},
+      fetchValue: {
+        namespaceId: currentNamespaceId,
+      },
       callback,
     });
   };
