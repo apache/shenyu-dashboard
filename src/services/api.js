@@ -1206,6 +1206,7 @@ export async function deleteNamespacePlugin(params) {
     method: `DELETE`,
     body: {
       ids: [...params.list],
+      namespaceId: params.namespaceId,
     },
   });
 }
