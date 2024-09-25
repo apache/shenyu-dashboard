@@ -20,7 +20,7 @@ import { refreshAuthMenus } from "./AuthRoute";
 import AddModal from "../routes/System/NamespacePlugin/AddModal";
 
 export function getUpdateModal({
-  pluginId,
+  id,
   namespaceId,
   dispatch,
   fetchValue,
@@ -30,10 +30,7 @@ export function getUpdateModal({
 }) {
   dispatch({
     type: "namespacePlugin/fetchItem",
-    payload: {
-      pluginId,
-      namespaceId,
-    },
+    payload: { id },
     callback: (plugin) => {
       dispatch({
         type: "namespacePlugin/fetchByPluginId",
@@ -53,6 +50,7 @@ export function getUpdateModal({
                   type: "namespacePlugin/update",
                   payload: {
                     config,
+                    id: plugin.id,
                     pluginId: plugin.pluginId,
                     enabled,
                     namespaceId,

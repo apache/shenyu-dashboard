@@ -143,7 +143,7 @@ export default class NamespacePlugin extends Component {
   editClick = (record) => {
     const { dispatch, currentNamespaceId } = this.props;
     getUpdateModal({
-      pluginId: record.pluginId,
+      id: record.id,
       namespaceId: currentNamespaceId,
       dispatch,
       fetchValue: this.currentQueryPayload(),
