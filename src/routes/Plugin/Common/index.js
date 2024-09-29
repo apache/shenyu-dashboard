@@ -269,6 +269,7 @@ export default class Common extends Component {
                     selectedDiscoveryType,
                     serverList,
                     discoveryProps,
+                    namespaceId: currentNamespaceId,
                   });
                   this.closeModal();
                 },
@@ -421,6 +422,7 @@ export default class Common extends Component {
   };
 
   getUpstreamsWithProps = (upstreams) => {
+    const { currentNamespaceId } = this.props;
     return upstreams.map((item) => ({
       protocol: item.protocol,
       url: item.url,
@@ -430,6 +432,7 @@ export default class Common extends Component {
       props: JSON.stringify({
         warmupTime: item.warmupTime,
       }),
+      namespaceId: currentNamespaceId,
     }));
   };
 
@@ -445,6 +448,7 @@ export default class Common extends Component {
     selectedDiscoveryType,
     serverList,
     discoveryProps,
+    namespaceId,
   }) => {
     const { dispatch } = this.props;
     dispatch({
@@ -464,12 +468,13 @@ export default class Common extends Component {
           props: discoveryProps,
           name: selectorName,
         },
+        namespaceId,
       },
     });
   };
 
   updateDiscoveryUpstream = (discoveryHandlerId, upstreams) => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const upstreamsWithHandlerId = upstreams.map((item) => ({
       protocol: item.protocol,
       url: item.url,
@@ -479,6 +484,7 @@ export default class Common extends Component {
         warmupTime: item.warmupTime,
       }),
       discoveryHandlerId,
+      namespaceId: currentNamespaceId,
     }));
     dispatch({
       type: "discovery/updateDiscoveryUpstream",
@@ -596,6 +602,7 @@ export default class Common extends Component {
                           selectedDiscoveryType,
                           serverList,
                           discoveryProps,
+                          namespaceId: currentNamespaceId,
                         });
                       } else {
                         this.updateDiscoveryUpstream(
@@ -739,7 +746,7 @@ export default class Common extends Component {
   // select
   rowClick = (record) => {
     const { id } = record;
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const { selectorPageSize } = this.state;
     dispatch({
       type: "common/saveCurrentSelector",
@@ -753,6 +760,7 @@ export default class Common extends Component {
         currentPage: 1,
         pageSize: selectorPageSize,
         selectorId: id,
+        namespaceId: currentNamespaceId,
       },
     });
   };

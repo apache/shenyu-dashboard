@@ -33,12 +33,13 @@ class DiscoveryImportModal extends Component {
   }
 
   componentDidMount() {
-    const { dispatch, pluginName } = this.props;
+    const { dispatch, pluginName, currentNamespaceId } = this.props;
     dispatch({
       type: "discovery/fetchDiscovery",
       payload: {
         pluginName,
         level: "1",
+        namespaceId: currentNamespaceId,
       },
       callback: (discoveryConfigList) => {
         this.setState({ configList: discoveryConfigList });
