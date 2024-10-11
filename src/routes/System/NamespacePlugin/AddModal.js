@@ -46,7 +46,7 @@ class AddModal extends Component {
       }
       const fieldName = jsonData?.field;
       this.state.jsonKey = fieldName;
-      this.state.jsonValue = config ? config[fieldName] ?? {} : {};
+      this.state.jsonValue = config[fieldName] || {};
     } catch (e) {
       this.state.jsonValue = {};
     }
