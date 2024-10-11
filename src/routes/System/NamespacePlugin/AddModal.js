@@ -16,8 +16,9 @@
  */
 
 import React, { Component, Fragment } from "react";
-import { Modal, Form, Switch, Input, Select, Divider, InputNumber } from "antd";
+import { Divider, Form, Input, InputNumber, Modal, Select, Switch } from "antd";
 import { connect } from "dva";
+import ReactJson from "react-json-view";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Option } = Select;
@@ -27,8 +28,45 @@ const FormItem = Form.Item;
   platform: global.platform,
 }))
 class AddModal extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      jsonKey: null,
+      jsonValue: {},
+    };
+    this.parseJson();
+  }
+
+  parseJson = () => {
+    let { config, data } = this.props;
+    try {
+      const jsonData = data.find((i) => i.dataType === 4);
+      if (config) {
+        config = JSON.parse(config);
+      }
+      const fieldName = jsonData?.field;
+      this.state.jsonKey = fieldName;
+      this.state.jsonValue = config[fieldName] || {};
+    } catch (e) {
+      this.state.jsonValue = {};
+    }
+  };
+
+  updateJson = (obj, fieldName) => {
+    const { form } = this.props;
+    let fieldsValue = form.getFieldsValue();
+    this.state.jsonValue = obj.updated_src;
+    const value = { [fieldName]: this.state.jsonValue };
+    if (!fieldsValue[fieldName]) {
+      form.setFields({ [fieldName]: { value } });
+    } else {
+      form.setFieldsValue(value);
+    }
+  };
+
   handleSubmit = (e) => {
     const { form, handleOk, id = "", data } = this.props;
+    const { jsonKey, jsonValue } = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -41,6 +79,9 @@ class AddModal extends Component {
               config[item.field] = values[fieldName];
             }
           });
+          if (data.some((i) => i.dataType === 4)) {
+            config[jsonKey] = jsonValue;
+          }
           config = JSON.stringify(config);
           if (config === "{}") {
             config = "";
@@ -52,6 +93,7 @@ class AddModal extends Component {
   };
 
   render() {
+    const { jsonValue } = this.state;
     let {
       handleCancel,
       form,
@@ -188,6 +230,26 @@ class AddModal extends Component {
                           })}
                         </Select>,
                       )}
+                    </FormItem>
+                  );
+                } else if (dataType === 4) {
+                  return (
+                    <FormItem
+                      label={eachField.label}
+                      name={fieldName}
+                      {...formItemLayout}
+                      key={index}
+                    >
+                      <ReactJson
+                        src={jsonValue}
+                        theme="monokai"
+                        displayDataTypes={false}
+                        name={false}
+                        onAdd={(obj) => this.updateJson(obj, fieldName)}
+                        onEdit={(obj) => this.updateJson(obj, fieldName)}
+                        onDelete={(obj) => this.updateJson(obj, fieldName)}
+                        style={{ borderRadius: 4, padding: 16 }}
+                      />
                     </FormItem>
                   );
                 } else {
