@@ -27,6 +27,8 @@ import {
   Tag,
   Typography,
   Switch,
+  Dropdown,
+  Menu,
 } from "antd";
 import { connect } from "dva";
 import { Link } from "dva/router";
@@ -46,6 +48,7 @@ const { Option } = Select;
   authMenu: resource.authMenu,
   language: global.language,
   loading: loading.effects["plugin/fetch"],
+  namespaces: global.namespaces,
 }))
 export default class Plugin extends Component {
   components = resizableComponents;
@@ -148,6 +151,35 @@ export default class Plugin extends Component {
       canceledCallback: () => {
         this.closeModal();
       },
+    });
+  };
+
+  getNamespaceMenus = (record) => {
+    const { namespaces } = this.props;
+    return (
+      <Menu>
+        {namespaces.map((namespace) => (
+          <Menu.Item key={namespace.id}>
+            <a onClick={() => this.generateClick(record, namespace)}>
+              {namespace.name}
+            </a>
+          </Menu.Item>
+        ))}
+      </Menu>
+    );
+  };
+
+  generateClick = (record, namespace) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "plugin/generate",
+      payload: {
+        pluginId: record.id,
+        namespaceId: namespace.namespaceId,
+      },
+      fetchValue: this.currentQueryPayload({
+        pageSize: 12,
+      }),
     });
   };
 
@@ -418,7 +450,7 @@ export default class Plugin extends Component {
           dataIndex: "time",
           key: "time",
           ellipsis: true,
-          width: 160,
+          width: 200,
           fixed: "right",
           render: (text, record) => {
             return (
@@ -442,6 +474,13 @@ export default class Plugin extends Component {
                   >
                     {getIntlContent("SHENYU.BUTTON.SYSTEM.RESOURCE")}
                   </div>
+                </AuthButton>
+                <AuthButton perms="system:plugin:add">
+                  <Dropdown overlay={this.getNamespaceMenus(record)}>
+                    <div className="edit">
+                      {getIntlContent("SHENYU.BUTTON.SYSTEM.GENERATE")}
+                    </div>
+                  </Dropdown>
                 </AuthButton>
               </div>
             );

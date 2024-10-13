@@ -22,6 +22,7 @@ import {
   updatePlugin,
   deletePlugin,
   addPlugin,
+  generatePlugin,
   updatepluginEnabled,
   fetchPluginHandleByPluginId,
   addPluginResource,
@@ -69,6 +70,17 @@ export default {
       if (json.code === 200) {
         message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
         callback();
+        yield put({ type: "reload", fetchValue });
+      } else {
+        message.warn(json.message);
+      }
+    },
+    *generate(params, { call, put }) {
+      const { payload, callback, fetchValue } = params;
+      const json = yield call(generatePlugin, payload);
+      if (json.code === 200) {
+        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
+        callback?.();
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);

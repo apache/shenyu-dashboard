@@ -244,6 +244,7 @@ class GlobalHeader extends PureComponent {
       "/config/dict",
       "/config/namespace",
       "/config/pluginhandle",
+      "/config/plugin",
       "/system/resource",
       "/system/role",
       "/system/manage",
