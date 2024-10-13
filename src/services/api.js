@@ -195,6 +195,13 @@ export async function addPlugin(params) {
   });
 }
 
+/* generatePlugin */
+export async function generatePlugin({ pluginId, namespaceId }) {
+  return request(`${baseUrl}/namespacePlugin/${namespaceId}/${pluginId}`, {
+    method: `PUT`,
+  });
+}
+
 function readFileAsBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
