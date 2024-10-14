@@ -140,6 +140,13 @@ export const getRouterData = (app) => {
         () => import("../routes/System/Alert"),
       ),
     },
+    "/system/scale": {
+      component: dynamicWrapper(
+        app,
+        ["scale"],
+        () => import("../routes/System/Scale"),
+      ),
+    },
     "/config/namespace": {
       component: dynamicWrapper(
         app,

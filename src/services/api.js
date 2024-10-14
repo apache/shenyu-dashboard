@@ -1116,6 +1116,64 @@ export function fetchAlertReport(params) {
   });
 }
 
+export function getScaleRules(params) {
+  return request(`${baseUrl}/scale/rule?${stringify(params)}`, {
+    method: `GET`,
+  });
+}
+
+export function getAllScalePolicies() {
+  return request(`${baseUrl}/scale/policy/getAllPolicies`, {
+    method: `GET`,
+  });
+}
+
+export function getScalePolicy({ id }) {
+  return request(`${baseUrl}/scale/policy/${id}`, {
+    method: `GET`,
+  });
+}
+
+export function updateScalePolicy(params) {
+  return request(`${baseUrl}/scale/policy`, {
+    method: `PUT`,
+    body: {
+      ...params,
+    },
+  });
+}
+
+export function getScaleRule({ id }) {
+  return request(`${baseUrl}/scale/rule/${id}`, {
+    method: `GET`,
+  });
+}
+
+export function addScaleRule(params) {
+  return request(`${baseUrl}/scale/rule`, {
+    method: `POST`,
+    body: {
+      ...params,
+    },
+  });
+}
+
+export function updateScaleRule(params) {
+  return request(`${baseUrl}/scale/rule`, {
+    method: `PUT`,
+    body: {
+      ...params,
+    },
+  });
+}
+
+export async function deleteScaleRules(params) {
+  return request(`${baseUrl}/scale/rule/batch`, {
+    method: `DELETE`,
+    body: [...params.list],
+  });
+}
+
 export function bindingSelector(params) {
   return request(`${baseUrl}/proxy-selector/binding`, {
     method: `POST`,
