@@ -34,6 +34,7 @@ import styles from "./index.less";
 import { getCurrentLocale, getIntlContent } from "../../utils/IntlUtils";
 import { checkUserPassword } from "../../services/api";
 import { emit } from "../../utils/emit";
+import { resetAuthMenuCache } from "../../utils/AuthRoute";
 
 const TranslationOutlinedSvg = () => (
   <svg
@@ -113,7 +114,7 @@ class GlobalHeader extends PureComponent {
     };
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const token = window.sessionStorage.getItem("token");
     if (token) {
       checkUserPassword().then((res) => {
@@ -125,7 +126,7 @@ class GlobalHeader extends PureComponent {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.setState = () => false;
   }
 
@@ -158,6 +159,16 @@ class GlobalHeader extends PureComponent {
 
   handleNamespacesValueChange = (value) => {
     const { dispatch } = this.props;
+    const namespaceId = value?.key || "649330b6-c2d7-4edc-be8e-8a54df9eb385";
+    window.sessionStorage.setItem("currentNamespaceId", namespaceId);
+    dispatch({
+      type: "global/fetchPermission",
+      payload: {
+        callback: () => {
+          resetAuthMenuCache();
+        },
+      },
+    });
     dispatch({
       type: "global/saveCurrentNamespaceId",
       payload: value.key,
@@ -229,7 +240,7 @@ class GlobalHeader extends PureComponent {
     );
   };
 
-  render() {
+  render () {
     const {
       onLogout,
       form: { getFieldDecorator, resetFields, validateFields, getFieldValue },
@@ -308,12 +319,11 @@ class GlobalHeader extends PureComponent {
                     style={{ fontWeight: "bold" }}
                     onClick={(e) => e.preventDefault()}
                   >
-                    {`${getIntlContent("SHENYU.SYSTEM.NAMESPACE")} / ${
-                      namespaces.find(
-                        (namespace) =>
-                          currentNamespaceId === namespace.namespaceId,
-                      )?.name
-                    } `}
+                    {`${getIntlContent("SHENYU.SYSTEM.NAMESPACE")} / ${namespaces.find(
+                      (namespace) =>
+                        currentNamespaceId === namespace.namespaceId,
+                    )?.name
+                      } `}
                   </a>
                   <Icon type="down" />
                 </Button>
@@ -392,7 +402,7 @@ class GlobalHeader extends PureComponent {
               {getFieldDecorator("oldPassword", {
                 rules: [
                   {
-                    validator(rule, value, callback) {
+                    validator (rule, value, callback) {
                       if (!value || value.length === 0) {
                         callback(getIntlContent("SHENYU.GLOBALHEADER.NOTNULL"));
                         return;
@@ -411,7 +421,7 @@ class GlobalHeader extends PureComponent {
               {getFieldDecorator("password", {
                 rules: [
                   {
-                    validator(rule, value, callback) {
+                    validator (rule, value, callback) {
                       const confirmPassword = getFieldValue("confirmPassword");
                       if (!value) {
                         callback(
@@ -453,7 +463,7 @@ class GlobalHeader extends PureComponent {
               {getFieldDecorator("confirmPassword", {
                 rules: [
                   {
-                    validator(rule, value, callback) {
+                    validator (rule, value, callback) {
                       const password = getFieldValue("password");
                       if (!value) {
                         callback(

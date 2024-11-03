@@ -807,7 +807,17 @@ export async function getMenuTree() {
 // get userPermission by token
 export async function getUserPermissionByToken(params) {
   return request(
-    `${baseUrl}/permission/getUserPermissionByToken?token=${params.token}`,
+    `${baseUrl}/permission/getUserPermissionByToken?token=${params.token}&namespaceId=${params.namespaceId}`,
+    {
+      method: `GET`,
+    },
+  );
+}
+
+// get userPermission
+export async function getUserPermission(params) {
+  return request(
+    `${baseUrl}/permission/getUserPermissionByToken?namespaceId=${params.namespaceId}`,
     {
       method: `GET`,
     },
