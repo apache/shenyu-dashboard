@@ -57,7 +57,8 @@ export default {
           type: "saveNamespaces",
           payload: json.data,
         });
-        const namespaceId = json.data[0]?.namespaceId || "649330b6-c2d7-4edc-be8e-8a54df9eb385";
+        const namespaceId =
+          json.data[0]?.namespaceId || "649330b6-c2d7-4edc-be8e-8a54df9eb385";
         window.sessionStorage.setItem("currentNamespaceId", namespaceId);
       }
     },
