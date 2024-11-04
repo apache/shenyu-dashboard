@@ -33,6 +33,7 @@ import {
 import { connect } from "dva";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { titleCase } from "../../../utils/utils";
+import { defaultNamespaceId } from "../../../components/_utils/utils";
 
 const { TreeNode } = Tree;
 const { Search } = Input;
@@ -57,7 +58,7 @@ export default class DataPermModal extends Component {
       pageSize: 12,
       ruleListMap: {},
       searchValue: "",
-      currentNamespaceId: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
+      currentNamespaceId: defaultNamespaceId,
       selectorExpandedRowKeys: [],
     };
   }

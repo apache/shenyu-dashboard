@@ -25,6 +25,7 @@ import {
   getUserPermissionByToken,
 } from "../services/api";
 import { getIntlContent } from "../utils/IntlUtils";
+import { defaultNamespaceId } from "../components/_utils/utils";
 
 export default {
   namespace: "global",
@@ -37,7 +38,7 @@ export default {
     permissions: {},
     language: "",
     namespaces: [],
-    currentNamespaceId: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
+    currentNamespaceId: defaultNamespaceId,
   },
 
   effects: {
@@ -57,9 +58,6 @@ export default {
           type: "saveNamespaces",
           payload: json.data,
         });
-        const namespaceId =
-          json.data[0]?.namespaceId || "649330b6-c2d7-4edc-be8e-8a54df9eb385";
-        window.sessionStorage.setItem("currentNamespaceId", namespaceId);
       }
     },
     *fetchPlugins({ payload }, { call, put }) {
@@ -92,11 +90,13 @@ export default {
         message.warn(json.message);
       }
     },
-    *fetchPermission({ payload }, { call, put }) {
+    *fetchPermission({ payload }, { call, put, select }) {
       const { callback } = payload;
       let permissions = { menu: [], button: [] };
       const token = window.sessionStorage.getItem("token");
-      const namespaceId = window.sessionStorage.getItem("currentNamespaceId");
+      const namespaceId = yield select(
+        ({ global }) => global.currentNamespaceId,
+      );
       if (namespaceId) {
         const params = { token, namespaceId };
         const json = yield call(getUserPermissionByToken, params);

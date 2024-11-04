@@ -814,16 +814,6 @@ export async function getUserPermissionByToken(params) {
   );
 }
 
-// get userPermission
-export async function getUserPermission(params) {
-  return request(
-    `${baseUrl}/permission/getUserPermissionByToken?namespaceId=${params.namespaceId}`,
-    {
-      method: `GET`,
-    },
-  );
-}
-
 /* get dataPermision's selectors by page */
 export async function getDataPermisionSelectors(params) {
   return request(`${baseUrl}/data-permission/selector?${stringify(params)}`, {
