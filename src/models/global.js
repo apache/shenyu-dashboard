@@ -57,6 +57,9 @@ export default {
           type: "saveNamespaces",
           payload: json.data,
         });
+        const namespaceId =
+          json.data[0]?.namespaceId || "649330b6-c2d7-4edc-be8e-8a54df9eb385";
+        window.sessionStorage.setItem("currentNamespaceId", namespaceId);
       }
     },
     *fetchPlugins({ payload }, { call, put }) {
@@ -93,8 +96,9 @@ export default {
       const { callback } = payload;
       let permissions = { menu: [], button: [] };
       const token = window.sessionStorage.getItem("token");
-      if (token) {
-        const params = { token };
+      const namespaceId = window.sessionStorage.getItem("currentNamespaceId");
+      if (namespaceId) {
+        const params = { token, namespaceId };
         const json = yield call(getUserPermissionByToken, params);
         if (json.code === 200) {
           let { menu, currentAuth } = json.data;
