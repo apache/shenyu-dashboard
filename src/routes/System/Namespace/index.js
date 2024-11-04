@@ -23,6 +23,7 @@ import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { refreshAuthMenus } from "../../../utils/AuthRoute";
+import { defaultNamespaceId } from "../../../components/_utils/utils";
 
 @connect(({ namespace, resource, loading, global }) => ({
   namespace,
@@ -201,7 +202,7 @@ export default class Namespace extends Component {
           if (deletedCurrentNamespace) {
             dispatch({
               type: "global/saveCurrentNamespaceId",
-              payload: "649330b6-c2d7-4edc-be8e-8a54df9eb385",
+              payload: defaultNamespaceId,
             });
           }
           dispatch({ type: "global/fetchNamespaces" });
@@ -294,8 +295,7 @@ export default class Namespace extends Component {
           width: 160,
           fixed: "right",
           render: (text, record) => {
-            return record.namespaceId ===
-              "649330b6-c2d7-4edc-be8e-8a54df9eb385" ? (
+            return record.namespaceId === defaultNamespaceId ? (
               ""
             ) : (
               <div className="optionParts">
@@ -357,7 +357,7 @@ export default class Namespace extends Component {
       selectedRowKeys,
       onChange: this.onSelectChange,
       getCheckboxProps: (record) => ({
-        disabled: record.namespaceId === "649330b6-c2d7-4edc-be8e-8a54df9eb385",
+        disabled: record.namespaceId === defaultNamespaceId,
       }),
     };
     const flatList = (map, list) => {

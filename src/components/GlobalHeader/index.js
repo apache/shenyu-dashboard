@@ -35,6 +35,7 @@ import { getCurrentLocale, getIntlContent } from "../../utils/IntlUtils";
 import { checkUserPassword } from "../../services/api";
 import { emit } from "../../utils/emit";
 import { resetAuthMenuCache } from "../../utils/AuthRoute";
+import { defaultNamespaceId } from "../_utils/utils";
 
 const TranslationOutlinedSvg = () => (
   <svg
@@ -159,23 +160,23 @@ class GlobalHeader extends PureComponent {
 
   handleNamespacesValueChange = (value) => {
     const { dispatch } = this.props;
-    const namespaceId = value?.key || "649330b6-c2d7-4edc-be8e-8a54df9eb385";
-    window.sessionStorage.setItem("currentNamespaceId", namespaceId);
+    const namespaceId = value?.key || defaultNamespaceId;
+    dispatch({
+      type: "global/saveCurrentNamespaceId",
+      payload: namespaceId,
+    });
+    if (namespaceId !== defaultNamespaceId) {
+      message.warn(getIntlContent("SHENYU.NAMESPACE.ALERTNAMESPACEID.CHANGED"));
+    }
     dispatch({
       type: "global/fetchPermission",
       payload: {
+        namespaceId,
         callback: () => {
           resetAuthMenuCache();
         },
       },
     });
-    dispatch({
-      type: "global/saveCurrentNamespaceId",
-      payload: value.key,
-    });
-    if (value.key !== "649330b6-c2d7-4edc-be8e-8a54df9eb385") {
-      message.warn(getIntlContent("SHENYU.NAMESPACE.ALERTNAMESPACEID.CHANGED"));
-    }
   };
 
   importConfigClick = () => {
