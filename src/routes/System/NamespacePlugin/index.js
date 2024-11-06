@@ -422,7 +422,7 @@ export default class NamespacePlugin extends Component {
                     {getIntlContent("SHENYU.SYSTEM.EDITOR")}
                   </div>
                 </AuthButton>
-                <AuthButton perms="system:namespacePlugin:resource">
+                {/* <AuthButton perms="system:namespacePlugin:resource">
                   <div
                     className="edit"
                     onClick={() => {
@@ -431,7 +431,7 @@ export default class NamespacePlugin extends Component {
                   >
                     {getIntlContent("SHENYU.BUTTON.SYSTEM.RESOURCE")}
                   </div>
-                </AuthButton>
+                </AuthButton> */}
               </div>
             );
           },
