@@ -97,7 +97,7 @@ export default {
       const namespaceId = yield select(
         ({ global }) => global.currentNamespaceId,
       );
-      if (namespaceId) {
+      if (token && namespaceId) {
         const params = { token, namespaceId };
         const json = yield call(getUserPermissionByToken, params);
         if (json.code === 200) {
