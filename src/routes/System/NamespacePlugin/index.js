@@ -160,26 +160,6 @@ export default class NamespacePlugin extends Component {
     });
   };
 
-  resourceClick = (record) => {
-    // code here...
-    const { dispatch } = this.props;
-    const { name, role, sort, config, pluginId, enabled } = record;
-    dispatch({
-      type: "plugin/createPluginResource",
-      payload: {
-        name,
-        role,
-        sort,
-        config,
-        id: pluginId,
-        enabled,
-      },
-      callback: () => {
-        refreshAuthMenus({ dispatch });
-      },
-    });
-  };
-
   searchOnchange = (e) => {
     this.setState({ name: e.target.value }, this.query);
   };
@@ -422,7 +402,7 @@ export default class NamespacePlugin extends Component {
                     {getIntlContent("SHENYU.SYSTEM.EDITOR")}
                   </div>
                 </AuthButton>
-                <AuthButton perms="system:namespacePlugin:resource">
+                {/* <AuthButton perms="system:namespacePlugin:resource">
                   <div
                     className="edit"
                     onClick={() => {
@@ -431,7 +411,7 @@ export default class NamespacePlugin extends Component {
                   >
                     {getIntlContent("SHENYU.BUTTON.SYSTEM.RESOURCE")}
                   </div>
-                </AuthButton>
+                </AuthButton> */}
               </div>
             );
           },
