@@ -87,7 +87,7 @@ export async function getAllMetadata(params) {
 }
 
 export async function findMetadata(params) {
-  return request(`${baseUrl}/meta-data/${params.id}/${params.namespaceId}`, {
+  return request(`${baseUrl}/meta-data/${params.id}/`, {
     method: `GET`,
   });
 }
@@ -468,7 +468,7 @@ export async function getAllSelectors(params) {
 
 /* get single selector */
 export async function findSelector(params) {
-  return request(`${baseUrl}/selector/${params.id}/${params.namespaceId}`, {
+  return request(`${baseUrl}/selector/${params.id}`, {
     method: `GET`,
   });
 }
@@ -496,7 +496,7 @@ export async function deleteRule(params) {
 }
 
 export async function findRule(params) {
-  return request(`${baseUrl}/rule/${params.id}/${params.namespaceId}`, {
+  return request(`${baseUrl}/rule/${params.id}`, {
     method: `GET`,
   });
 }

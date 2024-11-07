@@ -273,11 +273,9 @@ const setMenuIconAndSort = (menus, permissions) => {
 }))
 export default class AuthRoute extends Component {
   componentDidMount() {
-    const {
-      global: { permissions },
-      loading,
-      path,
-    } = this.props;
+    const { global, loading, path } = this.props;
+    // Fix hot-reload issue in development after code changes
+    const permissions = global?.permissions;
     if (
       (!permissions || !permissions.menu || permissions.menu.length === 0) &&
       !loading &&
