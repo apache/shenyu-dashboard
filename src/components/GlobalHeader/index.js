@@ -29,6 +29,7 @@ import {
 import { connect } from "dva";
 import { withRouter } from "dva/router";
 import AddModal from "./AddModal";
+import ExportModal from "./ExportModal";
 import ImportResultModal from "./ImportResultModal";
 import styles from "./index.less";
 import { getCurrentLocale, getIntlContent } from "../../utils/IntlUtils";
@@ -226,10 +227,31 @@ class GlobalHeader extends PureComponent {
 
   // export configs
   exportConfigClick = () => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "common/exportAll",
+    this.setState({
+      popup: (
+        <ExportModal
+          disabled={false}
+          handleOk={(values) => {
+            const { dispatch } = this.props;
+            dispatch({
+              type: "common/exportAll",
+              payload: values,
+              callback: (res) => {
+                this.closeModal(true);
+                this.showImportRestlt(JSON.parse(res));
+              },
+            });
+          }}
+          handleCancel={() => {
+            this.closeModal();
+          }}
+        />
+      ),
     });
+    // const { dispatch } = this.props;
+    // dispatch({
+    //   type: "common/exportAll",
+    // });
   };
 
   checkAuth = (perms) => {
@@ -337,7 +359,7 @@ class GlobalHeader extends PureComponent {
           {this.checkAuth("system:manager:exportConfig") && (
             <div className={styles.item}>
               <Button onClick={this.exportConfigClick}>
-                <Icon type="import" /> {getIntlContent("SHENYU.COMMON.EXPORT")}
+                <Icon type="export" /> {getIntlContent("SHENYU.COMMON.EXPORT")}
               </Button>
             </div>
           )}
