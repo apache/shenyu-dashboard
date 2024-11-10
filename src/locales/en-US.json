@@ -403,7 +403,7 @@
   "SHENYU.DOCUMENT.TAG.TABLE.CREATETIME": "Create Time",
   "SHENYU.DOCUMENT.TAG.TABLE.MODIFYTIME": "Modify Time",
   "SHENYU.COMMON.REQUIRED": "Required",
-  "SHENYU.COMMON.EXPORT": "Export All Config",
+  "SHENYU.COMMON.EXPORT": "Export Configs",
   "SHENYU.COMMON.IMPORT": "Import Configs",
   "SHENYU.COMMON.IMPORT.RESULT": "Import Result",
   "SHENYU.COMMON.IMPORT.METADATA.RESULT": "meta import fail message",

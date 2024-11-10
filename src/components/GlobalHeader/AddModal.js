@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-import React, { Component, forwardRef, Fragment } from "react";
-import { Modal, Form, Button } from "antd";
+import React, { Component, forwardRef } from "react";
+import { Modal, Form, Button, Dropdown, Menu, Icon } from "antd";
 import { connect } from "dva";
 import { getIntlContent } from "../../utils/IntlUtils";
+import { defaultNamespaceId } from "../_utils/utils";
 
 const FormItem = Form.Item;
 const ChooseFile = forwardRef(({ onChange, file }, ref) => {
@@ -45,23 +46,81 @@ const ChooseFile = forwardRef(({ onChange, file }, ref) => {
     </>
   );
 });
+
+const NamespaceSelector = forwardRef(
+  ({ onChange, currentNamespaceId, namespaces }) => {
+    const handleNamespaceChange = (value) => {
+      onChange(value.key);
+    };
+    return (
+      <Dropdown
+        overlay={
+          <Menu onClick={handleNamespaceChange}>
+            {namespaces.map((namespace) => {
+              let isCurrentNamespace =
+                currentNamespaceId === namespace.namespaceId;
+              return (
+                <Menu.Item
+                  key={namespace.namespaceId}
+                  disabled={isCurrentNamespace}
+                >
+                  <span>{namespace.name}</span>
+                </Menu.Item>
+              );
+            })}
+          </Menu>
+        }
+      >
+        <Button>
+          <a
+            className="ant-dropdown-link"
+            style={{ fontWeight: "bold" }}
+            onClick={(e) => e.preventDefault()}
+          >
+            {`${getIntlContent("SHENYU.SYSTEM.NAMESPACE")} / ${
+              namespaces.find(
+                (namespace) => currentNamespaceId === namespace.namespaceId,
+              )?.name
+            } `}
+          </a>
+          <Icon type="down" />
+        </Button>
+      </Dropdown>
+    );
+  },
+);
+
 @connect(({ global }) => ({
   platform: global.platform,
+  namespaces: global.namespaces,
 }))
 class AddModal extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      currentNamespaceId: defaultNamespaceId,
+    };
+  }
+
   handleSubmit = (e) => {
     const { form, handleOk } = this.props;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        let { file } = values;
-        handleOk({ file });
+        let { namespace, file } = values;
+        handleOk({ namespace, file });
       }
     });
   };
 
+  handleNamespacesValueChange = (value) => {
+    this.setState({ currentNamespaceId: value });
+  };
+
   render() {
-    let { handleCancel, form, config, file } = this.props;
+    let { handleCancel, form, config, file, namespaces } = this.props;
+    let { currentNamespaceId } = this.state;
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
@@ -87,6 +146,26 @@ class AddModal extends Component {
         onCancel={handleCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
+          <FormItem
+            {...formItemLayout}
+            label={getIntlContent("SHENYU.SYSTEM.NAMESPACE")}
+          >
+            {getFieldDecorator("namespace", {
+              rules: [
+                {
+                  required: true,
+                },
+              ],
+              initialValue: currentNamespaceId,
+              valuePropName: "namespace",
+            })(
+              <NamespaceSelector
+                onChange={this.handleNamespacesValueChange}
+                currentNamespaceId={currentNamespaceId}
+                namespaces={namespaces}
+              />,
+            )}
+          </FormItem>
           <FormItem
             {...formItemLayout}
             label={getIntlContent("SHENYU.COMMON.IMPORT")}

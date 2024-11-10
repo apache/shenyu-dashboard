@@ -539,7 +539,7 @@ export async function querySecretInfo() {
   return fetch(`${baseUrl}/platform/secretInfo`).catch(() => {});
 }
 
-// export all config
+// export configs
 export async function asyncConfigExport() {
   return download(`${baseUrl}/configs/export`, {
     method: `GET`,
@@ -549,6 +549,7 @@ export async function asyncConfigExport() {
 // import configs
 export async function asyncConfigImport(params) {
   const formData = new FormData();
+  formData.append("namespace", params.namespace);
   formData.append("file", params.file);
   return request(`${baseUrl}/configs/import`, {
     method: `POST`,

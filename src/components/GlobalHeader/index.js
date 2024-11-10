@@ -224,8 +224,8 @@ class GlobalHeader extends PureComponent {
     this.setState({ popup: "" });
   };
 
-  // 导出数据
-  exportAllClick = () => {
+  // export configs
+  exportConfigClick = () => {
     const { dispatch } = this.props;
     dispatch({
       type: "common/exportAll",
@@ -273,7 +273,7 @@ class GlobalHeader extends PureComponent {
           {getIntlContent("SHENYU.GLOBALHEADER.CHANGE.PASSWORD")}
         </Menu.Item>
         {this.checkAuth("system:manager:exportConfig") && (
-          <Menu.Item key="2" onClick={this.exportAllClick}>
+          <Menu.Item key="2" onClick={this.exportConfigClick}>
             <Icon type="export" /> {getIntlContent("SHENYU.COMMON.EXPORT")}
           </Menu.Item>
         )}
@@ -325,6 +325,20 @@ class GlobalHeader extends PureComponent {
                   <Icon type="down" />
                 </Button>
               </Dropdown>
+            </div>
+          )}
+          {this.checkAuth("system:manager:importConfig") && (
+            <div className={styles.item}>
+              <Button onClick={this.importConfigClick}>
+                <Icon type="import" /> {getIntlContent("SHENYU.COMMON.IMPORT")}
+              </Button>
+            </div>
+          )}
+          {this.checkAuth("system:manager:exportConfig") && (
+            <div className={styles.item}>
+              <Button onClick={this.exportConfigClick}>
+                <Icon type="import" /> {getIntlContent("SHENYU.COMMON.EXPORT")}
+              </Button>
             </div>
           )}
           <div className={styles.item}>
