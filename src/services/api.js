@@ -567,11 +567,21 @@ export async function asyncConfigImport(params) {
   });
 }
 
-// 同步单个插件
+// sync on plugin
 export async function asyncOnePlugin(params) {
   return request(`${baseUrl}/namespacePlugin/syncPluginData?id=${params.id}`, {
     method: `PUT`,
   });
+}
+
+// sync by plugin and namespace
+export async function asyncByPluginAndNamespace(params) {
+  return request(
+    `${baseUrl}/namespacePlugin/syncPluginData?id=${params.id}&namespaceId=${params.namespaceId}`,
+    {
+      method: `PUT`,
+    },
+  );
 }
 
 // get plugin dropdown list
