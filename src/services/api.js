@@ -546,6 +546,16 @@ export async function asyncConfigExport() {
   });
 }
 
+// export configs by namespace
+export async function asyncConfigExportByNamespace(params) {
+  return download(
+    `${baseUrl}/configs/exportByNamespace?namespaceId=${params.namespaceId}`,
+    {
+      method: `GET`,
+    },
+  );
+}
+
 // import configs
 export async function asyncConfigImport(params) {
   const formData = new FormData();

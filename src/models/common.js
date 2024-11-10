@@ -256,6 +256,10 @@ export default {
       yield call(asyncConfigExport);
     },
 
+    *exportByNamespace(_, { call }) {
+      yield call(asyncConfigExport);
+    },
+
     *import(params, { call }) {
       const { payload, callback } = params;
       const json = yield call(asyncConfigImport, payload);
