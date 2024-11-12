@@ -248,6 +248,10 @@ class GlobalHeader extends PureComponent {
         />
       ),
     });
+    // const { dispatch } = this.props;
+    // dispatch({
+    //   type: "common/exportAll",
+    // });
   };
 
   checkAuth = (perms) => {
