@@ -94,7 +94,7 @@ const NamespaceSelector = forwardRef(
   platform: global.platform,
   namespaces: global.namespaces,
 }))
-class AddModal extends Component {
+class ImportModal extends Component {
   constructor(props) {
     super(props);
 
@@ -186,4 +186,4 @@ class AddModal extends Component {
   }
 }
 
-export default Form.create()(AddModal);
+export default Form.create()(ImportModal);

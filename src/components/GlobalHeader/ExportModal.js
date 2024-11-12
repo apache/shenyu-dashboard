@@ -73,7 +73,6 @@ const NamespaceSelector = forwardRef(
 class ExportModal extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       currentNamespaceId: defaultNamespaceId,
     };
@@ -84,8 +83,7 @@ class ExportModal extends Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        let { namespace, file } = values;
-        handleOk({ namespace, file });
+        handleOk(values);
       }
     });
   };

@@ -549,7 +549,7 @@ export async function asyncConfigExport() {
 // export configs by namespace
 export async function asyncConfigExportByNamespace(params) {
   return download(
-    `${baseUrl}/configs/exportByNamespace?namespaceId=${params.namespaceId}`,
+    `${baseUrl}/configs/exportByNamespace?namespace=${params.payload.namespace}`,
     {
       method: `GET`,
     },

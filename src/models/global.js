@@ -44,6 +44,7 @@ export default {
   effects: {
     *fetchPlatform(_, { call, put }) {
       const json = yield call(queryPlatform);
+      console.log(json);
       if (json.code === 200) {
         yield put({
           type: "savePlatform",
