@@ -30,6 +30,7 @@ import {
   updateRule,
   enableRule,
   asyncConfigExport,
+  asyncConfigExportByNamespace,
   asyncConfigImport,
 } from "../services/api";
 import { getIntlContent } from "../utils/IntlUtils";
@@ -256,8 +257,8 @@ export default {
       yield call(asyncConfigExport);
     },
 
-    *exportByNamespace(_, { call }) {
-      yield call(asyncConfigExport);
+    *exportByNamespace(params, { call }) {
+      yield call(asyncConfigExportByNamespace, params);
     },
 
     *import(params, { call }) {

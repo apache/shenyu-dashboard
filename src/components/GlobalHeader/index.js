@@ -28,7 +28,7 @@ import {
 } from "antd";
 import { connect } from "dva";
 import { withRouter } from "dva/router";
-import AddModal from "./AddModal";
+import ImportModal from "./ImportModal";
 import ExportModal from "./ExportModal";
 import ImportResultModal from "./ImportResultModal";
 import styles from "./index.less";
@@ -183,7 +183,7 @@ class GlobalHeader extends PureComponent {
   importConfigClick = () => {
     this.setState({
       popup: (
-        <AddModal
+        <ImportModal
           disabled={false}
           handleOk={(values) => {
             const { dispatch } = this.props;
@@ -234,7 +234,7 @@ class GlobalHeader extends PureComponent {
           handleOk={(values) => {
             const { dispatch } = this.props;
             dispatch({
-              type: "common/exportAll",
+              type: "common/exportByNamespace",
               payload: values,
               callback: (res) => {
                 this.closeModal(true);
