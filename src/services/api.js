@@ -87,7 +87,7 @@ export async function getAllMetadata(params) {
 }
 
 export async function findMetadata(params) {
-  return request(`${baseUrl}/meta-data/${params.id}/`, {
+  return request(`${baseUrl}/meta-data/${params.id}`, {
     method: `GET`,
   });
 }
