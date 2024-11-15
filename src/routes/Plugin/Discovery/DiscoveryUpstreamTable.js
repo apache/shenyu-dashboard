@@ -24,8 +24,8 @@ import {
   InputNumber,
   Popconfirm,
   Select,
-  Table,
   Switch,
+  Table,
 } from "antd";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
@@ -67,24 +67,24 @@ class EditableCell extends Component {
           <Form.Item style={{ margin: 0 }}>
             {dataIndex === "gray"
               ? getFieldDecorator(dataIndex, {
-                rules: [
-                  {
-                    required: true,
-                    message: `Please Input ${title}!`,
-                  },
-                ],
-                valuePropName: "checked",
-                initialValue: record[dataIndex],
-              })(this.getInput())
+                  rules: [
+                    {
+                      required: true,
+                      message: `Please Input ${title}!`,
+                    },
+                  ],
+                  valuePropName: "checked",
+                  initialValue: record[dataIndex],
+                })(this.getInput())
               : getFieldDecorator(dataIndex, {
-                rules: [
-                  {
-                    required: true,
-                    message: `Please Input ${title}!`,
-                  },
-                ],
-                initialValue: record[dataIndex],
-              })(this.getInput())}
+                  rules: [
+                    {
+                      required: true,
+                      message: `Please Input ${title}!`,
+                    },
+                  ],
+                  initialValue: record[dataIndex],
+                })(this.getInput())}
           </Form.Item>
         ) : (
           children
@@ -158,7 +158,7 @@ class EditableTable extends Component {
         render: (text, record) => {
           return (
             <Switch
-              checked={Boolean(record.gray)}
+              checked={record.gray === "true" || record.gray === true}
               onChange={(v) => {
                 record.gray = v;
                 this.saveGray(record, record.key);
