@@ -25,6 +25,7 @@ import {
   Popconfirm,
   Select,
   Table,
+  Switch,
 } from "antd";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
@@ -43,6 +44,8 @@ class EditableCell extends Component {
           <Option value="1">close</Option>
         </Select>
       );
+    } else if (this.props.inputType === "switch") {
+      return <Switch />;
     }
     return <Input />;
   };
@@ -62,15 +65,26 @@ class EditableCell extends Component {
       <td {...restProps}>
         {editing ? (
           <Form.Item style={{ margin: 0 }}>
-            {getFieldDecorator(dataIndex, {
-              rules: [
-                {
-                  required: true,
-                  message: `Please Input ${title}!`,
-                },
-              ],
-              initialValue: record[dataIndex],
-            })(this.getInput())}
+            {dataIndex === "gray"
+              ? getFieldDecorator(dataIndex, {
+                rules: [
+                  {
+                    required: true,
+                    message: `Please Input ${title}!`,
+                  },
+                ],
+                valuePropName: "checked",
+                initialValue: record[dataIndex],
+              })(this.getInput())
+              : getFieldDecorator(dataIndex, {
+                rules: [
+                  {
+                    required: true,
+                    message: `Please Input ${title}!`,
+                  },
+                ],
+                initialValue: record[dataIndex],
+              })(this.getInput())}
           </Form.Item>
         ) : (
           children
@@ -135,6 +149,23 @@ class EditableTable extends Component {
         dataIndex: "warmupTime",
         editable: true,
         align: "center",
+      },
+      {
+        title: "gray",
+        dataIndex: "gray",
+        editable: true,
+        align: "center",
+        render: (text, record) => {
+          return (
+            <Switch
+              checked={Boolean(record.gray)}
+              onChange={(v) => {
+                record.gray = v;
+                this.saveGray(record, record.key);
+              }}
+            />
+          );
+        },
       },
       {
         title: getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.OPERATION"),
@@ -228,6 +259,7 @@ class EditableTable extends Component {
       weight: 50,
       startupTime: 0,
       warmupTime: 10,
+      gray: false,
     };
     this.props.onTableChange([...dataSource, newData]);
     this.props.onCountChange(newRecordCount);
@@ -259,6 +291,25 @@ class EditableTable extends Component {
     });
   }
 
+  saveGray(row, key) {
+    const newData = [...this.props.dataSource];
+    const index = newData.findIndex((item) => key === item.key);
+    if (index > -1) {
+      const item = newData[index];
+      newData.splice(index, 1, {
+        ...item,
+        ...row,
+      });
+      this.props.onTableChange(newData);
+    } else {
+      const { recordCount } = this.props;
+      row.key = recordCount + 1;
+      newData.push(row);
+      this.props.onCountChange(recordCount + 1);
+      this.props.onTableChange(newData);
+    }
+  }
+
   edit(key) {
     this.setState({ editingKey: key });
   }
@@ -284,6 +335,8 @@ class EditableTable extends Component {
         inputType = "number";
       } else if (col.dataIndex === "status") {
         inputType = "dropdown";
+      } else if (col.dataIndex === "gray") {
+        inputType = "switch";
       }
       return {
         ...col,
