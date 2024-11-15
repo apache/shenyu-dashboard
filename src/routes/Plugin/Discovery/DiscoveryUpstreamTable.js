@@ -158,6 +158,7 @@ class EditableTable extends Component {
         render: (text, record) => {
           return (
             <Switch
+              disabled={record.status === 1}
               checked={record.gray === "true" || record.gray === true}
               onChange={(v) => {
                 record.gray = v;
