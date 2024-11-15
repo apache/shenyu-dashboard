@@ -87,7 +87,7 @@ export async function getAllMetadata(params) {
 }
 
 export async function findMetadata(params) {
-  return request(`${baseUrl}/meta-data/${params.id}/`, {
+  return request(`${baseUrl}/meta-data/${params.id}`, {
     method: `GET`,
   });
 }
@@ -539,16 +539,27 @@ export async function querySecretInfo() {
   return fetch(`${baseUrl}/platform/secretInfo`).catch(() => {});
 }
 
-// export all config
+// export configs
 export async function asyncConfigExport() {
   return download(`${baseUrl}/configs/export`, {
     method: `GET`,
   });
 }
 
+// export configs by namespace
+export async function asyncConfigExportByNamespace(params) {
+  return download(
+    `${baseUrl}/configs/exportByNamespace?namespace=${params.payload.namespace}`,
+    {
+      method: `GET`,
+    },
+  );
+}
+
 // import configs
 export async function asyncConfigImport(params) {
   const formData = new FormData();
+  formData.append("namespace", params.namespace);
   formData.append("file", params.file);
   return request(`${baseUrl}/configs/import`, {
     method: `POST`,
@@ -556,11 +567,21 @@ export async function asyncConfigImport(params) {
   });
 }
 
-// 同步单个插件
+// sync on plugin
 export async function asyncOnePlugin(params) {
   return request(`${baseUrl}/namespacePlugin/syncPluginData?id=${params.id}`, {
     method: `PUT`,
   });
+}
+
+// sync by plugin and namespace
+export async function asyncByPluginAndNamespace(params) {
+  return request(
+    `${baseUrl}/namespacePlugin/syncPluginData?id=${params.id}&namespaceId=${params.namespaceId}`,
+    {
+      method: `PUT`,
+    },
+  );
 }
 
 // get plugin dropdown list
