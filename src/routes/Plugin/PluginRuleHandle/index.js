@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-import RequestRuleHandle from "./RequestRuleHandle";
 import HystrixRuleHandle from "./HystrixRuleHandle";
 import ParamPluginRuleHandle from "./ParamPluginRuleHandle";
 import ResponseRuleHandle from "./ResponseRuleHandle";
 import GeneralContextRuleHandle from "./GeneralContextRuleHandle";
 
 export default {
-  request: RequestRuleHandle,
   generalContext: GeneralContextRuleHandle,
   modifyResponse: ResponseRuleHandle,
   hystrix: HystrixRuleHandle,
