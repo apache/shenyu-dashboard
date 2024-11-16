@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Form, Input, Modal, Select, Switch } from "antd";
+import { Form, Input, InputNumber, Modal, Select, Switch } from "antd";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { ConfigType } from "./globalData";
 
@@ -166,7 +166,8 @@ class RuleModal extends Component {
             {getFieldDecorator("minimum", {
               initialValue: minimum,
             })(
-              <Input
+              <InputNumber
+                min={0}
                 type="number"
                 allowClear
                 placeholder={getIntlContent(
@@ -182,7 +183,8 @@ class RuleModal extends Component {
             {getFieldDecorator("maximum", {
               initialValue: maximum,
             })(
-              <Input
+              <InputNumber
+                min={0}
                 type="number"
                 allowClear
                 placeholder={getIntlContent(
