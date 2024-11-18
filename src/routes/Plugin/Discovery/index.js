@@ -338,6 +338,7 @@ export default class DiscoveryProxy extends Component {
                   startupTime: item.startupTime,
                   props: JSON.stringify({
                     warmupTime: item.warmupTime,
+                    gray: `${item.gray}`,
                   }),
                 }));
                 dispatch({
@@ -406,9 +407,15 @@ export default class DiscoveryProxy extends Component {
       if (item.props === null) {
         propsObj = {
           warmupTime: 10,
+          gray: "false",
         };
       }
-      return { ...item, key: item.id, warmupTime: propsObj.warmupTime };
+      return {
+        ...item,
+        key: item.id,
+        warmupTime: propsObj.warmupTime,
+        gray: propsObj.gray,
+      };
     });
     this.setState({
       popup: (
@@ -441,6 +448,7 @@ export default class DiscoveryProxy extends Component {
               startupTime: item.startupTime,
               props: JSON.stringify({
                 warmupTime: item.warmupTime,
+                gray: `${item.gray}`,
               }),
             }));
             dispatch({

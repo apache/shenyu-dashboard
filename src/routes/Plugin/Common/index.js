@@ -431,6 +431,7 @@ export default class Common extends Component {
       startupTime: item.startupTime,
       props: JSON.stringify({
         warmupTime: item.warmupTime,
+        gray: `${item.gray}`,
       }),
       namespaceId: currentNamespaceId,
     }));
@@ -482,6 +483,7 @@ export default class Common extends Component {
       weight: item.weight,
       props: JSON.stringify({
         warmupTime: item.warmupTime,
+        gray: `${item.gray}`,
       }),
       discoveryHandlerId,
       namespaceId: currentNamespaceId,
@@ -543,9 +545,15 @@ export default class Common extends Component {
               if (item.props === null) {
                 propsObj = {
                   warmupTime: 10,
+                  gray: "false",
                 };
               }
-              return { ...item, key: item.id, warmupTime: propsObj.warmupTime };
+              return {
+                ...item,
+                key: item.id,
+                warmupTime: propsObj.warmupTime,
+                gray: propsObj.gray,
+              };
             });
           }
           let discoveryHandlerId = selector.discoveryHandler
