@@ -34,7 +34,8 @@ import Selector from "./Selector";
 import Rule from "./Rule";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
-import { getUpdateModal, updatePluginsEnabled } from "../../../utils/plugin";
+import { getUpdateModal } from "../../../utils/plugin";
+import { updateNamespacePluginsEnabledByNamespace } from "../../../utils/namespacePlugin";
 
 const { Search } = Input;
 const { Title } = Typography;
@@ -377,8 +378,9 @@ export default class Common extends Component {
       : "";
     const plugin = this.getPlugin(plugins, pluginName);
     const enabled = !this.state.isPluginEnabled;
-    updatePluginsEnabled({
+    updateNamespacePluginsEnabledByNamespace({
       list: [plugin.id],
+      namespaceId: this.props.currentNamespaceId,
       enabled,
       dispatch,
       callback: () => {

@@ -99,3 +99,28 @@ export function updateNamespacePluginsEnabled({
     },
   });
 }
+
+export function updateNamespacePluginsEnabledByNamespace({
+  list,
+  enabled,
+  namespaceId,
+  dispatch,
+  fetchValue,
+  callback,
+}) {
+  dispatch({
+    type: "namespacePlugin/updateEnByNamespace",
+    payload: {
+      list,
+      enabled,
+      namespaceId,
+    },
+    fetchValue,
+    callback: () => {
+      if (callback) {
+        callback();
+      }
+      refreshAuthMenus({ dispatch });
+    },
+  });
+}

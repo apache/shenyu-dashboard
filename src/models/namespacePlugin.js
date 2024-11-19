@@ -23,6 +23,7 @@ import {
   findNamespacePlugin,
   getAllNamespacePlugins,
   updateNamespacePluginEnabled,
+  updateNamespacePluginEnabledByNamespace,
   updateNamespacePlugin,
   deleteNamespacePlugin,
   asyncNamespacePlugin,
@@ -107,6 +108,22 @@ export default {
     *updateEn(params, { call, put }) {
       const { payload, fetchValue, callback } = params;
       const json = yield call(updateNamespacePluginEnabled, payload);
+
+      if (json.code === 200) {
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
+        callback();
+        if (fetchValue) {
+          yield put({ type: "reload", fetchValue });
+        }
+      } else {
+        message.warn(json.message);
+      }
+    },
+    *updateEnByNamespace(params, { call, put }) {
+      const { payload, fetchValue, callback } = params;
+      const json = yield call(updateNamespacePluginEnabledByNamespace, payload);
 
       if (json.code === 200) {
         message.success(
