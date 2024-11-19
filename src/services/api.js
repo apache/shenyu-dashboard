@@ -1287,6 +1287,17 @@ export async function updateNamespacePluginEnabled(params) {
     },
   });
 }
+/* updateNamespacePluginEnabledByNamespace */
+export async function updateNamespacePluginEnabledByNamespace(params) {
+  return request(`${baseUrl}/namespacePlugin/enabledByNamespace`, {
+    method: `POST`,
+    body: {
+      ids: params.list,
+      enabled: params.enabled,
+      namespaceId: params.namespaceId,
+    },
+  });
+}
 
 /* updateNamespacePlugin */
 export async function updateNamespacePlugin(params) {

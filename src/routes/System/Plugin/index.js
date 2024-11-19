@@ -56,6 +56,7 @@ export default class Plugin extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      namespaceId: this.props.currentNamespaceId,
       currentPage: 1,
       pageSize: 12,
       selectedRowKeys: [],
@@ -101,9 +102,10 @@ export default class Plugin extends Component {
   };
 
   currentQueryPayload = (override) => {
-    const { name, enabled, currentPage, pageSize } = this.state;
+    const { name, namespaceId, enabled, currentPage, pageSize } = this.state;
     return {
       name,
+      namespaceId,
       enabled,
       currentPage,
       pageSize,
