@@ -161,7 +161,10 @@ class GlobalHeader extends PureComponent {
 
   handleNamespacesValueChange = (value) => {
     const { dispatch } = this.props;
-    const namespaceId = value?.key || defaultNamespaceId;
+    const namespaceId =
+      value?.key ||
+      window.sessionStorage.getItem("currentNamespaceId") ||
+      defaultNamespaceId;
     dispatch({
       type: "global/saveCurrentNamespaceId",
       payload: namespaceId,
@@ -169,6 +172,11 @@ class GlobalHeader extends PureComponent {
     if (namespaceId !== defaultNamespaceId) {
       message.warn(getIntlContent("SHENYU.NAMESPACE.ALERTNAMESPACEID.CHANGED"));
     }
+    // Fetch plugins for the new namespace
+    dispatch({
+      type: "global/fetchPlugins",
+      payload: {},
+    });
     dispatch({
       type: "global/fetchPermission",
       payload: {

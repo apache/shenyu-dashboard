@@ -48,7 +48,8 @@ const ChooseFile = forwardRef(({ onChange, file }, ref) => {
 });
 
 const NamespaceSelector = forwardRef(
-  ({ onChange, currentNamespaceId, namespaces }) => {
+  // eslint-disable-next-line no-unused-vars
+  ({ onChange, currentNamespaceId, namespaces }, ref) => {
     const handleNamespaceChange = (value) => {
       onChange(value.key);
     };
