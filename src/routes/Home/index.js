@@ -36,7 +36,7 @@ import { routerRedux } from "dva/router";
 import styles from "./home.less";
 import { getIntlContent } from "../../utils/IntlUtils";
 import {
-  activePluginSnapshot,
+  activePluginSnapshotByNamespace,
   getNewEventRecodLogList,
 } from "../../services/api";
 
@@ -66,11 +66,15 @@ export default class Home extends Component {
         type: "global/fetchPlatform",
       });
     }
-    activePluginSnapshot().then((res) => {
-      if (res) {
-        this.setState({ activePluginSnapshot: res.data || [] });
-      }
-    });
+    const currentNamespaceId =
+      window.sessionStorage.getItem("currentNamespaceId");
+    activePluginSnapshotByNamespace({ namespaceId: currentNamespaceId }).then(
+      (res) => {
+        if (res) {
+          this.setState({ activePluginSnapshot: res.data || [] });
+        }
+      },
+    );
     getNewEventRecodLogList().then((res) => {
       if (res) {
         this.setState({ activeLog: res.data || [] });

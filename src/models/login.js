@@ -19,7 +19,7 @@ import { routerRedux } from "dva/router";
 // import { stringify } from "qs";
 import { message } from "antd";
 import { queryLogin } from "../services/api";
-// import { getPageQuery } from "../utils/utils";
+import { defaultNamespaceId } from "../components/_utils/utils";
 
 export default {
   namespace: "login",
@@ -52,6 +52,11 @@ export default {
             type: "global/fetchNamespaces",
           });
         }
+        // Reset namespace to default on login
+        yield put({
+          type: "global/saveCurrentNamespaceId",
+          payload: defaultNamespaceId,
+        });
         /* const urlParams = new URL(window.location.href);
          const params = getPageQuery();
          let { redirect } = params;
@@ -89,6 +94,7 @@ export default {
       window.sessionStorage.removeItem("token");
       window.sessionStorage.removeItem("userName");
       window.sessionStorage.removeItem("userId");
+      window.sessionStorage.removeItem("currentNamespaceId");
       yield put(
         routerRedux.push({
           pathname: "/user/login",

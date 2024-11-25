@@ -189,7 +189,7 @@ export async function addPlugin(params) {
       formData.append("file", base64Data);
     }
   }
-  return request(`${baseUrl}/plugin`, {
+  return request(`${baseUrl}/plugin-template`, {
     method: `POST`,
     body: formData,
   });
@@ -197,7 +197,7 @@ export async function addPlugin(params) {
 
 /* generatePlugin */
 export async function generatePlugin({ pluginId, namespaceId }) {
-  return request(`${baseUrl}/namespacePlugin/${namespaceId}/${pluginId}`, {
+  return request(`${baseUrl}/namespace-plugin/${namespaceId}/${pluginId}`, {
     method: `PUT`,
   });
 }
@@ -221,7 +221,7 @@ function readFileAsBase64(file) {
 
 /* deletePlugin */
 export async function deletePlugin(params) {
-  return request(`${baseUrl}/plugin/batch`, {
+  return request(`${baseUrl}/plugin-template/batch`, {
     method: `DELETE`,
     body: [...params.list],
   });
@@ -244,7 +244,7 @@ export async function updatePlugin(params) {
       formData.append("file", base64Data);
     }
   }
-  return request(`${baseUrl}/plugin/${params.id}`, {
+  return request(`${baseUrl}/plugin-template/${params.id}`, {
     method: `PUT`,
     body: formData,
   });
@@ -252,28 +252,45 @@ export async function updatePlugin(params) {
 
 /* getAllPlugins */
 export async function getAllPlugins(params) {
-  return request(`${baseUrl}/plugin?${stringify(params)}`, {
+  return request(`${baseUrl}/plugin-template?${stringify(params)}`, {
+    method: `GET`,
+  });
+}
+
+/* getPluginsByNamespace */
+export async function getPluginsByNamespace(params) {
+  return request(`${baseUrl}/namespace-plugin?${stringify(params)}`, {
     method: `GET`,
   });
 }
 
 /* get Plugins snapshot */
 export function activePluginSnapshot() {
-  return request(`${baseUrl}/plugin/snapshot/active`, {
+  return request(`${baseUrl}/plugin-template/snapshot/active`, {
     method: `GET`,
   });
 }
 
+/* get Plugins snapshot By namespace */
+export function activePluginSnapshotByNamespace(params) {
+  return request(
+    `${baseUrl}/namespace-plugin/snapshot/active?namespaceId=${params.namespaceId}`,
+    {
+      method: `GET`,
+    },
+  );
+}
+
 /* findPlugin */
 export async function findPlugin(params) {
-  return request(`${baseUrl}/plugin/${params.id}`, {
+  return request(`${baseUrl}/plugin-template/${params.id}`, {
     method: `GET`,
   });
 }
 
 /* updatepluginEnabled */
 export async function updatepluginEnabled(params) {
-  return request(`${baseUrl}/plugin/enabled`, {
+  return request(`${baseUrl}/plugin-template/enabled`, {
     method: `POST`,
     body: {
       ids: params.list,
@@ -569,7 +586,7 @@ export async function asyncConfigImport(params) {
 
 // sync on plugin
 export async function asyncOnePlugin(params) {
-  return request(`${baseUrl}/namespacePlugin/syncPluginData?id=${params.id}`, {
+  return request(`${baseUrl}/namespace-plugin/syncPluginData?id=${params.id}`, {
     method: `PUT`,
   });
 }
@@ -577,7 +594,7 @@ export async function asyncOnePlugin(params) {
 // sync by plugin and namespace
 export async function asyncByPluginAndNamespace(params) {
   return request(
-    `${baseUrl}/namespacePlugin/syncPluginData?id=${params.id}&namespaceId=${params.namespaceId}`,
+    `${baseUrl}/namespace-plugin/syncPluginData?id=${params.id}&namespaceId=${params.namespaceId}`,
     {
       method: `PUT`,
     },
@@ -586,7 +603,7 @@ export async function asyncByPluginAndNamespace(params) {
 
 // get plugin dropdown list
 export async function getPluginDropDownList() {
-  return request(`${baseUrl}/plugin/all`, {
+  return request(`${baseUrl}/plugin-template/all`, {
     method: `GET`,
   });
 }
@@ -594,7 +611,7 @@ export async function getPluginDropDownList() {
 // get plugin dropdown list by namespace
 export async function getPluginDropDownListByNamespace(params) {
   return request(
-    `${baseUrl}/plugin/listByNamespace?namespace=${params.namespace}`,
+    `${baseUrl}/plugin-template/listByNamespace?namespace=${params.namespace}`,
     {
       method: `GET`,
     },
@@ -654,10 +671,13 @@ export function fetchPluginHandleByPluginId(params) {
 
 // create plugin resource
 export function addPluginResource(params) {
-  return request(`${baseUrl}/plugin/createPluginResource/${params.id}`, {
-    method: `PUT`,
-    body: params,
-  });
+  return request(
+    `${baseUrl}/plugin-template/createPluginResource/${params.id}`,
+    {
+      method: `PUT`,
+      body: params,
+    },
+  );
 }
 
 // fetch dict list
@@ -845,6 +865,15 @@ export async function getUserPermissionByToken(params) {
   );
 }
 
+// get userPermission by namespace
+export async function getUserPermissionByNamespace(params) {
+  return request(
+    `${baseUrl}/permission/getUserPermissionByNamespace?namespaceId=${params.namespaceId}`,
+    {
+      method: `GET`,
+    },
+  );
+}
 /* get dataPermision's selectors by page */
 export async function getDataPermisionSelectors(params) {
   return request(`${baseUrl}/data-permission/selector?${stringify(params)}`, {
@@ -1265,21 +1294,21 @@ export async function deleteNamespace(params) {
 
 /* findNamespacePlugin */
 export async function findNamespacePlugin(params) {
-  return request(`${baseUrl}/namespacePlugin/${params.id}`, {
+  return request(`${baseUrl}/namespace-plugin/${params.id}`, {
     method: `GET`,
   });
 }
 
 /* getAllNamespacePlugins */
 export async function getAllNamespacePlugins(params) {
-  return request(`${baseUrl}/namespacePlugin?${stringify(params)}`, {
+  return request(`${baseUrl}/namespace-plugin?${stringify(params)}`, {
     method: `GET`,
   });
 }
 
 /* updatepluginEnabled */
 export async function updateNamespacePluginEnabled(params) {
-  return request(`${baseUrl}/namespacePlugin/enabled`, {
+  return request(`${baseUrl}/namespace-plugin/enabled`, {
     method: `POST`,
     body: {
       ids: params.list,
@@ -1289,7 +1318,7 @@ export async function updateNamespacePluginEnabled(params) {
 }
 /* updateNamespacePluginEnabledByNamespace */
 export async function updateNamespacePluginEnabledByNamespace(params) {
-  return request(`${baseUrl}/namespacePlugin/enabledByNamespace`, {
+  return request(`${baseUrl}/namespace-plugin/enabledByNamespace`, {
     method: `POST`,
     body: {
       ids: params.list,
@@ -1301,7 +1330,7 @@ export async function updateNamespacePluginEnabledByNamespace(params) {
 
 /* updateNamespacePlugin */
 export async function updateNamespacePlugin(params) {
-  return request(`${baseUrl}/namespacePlugin/${params.id}`, {
+  return request(`${baseUrl}/namespace-plugin/${params.id}`, {
     method: `PUT`,
     body: params,
   });
@@ -1309,7 +1338,7 @@ export async function updateNamespacePlugin(params) {
 
 /* deletePlugin */
 export async function deleteNamespacePlugin(params) {
-  return request(`${baseUrl}/namespacePlugin/batch`, {
+  return request(`${baseUrl}/namespace-plugin/batch`, {
     method: `DELETE`,
     body: {
       ids: [...params.list],
@@ -1320,7 +1349,7 @@ export async function deleteNamespacePlugin(params) {
 
 // sync all plugin
 export async function asyncNamespacePlugin() {
-  return request(`${baseUrl}/namespacePlugin/syncPluginAll`, {
+  return request(`${baseUrl}/namespace-plugin/syncPluginAll`, {
     method: `POST`,
   });
 }

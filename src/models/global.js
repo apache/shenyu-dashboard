@@ -19,10 +19,10 @@ import { message } from "antd";
 import { routerRedux } from "dva/router";
 import {
   queryPlatform,
-  getAllPlugins,
+  getPluginsByNamespace,
   getNamespaceList,
   asyncByPluginAndNamespace,
-  getUserPermissionByToken,
+  getUserPermissionByNamespace,
 } from "../services/api";
 import { getIntlContent } from "../utils/IntlUtils";
 import { defaultNamespaceId } from "../components/_utils/utils";
@@ -38,7 +38,8 @@ export default {
     permissions: {},
     language: "",
     namespaces: [],
-    currentNamespaceId: defaultNamespaceId,
+    currentNamespaceId:
+      window.sessionStorage.getItem("currentNamespaceId") || defaultNamespaceId,
   },
 
   effects: {
@@ -60,13 +61,17 @@ export default {
         });
       }
     },
-    *fetchPlugins({ payload }, { call, put }) {
+    *fetchPlugins({ payload }, { call, put, select }) {
       const { callback } = payload ?? {};
+      const namespaceId = yield select(
+        ({ global }) => global.currentNamespaceId,
+      );
       const params = {
+        namespaceId,
         currentPage: 1,
         pageSize: 50,
       };
-      const json = yield call(getAllPlugins, params);
+      const json = yield call(getPluginsByNamespace, params);
       if (json.code === 200) {
         let { dataList } = json.data;
 
@@ -99,7 +104,7 @@ export default {
       );
       if (token && namespaceId) {
         const params = { token, namespaceId };
-        const json = yield call(getUserPermissionByToken, params);
+        const json = yield call(getUserPermissionByNamespace, params);
         if (json.code === 200) {
           let { menu, currentAuth } = json.data;
           permissions = { menu, button: currentAuth };
@@ -119,13 +124,16 @@ export default {
       });
       callback(permissions);
     },
-    *refreshPermission({ payload }, { call, put }) {
+    *refreshPermission({ payload }, { call, put, select }) {
       const { callback } = payload ?? {};
       let permissions = { menu: [], button: [] };
       const token = window.sessionStorage.getItem("token");
-      if (token) {
-        const params = { token };
-        const json = yield call(getUserPermissionByToken, params);
+      const namespaceId = yield select(
+        ({ global }) => global.currentNamespaceId,
+      );
+      if (token && namespaceId) {
+        const params = { token, namespaceId };
+        const json = yield call(getUserPermissionByNamespace, params);
         if (json.code === 200) {
           let { menu, currentAuth } = json.data;
           permissions = { menu, button: currentAuth };
@@ -176,6 +184,7 @@ export default {
       };
     },
     saveCurrentNamespaceId(state, { payload }) {
+      window.sessionStorage.setItem("currentNamespaceId", payload);
       return {
         ...state,
         currentNamespaceId: payload,
