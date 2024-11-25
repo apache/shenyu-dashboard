@@ -221,7 +221,7 @@ function readFileAsBase64(file) {
 
 /* deletePlugin */
 export async function deletePlugin(params) {
-  return request(`${baseUrl}/plugin/batch`, {
+  return request(`${baseUrl}/plugin-template/batch`, {
     method: `DELETE`,
     body: [...params.list],
   });
@@ -244,7 +244,7 @@ export async function updatePlugin(params) {
       formData.append("file", base64Data);
     }
   }
-  return request(`${baseUrl}/plugin/${params.id}`, {
+  return request(`${baseUrl}/plugin-template/${params.id}`, {
     method: `PUT`,
     body: formData,
   });
@@ -252,28 +252,28 @@ export async function updatePlugin(params) {
 
 /* getAllPlugins */
 export async function getAllPlugins(params) {
-  return request(`${baseUrl}/plugin?${stringify(params)}`, {
+  return request(`${baseUrl}/plugin-template?${stringify(params)}`, {
     method: `GET`,
   });
 }
 
 /* get Plugins snapshot */
 export function activePluginSnapshot() {
-  return request(`${baseUrl}/plugin/snapshot/active`, {
+  return request(`${baseUrl}/plugin-template/snapshot/active`, {
     method: `GET`,
   });
 }
 
 /* findPlugin */
 export async function findPlugin(params) {
-  return request(`${baseUrl}/plugin/${params.id}`, {
+  return request(`${baseUrl}/plugin-template/${params.id}`, {
     method: `GET`,
   });
 }
 
 /* updatepluginEnabled */
 export async function updatepluginEnabled(params) {
-  return request(`${baseUrl}/plugin/enabled`, {
+  return request(`${baseUrl}/plugin-template/enabled`, {
     method: `POST`,
     body: {
       ids: params.list,
@@ -586,7 +586,7 @@ export async function asyncByPluginAndNamespace(params) {
 
 // get plugin dropdown list
 export async function getPluginDropDownList() {
-  return request(`${baseUrl}/plugin/all`, {
+  return request(`${baseUrl}/plugin-template/all`, {
     method: `GET`,
   });
 }
@@ -594,7 +594,7 @@ export async function getPluginDropDownList() {
 // get plugin dropdown list by namespace
 export async function getPluginDropDownListByNamespace(params) {
   return request(
-    `${baseUrl}/plugin/listByNamespace?namespace=${params.namespace}`,
+    `${baseUrl}/plugin-template/listByNamespace?namespace=${params.namespace}`,
     {
       method: `GET`,
     },
@@ -654,10 +654,13 @@ export function fetchPluginHandleByPluginId(params) {
 
 // create plugin resource
 export function addPluginResource(params) {
-  return request(`${baseUrl}/plugin/createPluginResource/${params.id}`, {
-    method: `PUT`,
-    body: params,
-  });
+  return request(
+    `${baseUrl}/plugin-template/createPluginResource/${params.id}`,
+    {
+      method: `PUT`,
+      body: params,
+    },
+  );
 }
 
 // fetch dict list
