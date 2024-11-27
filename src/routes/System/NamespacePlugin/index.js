@@ -143,7 +143,7 @@ export default class NamespacePlugin extends Component {
   editClick = (record) => {
     const { dispatch, currentNamespaceId } = this.props;
     getUpdateModal({
-      id: record.id,
+      id: record.pluginRelId,
       namespaceId: currentNamespaceId,
       dispatch,
       fetchValue: this.currentQueryPayload(),
@@ -372,7 +372,7 @@ export default class NamespacePlugin extends Component {
                 checked={text}
                 onChange={(checked) => {
                   this.statusSwitch({
-                    list: [row.id],
+                    list: [row.pluginRelId],
                     enabled: checked,
                     namespaceId: row.namespaceId,
                   });
@@ -531,6 +531,7 @@ export default class NamespacePlugin extends Component {
           components={this.components}
           style={{ marginTop: 30 }}
           bordered
+          rowKey="pluginRelId"
           loading={loading}
           columns={columns}
           dataSource={namespacePluginList}
