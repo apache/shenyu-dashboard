@@ -69,12 +69,14 @@ class SelectorCopy extends Component {
     if (Object.keys(pluginMap).length) {
       Object.keys(pluginMap).forEach((key) => {
         const plugin = pluginList.find((v) => v.id === key);
-        selectorTree.push({
-          title: plugin.name,
-          value: plugin.id,
-          disabled: true,
-          children: pluginMap[key],
-        });
+        if (plugin) {
+          selectorTree.push({
+            title: plugin.name,
+            value: plugin.id,
+            disabled: true,
+            children: pluginMap[key],
+          });
+        }
       });
     }
     this.setState({ selectorTree });
