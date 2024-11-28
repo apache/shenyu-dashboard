@@ -1350,8 +1350,9 @@ export async function deleteNamespacePlugin(params) {
 }
 
 // sync all plugin
-export async function asyncNamespacePlugin() {
+export async function asyncNamespacePlugin(params) {
   return request(`${baseUrl}/namespace-plugin/syncPluginAll`, {
     method: `POST`,
+    body: params,
   });
 }

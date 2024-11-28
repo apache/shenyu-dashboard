@@ -239,6 +239,7 @@ export default class NamespacePlugin extends Component {
     const { dispatch } = this.props;
     dispatch({
       type: "namespacePlugin/asyncAll",
+      payload: { namespaceId: this.props.currentNamespaceId },
     });
   };
 

@@ -145,8 +145,10 @@ export default {
       yield put({ type: "fetch", payload });
     },
 
-    *asyncAll(_, { call }) {
-      const json = yield call(asyncNamespacePlugin);
+    *asyncAll(params, { call }) {
+      const { payload } = params;
+      console.log("asyncAll", payload);
+      const json = yield call(asyncNamespacePlugin, payload);
       if (json.code === 200) {
         message.success(getIntlContent("SHENYU.COMMON.RESPONSE.SYNC.SUCCESS"));
       } else {
