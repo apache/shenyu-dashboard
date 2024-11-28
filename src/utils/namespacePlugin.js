@@ -30,7 +30,7 @@ export function getUpdateModal({
 }) {
   dispatch({
     type: "namespacePlugin/fetchItem",
-    payload: { id },
+    payload: { id, namespaceId },
     callback: (plugin) => {
       dispatch({
         type: "namespacePlugin/fetchByPluginId",
@@ -50,7 +50,6 @@ export function getUpdateModal({
                   type: "namespacePlugin/update",
                   payload: {
                     config,
-                    id: plugin.id,
                     pluginId: plugin.pluginId,
                     enabled,
                     namespaceId,
