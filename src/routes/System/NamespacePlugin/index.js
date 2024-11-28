@@ -196,7 +196,7 @@ export default class NamespacePlugin extends Component {
     }
   };
 
-  // 数据状态切换
+  // change status
   statusSwitch = ({ list, enabled, namespaceId, callback }) => {
     const { dispatch } = this.props;
     updateNamespacePluginsEnabled({
@@ -209,7 +209,7 @@ export default class NamespacePlugin extends Component {
     });
   };
 
-  // 批量启用或禁用
+  // batch enable or disable
   enableClick = () => {
     const { dispatch, currentNamespaceId } = this.props;
     const { selectedRowKeys } = this.state;
@@ -234,7 +234,7 @@ export default class NamespacePlugin extends Component {
     }
   };
 
-  // 同步插件数据
+  // sync all
   syncAllClick = () => {
     const { dispatch } = this.props;
     dispatch({

@@ -1314,6 +1314,7 @@ export async function updateNamespacePluginEnabled(params) {
     body: {
       ids: params.list,
       enabled: params.enabled,
+      namespaceId: params.namespaceId,
     },
   });
 }
