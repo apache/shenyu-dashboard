@@ -39,6 +39,7 @@ import {
   updateNamespacePluginsEnabled,
 } from "../../../utils/namespacePlugin";
 
+
 const { Text } = Typography;
 
 const { Option } = Select;
@@ -143,7 +144,7 @@ export default class NamespacePlugin extends Component {
   editClick = (record) => {
     const { dispatch, currentNamespaceId } = this.props;
     getUpdateModal({
-      id: record.id,
+      id: record.pluginId,
       namespaceId: currentNamespaceId,
       dispatch,
       fetchValue: this.currentQueryPayload(),
@@ -373,7 +374,7 @@ export default class NamespacePlugin extends Component {
                 checked={text}
                 onChange={(checked) => {
                   this.statusSwitch({
-                    list: [row.id],
+                    list: [row.pluginId],
                     enabled: checked,
                     namespaceId: row.namespaceId,
                   });
