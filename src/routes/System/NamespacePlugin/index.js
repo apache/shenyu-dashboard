@@ -438,6 +438,7 @@ export default class NamespacePlugin extends Component {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
+    console.log(rowSelection);
     const flatList = (map, list) => {
       list.forEach((element) => {
         if (!element.children) {
@@ -536,6 +537,7 @@ export default class NamespacePlugin extends Component {
           loading={loading}
           columns={columns}
           dataSource={namespacePluginList}
+          rowKey={(record) => record.pluginId}
           rowSelection={rowSelection}
           pagination={{
             total,
