@@ -147,7 +147,6 @@ export default {
 
     *asyncAll(params, { call }) {
       const { payload } = params;
-      console.log("asyncAll", payload);
       const json = yield call(asyncNamespacePlugin, payload);
       if (json.code === 200) {
         message.success(getIntlContent("SHENYU.COMMON.RESPONSE.SYNC.SUCCESS"));
