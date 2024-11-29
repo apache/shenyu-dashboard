@@ -39,7 +39,6 @@ import {
   updateNamespacePluginsEnabled,
 } from "../../../utils/namespacePlugin";
 
-
 const { Text } = Typography;
 
 const { Option } = Select;
@@ -438,7 +437,7 @@ export default class NamespacePlugin extends Component {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
-    console.log(rowSelection);
+
     const flatList = (map, list) => {
       list.forEach((element) => {
         if (!element.children) {
