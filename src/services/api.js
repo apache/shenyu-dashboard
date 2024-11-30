@@ -1294,7 +1294,7 @@ export async function deleteNamespace(params) {
 
 /* findNamespacePlugin */
 export async function findNamespacePlugin(params) {
-  return request(`${baseUrl}/namespace-plugin/${params.id}`, {
+  return request(`${baseUrl}/namespace-plugin/detail?${stringify(params)}`, {
     method: `GET`,
   });
 }
@@ -1313,6 +1313,7 @@ export async function updateNamespacePluginEnabled(params) {
     body: {
       ids: params.list,
       enabled: params.enabled,
+      namespaceId: params.namespaceId,
     },
   });
 }
@@ -1330,8 +1331,8 @@ export async function updateNamespacePluginEnabledByNamespace(params) {
 
 /* updateNamespacePlugin */
 export async function updateNamespacePlugin(params) {
-  return request(`${baseUrl}/namespace-plugin/${params.id}`, {
-    method: `PUT`,
+  return request(`${baseUrl}/namespace-plugin`, {
+    method: `POST`,
     body: params,
   });
 }
@@ -1348,8 +1349,9 @@ export async function deleteNamespacePlugin(params) {
 }
 
 // sync all plugin
-export async function asyncNamespacePlugin() {
+export async function asyncNamespacePlugin(params) {
   return request(`${baseUrl}/namespace-plugin/syncPluginAll`, {
     method: `POST`,
+    body: params,
   });
 }

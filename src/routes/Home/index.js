@@ -96,6 +96,7 @@ export default class Home extends Component {
     return (
       <div style={{ display: "inline" }}>
         <Tag color="geekblue">{log.operationTime}</Tag>
+        {/* eslint-disable-next-line prettier/prettier */}
         <span style={textStyle}>{log.operationType}</span> by{" "}
         <span style={textStyle}>{log.operator}</span>
       </div>
