@@ -594,7 +594,7 @@ export async function asyncOnePlugin(params) {
 // sync by plugin and namespace
 export async function asyncByPluginAndNamespace(params) {
   return request(
-    `${baseUrl}/namespace-plugin/syncPluginData?id=${params.id}&namespaceId=${params.namespaceId}`,
+    `${baseUrl}/namespace-plugin/syncPluginData?pluginId=${params.pluginId}&namespaceId=${params.namespaceId}`,
     {
       method: `PUT`,
     },
