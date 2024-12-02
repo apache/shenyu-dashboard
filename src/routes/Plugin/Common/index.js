@@ -123,7 +123,7 @@ export default class Common extends Component {
     const { selectorName } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const tempPlugin = this.getPlugin(plugins, name);
-    const tempPluginId = tempPlugin?.id;
+    const tempPluginId = tempPlugin?.pluginId;
     const enabled = tempPlugin?.enabled ?? false;
     this.setState({ pluginId: tempPluginId, isPluginEnabled: enabled });
     dispatch({
@@ -379,7 +379,7 @@ export default class Common extends Component {
     const plugin = this.getPlugin(plugins, pluginName);
     const enabled = !this.state.isPluginEnabled;
     updateNamespacePluginsEnabledByNamespace({
-      list: [plugin.id],
+      list: [plugin.pluginId],
       namespaceId: this.props.currentNamespaceId,
       enabled,
       dispatch,
