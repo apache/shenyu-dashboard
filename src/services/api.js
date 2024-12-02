@@ -611,7 +611,7 @@ export async function getPluginDropDownList() {
 // get plugin dropdown list by namespace
 export async function getPluginDropDownListByNamespace(params) {
   return request(
-    `${baseUrl}/plugin-template/listByNamespace?namespace=${params.namespace}`,
+    `${baseUrl}/namespace-plugin/listByNamespace?namespace=${params.namespace}`,
     {
       method: `GET`,
     },
