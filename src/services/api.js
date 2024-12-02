@@ -198,7 +198,7 @@ export async function addPlugin(params) {
 /* generatePlugin */
 export async function generatePlugin({ pluginId, namespaceId }) {
   return request(`${baseUrl}/namespace-plugin/${namespaceId}/${pluginId}`, {
-    method: `PUT`,
+    method: `POST`,
   });
 }
 
@@ -1334,10 +1334,13 @@ export async function updateNamespacePluginEnabledByNamespace(params) {
 
 /* updateNamespacePlugin */
 export async function updateNamespacePlugin(params) {
-  return request(`${baseUrl}/namespace-plugin`, {
-    method: `POST`,
-    body: params,
-  });
+  return request(
+    `${baseUrl}/namespace-plugin/${params.namespaceId}/${params.pluginId}`,
+    {
+      method: `PUT`,
+      body: params,
+    },
+  );
 }
 
 /* deletePlugin */
