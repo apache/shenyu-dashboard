@@ -26,9 +26,10 @@ import { Type } from "./globalData";
 
 const DEFAULT_ALERT_TYPE = 1;
 
-@connect(({ alert, loading }) => ({
+@connect(({ alert, loading, global }) => ({
   alert,
   loading: loading.effects["alert/fetch"],
+  currentNamespaceId: global.currentNamespaceId,
 }))
 export default class Alert extends Component {
   constructor(props) {
@@ -49,13 +50,14 @@ export default class Alert extends Component {
   };
 
   getAllAlerts = () => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const { currentPage, pageSize } = this.state;
     dispatch({
       type: "alert/fetch",
       payload: {
         currentPage,
         pageSize,
+        namespaceId: currentNamespaceId,
       },
     });
   };

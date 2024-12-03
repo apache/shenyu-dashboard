@@ -216,11 +216,11 @@ export default class NamespacePlugin extends Component {
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "namespacePlugin/fetchItem",
-        payload: { id: selectedRowKeys[0] },
-        callback: (user) => {
+        payload: { id: selectedRowKeys[0], namespaceId: currentNamespaceId },
+        callback: (plugin) => {
           this.statusSwitch({
             list: selectedRowKeys,
-            enabled: !user.enabled,
+            enabled: !plugin.enabled,
             namespaceId: currentNamespaceId,
             callback: () => {
               this.setState({ selectedRowKeys: [] });

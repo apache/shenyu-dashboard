@@ -69,11 +69,15 @@ export default class DataPermModal extends Component {
 
   getPluginTreeData = () => {
     const { dispatch } = this.props;
+    const { currentNamespaceId } = this.state;
     dispatch({
       type: "resource/fetchMenuTree",
     });
     dispatch({
-      type: "global/fetchPlugins",
+      type: "global/fetchPluginsByNamespace",
+      payload: {
+        namespaceId: currentNamespaceId,
+      },
     });
   };
 
@@ -241,28 +245,30 @@ export default class DataPermModal extends Component {
           return;
         }
         const currentPluginInfo = plugins.find((v) => v.name === plugin.name);
-        let currentCategory = treeData.find(
-          (tree) => tree.title === currentPluginInfo.role,
-        );
-        if (!currentCategory) {
-          treeData.push({
-            title: currentPluginInfo.role,
-            key: currentPluginInfo.role,
-            selectable: false,
-            icon: "unordered-list",
+        if (currentPluginInfo) {
+          let currentCategory = treeData.find(
+            (tree) => tree.title === currentPluginInfo.role,
+          );
+          if (!currentCategory) {
+            treeData.push({
+              title: currentPluginInfo.role,
+              key: currentPluginInfo.role,
+              selectable: false,
+              icon: "unordered-list",
+              sort: plugin.sort,
+              children: [],
+            });
+            currentCategory = treeData[treeData.length - 1];
+          }
+          currentCategory.children.push({
+            key: currentPluginInfo.pluginId,
+            title: titleCase(currentPluginInfo.name),
+            selectable: true,
             sort: plugin.sort,
-            children: [],
+            icon: plugin.meta.icon,
+            pluginId: currentPluginInfo.pluginId,
           });
-          currentCategory = treeData[treeData.length - 1];
         }
-        currentCategory.children.push({
-          key: currentPluginInfo.id,
-          title: titleCase(currentPluginInfo.name),
-          selectable: true,
-          sort: plugin.sort,
-          icon: plugin.meta.icon,
-          pluginId: currentPluginInfo.id,
-        });
       });
 
       pluginMenuList = treeData;
@@ -424,11 +430,18 @@ export default class DataPermModal extends Component {
 
   handleNamespacesValueChange = (value) => {
     const { currentPlugin } = this.state;
+    const { dispatch } = this.props;
     this.setState({ currentNamespaceId: value.key }, () => {
       if (currentPlugin) {
         this.setState({ selectorExpandedRowKeys: [] });
         this.getPermissionSelectorList(1);
       }
+      dispatch({
+        type: "global/fetchPluginsByNamespace",
+        payload: {
+          namespaceId: value.key,
+        },
+      });
     });
   };
 

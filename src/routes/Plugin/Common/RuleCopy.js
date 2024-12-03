@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Modal, TreeSelect } from "antd";
+import { Modal, TreeSelect, Dropdown, Menu, Button, Icon } from "antd";
 import { connect } from "dva";
 import {
   getPluginDropDownListByNamespace,
@@ -25,9 +25,11 @@ import {
   findRule,
 } from "../../../services/api";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import { defaultNamespaceId } from "../../../components/_utils/utils";
 
 @connect(({ global }) => ({
   currentNamespaceId: global.currentNamespaceId,
+  namespaces: global.namespaces,
 }))
 class RuleCopy extends Component {
   constructor(props) {
@@ -36,12 +38,19 @@ class RuleCopy extends Component {
       ruleTree: [],
       value: undefined,
       loading: false,
+      currentNamespaceId: defaultNamespaceId,
     };
   }
 
   componentDidMount() {
     this.getAllRule();
   }
+
+  handleNamespacesValueChange = (value) => {
+    this.setState({ currentNamespaceId: value.key }, () => {
+      this.getAllRule();
+    });
+  };
 
   getAllRule = async () => {
     const { currentNamespaceId } = this.props;
@@ -133,8 +142,8 @@ class RuleCopy extends Component {
   };
 
   render() {
-    const { visible = false } = this.props;
-    const { ruleTree, value, loading } = this.state;
+    const { visible = false, namespaces } = this.props;
+    const { ruleTree, value, loading, currentNamespaceId } = this.state;
     return (
       <Modal
         visible={visible}
@@ -144,6 +153,40 @@ class RuleCopy extends Component {
         onOk={this.handleOk}
         confirmLoading={loading}
       >
+        <Dropdown
+          placement="bottomCenter"
+          overlay={
+            <Menu onClick={this.handleNamespacesValueChange}>
+              {namespaces.map((namespace) => {
+                let isCurrentNamespace =
+                  currentNamespaceId === namespace.namespaceId;
+                return (
+                  <Menu.Item
+                    key={namespace.namespaceId}
+                    disabled={isCurrentNamespace}
+                  >
+                    <span>{namespace.name}</span>
+                  </Menu.Item>
+                );
+              })}
+            </Menu>
+          }
+        >
+          <Button>
+            <a
+              className="ant-dropdown-link"
+              style={{ fontWeight: "bold" }}
+              onClick={(e) => e.preventDefault()}
+            >
+              {`${getIntlContent("SHENYU.SYSTEM.NAMESPACE")} / ${
+                namespaces.find(
+                  (namespace) => currentNamespaceId === namespace.namespaceId,
+                )?.name
+              } `}
+            </a>
+            <Icon type="down" />
+          </Button>
+        </Dropdown>
         <TreeSelect
           style={{ width: "100%" }}
           showSearch

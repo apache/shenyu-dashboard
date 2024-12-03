@@ -123,7 +123,7 @@ export default class Common extends Component {
     const { selectorName } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const tempPlugin = this.getPlugin(plugins, name);
-    const tempPluginId = tempPlugin?.id;
+    const tempPluginId = tempPlugin?.pluginId;
     const enabled = tempPlugin?.enabled ?? false;
     this.setState({ pluginId: tempPluginId, isPluginEnabled: enabled });
     dispatch({
@@ -168,7 +168,7 @@ export default class Common extends Component {
   getPluginId = (plugins, name) => {
     let plugin = this.getPlugin(plugins, name);
     if (plugin) {
-      return plugin.id;
+      return plugin.pluginId;
     } else {
       return "";
     }
@@ -210,7 +210,7 @@ export default class Common extends Component {
     const { dispatch, plugins, currentNamespaceId } = this.props;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
-    const { id: pluginId, config } = plugin;
+    const { pluginId, config } = plugin;
     const multiSelectorHandle =
       this.getPluginConfigField(config, "multiSelectorHandle") === "1";
     const isDiscovery = this.isDiscovery(pluginId);
@@ -379,7 +379,7 @@ export default class Common extends Component {
     const plugin = this.getPlugin(plugins, pluginName);
     const enabled = !this.state.isPluginEnabled;
     updateNamespacePluginsEnabledByNamespace({
-      list: [plugin.id],
+      list: [plugin.pluginId],
       namespaceId: this.props.currentNamespaceId,
       enabled,
       dispatch,
@@ -398,7 +398,7 @@ export default class Common extends Component {
       : "";
     const plugin = this.getPlugin(plugins, pluginName);
     getUpdateModal({
-      pluginId: plugin.id,
+      pluginId: plugin.pluginId,
       dispatch,
       callback: (popup) => {
         this.setState({ popup });
@@ -504,7 +504,7 @@ export default class Common extends Component {
     const { selectorPage, selectorPageSize } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
-    const { id: pluginId, config } = plugin;
+    const { pluginId, config } = plugin;
     const multiSelectorHandle =
       this.getPluginConfigField(config, "multiSelectorHandle") === "1";
     const isDiscovery = this.isDiscovery(pluginId);
@@ -670,7 +670,7 @@ export default class Common extends Component {
     const { selectorPage, selectorPageSize } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
     const plugin = this.getPlugin(plugins, name);
-    const { id: pluginId } = plugin;
+    const { pluginId } = plugin;
     dispatch({
       type: "common/enableSelector",
       payload: {
@@ -887,17 +887,20 @@ export default class Common extends Component {
         pageSize: rulePageSize,
         namespaceId: currentNamespaceId,
       },
+      callback: () => {
+        this.setState({ ruleSelectedRowKeys: [] });
+      },
     });
   };
 
   asyncClick = () => {
     const { dispatch, plugins, currentNamespaceId } = this.props;
     let name = this.props.match.params ? this.props.match.params.id : "";
-    const id = this.getPluginId(plugins, name);
+    const pluginId = this.getPluginId(plugins, name);
     dispatch({
       type: "global/asyncPlugin",
       payload: {
-        id,
+        pluginId,
         namespaceId: currentNamespaceId,
       },
     });
