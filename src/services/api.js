@@ -1294,12 +1294,9 @@ export async function deleteNamespace(params) {
 
 /* findNamespacePlugin */
 export async function findNamespacePlugin(params) {
-  return request(
-    `${baseUrl}/namespace-plugin/${params.namespaceId}/${params.id}`,
-    {
-      method: `GET`,
-    },
-  );
+  return request(`${baseUrl}/namespace-plugin/${params.id}`, {
+    method: `GET`,
+  });
 }
 
 /* getAllNamespacePlugins */
@@ -1334,13 +1331,10 @@ export async function updateNamespacePluginEnabledByNamespace(params) {
 
 /* updateNamespacePlugin */
 export async function updateNamespacePlugin(params) {
-  return request(
-    `${baseUrl}/namespace-plugin/${params.namespaceId}/${params.pluginId}`,
-    {
-      method: `PUT`,
-      body: params,
-    },
-  );
+  return request(`${baseUrl}/namespace-plugin/${params.id}`, {
+    method: `PUT`,
+    body: params,
+  });
 }
 
 /* deletePlugin */

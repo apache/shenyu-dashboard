@@ -182,6 +182,9 @@ export default class Plugin extends Component {
       fetchValue: this.currentQueryPayload({
         pageSize: 12,
       }),
+      callback: () => {
+        refreshAuthMenus({ dispatch });
+      },
     });
   };
 
