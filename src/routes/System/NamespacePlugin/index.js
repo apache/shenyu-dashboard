@@ -143,7 +143,7 @@ export default class NamespacePlugin extends Component {
   editClick = (record) => {
     const { dispatch, currentNamespaceId } = this.props;
     getUpdateModal({
-      id: record.id,
+      id: record.pluginId,
       namespaceId: currentNamespaceId,
       dispatch,
       fetchValue: this.currentQueryPayload(),
@@ -196,7 +196,7 @@ export default class NamespacePlugin extends Component {
     }
   };
 
-  // 数据状态切换
+  // change status
   statusSwitch = ({ list, enabled, namespaceId, callback }) => {
     const { dispatch } = this.props;
     updateNamespacePluginsEnabled({
@@ -209,18 +209,18 @@ export default class NamespacePlugin extends Component {
     });
   };
 
-  // 批量启用或禁用
+  // batch enable or disable
   enableClick = () => {
     const { dispatch, currentNamespaceId } = this.props;
     const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "namespacePlugin/fetchItem",
-        payload: { id: selectedRowKeys[0] },
-        callback: (user) => {
+        payload: { id: selectedRowKeys[0], namespaceId: currentNamespaceId },
+        callback: (plugin) => {
           this.statusSwitch({
             list: selectedRowKeys,
-            enabled: !user.enabled,
+            enabled: !plugin.enabled,
             namespaceId: currentNamespaceId,
             callback: () => {
               this.setState({ selectedRowKeys: [] });
@@ -234,11 +234,12 @@ export default class NamespacePlugin extends Component {
     }
   };
 
-  // 同步插件数据
+  // sync all
   syncAllClick = () => {
     const { dispatch } = this.props;
     dispatch({
       type: "namespacePlugin/asyncAll",
+      payload: { namespaceId: this.props.currentNamespaceId },
     });
   };
 
@@ -372,7 +373,7 @@ export default class NamespacePlugin extends Component {
                 checked={text}
                 onChange={(checked) => {
                   this.statusSwitch({
-                    list: [row.id],
+                    list: [row.pluginId],
                     enabled: checked,
                     namespaceId: row.namespaceId,
                   });
@@ -436,6 +437,7 @@ export default class NamespacePlugin extends Component {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
+
     const flatList = (map, list) => {
       list.forEach((element) => {
         if (!element.children) {
@@ -534,6 +536,7 @@ export default class NamespacePlugin extends Component {
           loading={loading}
           columns={columns}
           dataSource={namespacePluginList}
+          rowKey={(record) => record.pluginId}
           rowSelection={rowSelection}
           pagination={{
             total,

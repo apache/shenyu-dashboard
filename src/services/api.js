@@ -198,7 +198,7 @@ export async function addPlugin(params) {
 /* generatePlugin */
 export async function generatePlugin({ pluginId, namespaceId }) {
   return request(`${baseUrl}/namespace-plugin/${namespaceId}/${pluginId}`, {
-    method: `PUT`,
+    method: `POST`,
   });
 }
 
@@ -594,7 +594,7 @@ export async function asyncOnePlugin(params) {
 // sync by plugin and namespace
 export async function asyncByPluginAndNamespace(params) {
   return request(
-    `${baseUrl}/namespace-plugin/syncPluginData?id=${params.id}&namespaceId=${params.namespaceId}`,
+    `${baseUrl}/namespace-plugin/syncPluginData?pluginId=${params.pluginId}&namespaceId=${params.namespaceId}`,
     {
       method: `PUT`,
     },
@@ -611,7 +611,7 @@ export async function getPluginDropDownList() {
 // get plugin dropdown list by namespace
 export async function getPluginDropDownListByNamespace(params) {
   return request(
-    `${baseUrl}/plugin-template/listByNamespace?namespace=${params.namespace}`,
+    `${baseUrl}/namespace-plugin/listByNamespace?namespace=${params.namespace}`,
     {
       method: `GET`,
     },
@@ -1294,9 +1294,12 @@ export async function deleteNamespace(params) {
 
 /* findNamespacePlugin */
 export async function findNamespacePlugin(params) {
-  return request(`${baseUrl}/namespace-plugin/${params.id}`, {
-    method: `GET`,
-  });
+  return request(
+    `${baseUrl}/namespace-plugin/${params.namespaceId}/${params.id}`,
+    {
+      method: `GET`,
+    },
+  );
 }
 
 /* getAllNamespacePlugins */
@@ -1313,6 +1316,7 @@ export async function updateNamespacePluginEnabled(params) {
     body: {
       ids: params.list,
       enabled: params.enabled,
+      namespaceId: params.namespaceId,
     },
   });
 }
@@ -1330,10 +1334,13 @@ export async function updateNamespacePluginEnabledByNamespace(params) {
 
 /* updateNamespacePlugin */
 export async function updateNamespacePlugin(params) {
-  return request(`${baseUrl}/namespace-plugin/${params.id}`, {
-    method: `PUT`,
-    body: params,
-  });
+  return request(
+    `${baseUrl}/namespace-plugin/${params.namespaceId}/${params.pluginId}`,
+    {
+      method: `PUT`,
+      body: params,
+    },
+  );
 }
 
 /* deletePlugin */
@@ -1348,8 +1355,9 @@ export async function deleteNamespacePlugin(params) {
 }
 
 // sync all plugin
-export async function asyncNamespacePlugin() {
+export async function asyncNamespacePlugin(params) {
   return request(`${baseUrl}/namespace-plugin/syncPluginAll`, {
     method: `POST`,
+    body: params,
   });
 }

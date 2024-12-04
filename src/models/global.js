@@ -86,6 +86,28 @@ export default {
         });
       }
     },
+    *fetchPluginsByNamespace({ payload }, { call, put }) {
+      const { callback, namespaceId } = payload ?? {};
+      const params = {
+        namespaceId,
+        currentPage: 1,
+        pageSize: 50,
+      };
+      const json = yield call(getPluginsByNamespace, params);
+      if (json.code === 200) {
+        let { dataList } = json.data;
+
+        if (callback) {
+          callback(dataList);
+        }
+        yield put({
+          type: "savePlugins",
+          payload: {
+            dataList,
+          },
+        });
+      }
+    },
     *asyncPlugin(params, { call }) {
       const { payload } = params;
       const json = yield call(asyncByPluginAndNamespace, payload);
