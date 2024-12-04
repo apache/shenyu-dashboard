@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Form, Select, Input, Button, Tooltip, Popconfirm } from "antd";
+import { Button, Form, Input, Popconfirm, Select, Tooltip } from "antd";
 import classnames from "classnames";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
