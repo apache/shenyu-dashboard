@@ -17,28 +17,29 @@
 
 import React, { Component } from "react";
 import {
-  Modal,
-  Form,
-  Row,
-  Col,
-  Select,
-  Input,
-  Switch,
   Button,
-  message,
+  Col,
   DatePicker,
+  Form,
+  Input,
+  message,
+  Modal,
+  Row,
+  Select,
+  Switch,
   TimePicker,
 } from "antd";
 import { connect } from "dva";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import CommonRuleHandle from "./CommonRuleHandle";
+import ComposeRuleHandle from "./ComposeRuleHandle";
 import PluginRuleHandle from "../PluginRuleHandle";
 import RuleCopy from "./RuleCopy";
 import {
   formatDate,
-  formatTime,
   formatDateString,
+  formatTime,
   formatTimeString,
 } from "../../../utils/utils";
 
@@ -177,7 +178,7 @@ class AddModal extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     const { form, handleOk, multiRuleHandle } = this.props;
-    const { ruleConditions, pluginHandleList, customRulePage } = this.state;
+    const { ruleConditions, pluginHandleList } = this.state;
 
     form.validateFieldsAndScroll((err, values) => {
       const {
@@ -194,31 +195,33 @@ class AddModal extends Component {
         if (submit) {
           let handle;
 
-          if (!customRulePage) {
-            // commonRule
-            switch (handleType) {
-              case "1":
-                handle = [];
-                pluginHandleList.forEach((handleList, index) => {
-                  handle[index] = {};
-                  handleList.forEach((item) => {
-                    handle[index][item.field] = values[item.field + index];
-                  });
+          // commonRule
+          switch (handleType) {
+            case "1":
+              handle = [];
+              pluginHandleList.forEach((handleList, index) => {
+                handle[index] = {};
+                handleList.forEach((item) => {
+                  handle[index][item.field] = values[item.field + index];
                 });
-                handle = multiRuleHandle
-                  ? JSON.stringify(handle)
-                  : JSON.stringify(handle[0]);
-                break;
-              case "2":
-                handle = handleJSON;
-                break;
-              default:
-                break;
-            }
+              });
+              handle = multiRuleHandle
+                ? JSON.stringify(handle)
+                : JSON.stringify(handle[0]);
+              break;
+            case "2":
+              handle = handleJSON;
+              break;
+            default:
+              break;
           }
           if (this.handleComponentRef) {
             // customizationRule
-            handle = this.handleComponentRef.getData(values);
+            const customHandle = this.handleComponentRef.getData(values);
+            handle = JSON.stringify({
+              ...JSON.parse(handle),
+              ...JSON.parse(customHandle),
+            });
           }
 
           handleOk({
@@ -498,7 +501,7 @@ class AddModal extends Component {
 
     let RuleHandleComponent;
     if (customRulePage) {
-      RuleHandleComponent = PluginRuleHandle[pluginName];
+      RuleHandleComponent = ComposeRuleHandle;
     } else if (pluginHandleList) {
       RuleHandleComponent = CommonRuleHandle;
     }
@@ -696,6 +699,7 @@ class AddModal extends Component {
               onRef={(handleComponentRef) => {
                 this.handleComponentRef = handleComponentRef;
               }}
+              pluginName={pluginName}
               onAddPluginHandle={this.handleAddHandle}
               onDeletePluginHandle={this.handleDeleteHandle}
               form={form}
