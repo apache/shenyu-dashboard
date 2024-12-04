@@ -132,17 +132,8 @@ export default {
         let dataList = [];
         let useJSON = false;
         if (json.data && json.data.length > 0) {
-          const fieldArr = json.data.map((v) => v.field);
           // eslint-disable-next-line no-plusplus
           for (let i = 0; i < length; i++) {
-            if (handleData[i]) {
-              const keys = Object.keys(handleData[i]);
-              let allKeys = [...fieldArr, ...keys];
-              allKeys = new Set(allKeys);
-              if (allKeys.size !== fieldArr.length) {
-                useJSON = true;
-              }
-            }
             let dataItem = json.data.map((data) => {
               let item = { ...data };
               item.key = item.id;
