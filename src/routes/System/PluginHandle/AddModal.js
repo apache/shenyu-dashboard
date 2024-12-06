@@ -129,7 +129,15 @@ class AddPluginHandle extends Component {
               ],
               initialValue: pluginId,
             })(
-              <Select placeholder={getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME")}>
+              <Select
+                placeholder={getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME")}
+                showSearch
+                filterOption={(input, option) =>
+                  option.props.children
+                    .toLowerCase()
+                    .indexOf(input.toLowerCase()) >= 0
+                }
+              >
                 {pluginDropDownList.map((item, i) => {
                   return (
                     <Option key={i} value={item.id}>
