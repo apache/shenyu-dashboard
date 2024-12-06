@@ -169,9 +169,6 @@ class GlobalHeader extends PureComponent {
       type: "global/saveCurrentNamespaceId",
       payload: namespaceId,
     });
-    if (namespaceId !== defaultNamespaceId) {
-      message.warn(getIntlContent("SHENYU.NAMESPACE.ALERTNAMESPACEID.CHANGED"));
-    }
     // Fetch plugins for the new namespace
     dispatch({
       type: "global/fetchPlugins",
