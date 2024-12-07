@@ -151,7 +151,7 @@ class SelectorCopy extends Component {
             </Menu>
           }
         >
-          <Button>
+          <Button style={{ marginBottom: 20 }}>
             <a
               className="ant-dropdown-link"
               style={{ fontWeight: "bold" }}

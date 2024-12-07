@@ -16,16 +16,7 @@
  */
 
 import React, { PureComponent } from "react";
-import {
-  Button,
-  Dropdown,
-  Form,
-  Icon,
-  Input,
-  Menu,
-  message,
-  Modal,
-} from "antd";
+import { Button, Dropdown, Form, Icon, Input, Menu, Modal } from "antd";
 import { connect } from "dva";
 import { withRouter } from "dva/router";
 import ImportModal from "./ImportModal";
@@ -169,9 +160,6 @@ class GlobalHeader extends PureComponent {
       type: "global/saveCurrentNamespaceId",
       payload: namespaceId,
     });
-    if (namespaceId !== defaultNamespaceId) {
-      message.warn(getIntlContent("SHENYU.NAMESPACE.ALERTNAMESPACEID.CHANGED"));
-    }
     // Fetch plugins for the new namespace
     dispatch({
       type: "global/fetchPlugins",
@@ -302,6 +290,13 @@ class GlobalHeader extends PureComponent {
           <Icon type="form" />{" "}
           {getIntlContent("SHENYU.GLOBALHEADER.CHANGE.PASSWORD")}
         </Menu.Item>
+        <Menu.Item key="0" onClick={onLogout}>
+          <Icon type="logout" /> {getIntlContent("SHENYU.GLOBALHEADER.LOGOUT")}
+        </Menu.Item>
+      </Menu>
+    );
+    const importMenu = (
+      <Menu>
         {this.checkAuth("system:manager:exportConfig") && (
           <Menu.Item key="2" onClick={this.exportConfigClick}>
             <Icon type="export" /> {getIntlContent("SHENYU.COMMON.EXPORT")}
@@ -312,9 +307,6 @@ class GlobalHeader extends PureComponent {
             <Icon type="import" /> {getIntlContent("SHENYU.COMMON.IMPORT")}
           </Menu.Item>
         )}
-        <Menu.Item key="0" onClick={onLogout}>
-          <Icon type="logout" /> {getIntlContent("SHENYU.GLOBALHEADER.LOGOUT")}
-        </Menu.Item>
       </Menu>
     );
     return (
@@ -357,18 +349,15 @@ class GlobalHeader extends PureComponent {
               </Dropdown>
             </div>
           )}
-          {this.checkAuth("system:manager:importConfig") && (
+          {(this.checkAuth("system:manager:importConfig") ||
+            this.checkAuth("system:manager:exportConfig")) && (
             <div className={styles.item}>
-              <Button onClick={this.importConfigClick}>
-                <Icon type="import" /> {getIntlContent("SHENYU.COMMON.IMPORT")}
-              </Button>
-            </div>
-          )}
-          {this.checkAuth("system:manager:exportConfig") && (
-            <div className={styles.item}>
-              <Button onClick={this.exportConfigClick}>
-                <Icon type="export" /> {getIntlContent("SHENYU.COMMON.EXPORT")}
-              </Button>
+              <Dropdown overlay={importMenu}>
+                <Button>
+                  <Icon type="import" />{" "}
+                  {getIntlContent("SHENYU.COMMON.IMPORT_EXPORT")}
+                </Button>
+              </Dropdown>
             </div>
           )}
           <div className={styles.item}>
