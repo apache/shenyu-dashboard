@@ -21,7 +21,7 @@ import {
   queryPlatform,
   getPluginsByNamespace,
   getNamespaceList,
-  asyncByPluginAndNamespace,
+  asyncOnePlugin,
   getUserPermissionByNamespace,
 } from "../services/api";
 import { getIntlContent } from "../utils/IntlUtils";
@@ -110,7 +110,7 @@ export default {
     },
     *asyncPlugin(params, { call }) {
       const { payload } = params;
-      const json = yield call(asyncByPluginAndNamespace, payload);
+      const json = yield call(asyncOnePlugin, payload);
       if (json.code === 200) {
         message.success(getIntlContent("SHENYU.COMMON.RESPONSE.SYNC.SUCCESS"));
       } else {
