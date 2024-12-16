@@ -34,8 +34,10 @@ import Selector from "./Selector";
 import Rule from "./Rule";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
-import { getUpdateModal } from "../../../utils/plugin";
-import { updateNamespacePluginsEnabledByNamespace } from "../../../utils/namespacePlugin";
+import {
+  getUpdateModal,
+  updateNamespacePluginsEnabledByNamespace,
+} from "../../../utils/namespacePlugin";
 
 const { Search } = Input;
 const { Title } = Typography;
@@ -398,7 +400,8 @@ export default class Common extends Component {
       : "";
     const plugin = this.getPlugin(plugins, pluginName);
     getUpdateModal({
-      pluginId: plugin.pluginId,
+      id: plugin.id,
+      namespaceId: plugin.namespaceId,
       dispatch,
       callback: (popup) => {
         this.setState({ popup });
