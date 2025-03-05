@@ -25,7 +25,7 @@ import { Method } from "./globalData";
 const { Title, Text, Paragraph } = Typography;
 
 function ApiInfo(props) {
-  const {
+  let {
     apiData: { envProps = [] },
     apiDetail,
     apiDetail: { document, responseParameters, requestHeaders },
@@ -44,6 +44,7 @@ function ApiInfo(props) {
       });
     });
     requestParameters = requestParameters ?? documentJSON.parameters;
+    responseParameters = responseParameters ?? documentJSON.responseType;
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
