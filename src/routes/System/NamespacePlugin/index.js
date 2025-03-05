@@ -137,7 +137,7 @@ export default class NamespacePlugin extends Component {
       this.setState({ popup: "", currentPage: 1 }, this.query);
       return;
     }
-    this.setState({ popup: "", currentPage: 1 });
+    this.setState({ popup: "" });
   };
 
   editClick = (record) => {
