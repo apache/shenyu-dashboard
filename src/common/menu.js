@@ -100,6 +100,11 @@ export const menuData = [
         path: "dict",
         locale: "SHENYU.MENU.SYSTEM.MANAGMENT.DICTIONARY",
       },
+      {
+        name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.INSTANCE"),
+        path: "instance",
+        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.INSTANCE",
+      },
     ],
   },
   {
