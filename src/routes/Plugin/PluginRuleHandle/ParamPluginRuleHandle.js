@@ -327,7 +327,7 @@ export default class ParamPluginRuleHandle extends Component {
     return (
       <Form.Item
         required={true}
-        label={getIntlContent("SHENYU.COMMON.DEAL.TEMPLATE")}
+        label={getIntlContent("SHENYU.COMMON.DEAL.CUSTOM")}
         labelCol={{ span: 4 }}
         wrapperCol={{ span: 20 }}
       >
