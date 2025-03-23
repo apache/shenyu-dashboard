@@ -111,9 +111,10 @@ export default class GeneralContextRuleHandle extends Component {
 
     return (
       <FormItem
-        label={getIntlContent("SHENYU.COMMON.DEAL")}
-        labelCol={{ span: 3 }}
-        wrapperCol={{ span: 21 }}
+        required={true}
+        label={getIntlContent("SHENYU.COMMON.DEAL.TEMPLATE")}
+        labelCol={{ span: 4 }}
+        wrapperCol={{ span: 20 }}
         className={styles.rootFormItem}
       >
         <Tabs defaultActiveKey={currentType} onChange={this.handleTabChange}>

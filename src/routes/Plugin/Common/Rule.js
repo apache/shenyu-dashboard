@@ -509,10 +509,10 @@ class AddModal extends Component {
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 3 },
+        sm: { span: 4 },
       },
       wrapperCol: {
-        sm: { span: 21 },
+        sm: { span: 20 },
       },
     };
     const formCheckLayout = {
