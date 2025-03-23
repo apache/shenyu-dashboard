@@ -204,7 +204,7 @@ export default class HystrixRuleHandle extends Component {
         </FormItem>
         <FormItem
           required={true}
-          label={getIntlContent("SHENYU.COMMON.DEAL.CUSTOM")}
+          label={getIntlContent("SHENYU.COMMON.DEAL.COMPONENT")}
           {...formItemLayout}
         >
           <div className={styles.handleWrap} style={{ marginTop: 0 }}>

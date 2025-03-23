@@ -416,7 +416,7 @@ export default class RequestRuleHandle extends Component {
     return (
       <FormItem
         required={true}
-        label={getIntlContent("SHENYU.COMMON.DEAL.CUSTOM")}
+        label={getIntlContent("SHENYU.COMMON.DEAL.COMPONENT")}
         labelCol={{ span: 4 }}
         wrapperCol={{ span: 20 }}
         className={styles.rootFormItem}

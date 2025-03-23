@@ -47,7 +47,7 @@ export default class CommonRuleHandle extends Component {
     return (
       <FormItem
         required={true}
-        label={getIntlContent("SHENYU.COMMON.DEAL")}
+        label={getIntlContent("SHENYU.COMMON.DEAL.CUSTOM")}
         {...formItemLayout}
         className={styles.rootFormItem}
       >
