@@ -326,9 +326,10 @@ export default class ParamPluginRuleHandle extends Component {
 
     return (
       <Form.Item
-        label={getIntlContent("SHENYU.COMMON.DEAL")}
-        labelCol={{ span: 3 }}
-        wrapperCol={{ span: 21 }}
+        required={true}
+        label={getIntlContent("SHENYU.COMMON.DEAL.COMPONENT")}
+        labelCol={{ span: 4 }}
+        wrapperCol={{ span: 20 }}
       >
         {getFieldDecorator("handle", {
           initialValue: handle,

@@ -165,10 +165,10 @@ export default class HystrixRuleHandle extends Component {
     } = this.state;
     const formItemLayout = {
       labelCol: {
-        sm: { span: 3 },
+        sm: { span: 4 },
       },
       wrapperCol: {
-        sm: { span: 21 },
+        sm: { span: 20 },
       },
     };
     // eslint-disable-next-line
@@ -203,7 +203,8 @@ export default class HystrixRuleHandle extends Component {
           )}
         </FormItem>
         <FormItem
-          label={getIntlContent("SHENYU.COMMON.DEAL")}
+          required={true}
+          label={getIntlContent("SHENYU.COMMON.DEAL.COMPONENT")}
           {...formItemLayout}
         >
           <div className={styles.handleWrap} style={{ marginTop: 0 }}>

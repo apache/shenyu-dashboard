@@ -26,10 +26,10 @@ const { Option } = Select;
 
 const formItemLayout = {
   labelCol: {
-    sm: { span: 3 },
+    sm: { span: 4 },
   },
   wrapperCol: {
-    sm: { span: 21 },
+    sm: { span: 20 },
   },
 };
 
@@ -46,7 +46,8 @@ export default class CommonRuleHandle extends Component {
     const { getFieldDecorator, getFieldValue } = form;
     return (
       <FormItem
-        label={getIntlContent("SHENYU.COMMON.DEAL")}
+        required={true}
+        label={getIntlContent("SHENYU.COMMON.DEAL.CUSTOM")}
         {...formItemLayout}
         className={styles.rootFormItem}
       >

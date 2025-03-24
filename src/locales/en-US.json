@@ -38,6 +38,8 @@
   "SHENYU.COMMON.INPUTMATCHTYPE": "MatchMode",
   "SHENYU.COMMON.CONDITION": "Conditions",
   "SHENYU.COMMON.DEAL": "Handler",
+  "SHENYU.COMMON.DEAL.COMPONENT": "Component Handler",
+  "SHENYU.COMMON.DEAL.CUSTOM": "Custom Handler",
   "SHENYU.COMMON.SETTING": "Configuration",
   "SHENYU.COMMON.YES": "YES",
   "SHENYU.COMMON.NO": "NO",
