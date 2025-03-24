@@ -161,6 +161,30 @@ export default class Instance extends Component {
         },
         {
           align: "center",
+          title: getIntlContent("SHENYU.INSTANCE.PORT"),
+          dataIndex: "instancePort",
+          key: "instancePort",
+          ellipsis: true,
+          width: 120,
+          render: (text, record) => {
+            return record.instancePort ? (
+              <div
+                style={{
+                  color: "#1890ff",
+                  fontWeight: "bold",
+                }}
+              >
+                {text || "----"}
+              </div>
+            ) : (
+              <div style={{ color: "#260033", fontWeight: "bold" }}>
+                {text || "----"}
+              </div>
+            );
+          },
+        },
+        {
+          align: "center",
           title: getIntlContent("SHENYU.INSTANCE.SELECT.TYPE"),
           dataIndex: "instanceType",
           ellipsis: true,
@@ -182,6 +206,7 @@ export default class Instance extends Component {
               <div>
                 <Tag color="#9dd3a8">{record.instanceType}</Tag>
                 <Tag color="#CCCC99">{record.instanceIp}</Tag>
+                <Tag color="#DCDC17">{record.instancePort}</Tag>
               </div>
             );
             const t = JSON.stringify(

@@ -336,6 +336,7 @@
   "SHENYU.MESSAGE.SESSION.INVALID": "Session is invalid",
   "SHENYU.MESSAGE.SESSION.RELOGIN": "Please login in again",
   "SHENYU.INSTANCE.IP": "Instance IP",
+  "SHENYU.INSTANCE.PORT": "Instance Port",
   "SHENYU.INSTANCE.INFO": "Instance Info",
   "SHENYU.INSTANCE.SELECT.TYPE": "Instance Type",
   "SHENYU.INSTANCE.SELECT.TYPE.BOOTSTRAP": "Bootstrap",
