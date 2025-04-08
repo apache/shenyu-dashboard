@@ -1355,3 +1355,41 @@ export async function asyncNamespacePlugin(params) {
     body: params,
   });
 }
+
+/* getInstancesByNamespace */
+export async function getInstancesByNamespace(params) {
+  return request(`${baseUrl}/instance?${stringify(params)}`, {
+    method: `GET`,
+  });
+}
+
+/* findInstance */
+export async function findInstance(params) {
+  return request(`${baseUrl}/instance/${params.id}`, {
+    method: `GET`,
+  });
+}
+
+/* addInstance */
+export async function addInstance(params) {
+  return request(`${baseUrl}/instance`, {
+    method: `POST`,
+    body: params,
+  });
+}
+
+/* updateInstance */
+export async function updateInstance(params) {
+  return request(`${baseUrl}/instance/${params.id}`, {
+    method: `PUT`,
+    body: params,
+  });
+}
+
+/* deleteInstance */
+export async function deleteInstance(params) {
+  return request(`${baseUrl}/instance/batch`, {
+    method: `DELETE`,
+    body: [...params.list],
+  });
+}
