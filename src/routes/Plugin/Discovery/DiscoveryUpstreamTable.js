@@ -256,7 +256,7 @@ class EditableTable extends Component {
       key: newRecordCount,
       protocol: "http://",
       url: "localhost:",
-      status: 0,
+      status: "close",
       weight: 50,
       startupTime: 0,
       warmupTime: 10,
