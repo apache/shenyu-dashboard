@@ -29,6 +29,7 @@ import {
   Typography,
 } from "antd";
 import { connect } from "dva";
+import TextArea from "antd/lib/input/TextArea";
 import styles from "../index.less";
 import Tools from "./Tools";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
@@ -37,7 +38,6 @@ import {
   getUpdateModal,
   updateNamespacePluginsEnabledByNamespace,
 } from "../../../utils/namespacePlugin";
-import TextArea from "antd/lib/input/TextArea";
 
 const { Search } = Input;
 const { Title } = Typography;
