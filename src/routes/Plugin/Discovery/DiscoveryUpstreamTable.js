@@ -40,8 +40,8 @@ class EditableCell extends Component {
       // return <Select />;
       return (
         <Select>
-          <Option value="0">open</Option>
-          <Option value="1">close</Option>
+          <Option value={0}>{getIntlContent("SHENYU.COMMON.OPEN")}</Option>
+          <Option value={1}>{getIntlContent("SHENYU.COMMON.CLOSE")}</Option>
         </Select>
       );
     } else if (this.props.inputType === "switch") {
@@ -67,24 +67,24 @@ class EditableCell extends Component {
           <Form.Item style={{ margin: 0 }}>
             {dataIndex === "gray"
               ? getFieldDecorator(dataIndex, {
-                  rules: [
-                    {
-                      required: true,
-                      message: `Please Input ${title}!`,
-                    },
-                  ],
-                  valuePropName: "checked",
-                  initialValue: record[dataIndex],
-                })(this.getInput())
+                rules: [
+                  {
+                    required: true,
+                    message: `Please Input ${title}!`,
+                  },
+                ],
+                valuePropName: "checked",
+                initialValue: record[dataIndex],
+              })(this.getInput())
               : getFieldDecorator(dataIndex, {
-                  rules: [
-                    {
-                      required: true,
-                      message: `Please Input ${title}!`,
-                    },
-                  ],
-                  initialValue: record[dataIndex],
-                })(this.getInput())}
+                rules: [
+                  {
+                    required: true,
+                    message: `Please Input ${title}!`,
+                  },
+                ],
+                initialValue: dataIndex === "status" ? Number(record[dataIndex]) : record[dataIndex],
+              })(this.getInput())}
           </Form.Item>
         ) : (
           children
@@ -129,7 +129,15 @@ class EditableTable extends Component {
         width: "19%",
         align: "center",
         render: (text) => {
-          return text === 0 || text === "0" ? "open" : "close";
+          const statusMap = {
+            0: getIntlContent("SHENYU.COMMON.OPEN"),
+            1: getIntlContent("SHENYU.COMMON.CLOSE"),
+            false: getIntlContent("SHENYU.COMMON.OPEN"),
+            true: getIntlContent("SHENYU.COMMON.CLOSE"),
+            "false": getIntlContent("SHENYU.COMMON.OPEN"),
+            "true": getIntlContent("SHENYU.COMMON.CLOSE")
+          };
+          return statusMap[text] || getIntlContent("SHENYU.COMMON.CLOSE");
         },
       },
       {
