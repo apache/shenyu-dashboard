@@ -1358,14 +1358,14 @@ export async function asyncNamespacePlugin(params) {
 
 /* get mcpServer list */
 export async function fetchMcpServer(params) {
-  return request(`${baseUrl}/plugin/mcp/list?${stringify(params)}`, {
+  return request(`${baseUrl}/mcpServer/list?${stringify(params)}`, {
     method: `GET`,
   });
 }
 
 /* add mcpServer */
 export async function addMcpServer(params) {
-  return request(`${baseUrl}/plugin/mcp/add`, {
+  return request(`${baseUrl}/mcpServer/add`, {
     method: `POST`,
     body: {
       ...params,
@@ -1375,7 +1375,7 @@ export async function addMcpServer(params) {
 
 /* update mcpServer */
 export async function updateMcpServer(params) {
-  return request(`${baseUrl}/plugin/mcp/update`, {
+  return request(`${baseUrl}/mcpServer/update`, {
     method: `PUT`,
     body: {
       ...params,
@@ -1385,7 +1385,7 @@ export async function updateMcpServer(params) {
 
 /* delete mcpServer */
 export async function deleteMcpServer(params) {
-  return request(`${baseUrl}/plugin/mcp/delete`, {
+  return request(`${baseUrl}/mcpServer/delete`, {
     method: `DELETE`,
     body: [...params.list],
   });

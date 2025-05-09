@@ -37,6 +37,7 @@ import {
   getUpdateModal,
   updateNamespacePluginsEnabledByNamespace,
 } from "../../../utils/namespacePlugin";
+import TextArea from "antd/lib/input/TextArea";
 
 const { Search } = Input;
 const { Title } = Typography;
@@ -429,17 +430,54 @@ export default class McpServer extends Component {
     };
 
     const toolsColumns = [
+      // {
+      //   align: "center",
+      //   title: getIntlContent("SHENYU.SELECTOR.EXEORDER"),
+      //   dataIndex: "sort",
+      //   key: "sort",
+      // },
       {
         align: "center",
-        title: getIntlContent("SHENYU.SELECTOR.EXEORDER"),
-        dataIndex: "sort",
-        key: "sort",
+        title: getIntlContent("SHENYU.COMMON.TOOL.NAME"),
+        dataIndex: "name",
+        key: "name",
       },
       {
         align: "center",
-        title: getIntlContent("SHENYU.COMMON.RULE.NAME"),
-        dataIndex: "name",
-        key: "name",
+        title: getIntlContent("SHENYU.COMMON.TOOL.REQUESTMETHOD"),
+        dataIndex: "handle",
+        key: "requestMethod",
+        render: (text) => {
+          const handle = JSON.parse(text);
+          return <Tag color="green">{handle.requestMethod}</Tag>;
+        },
+      },
+      {
+        align: "center",
+        title: getIntlContent("SHENYU.COMMON.TOOL.REQUESTURI"),
+        dataIndex: "handle",
+        key: "requestURI",
+        render: (text) => {
+          const handle = JSON.parse(text);
+          return <Tag color="cyan">{handle.requestURI}</Tag>;
+        },
+      },
+      {
+        align: "center",
+        title: getIntlContent("SHENYU.COMMON.TOOL.REQUESTPARAMS"),
+        dataIndex: "handle",
+        key: "requestParams",
+        render: (text) => {
+          const handle = JSON.parse(text);
+          const parameters = handle.parameters;
+          return (
+            <TextArea
+              // style={{ width: "100%", height: 100 }}
+              value={JSON.stringify(parameters)}
+              // disabled
+            />
+          );
+        },
       },
       {
         align: "center",
@@ -472,7 +510,7 @@ export default class McpServer extends Component {
         render: (text, record) => {
           return (
             <div>
-              <AuthButton perms={`plugin:${this.state.pluginName}Tool:edit`}>
+              <AuthButton perms={`plugin:${this.state.pluginName}Rule:edit`}>
                 <span
                   className="edit"
                   style={{ marginRight: 8 }}
@@ -484,7 +522,7 @@ export default class McpServer extends Component {
                   {getIntlContent("SHENYU.COMMON.CHANGE")}
                 </span>
               </AuthButton>
-              <AuthButton perms={`plugin:${this.state.pluginName}Tool:delete`}>
+              <AuthButton perms={`plugin:${this.state.pluginName}Rule:delete`}>
                 <Popconfirm
                   title={getIntlContent("SHENYU.COMMON.DELETE")}
                   placement="bottom"
