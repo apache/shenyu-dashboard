@@ -67,24 +67,27 @@ class EditableCell extends Component {
           <Form.Item style={{ margin: 0 }}>
             {dataIndex === "gray"
               ? getFieldDecorator(dataIndex, {
-                rules: [
-                  {
-                    required: true,
-                    message: `Please Input ${title}!`,
-                  },
-                ],
-                valuePropName: "checked",
-                initialValue: record[dataIndex],
-              })(this.getInput())
+                  rules: [
+                    {
+                      required: true,
+                      message: `Please Input ${title}!`,
+                    },
+                  ],
+                  valuePropName: "checked",
+                  initialValue: record[dataIndex],
+                })(this.getInput())
               : getFieldDecorator(dataIndex, {
-                rules: [
-                  {
-                    required: true,
-                    message: `Please Input ${title}!`,
-                  },
-                ],
-                initialValue: dataIndex === "status" ? Number(record[dataIndex]) : record[dataIndex],
-              })(this.getInput())}
+                  rules: [
+                    {
+                      required: true,
+                      message: `Please Input ${title}!`,
+                    },
+                  ],
+                  initialValue:
+                    dataIndex === "status"
+                      ? Number(record[dataIndex])
+                      : record[dataIndex],
+                })(this.getInput())}
           </Form.Item>
         ) : (
           children
@@ -134,8 +137,6 @@ class EditableTable extends Component {
             1: getIntlContent("SHENYU.COMMON.CLOSE"),
             false: getIntlContent("SHENYU.COMMON.OPEN"),
             true: getIntlContent("SHENYU.COMMON.CLOSE"),
-            "false": getIntlContent("SHENYU.COMMON.OPEN"),
-            "true": getIntlContent("SHENYU.COMMON.CLOSE")
           };
           return statusMap[text] || getIntlContent("SHENYU.COMMON.CLOSE");
         },
