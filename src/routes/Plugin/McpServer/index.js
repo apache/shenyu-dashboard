@@ -283,6 +283,7 @@ export default class McpServer extends Component {
   };
 
   editTool = (record) => {
+    console.log("record", record);
     const { dispatch, currentSelector, plugins, currentNamespaceId } =
       this.props;
     const { toolPage, toolPageSize, pluginId, pluginName } = this.state;
@@ -444,26 +445,6 @@ export default class McpServer extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SHENYU.COMMON.TOOL.REQUESTMETHOD"),
-        dataIndex: "handle",
-        key: "requestMethod",
-        render: (text) => {
-          const handle = JSON.parse(text);
-          return <Tag color="green">{handle.requestMethod}</Tag>;
-        },
-      },
-      {
-        align: "center",
-        title: getIntlContent("SHENYU.COMMON.TOOL.REQUESTURI"),
-        dataIndex: "handle",
-        key: "requestURI",
-        render: (text) => {
-          const handle = JSON.parse(text);
-          return <Tag color="cyan">{handle.requestURI}</Tag>;
-        },
-      },
-      {
-        align: "center",
         title: getIntlContent("SHENYU.COMMON.TOOL.REQUESTPARAMS"),
         dataIndex: "handle",
         key: "requestParams",
@@ -474,6 +455,23 @@ export default class McpServer extends Component {
             <TextArea
               // style={{ width: "100%", height: 100 }}
               value={JSON.stringify(parameters)}
+              // disabled
+            />
+          );
+        },
+      },
+      {
+        align: "center",
+        title: getIntlContent("SHENYU.COMMON.TOOL.REQUESTTEMPLATE"),
+        dataIndex: "handle",
+        key: "requestTemplate",
+        render: (text) => {
+          const handle = JSON.parse(text);
+          const requestTemplate = handle.requestTemplate;
+          return (
+            <TextArea
+              // style={{ width: "100%", height: 100 }}
+              value={requestTemplate}
               // disabled
             />
           );

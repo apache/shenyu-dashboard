@@ -31,115 +31,48 @@ import { connect } from "dva";
 import TextArea from "antd/lib/input/TextArea";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
-// import PluginRuleHandle from "../PluginRuleHandle";
 import RuleCopy from "./RuleCopy";
 
 const FormItem = Form.Item;
 const { Option } = Select;
 
-@connect(({ pluginHandle, shenyuDict, global }) => ({
-  pluginHandle,
-  shenyuDict,
+@connect(({ global }) => ({
   currentNamespaceId: global.currentNamespaceId,
 }))
 class AddModal extends Component {
   constructor(props) {
     super(props);
-
-    // const customPluginNames = Object.keys(PluginRuleHandle);
     this.state = {
-      // customRulePage: customPluginNames.includes(props.pluginName),
-      // handleType: "2",
       visible: false,
     };
 
-    // this.initRuleCondition(props);
     this.initParameters(props);
-    // this.initDics();
   }
-
-  componentDidMount() {
-    // const {
-    //   dispatch,
-    //   pluginId,
-    //   handle,
-    //   form: { setFieldsValue },
-    //   currentNamespaceId,
-    // } = this.props;
-    // this.setState({ pluginHandleList: [] });
-    // let type = 2;
-    // dispatch({
-    //   type: "pluginHandle/fetchByPluginId",
-    //   payload: {
-    //     pluginId,
-    //     type,
-    //     handle,
-    //     namespaceId: currentNamespaceId,
-    //     callBack: (pluginHandles, useJSON) => {
-    //       this.setState({ pluginHandleList: pluginHandles }, () => {
-    //         if (useJSON) {
-    //           setFieldsValue({
-    //             handleType: "2",
-    //             handleJSON: handle,
-    //           });
-    //         }
-    //       });
-    //     },
-    //   },
-    // });
   }
 
   initParameters = (props) => {
-    const parameters = props.parameters || [
-      {
-        paramType: "String",
-        paramName: "",
-        paramDescription: "",
-      },
-    ];
+    let parameters = [];
+    try {
+      const handle = props.handle ? JSON.parse(props.handle) : {};
+      parameters = handle.parameters || [
+        {
+          paramType: "String",
+          paramName: "",
+          paramDescription: "",
+        },
+      ];
+    } catch (e) {
+      console.error("Failed to parse handle JSON:", e);
+      parameters = [
+        {
+          paramType: "String",
+          paramName: "",
+          paramDescription: "",
+        },
+      ];
+    }
     this.state.parameters = parameters;
   };
-
-  // initRuleCondition = (props) => {
-  //   const ruleConditions = props.ruleConditions || [
-  //     {
-  //       paramType: "uri",
-  //       operator: "pathPattern",
-  //       paramName: "/",
-  //       paramValue: "",
-  //     },
-  //   ];
-  //   ruleConditions.forEach((item, index) => {
-  //     const { paramType } = item;
-  //     let key = `paramTypeValueEn${index}`;
-  //     if (paramType === "uri" || paramType === "host" || paramType === "ip") {
-  //       this.state[key] = true;
-  //       ruleConditions[index].paramName = "/";
-  //     } else {
-  //       this.state[key] = false;
-  //     }
-  //   });
-  //   this.state.ruleConditions = ruleConditions;
-  // };
-
-  // initDics = () => {
-  //   this.initDic("operator");
-  //   this.initDic("matchMode");
-  //   this.initDic("paramType");
-  // };
-
-  // initDic = (type) => {
-  //   const { dispatch } = this.props;
-  //   dispatch({
-  //     type: "shenyuDict/fetchByType",
-  //     payload: {
-  //       type,
-  //       callBack: (dics) => {
-  //         this.state[`${type}Dics`] = dics;
-  //       },
-  //     },
-  //   });
-  // };
 
   checkParams = () => {
     let { parameters } = this.state;
@@ -169,53 +102,21 @@ class AddModal extends Component {
     const { parameters } = this.state;
 
     form.validateFieldsAndScroll((err, values) => {
-      const { name, enabled, requestMethod, requestURI } = values;
-      // values.matchMode = "0";
-      // values.sort = 0;
-      // values.loged = false;
-      // values.loged = false;
+      const { name, description, enabled, requestTemplate } = values;
       if (!err) {
         const submit = this.checkParams();
         if (submit) {
           let handle = {
-            requestMethod,
-            requestURI,
             parameters,
+            requestTemplate,
+            description,
           };
-          // commonRule
-          // switch (handleType) {
-          //   case "1":
-          //     handle = [];
-          //     pluginHandleList.forEach((handleList, index) => {
-          //       handle[index] = {};
-          //       handleList.forEach((item) => {
-          //         handle[index][item.field] = values[item.field + index];
-          //       });
-          //     });
-          //     handle = multiRuleHandle
-          //       ? JSON.stringify(handle)
-          //       : JSON.stringify(handle[0]);
-          //     break;
-          //   case "2":
-          //     handle = handleJSON;
-          //     break;
-          //   default:
-          //     break;
-          // }
-          // if (this.handleComponentRef) {
-          //   // customizationRule
-          //   const customHandle = this.handleComponentRef.getData(values);
-          // handle = JSON.stringify({
-          //   ...JSON.parse(handle ?? "{}"),
-          //   ...JSON.parse(customHandle),
-          // });
-          // }
-
           handle = JSON.stringify({
             ...handle,
           });
           handleOk({
             name,
+            description,
             handle,
             enabled,
             sort: 1,
@@ -254,12 +155,6 @@ class AddModal extends Component {
   handleDelete = (index) => {
     let { parameters } = this.state;
     parameters.splice(index, 1);
-    // if (parameters && parameters.length > 1) {
-    //   parameters.splice(index, 1);
-    // } else {
-    //   message.destroy();
-    //   message.error("At least one condition");
-    // }
     this.setState({ parameters });
   };
 
@@ -277,18 +172,6 @@ class AddModal extends Component {
       enabled,
       sort,
     };
-    // this.initRuleCondition({
-    //   ruleConditions: ruleConditions.map((v) => {
-    //     const {
-    //       id: rawId,
-    //       selectorId,
-    //       dateCreated,
-    //       dateUpdated,
-    //       ...condition
-    //     } = v;
-    //     return condition;
-    //   }),
-    // });
     form.setFieldsValue(formData);
     this.setState({ visible: false });
   };
@@ -299,11 +182,23 @@ class AddModal extends Component {
       form,
       name = "",
       description = "",
-      requestMethod = "GET",
-      requestURI = "",
       enabled = true,
+      handle = "{}",
     } = this.props;
     const { parameters, visible } = this.state;
+
+    // Parse handle JSON to get requestTemplate and description
+    let parsedHandle = {};
+    try {
+      parsedHandle = JSON.parse(handle);
+    } catch (e) {
+      console.error("Failed to parse handle JSON:", e);
+    }
+
+    const { requestTemplate = "", description: handleDescription = "" } =
+      parsedHandle;
+    // Use description from handle if available, otherwise use from props
+    const finalDescription = handleDescription || description;
 
     const { getFieldDecorator } = form;
     const formItemLayout = {
@@ -378,60 +273,12 @@ class AddModal extends Component {
                   message: getIntlContent("SHENYU.COMMON.INPUTDESCRIPTION"),
                 },
               ],
-              initialValue: description,
+              initialValue: finalDescription,
             })(
               <TextArea
                 allowClear
                 placeholder={getIntlContent(
                   "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.DESCRIPTION",
-                )}
-              />,
-            )}
-          </FormItem>
-          <FormItem
-            label={getIntlContent(
-              "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.REQUESTMETHOD",
-            )}
-            {...formItemLayout}
-          >
-            {getFieldDecorator("requestMethod", {
-              rules: [
-                {
-                  required: true,
-                  message: getIntlContent("SHENYU.COMMON.INPUTREQUESTMETHOD"),
-                },
-              ],
-              initialValue: requestMethod,
-            })(
-              <Select>
-                <Option value="GET">GET</Option>
-                <Option value="POST">POST</Option>
-                <Option value="PUT">PUT</Option>
-                <Option value="DELETE">DELETE</Option>
-                <Option value="OPTIONS">OPTIONS</Option>
-                <Option value="HEAD">HEAD</Option>
-              </Select>,
-            )}
-          </FormItem>
-          <FormItem
-            label={getIntlContent(
-              "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.REQUESTURI",
-            )}
-            {...formItemLayout}
-          >
-            {getFieldDecorator("requestURI", {
-              rules: [
-                {
-                  required: true,
-                  message: getIntlContent("SHENYU.COMMON.INPUTREQUESTURI"),
-                },
-              ],
-              initialValue: requestURI,
-            })(
-              <Input
-                allowClear
-                placeholder={getIntlContent(
-                  "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.REQUESTURI",
                 )}
               />,
             )}
@@ -519,6 +366,29 @@ class AddModal extends Component {
               </Button>
             </FormItem>
           </div>
+          <FormItem
+            label={getIntlContent(
+              "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.REQUESTTEMPLATE",
+            )}
+            {...formItemLayout}
+          >
+            {getFieldDecorator("requestTemplate", {
+              rules: [
+                {
+                  required: true,
+                  message: getIntlContent("SHENYU.COMMON.INPUTREQUESTTEMPLATE"),
+                },
+              ],
+              initialValue: requestTemplate,
+            })(
+              <TextArea
+                allowClear
+                placeholder={getIntlContent(
+                  "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.REQUESTTEMPLATE",
+                )}
+              />,
+            )}
+          </FormItem>
           <FormItem
             {...formItemLayout}
             label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}
