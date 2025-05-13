@@ -48,7 +48,6 @@ class AddModal extends Component {
 
     this.initParameters(props);
   }
-  }
 
   initParameters = (props) => {
     let parameters = [];
