@@ -462,16 +462,16 @@ export default class McpServer extends Component {
       },
       {
         align: "center",
-        title: getIntlContent("SHENYU.COMMON.TOOL.REQUESTTEMPLATE"),
+        title: getIntlContent("SHENYU.COMMON.TOOL.REQUESTCONFIG"),
         dataIndex: "handle",
-        key: "requestTemplate",
+        key: "requestConfig",
         render: (text) => {
           const handle = JSON.parse(text);
-          const requestTemplate = handle.requestTemplate;
+          const requestConfig = handle.requestConfig;
           return (
             <TextArea
               // style={{ width: "100%", height: 100 }}
-              value={requestTemplate}
+              value={requestConfig}
               // disabled
             />
           );

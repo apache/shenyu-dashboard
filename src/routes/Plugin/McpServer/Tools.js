@@ -55,18 +55,18 @@ class AddModal extends Component {
       const handle = props.handle ? JSON.parse(props.handle) : {};
       parameters = handle.parameters || [
         {
-          paramType: "String",
-          paramName: "",
-          paramDescription: "",
+          type: "String",
+          name: "",
+          description: "",
         },
       ];
     } catch (e) {
       console.error("Failed to parse handle JSON:", e);
       parameters = [
         {
-          paramType: "String",
-          paramName: "",
-          paramDescription: "",
+          type: "String",
+          name: "",
+          description: "",
         },
       ];
     }
@@ -78,14 +78,14 @@ class AddModal extends Component {
     let result = true;
     if (parameters) {
       parameters.forEach((item, index) => {
-        const { paramType, paramName, paramDescription } = item;
-        if (!paramType || !paramName || !paramDescription) {
+        const { type, name, description } = item;
+        if (!type || !name || !description) {
           message.destroy();
           message.error(`Line ${index + 1} param is incomplete`);
           result = false;
         }
         // eslint-disable-next-line no-lonely-if
-        if (!paramName) {
+        if (!name) {
           message.destroy();
           message.error(`Line ${index + 1} param is incomplete`);
           result = false;
@@ -101,13 +101,13 @@ class AddModal extends Component {
     const { parameters } = this.state;
 
     form.validateFieldsAndScroll((err, values) => {
-      const { name, description, enabled, requestTemplate } = values;
+      const { name, description, enabled, requestConfig } = values;
       if (!err) {
         const submit = this.checkParams();
         if (submit) {
           let handle = {
             parameters,
-            requestTemplate,
+            requestConfig,
             description,
           };
           handle = JSON.stringify({
@@ -139,14 +139,14 @@ class AddModal extends Component {
   handleAdd = () => {
     let { parameters } = this.state;
     parameters.push({
-      paramType: "String",
-      paramName: "",
-      paramDescription: "",
+      type: "String",
+      name: "",
+      description: "",
     });
 
     this.setState({ parameters }, () => {
       let len = parameters.length || 0;
-      let key = `paramTypeValueEn${len - 1}`;
+      let key = `typeValueEn${len - 1}`;
       this.setState({ [key]: true });
     });
   };
@@ -186,7 +186,7 @@ class AddModal extends Component {
     } = this.props;
     const { parameters, visible } = this.state;
 
-    // Parse handle JSON to get requestTemplate and description
+    // Parse handle JSON to get requestConfig and description
     let parsedHandle = {};
     try {
       parsedHandle = JSON.parse(handle);
@@ -194,7 +194,7 @@ class AddModal extends Component {
       console.error("Failed to parse handle JSON:", e);
     }
 
-    const { requestTemplate = "", description: handleDescription = "" } =
+    const { requestConfig = "", description: handleDescription = "" } =
       parsedHandle;
     // Use description from handle if available, otherwise use from props
     const finalDescription = handleDescription || description;
@@ -293,27 +293,27 @@ class AddModal extends Component {
                     <Col span={4}>
                       <Input
                         allowClear
-                        value={item.paramName}
+                        value={item.name}
                         placeholder={getIntlContent(
                           "SHENYU.COMMON.PARAMETER.NAME",
                         )}
                         onChange={(e) => {
                           const newValue = e.target.value;
                           const newParameters = [...parameters];
-                          newParameters[index].paramName = newValue;
+                          newParameters[index].name = newValue;
                           this.setState({ parameters: newParameters });
                         }}
                       />
                     </Col>
                     <Col span={5}>
                       <Select
-                        value={item.paramType}
+                        value={item.type}
                         placeholder={getIntlContent(
                           "SHENYU.COMMON.PARAMETER.TYPE",
                         )}
                         onChange={(value) => {
                           const newParameters = [...parameters];
-                          newParameters[index].paramType = value;
+                          newParameters[index].type = value;
                           this.setState({ parameters: newParameters });
                         }}
                       >
@@ -328,14 +328,14 @@ class AddModal extends Component {
                     <Col span={11}>
                       <Input
                         allowClear
-                        value={item.paramDescription}
+                        value={item.description}
                         placeholder={getIntlContent(
                           "SHENYU.COMMON.PARAMETER.DESCRIPTION",
                         )}
                         onChange={(e) => {
                           const newValue = e.target.value;
                           const newParameters = [...parameters];
-                          newParameters[index].paramDescription = newValue;
+                          newParameters[index].description = newValue;
                           this.setState({ parameters: newParameters });
                         }}
                       />
@@ -366,25 +366,21 @@ class AddModal extends Component {
             </FormItem>
           </div>
           <FormItem
-            label={getIntlContent(
-              "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.REQUESTTEMPLATE",
-            )}
+            label={getIntlContent("SHENYU.COMMON.TOOL.REQUESTCONFIG")}
             {...formItemLayout}
           >
-            {getFieldDecorator("requestTemplate", {
+            {getFieldDecorator("requestConfig", {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.COMMON.INPUTREQUESTTEMPLATE"),
+                  message: getIntlContent("SHENYU.COMMON.INPUTREQUESTCONFIG"),
                 },
               ],
-              initialValue: requestTemplate,
+              initialValue: requestConfig,
             })(
               <TextArea
                 allowClear
-                placeholder={getIntlContent(
-                  "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.REQUESTTEMPLATE",
-                )}
+                placeholder={getIntlContent("SHENYU.COMMON.INPUTREQUESTCONFIG")}
               />,
             )}
           </FormItem>
