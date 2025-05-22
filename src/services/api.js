@@ -1355,3 +1355,38 @@ export async function asyncNamespacePlugin(params) {
     body: params,
   });
 }
+
+/* get mcpServer list */
+export async function fetchMcpServer(params) {
+  return request(`${baseUrl}/mcpServer/list?${stringify(params)}`, {
+    method: `GET`,
+  });
+}
+
+/* add mcpServer */
+export async function addMcpServer(params) {
+  return request(`${baseUrl}/mcpServer/add`, {
+    method: `POST`,
+    body: {
+      ...params,
+    },
+  });
+}
+
+/* update mcpServer */
+export async function updateMcpServer(params) {
+  return request(`${baseUrl}/mcpServer/update`, {
+    method: `PUT`,
+    body: {
+      ...params,
+    },
+  });
+}
+
+/* delete mcpServer */
+export async function deleteMcpServer(params) {
+  return request(`${baseUrl}/mcpServer/delete`, {
+    method: `DELETE`,
+    body: [...params.list],
+  });
+}
