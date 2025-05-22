@@ -356,7 +356,11 @@ export default class McpServer extends Component {
   };
 
   onToolSelectChange = (toolSelectedRowKeys) => {
-    this.setState({ toolSelectedRowKeys });
+    if (toolSelectedRowKeys && toolSelectedRowKeys.length > 0) {
+      this.setState({ toolSelectedRowKeys });
+    } else {
+      this.setState({ toolSelectedRowKeys: [] });
+    }
   };
 
   openToolClick = () => {
