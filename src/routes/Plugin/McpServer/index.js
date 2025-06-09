@@ -31,6 +31,7 @@ import {
 import { connect } from "dva";
 import TextArea from "antd/lib/input/TextArea";
 import styles from "../index.less";
+import Server from "./Server";
 import Tools from "./Tools";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
@@ -52,8 +53,10 @@ export default class McpServer extends Component {
     this.state = {
       selectorPage: 1,
       selectorPageSize: 12,
+      selectorSelectedRowKeys: [],
       toolPage: 1,
       toolPageSize: 12,
+      toolSelectedRowKeys: [],
       popup: "",
       localeName: "",
       selectorName: undefined,
@@ -137,6 +140,7 @@ export default class McpServer extends Component {
         namespaceId: currentNamespaceId,
       },
     });
+    this.setState({ selectorSelectedRowKeys: [] });
     this.setState({ toolSelectedRowKeys: [] });
   };
 
@@ -154,6 +158,7 @@ export default class McpServer extends Component {
         namespaceId: currentNamespaceId,
       },
     });
+    this.setState({ selectorSelectedRowKeys: [] });
     this.setState({ toolSelectedRowKeys: [] });
   };
 
@@ -175,6 +180,132 @@ export default class McpServer extends Component {
 
   closeModal = () => {
     this.setState({ popup: "" });
+  };
+
+  searchSelectorOnchange = (e) => {
+    const selectorName = e.target.value;
+    this.setState({ selectorName });
+  };
+
+  searchSelector = () => {
+    const { plugins } = this.props;
+    const { selectorPage, selectorPageSize } = this.state;
+    this.getAllSelectors(selectorPage, selectorPageSize, plugins);
+  };
+
+  isDiscovery = (pluginId) => {
+    // 5:   divide
+    // 15:  grpc
+    // 26:  websocket
+    return ["5", "15", "26"].includes(pluginId);
+  };
+
+  addSelector = () => {
+    const { selectorPage, selectorPageSize, pluginName } = this.state;
+    const { dispatch, plugins, currentNamespaceId } = this.props;
+    const plugin = this.getPlugin(plugins, pluginName);
+    const { pluginId, config } = plugin;
+    const multiSelectorHandle =
+      this.getPluginConfigField(config, "multiSelectorHandle") === "1";
+    const isDiscovery = this.isDiscovery(pluginId);
+    if (isDiscovery) {
+      let discoveryConfig = {
+        discoveryType: "",
+        serverList: "",
+        handler: {},
+        listenerNode: "",
+        props: {},
+      };
+      this.setState({
+        popup: (
+          <Server
+            pluginName
+            pluginId={pluginId}
+            multiSelectorHandle={multiSelectorHandle}
+            isAdd={true}
+            discoveryConfig={discoveryConfig}
+            isDiscovery={true}
+            handleOk={(selector) => {
+              const {
+                name: selectorName,
+                listenerNode,
+                serverList,
+                selectedDiscoveryType,
+                discoveryProps,
+                handler,
+                upstreams,
+                importedDiscoveryId,
+              } = selector;
+              const upstreamsWithProps = this.getUpstreamsWithProps(upstreams);
+              dispatch({
+                type: "common/addSelector",
+                payload: {
+                  pluginId,
+                  ...selector,
+                  upstreams: upstreamsWithProps,
+                  namespaceId: currentNamespaceId,
+                },
+                fetchValue: {
+                  pluginId,
+                  currentPage: selectorPage,
+                  pageSize: selectorPageSize,
+                  namespaceId: currentNamespaceId,
+                },
+                callback: (selectorId) => {
+                  this.addDiscoveryUpstream({
+                    selectorId,
+                    selectorName,
+                    pluginName,
+                    listenerNode,
+                    handler,
+                    typeValue: this.getTypeValueByPluginName(pluginName),
+                    upstreamsWithProps,
+                    importedDiscoveryId,
+                    selectedDiscoveryType,
+                    serverList,
+                    discoveryProps,
+                    namespaceId: currentNamespaceId,
+                  });
+                  this.closeModal();
+                },
+              });
+            }}
+            onCancel={this.closeModal}
+          />
+        ),
+      });
+    } else {
+      this.setState({
+        popup: (
+          <Server
+            pluginName={pluginName}
+            pluginId={pluginId}
+            multiSelectorHandle={multiSelectorHandle}
+            isDiscovery={false}
+            handleOk={(selector) => {
+              dispatch({
+                type: "common/addSelector",
+                payload: {
+                  pluginId,
+                  ...selector,
+                  namespaceId: currentNamespaceId,
+                },
+                fetchValue: {
+                  pluginId,
+                  currentPage: selectorPage,
+                  pageSize: selectorPageSize,
+                  namespaceId: currentNamespaceId,
+                },
+                callback: () => {
+                  this.closeModal();
+                },
+              });
+            }}
+            onCancel={this.closeModal}
+          />
+        ),
+      });
+    }
   };
 
   searchToolOnchange = (e) => {
@@ -267,6 +398,355 @@ export default class McpServer extends Component {
       },
       canceledCallback: () => {
         this.closeModal();
+      },
+    });
+  };
+
+  getTypeValueByPluginName = (name) => {
+    return name === "divide"
+      ? "http"
+      : name === "websocket"
+        ? "ws"
+        : name === "grpc"
+          ? "grpc"
+          : "http";
+  };
+
+  getUpstreamsWithProps = (upstreams) => {
+    const { currentNamespaceId } = this.props;
+    return upstreams.map((item) => ({
+      protocol: item.protocol,
+      url: item.url,
+      status: parseInt(item.status, 10),
+      weight: item.weight,
+      startupTime: item.startupTime,
+      props: JSON.stringify({
+        warmupTime: item.warmupTime,
+        gray: `${item.gray}`,
+      }),
+      namespaceId: currentNamespaceId,
+    }));
+  };
+
+  addDiscoveryUpstream = ({
+    selectorId,
+    selectorName,
+    pluginName,
+    listenerNode,
+    handler,
+    typeValue,
+    upstreamsWithProps,
+    importedDiscoveryId,
+    selectedDiscoveryType,
+    serverList,
+    discoveryProps,
+    namespaceId,
+  }) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "discovery/bindSelector",
+      payload: {
+        selectorId,
+        name: selectorName,
+        pluginName,
+        listenerNode,
+        handler,
+        type: typeValue,
+        discoveryUpstreams: upstreamsWithProps,
+        discovery: {
+          id: importedDiscoveryId,
+          discoveryType: selectedDiscoveryType,
+          serverList,
+          props: discoveryProps,
+          name: selectorName,
+        },
+        namespaceId,
+      },
+    });
+  };
+
+  updateDiscoveryUpstream = (discoveryHandlerId, upstreams) => {
+    const { dispatch, currentNamespaceId } = this.props;
+    const upstreamsWithHandlerId = upstreams.map((item) => ({
+      protocol: item.protocol,
+      url: item.url,
+      status: parseInt(item.status, 10),
+      weight: item.weight,
+      props: JSON.stringify({
+        warmupTime: item.warmupTime,
+        gray: `${item.gray}`,
+      }),
+      discoveryHandlerId,
+      namespaceId: currentNamespaceId,
+    }));
+    dispatch({
+      type: "discovery/updateDiscoveryUpstream",
+      payload: {
+        discoveryHandlerId,
+        upstreams: upstreamsWithHandlerId,
+      },
+    });
+  };
+
+  editSelector = (record) => {
+    const { dispatch, plugins, currentNamespaceId } = this.props;
+    const { selectorPage, selectorPageSize, pluginName } = this.state;
+    const plugin = this.getPlugin(plugins, pluginName);
+    const { pluginId, config } = plugin;
+    const multiSelectorHandle =
+      this.getPluginConfigField(config, "multiSelectorHandle") === "1";
+    const isDiscovery = this.isDiscovery(pluginId);
+    const { id } = record;
+    dispatch({
+      type: "common/fetchSeItem",
+      payload: {
+        id,
+        namespaceId: currentNamespaceId,
+      },
+      callback: (selector) => {
+        if (isDiscovery) {
+          let discoveryConfig = {
+            props:
+              selector.discoveryVO && selector.discoveryVO.props
+                ? selector.discoveryVO.props
+                : "{}",
+            discoveryType:
+              selector.discoveryVO && selector.discoveryVO.type
+                ? selector.discoveryVO.type
+                : "local",
+            serverList:
+              selector.discoveryVO && selector.discoveryVO.serverList
+                ? selector.discoveryVO.serverList
+                : "",
+            handler:
+              selector.discoveryHandler && selector.discoveryHandler.handler
+                ? selector.discoveryHandler.handler
+                : "{}",
+            listenerNode:
+              selector.discoveryHandler &&
+              selector.discoveryHandler.listenerNode
+                ? selector.discoveryHandler.listenerNode
+                : "",
+          };
+          let updateArray = [];
+          if (selector.discoveryUpstreams) {
+            updateArray = selector.discoveryUpstreams.map((item) => {
+              let propsObj = JSON.parse(item.props || "{}");
+              if (item.props === null) {
+                propsObj = {
+                  warmupTime: 10,
+                  gray: "false",
+                };
+              }
+              return {
+                ...item,
+                key: item.id,
+                warmupTime: propsObj.warmupTime,
+                gray: propsObj.gray,
+              };
+            });
+          }
+          let discoveryHandlerId = selector.discoveryHandler
+            ? selector.discoveryHandler.id
+            : "";
+          this.setState({
+            popup: (
+              <Server
+                pluginName={pluginName}
+                {...selector}
+                multiSelectorHandle={multiSelectorHandle}
+                discoveryConfig={discoveryConfig}
+                discoveryUpstreams={updateArray}
+                isAdd={false}
+                isDiscovery={true}
+                handleOk={(values) => {
+                  dispatch({
+                    type: "common/updateSelector",
+                    payload: {
+                      pluginId,
+                      ...values,
+                      id,
+                      namespaceId: currentNamespaceId,
+                    },
+                    fetchValue: {
+                      pluginId,
+                      currentPage: selectorPage,
+                      pageSize: selectorPageSize,
+                      namespaceId: currentNamespaceId,
+                    },
+                    callback: () => {
+                      const {
+                        name: selectorName,
+                        handler,
+                        upstreams,
+                        serverList,
+                        listenerNode,
+                        discoveryProps,
+                        importedDiscoveryId,
+                        selectedDiscoveryType,
+                      } = values;
+
+                      if (!discoveryHandlerId) {
+                        this.addDiscoveryUpstream({
+                          selectorId: id,
+                          selectorName,
+                          pluginName,
+                          listenerNode,
+                          handler,
+                          typeValue: this.getTypeValueByPluginName(pluginName),
+                          upstreamsWithProps:
+                            this.getUpstreamsWithProps(upstreams),
+                          importedDiscoveryId,
+                          selectedDiscoveryType,
+                          serverList,
+                          discoveryProps,
+                          namespaceId: currentNamespaceId,
+                        });
+                      } else {
+                        this.updateDiscoveryUpstream(
+                          discoveryHandlerId,
+                          upstreams,
+                        );
+                      }
+                      this.closeModal();
+                    },
+                  });
+                }}
+                onCancel={this.closeModal}
+              />
+            ),
+          });
+        } else {
+          this.setState({
+            popup: (
+              <Server
+                pluginName={pluginName}
+                pluginId={pluginId}
+                {...selector}
+                multiSelectorHandle={multiSelectorHandle}
+                isDiscovery={false}
+                handleOk={(values) => {
+                  dispatch({
+                    type: "common/updateSelector",
+                    payload: {
+                      pluginId,
+                      ...values,
+                      id,
+                      namespaceId: currentNamespaceId,
+                    },
+                    fetchValue: {
+                      pluginId,
+                      currentPage: selectorPage,
+                      pageSize: selectorPageSize,
+                      namespaceId: currentNamespaceId,
+                    },
+                    callback: () => {
+                      this.closeModal();
+                    },
+                  });
+                }}
+                onCancel={this.closeModal}
+              />
+            ),
+          });
+        }
+      },
+    });
+  };
+
+  enableSelector = ({ list, enabled }) => {
+    const { dispatch, plugins, currentNamespaceId } = this.props;
+    const { selectorPage, selectorPageSize, pluginName } = this.state;
+    const plugin = this.getPlugin(plugins, pluginName);
+    const { pluginId } = plugin;
+    dispatch({
+      type: "common/enableSelector",
+      payload: {
+        list,
+        enabled,
+        namespaceId: currentNamespaceId,
+      },
+      fetchValue: {
+        pluginId,
+        currentPage: selectorPage,
+        pageSize: selectorPageSize,
+        namespaceId: currentNamespaceId,
+      },
+    });
+  };
+
+  onSelectorSelectChange = (selectorSelectedRowKeys) => {
+    this.setState({ selectorSelectedRowKeys });
+  };
+
+  openSelectorClick = () => {
+    const { selectorSelectedRowKeys } = this.state;
+    const { selectorList } = this.props;
+    if (selectorSelectedRowKeys && selectorSelectedRowKeys.length > 0) {
+      let anyEnabled = selectorList.some(
+        (selector) =>
+          selectorSelectedRowKeys.includes(selector.id) && selector.enabled,
+      );
+      this.enableSelector({
+        list: selectorSelectedRowKeys,
+        enabled: !anyEnabled,
+      });
+    } else {
+      message.destroy();
+      message.warn("Please select data");
+    }
+  };
+
+  deleteSelector = (record) => {
+    const { dispatch, plugins, currentNamespaceId } = this.props;
+    const { selectorPage, selectorPageSize, pluginName } = this.state;
+    const pluginId = this.getPluginId(plugins, pluginName);
+    dispatch({
+      type: "common/deleteSelector",
+      payload: {
+        list: [record.id],
+        namespaceId: currentNamespaceId,
+      },
+      fetchValue: {
+        pluginId,
+        currentPage: selectorPage,
+        pageSize: selectorPageSize,
+        namespaceId: currentNamespaceId,
+      },
+    });
+  };
+
+  pageSelectorChange = (page) => {
+    this.setState({ selectorPage: page });
+    const { plugins } = this.props;
+    const { selectorPageSize } = this.state;
+    this.getAllSelectors(page, selectorPageSize, plugins);
+  };
+
+  pageSelectorChangeSize = (currentPage, pageSize) => {
+    const { plugins } = this.props;
+    this.setState({ selectorPage: 1, selectorPageSize: pageSize });
+    this.getAllSelectors(1, pageSize, plugins);
+  };
+
+  // select
+  rowClick = (record) => {
+    const { id } = record;
+    const { dispatch, currentNamespaceId } = this.props;
+    const { selectorPageSize } = this.state;
+    dispatch({
+      type: "common/saveCurrentSelector",
+      payload: {
+        currentSelector: record,
+      },
+    });
+    dispatch({
+      type: "common/fetchRule",
+      payload: {
+        currentPage: 1,
+        pageSize: selectorPageSize,
+        selectorId: id,
+        namespaceId: currentNamespaceId,
       },
     });
   };
@@ -426,8 +906,109 @@ export default class McpServer extends Component {
   }
 
   render() {
-    const { popup, toolPage, toolPageSize, toolSelectedRowKeys } = this.state;
-    const { ruleList, toolTotal } = this.props;
+    const {
+      popup,
+      selectorPage,
+      selectorPageSize,
+      selectorSelectedRowKeys,
+      toolPage,
+      toolPageSize,
+      toolSelectedRowKeys,
+    } = this.state;
+    const {
+      ruleList,
+      selectorList,
+      selectorTotal,
+      currentSelector,
+      toolTotal,
+    } = this.props;
+
+    const selectColumns = [
+      {
+        align: "center",
+        title: getIntlContent("SHENYU.SELECTOR.EXEORDER"),
+        dataIndex: "sort",
+        key: "sort",
+      },
+      {
+        align: "center",
+        title: getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"),
+        dataIndex: "name",
+        key: "name",
+      },
+      {
+        align: "center",
+        title: getIntlContent("SHENYU.COMMON.OPEN"),
+        dataIndex: "enabled",
+        key: "enabled",
+        render: (text, row) => (
+          <Switch
+            checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+            unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+            checked={text}
+            onChange={(checked) => {
+              this.enableSelector({ list: [row.id], enabled: checked });
+            }}
+          />
+        ),
+      },
+      {
+        align: "center",
+        title: getIntlContent("SHENYU.COMMON.OPERAT"),
+        dataIndex: "operate",
+        key: "operate",
+        render: (text, record) => {
+          return (
+            <div>
+              <AuthButton
+                perms={`plugin:${this.state.pluginName}Selector:edit`}
+              >
+                <span
+                  style={{ marginRight: 8 }}
+                  className="edit"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    this.editSelector(record);
+                  }}
+                >
+                  {getIntlContent("SHENYU.COMMON.CHANGE")}
+                </span>
+              </AuthButton>
+              <AuthButton
+                perms={`plugin:${this.state.pluginName}Selector:delete`}
+              >
+                <Popconfirm
+                  title={getIntlContent("SHENYU.COMMON.DELETE")}
+                  placement="bottom"
+                  onCancel={(e) => {
+                    e.stopPropagation();
+                  }}
+                  onConfirm={(e) => {
+                    e.stopPropagation();
+                    this.deleteSelector(record);
+                  }}
+                  okText={getIntlContent("SHENYU.COMMON.SURE")}
+                  cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                >
+                  <span
+                    className="edit"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                  </span>
+                </Popconfirm>
+              </AuthButton>
+            </div>
+          );
+        },
+      },
+    ];
+    const selectorRowSelection = {
+      selectedRowKeys: selectorSelectedRowKeys,
+      onChange: this.onSelectorSelectChange,
+    };
 
     const toolRowSelection = {
       selectedRowKeys: toolSelectedRowKeys,
@@ -435,12 +1016,12 @@ export default class McpServer extends Component {
     };
 
     const toolsColumns = [
-      // {
-      //   align: "center",
-      //   title: getIntlContent("SHENYU.SELECTOR.EXEORDER"),
-      //   dataIndex: "sort",
-      //   key: "sort",
-      // },
+      {
+        align: "center",
+        title: getIntlContent("SHENYU.SELECTOR.EXEORDER"),
+        dataIndex: "sort",
+        key: "sort",
+      },
       {
         align: "center",
         title: getIntlContent("SHENYU.COMMON.TOOL.NAME"),
@@ -615,7 +1196,87 @@ export default class McpServer extends Component {
           </div>
         </Row>
         <Row gutter={20}>
-          <Col>
+          <Col span={10}>
+            <div className="table-header">
+              <h3>{getIntlContent("SHENYU.PLUGIN.SERVER.LIST.TITLE")}</h3>
+              <div className={styles.headerSearch}>
+                <AuthButton
+                  perms={`plugin:${this.state.pluginName}Selector:query`}
+                >
+                  <Search
+                    className={styles.search}
+                    style={{ minWidth: "130px" }}
+                    placeholder={getIntlContent(
+                      "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME",
+                    )}
+                    enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                    size="default"
+                    onChange={this.searchSelectorOnchange}
+                    onSearch={this.searchSelector}
+                  />
+                </AuthButton>
+                <AuthButton
+                  perms={`plugin:${this.state.pluginName}Selector:add`}
+                >
+                  <Button type="primary" onClick={this.addSelector}>
+                    {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.ADD")}
+                  </Button>
+                </AuthButton>
+                <AuthButton
+                  perms={`plugin:${this.state.pluginName}Selector:edit`}
+                >
+                  <Button
+                    type="primary"
+                    onClick={this.openSelectorClick}
+                    style={{ marginLeft: 10 }}
+                  >
+                    {getIntlContent(
+                      selectorList.some(
+                        (selector) =>
+                          selectorSelectedRowKeys.includes(selector.id) &&
+                          selector.enabled,
+                      )
+                        ? "SHENYU.PLUGIN.SELECTOR.BATCH.CLOSED"
+                        : "SHENYU.PLUGIN.SELECTOR.BATCH.OPENED",
+                    )}
+                  </Button>
+                </AuthButton>
+              </div>
+            </div>
+            <Table
+              size="small"
+              onRow={(record) => {
+                return {
+                  onClick: () => {
+                    this.rowClick(record);
+                  },
+                };
+              }}
+              style={{ marginTop: 30 }}
+              bordered
+              columns={selectColumns}
+              dataSource={selectorList}
+              rowSelection={selectorRowSelection}
+              pagination={{
+                total: selectorTotal,
+                showTotal: (showTotal) => `${showTotal}`,
+                showSizeChanger: true,
+                pageSizeOptions: ["12", "20", "50", "100"],
+                current: selectorPage,
+                pageSize: selectorPageSize,
+                onChange: this.pageSelectorChange,
+                onShowSizeChange: this.pageSelectorChangeSize,
+              }}
+              rowClassName={(item) => {
+                if (currentSelector && currentSelector.id === item.id) {
+                  return "table-selected";
+                } else {
+                  return "";
+                }
+              }}
+            />
+          </Col>
+          <Col span={14}>
             <div className="table-header">
               <div style={{ display: "flex", alignItems: "center" }}>
                 <h3>{getIntlContent("SHENYU.PLUGIN.SELECTOR.TOOL.LIST")}</h3>
