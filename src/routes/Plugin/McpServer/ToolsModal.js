@@ -79,7 +79,6 @@ class AddModal extends Component {
   };
 
   updateJson = (obj) => {
-    console.log({ obj });
     this.setState({ questJson: obj.updated_src });
     this.props.form.setFieldsValue({
       requestConfig: JSON.stringify(obj.updated_src),
