@@ -386,7 +386,6 @@ class AddModal extends Component {
               src={questJson}
               theme="monokai"
               displayDataTypes={false}
-              name={getIntlContent("SHENYU.COMMON.TOOL.REQUESTCONFIG")}
               onAdd={this.updateJson}
               onEdit={this.updateJson}
               onDelete={this.updateJson}
