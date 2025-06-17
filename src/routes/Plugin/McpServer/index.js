@@ -22,6 +22,7 @@ import {
   Input,
   message,
   Popconfirm,
+  Popover,
   Row,
   Switch,
   Table,
@@ -29,10 +30,10 @@ import {
   Typography,
 } from "antd";
 import { connect } from "dva";
-import TextArea from "antd/lib/input/TextArea";
+import ReactJson from "react-json-view";
 import styles from "../index.less";
-import Server from "./Server";
-import Tools from "./Tools";
+import Selector from "../Common/Selector";
+import Tools from "./ToolsModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import {
@@ -218,11 +219,20 @@ export default class McpServer extends Component {
       };
       this.setState({
         popup: (
-          <Server
+          <Selector
+            modalTitle={getIntlContent("SHENYU.SERVER.NAME")}
             pluginName
             pluginId={pluginId}
             multiSelectorHandle={multiSelectorHandle}
             isAdd={true}
+            selectorConditions={[
+              {
+                paramType: "uri",
+                operator: "match",
+                paramName: "/**",
+                paramValue: "",
+              },
+            ]}
             discoveryConfig={discoveryConfig}
             isDiscovery={true}
             handleOk={(selector) => {
@@ -277,7 +287,7 @@ export default class McpServer extends Component {
     } else {
       this.setState({
         popup: (
-          <Server
+          <Selector
             pluginName={pluginName}
             pluginId={pluginId}
             multiSelectorHandle={multiSelectorHandle}
@@ -551,7 +561,7 @@ export default class McpServer extends Component {
             : "";
           this.setState({
             popup: (
-              <Server
+              <Selector
                 pluginName={pluginName}
                 {...selector}
                 multiSelectorHandle={multiSelectorHandle}
@@ -619,7 +629,7 @@ export default class McpServer extends Component {
         } else {
           this.setState({
             popup: (
-              <Server
+              <Selector
                 pluginName={pluginName}
                 pluginId={pluginId}
                 {...selector}
@@ -1037,11 +1047,19 @@ export default class McpServer extends Component {
           const handle = JSON.parse(text);
           const parameters = handle.parameters;
           return (
-            <TextArea
-              // style={{ width: "100%", height: 100 }}
-              value={JSON.stringify(parameters)}
-              // disabled
-            />
+            <Popover
+              content={
+                <ReactJson
+                  name={false}
+                  displayDataTypes={false}
+                  src={parameters}
+                  theme="monokai"
+                />
+              }
+              title={getIntlContent("SHENYU.COMMON.TOOL.REQUESTPARAMS")}
+            >
+              <a>{getIntlContent("SHENYU.COMMON.PREVIEW")}</a>
+            </Popover>
           );
         },
       },
@@ -1052,13 +1070,21 @@ export default class McpServer extends Component {
         key: "requestConfig",
         render: (text) => {
           const handle = JSON.parse(text);
-          const requestConfig = handle.requestConfig;
+          const requestConfig = JSON.parse(handle.requestConfig);
           return (
-            <TextArea
-              // style={{ width: "100%", height: 100 }}
-              value={requestConfig}
-              // disabled
-            />
+            <Popover
+              content={
+                <ReactJson
+                  name={false}
+                  displayDataTypes={false}
+                  src={requestConfig}
+                  theme="monokai"
+                />
+              }
+              title={getIntlContent("SHENYU.COMMON.TOOL.REQUESTCONFIG")}
+            >
+              <a>{getIntlContent("SHENYU.COMMON.PREVIEW")}</a>
+            </Popover>
           );
         },
       },

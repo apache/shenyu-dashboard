@@ -29,9 +29,10 @@ import {
 } from "antd";
 import { connect } from "dva";
 import TextArea from "antd/lib/input/TextArea";
+import ReactJson from "react-json-view";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
-import RuleCopy from "./RuleCopy";
+import RuleCopy from "../Common/RuleCopy";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -44,6 +45,7 @@ class AddModal extends Component {
     super(props);
     this.state = {
       visible: false,
+      questJson: {},
     };
 
     this.initParameters(props);
@@ -51,6 +53,7 @@ class AddModal extends Component {
 
   initParameters = (props) => {
     let parameters = [];
+    let questJson = {};
     try {
       const handle = props.handle ? JSON.parse(props.handle) : {};
       parameters = handle.parameters || [
@@ -60,6 +63,7 @@ class AddModal extends Component {
           description: "",
         },
       ];
+      questJson = JSON.parse(handle.requestConfig);
     } catch (e) {
       console.error("Failed to parse handle JSON:", e);
       parameters = [
@@ -71,6 +75,15 @@ class AddModal extends Component {
       ];
     }
     this.state.parameters = parameters;
+    this.state.questJson = questJson;
+  };
+
+  updateJson = (obj) => {
+    console.log({ obj });
+    this.setState({ questJson: obj.updated_src });
+    this.props.form.setFieldsValue({
+      requestConfig: JSON.stringify(obj.updated_src),
+    });
   };
 
   checkParams = () => {
@@ -101,13 +114,13 @@ class AddModal extends Component {
     const { parameters } = this.state;
 
     form.validateFieldsAndScroll((err, values) => {
-      const { name, description, enabled, requestConfig } = values;
+      const { name, description, enabled } = values;
       if (!err) {
         const submit = this.checkParams();
         if (submit) {
           let handle = {
             parameters,
-            requestConfig,
+            requestConfig: JSON.stringify(this.state.questJson),
             description,
           };
           handle = JSON.stringify({
@@ -184,7 +197,7 @@ class AddModal extends Component {
       enabled = true,
       handle = "{}",
     } = this.props;
-    const { parameters, visible } = this.state;
+    const { parameters, visible, questJson } = this.state;
 
     // Parse handle JSON to get requestConfig and description
     let parsedHandle = {};
@@ -194,8 +207,7 @@ class AddModal extends Component {
       console.error("Failed to parse handle JSON:", e);
     }
 
-    const { requestConfig = "", description: handleDescription = "" } =
-      parsedHandle;
+    const { description: handleDescription = "" } = parsedHandle;
     // Use description from handle if available, otherwise use from props
     const finalDescription = handleDescription || description;
 
@@ -368,21 +380,18 @@ class AddModal extends Component {
           <FormItem
             label={getIntlContent("SHENYU.COMMON.TOOL.REQUESTCONFIG")}
             {...formItemLayout}
+            required={true}
           >
-            {getFieldDecorator("requestConfig", {
-              rules: [
-                {
-                  required: true,
-                  message: getIntlContent("SHENYU.COMMON.INPUTREQUESTCONFIG"),
-                },
-              ],
-              initialValue: requestConfig,
-            })(
-              <TextArea
-                allowClear
-                placeholder={getIntlContent("SHENYU.COMMON.INPUTREQUESTCONFIG")}
-              />,
-            )}
+            <ReactJson
+              src={questJson}
+              theme="monokai"
+              displayDataTypes={false}
+              name={getIntlContent("SHENYU.COMMON.TOOL.REQUESTCONFIG")}
+              onAdd={this.updateJson}
+              onEdit={this.updateJson}
+              onDelete={this.updateJson}
+              style={{ borderRadius: 4, padding: 16 }}
+            />
           </FormItem>
           <FormItem
             {...formItemLayout}

@@ -1705,7 +1705,7 @@ class AddModal extends Component {
       <Modal
         width="1100px"
         centered
-        title={getIntlContent("SHENYU.SELECTOR.NAME")}
+        title={this.props.modalTitle || getIntlContent("SHENYU.SELECTOR.NAME")}
         // visible here defaults to true, because the visibility of modal is determined by the popup attribute in index.js
         visible
         okText={getIntlContent("SHENYU.COMMON.SURE")}
