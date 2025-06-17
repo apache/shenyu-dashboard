@@ -386,6 +386,7 @@ class AddModal extends Component {
               src={questJson}
               theme="monokai"
               displayDataTypes={false}
+              name={false}
               onAdd={this.updateJson}
               onEdit={this.updateJson}
               onDelete={this.updateJson}
