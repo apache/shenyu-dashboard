@@ -123,7 +123,6 @@ export default {
 
     *addRule(params, { call, put }) {
       const { payload, callback, fetchValue } = params;
-      console.log(payload);
       const json = yield call(addRule, payload);
       if (json.code === 200) {
         message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
