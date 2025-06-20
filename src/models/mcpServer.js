@@ -53,7 +53,9 @@ export default {
     *delete({ payload, callback }, { call, put }) {
       const response = yield call(deleteMcpServer, payload);
       if (response) {
-        message.success("删除成功");
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
+        );
         yield put({ type: "reload" });
       }
       if (callback) callback();
