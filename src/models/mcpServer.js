@@ -43,7 +43,9 @@ export default {
     *update({ payload, callback }, { call, put }) {
       const response = yield call(updateMcpServer, payload);
       if (response) {
-        message.success("更新成功");
+        message.success(
+          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
+        );
         yield put({ type: "reload" });
       }
       if (callback) callback();
