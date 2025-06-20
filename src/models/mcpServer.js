@@ -5,6 +5,7 @@ import {
   updateMcpServer,
   deleteMcpServer,
 } from "../services/api";
+import { getIntlContent } from "../utils/IntlUtils";
 
 export default {
   namespace: "mcpServer",
@@ -34,7 +35,7 @@ export default {
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addMcpServer, payload);
       if (response) {
-        message.success("添加成功");
+        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
         yield put({ type: "reload" });
       }
       if (callback) callback();
