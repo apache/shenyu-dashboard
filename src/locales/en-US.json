@@ -467,6 +467,8 @@
   "SHENYU.DISCOVERY.SELECTOR.CONFIG.IMPORT.CONFIRM": "Configuration Import Confirmation",
   "SHENYU.DISCOVERY.SELECTOR.DELETE.CONFIRM": "Are you sure to delete this selector?",
   "SHENYU.DISCOVERY.SELECTOR.CONFIG.IMPORT.SURE": "Import",
+  "SHENYU.DISCOVERY.SELECTOR.EDITING.TITLE": "Unsaved Changes Detected",
+  "SHENYU.DISCOVERY.SELECTOR.EDITING.CONTENT": "There are unsaved upstream changes, Continuing will discard them",
   "SHENYU.COMMON.REFRESH": "Refresh",
   "SHENYU.SYSTEM.NAMESPACE": "Namespace",
   "SHENYU.SYSTEM.NAMESPACE.NAMESPACEID": "namespaceId",

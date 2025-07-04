@@ -74,7 +74,8 @@ class EditableCell extends Component {
                     },
                   ],
                   valuePropName: "checked",
-                  initialValue: record[dataIndex],
+                  initialValue:
+                    record[dataIndex] === "true" || record[dataIndex] === true,
                 })(this.getInput())
               : getFieldDecorator(dataIndex, {
                   rules: [

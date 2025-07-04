@@ -54,6 +54,7 @@ import EditableFormTable from "../Discovery/DiscoveryUpstreamTable.js";
 const { Item } = Form;
 const { TabPane } = Tabs;
 const { Option } = Select;
+const { confirm } = Modal;
 
 const formItemLayout = {
   labelCol: { sm: { span: 3 } },
@@ -126,6 +127,7 @@ class AddModal extends Component {
       this.state.configPropsJson = JSON.parse(discoveryConfig.props);
       this.state.selectedDiscoveryValue = discoveryConfig.discoveryType;
     }
+    this.editableFormTableRef = React.createRef();
   }
 
   componentDidMount() {
@@ -172,6 +174,84 @@ class AddModal extends Component {
   }
 
   handleSubmit = (e) => {
+    if (this.editableFormTableRef.current?.state?.editingKey) {
+      confirm({
+        title: getIntlContent("SHENYU.DISCOVERY.SELECTOR.EDITING.TITLE"),
+        content: getIntlContent("SHENYU.DISCOVERY.SELECTOR.EDITING.CONTENT"),
+        okText: getIntlContent("SHENYU.COMMON.SURE"),
+        cancelText: getIntlContent("SHENYU.COMMON.CALCEL"),
+        onOk: () => {
+          this.submitForm(e);
+        },
+      });
+    } else {
+      this.submitForm(e);
+    }
+  };
+
+  handleAdd = () => {
+    let { selectorConditions } = this.state;
+    selectorConditions.push({
+      paramType: "uri",
+      operator: "pathPattern",
+      paramName: "/",
+      paramValue: "",
+    });
+    this.setState({ selectorConditions }, () => {
+      let len = selectorConditions.length || 0;
+      let key = `paramTypeValueEn${len - 1}`;
+
+      this.setState({ [key]: true });
+    });
+  };
+
+  handleDelete = (index) => {
+    let { selectorConditions } = this.state;
+    if (selectorConditions && selectorConditions.length > 1) {
+      selectorConditions.splice(index, 1);
+    } else {
+      message.destroy();
+      message.error("At least one condition");
+    }
+    this.setState({ selectorConditions });
+  };
+
+  handleAddHandle = () => {
+    let { pluginHandleList } = this.state;
+    let pluginHandle = pluginHandleList[0];
+    let toAddPluginHandle = pluginHandle.map((e) => {
+      return { ...e, value: null };
+    });
+    pluginHandleList.push(toAddPluginHandle);
+    this.setState({
+      pluginHandleList,
+    });
+  };
+
+  handleDeleteHandle = (index) => {
+    let { pluginHandleList } = this.state;
+    if (pluginHandleList.length === 1) {
+      message.destroy();
+      message.error(getIntlContent("SHENYU.PLUGIN.HANDLE.TIP"));
+    } else {
+      pluginHandleList.splice(index, 1);
+      this.setState({ pluginHandleList });
+    }
+  };
+
+  handleOptions() {
+    const { discovery } = this.props;
+    if (!discovery || !Array.isArray(discovery.typeEnums)) {
+      return [];
+    }
+    return discovery.typeEnums.map((type) => (
+      <Option key={type} value={type.toString()}>
+        {type.toString()}
+      </Option>
+    ));
+  }
+
+  submitForm = (e) => {
     e.preventDefault();
     const { form, handleOk, multiSelectorHandle, pluginId, isDiscovery } =
       this.props;
@@ -270,68 +350,6 @@ class AddModal extends Component {
       }
     });
   };
-
-  handleAdd = () => {
-    let { selectorConditions } = this.state;
-    selectorConditions.push({
-      paramType: "uri",
-      operator: "pathPattern",
-      paramName: "/",
-      paramValue: "",
-    });
-    this.setState({ selectorConditions }, () => {
-      let len = selectorConditions.length || 0;
-      let key = `paramTypeValueEn${len - 1}`;
-
-      this.setState({ [key]: true });
-    });
-  };
-
-  handleDelete = (index) => {
-    let { selectorConditions } = this.state;
-    if (selectorConditions && selectorConditions.length > 1) {
-      selectorConditions.splice(index, 1);
-    } else {
-      message.destroy();
-      message.error("At least one condition");
-    }
-    this.setState({ selectorConditions });
-  };
-
-  handleAddHandle = () => {
-    let { pluginHandleList } = this.state;
-    let pluginHandle = pluginHandleList[0];
-    let toAddPluginHandle = pluginHandle.map((e) => {
-      return { ...e, value: null };
-    });
-    pluginHandleList.push(toAddPluginHandle);
-    this.setState({
-      pluginHandleList,
-    });
-  };
-
-  handleDeleteHandle = (index) => {
-    let { pluginHandleList } = this.state;
-    if (pluginHandleList.length === 1) {
-      message.destroy();
-      message.error(getIntlContent("SHENYU.PLUGIN.HANDLE.TIP"));
-    } else {
-      pluginHandleList.splice(index, 1);
-      this.setState({ pluginHandleList });
-    }
-  };
-
-  handleOptions() {
-    const { discovery } = this.props;
-    if (!discovery || !Array.isArray(discovery.typeEnums)) {
-      return [];
-    }
-    return discovery.typeEnums.map((type) => (
-      <Option key={type} value={type.toString()}>
-        {type.toString()}
-      </Option>
-    ));
-  }
 
   conditionChange = (index, name, value) => {
     let { selectorConditions } = this.state;
@@ -1659,6 +1677,7 @@ class AddModal extends Component {
                   {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}
                 </Divider>
                 <EditableFormTable
+                  wrappedComponentRef={this.editableFormTableRef}
                   isLocal={false}
                   dataSource={upstreams}
                   recordCount={recordCount}
@@ -1675,6 +1694,7 @@ class AddModal extends Component {
               {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}
             </Divider>
             <EditableFormTable
+              wrappedComponentRef={this.editableFormTableRef}
               isLocal={true}
               dataSource={upstreams}
               recordCount={recordCount}
