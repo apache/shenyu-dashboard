@@ -175,6 +175,13 @@ export const getRouterData = (app) => {
         () => import("../routes/System/Plugin"),
       ),
     },
+    "/config/instance": {
+      component: dynamicWrapper(
+        app,
+        ["instance"],
+        () => import("../routes/System/Instance"),
+      ),
+    },
     "/config/namespacePlugin": {
       component: dynamicWrapper(
         app,

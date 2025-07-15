@@ -1362,6 +1362,12 @@ export async function fetchMcpServer(params) {
     method: `GET`,
   });
 }
+/* getInstancesByNamespace */
+export async function getInstancesByNamespace(params) {
+  return request(`${baseUrl}/instance?${stringify(params)}`, {
+    method: `GET`,
+  });
+}
 
 /* add mcpServer */
 export async function addMcpServer(params) {
@@ -1386,6 +1392,36 @@ export async function updateMcpServer(params) {
 /* delete mcpServer */
 export async function deleteMcpServer(params) {
   return request(`${baseUrl}/mcpServer/delete`, {
+    method: `DELETE`,
+    body: [...params.list],
+  });
+}
+/* findInstance */
+export async function findInstance(params) {
+  return request(`${baseUrl}/instance/${params.id}`, {
+    method: `GET`,
+  });
+}
+
+/* addInstance */
+export async function addInstance(params) {
+  return request(`${baseUrl}/instance`, {
+    method: `POST`,
+    body: params,
+  });
+}
+
+/* updateInstance */
+export async function updateInstance(params) {
+  return request(`${baseUrl}/instance/${params.id}`, {
+    method: `PUT`,
+    body: params,
+  });
+}
+
+/* deleteInstance */
+export async function deleteInstance(params) {
+  return request(`${baseUrl}/instance/batch`, {
     method: `DELETE`,
     body: [...params.list],
   });
