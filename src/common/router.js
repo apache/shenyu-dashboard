@@ -95,6 +95,13 @@ export const getRouterData = (app) => {
         () => import("../layouts/BasicLayout"),
       ),
     },
+    "/plug/Mcp/mcpServer": {
+      component: dynamicWrapper(
+        app,
+        ["mcpServer"],
+        () => import("../routes/Plugin/McpServer"),
+      ),
+    },
     "/home": {
       component: dynamicWrapper(app, [], () => import("../routes/Home")),
     },
