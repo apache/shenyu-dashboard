@@ -1426,3 +1426,14 @@ export async function deleteInstance(params) {
     body: [...params.list],
   });
 }
+
+/* import swagger */
+export async function importSwagger(params) {
+  return request(`${baseUrl}/swagger/import`, {
+    method: `POST`,
+    body: {
+      swaggerUrl: params.swaggerUrl,
+      projectName: params.projectName,
+    },
+  });
+}
