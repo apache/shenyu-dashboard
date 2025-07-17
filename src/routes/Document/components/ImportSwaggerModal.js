@@ -24,18 +24,24 @@ import { getIntlContent } from "../../../utils/IntlUtils";
 import { importSwagger } from "../../../services/api";
 
 class ImportSwaggerModal extends Component {
-  static defaultProps = {
+  static propTypes = {
     form: PropTypes.object,
     visible: PropTypes.bool,
-    formLoaded: PropTypes.func,
     onOk: PropTypes.func,
     onCancel: PropTypes.func,
     currentProjectName: PropTypes.string,
   };
 
+  static defaultProps = {
+    visible: false,
+    currentProjectName: "",
+    form: null,
+    onOk: null,
+    onCancel: null,
+  };
+
   componentDidMount() {
-    const { form, formLoaded } = this.props;
-    formLoaded?.(form);
+    // Component mounted
   }
 
   handleSubmit = () => {
@@ -48,13 +54,23 @@ class ImportSwaggerModal extends Component {
         try {
           const res = await importSwagger(values);
           if (res.code !== 200) {
-            message.error(res.message || getIntlContent("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.FAILED"));
+            message.error(
+              res.message ||
+                getIntlContent("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.FAILED"),
+            );
           } else {
-            message.success(res.message || getIntlContent("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.SUCCESS"));
+            message.success(
+              res.message ||
+                getIntlContent("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.SUCCESS"),
+            );
             onOk?.(values);
           }
         } catch (error) {
-          message.error(getIntlContent("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.NETWORK.ERROR"));
+          message.error(
+            getIntlContent(
+              "SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.NETWORK.ERROR",
+            ),
+          );
         }
       }
     });
@@ -82,39 +98,55 @@ class ImportSwaggerModal extends Component {
         width={600}
       >
         <Form className="login-form" {...formItemLayout}>
-          <Form.Item label={getIntlContent("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.PROJECT.NAME")}>
+          <Form.Item
+            label={getIntlContent(
+              "SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.PROJECT.NAME",
+            )}
+          >
             {getFieldDecorator("projectName", {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.PROJECT.NAME.PLACEHOLDER"),
+                  message: getIntlContent(
+                    "SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.PROJECT.NAME.PLACEHOLDER",
+                  ),
                 },
               ],
               initialValue: currentProjectName,
             })(
               <Input
                 allowClear
-                placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.PROJECT.NAME.PLACEHOLDER")}
+                placeholder={getIntlContent(
+                  "SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.PROJECT.NAME.PLACEHOLDER",
+                )}
               />,
             )}
           </Form.Item>
 
-          <Form.Item label={getIntlContent("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.URL")}>
+          <Form.Item
+            label={getIntlContent("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.URL")}
+          >
             {getFieldDecorator("swaggerUrl", {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.URL.REQUIRED"),
+                  message: getIntlContent(
+                    "SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.URL.REQUIRED",
+                  ),
                 },
                 {
                   type: "url",
-                  message: getIntlContent("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.URL.INVALID"),
+                  message: getIntlContent(
+                    "SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.URL.INVALID",
+                  ),
                 },
               ],
             })(
               <Input
                 allowClear
-                placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.URL.PLACEHOLDER")}
+                placeholder={getIntlContent(
+                  "SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.URL.PLACEHOLDER",
+                )}
               />,
             )}
           </Form.Item>
@@ -124,4 +156,4 @@ class ImportSwaggerModal extends Component {
   }
 }
 
-export default Form.create()(ImportSwaggerModal); 
+export default Form.create()(ImportSwaggerModal);

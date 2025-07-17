@@ -46,10 +46,8 @@ const SearchApi = React.forwardRef((props, ref) => {
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [document, setDocument] = useState("{}");
   const [ext, setExt] = useState("{}");
-  
   // Import Swagger related state
   const [swaggerModalVisible, setSwaggerModalVisible] = useState(false);
-  const [swaggerForm, setSwaggerForm] = useState({});
   const [currentProjectName, setCurrentProjectName] = useState("");
 
   const queryRootTag = async () => {
@@ -152,7 +150,7 @@ const SearchApi = React.forwardRef((props, ref) => {
     curNode.children.push({
       selectable: false,
       title: (
-        <Row gutter={2} >
+        <Row gutter={2}>
           {showAddTag && (
             <Col span={10}>
               <Button
@@ -275,7 +273,7 @@ const SearchApi = React.forwardRef((props, ref) => {
   };
 
   // Handle Import Swagger button click
-  const handleImportSwagger = (tagId) => {
+  const handleImportSwagger = () => {
     // Get current project name, preferably from the root node of the tree structure
     let projectName = "default_project";
     if (treeData && treeData.length > 0) {
@@ -291,7 +289,7 @@ const SearchApi = React.forwardRef((props, ref) => {
   };
 
   // Handle Import Swagger modal confirm
-  const handleSwaggerOk = (values) => {
+  const handleSwaggerOk = () => {
     setSwaggerModalVisible(false);
     // Refresh tree structure
     queryRootTag();
@@ -351,7 +349,6 @@ const SearchApi = React.forwardRef((props, ref) => {
       />
       <ImportSwaggerModal
         visible={swaggerModalVisible}
-        formLoaded={setSwaggerForm}
         onOk={handleSwaggerOk}
         onCancel={handleSwaggerCancel}
         currentProjectName={currentProjectName}
