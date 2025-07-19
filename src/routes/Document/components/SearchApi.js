@@ -33,6 +33,7 @@ import { getRootTag, getParentTagId, getApi } from "../../../services/api";
 import { Method } from "./globalData";
 import AddAndUpdateTag from "./AddAndUpdateTag";
 import AddAndUpdateApiDoc from "./AddAndUpdateApiDoc";
+import ImportSwaggerModal from "./ImportSwaggerModal";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Text } = Typography;
@@ -45,6 +46,9 @@ const SearchApi = React.forwardRef((props, ref) => {
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [document, setDocument] = useState("{}");
   const [ext, setExt] = useState("{}");
+  // Import Swagger related state
+  const [swaggerModalVisible, setSwaggerModalVisible] = useState(false);
+  const [currentProjectName, setCurrentProjectName] = useState("");
 
   const queryRootTag = async () => {
     setExpandedKeys([]);
@@ -75,7 +79,7 @@ const SearchApi = React.forwardRef((props, ref) => {
       const { dataList: apiDataList } = apiDataRecords;
       data[0].apiDataList = apiDataList;
       setTreeData(arr);
-      // 默认选中第一个
+      // Select the first one by default
       setSelectedKeys(["0"]);
       onSelect(["0"], { node: { props: arr[0] } });
     } else {
@@ -146,9 +150,9 @@ const SearchApi = React.forwardRef((props, ref) => {
     curNode.children.push({
       selectable: false,
       title: (
-        <Row gutter={18}>
+        <Row gutter={2}>
           {showAddTag && (
-            <Col span={12}>
+            <Col span={10}>
               <Button
                 type="primary"
                 ghost
@@ -163,8 +167,7 @@ const SearchApi = React.forwardRef((props, ref) => {
               </Button>
             </Col>
           )}
-
-          <Col span={12}>
+          <Col span={showAddTag ? 6 : 12}>
             <Button
               type="primary"
               ghost
@@ -176,6 +179,16 @@ const SearchApi = React.forwardRef((props, ref) => {
               }
             >
               + Api
+            </Button>
+          </Col>
+          <Col span={showAddTag ? 8 : 12}>
+            <Button
+              type="primary"
+              ghost
+              size="small"
+              onClick={() => handleImportSwagger(id)}
+            >
+              {getIntlContent("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER")}
             </Button>
           </Col>
         </Row>
@@ -259,6 +272,29 @@ const SearchApi = React.forwardRef((props, ref) => {
     afterUpdate(data, refType);
   };
 
+  // Handle Import Swagger button click
+  const handleImportSwagger = () => {
+    // Get current project name, preferably from the root node of the tree structure
+    let projectName = "default_project";
+    if (treeData && treeData.length > 0) {
+      projectName = treeData[0].name || "default_project";
+    }
+    setCurrentProjectName(projectName);
+    setSwaggerModalVisible(true);
+  };
+
+  // Handle Import Swagger modal cancel
+  const handleSwaggerCancel = () => {
+    setSwaggerModalVisible(false);
+  };
+
+  // Handle Import Swagger modal confirm
+  const handleSwaggerOk = () => {
+    setSwaggerModalVisible(false);
+    // Refresh tree structure
+    queryRootTag();
+  };
+
   useImperativeHandle(ref, () => ({
     addOrUpdateApi,
     addOrUpdateTag,
@@ -310,6 +346,12 @@ const SearchApi = React.forwardRef((props, ref) => {
         formLoaded={setApiForm}
         onOk={handleApiOk}
         onCancel={handleApiCancel}
+      />
+      <ImportSwaggerModal
+        visible={swaggerModalVisible}
+        onOk={handleSwaggerOk}
+        onCancel={handleSwaggerCancel}
+        currentProjectName={currentProjectName}
       />
     </div>
   );
