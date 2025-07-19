@@ -34,6 +34,8 @@ import ReactJson from "react-json-view";
 import styles from "../index.less";
 import Selector from "../Common/Selector";
 import Tools from "./ToolsModal";
+import JsonEditModal from "./JsonEditModal";
+import McpConfigModal from "./McpConfigModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import {
@@ -65,6 +67,11 @@ export default class McpServer extends Component {
       isPluginEnabled: false,
       pluginName: "mcpServer",
       pluginRole: "Mcp",
+      jsonEditVisible: false,
+      currentJsonData: null,
+      mcpConfigVisible: false,
+      mcpConfigType: "sse", // "sse" or "streamable"
+      currentSelectorForConfig: null,
     };
   }
 
@@ -915,6 +922,89 @@ export default class McpServer extends Component {
     getCurrentLocale(this.state.localeName);
   }
 
+  editToolByJson = (record) => {
+    const { dispatch, currentNamespaceId } = this.props;
+    const { id } = record;
+
+    dispatch({
+      type: "common/fetchRuleItem",
+      payload: {
+        id,
+        namespaceId: currentNamespaceId,
+      },
+      callback: (rule) => {
+        this.setState({
+          currentJsonData: rule,
+          jsonEditVisible: true,
+        });
+      },
+    });
+  };
+
+  handleJsonEditOk = (jsonData) => {
+    const { dispatch, currentSelector, currentNamespaceId } = this.props;
+    const { toolPage, toolPageSize } = this.state;
+    const selectorId = currentSelector ? currentSelector.id : "";
+
+    dispatch({
+      type: "common/updateRule",
+      payload: {
+        selectorId,
+        ...jsonData,
+        namespaceId: currentNamespaceId,
+      },
+      fetchValue: {
+        selectorId,
+        currentPage: toolPage,
+        pageSize: toolPageSize,
+        namespaceId: currentNamespaceId,
+      },
+      callback: () => {
+        this.setState({
+          jsonEditVisible: false,
+          currentJsonData: null,
+        });
+        message.success(getIntlContent("SHENYU.MCP.JSON.EDIT.UPDATE.SUCCESS"));
+
+        // 刷新工具列表以确保最新数据显示
+        this.getAllTools(toolPage, toolPageSize);
+      },
+    });
+  };
+
+  handleJsonEditCancel = () => {
+    this.setState({
+      jsonEditVisible: false,
+      currentJsonData: null,
+    });
+  };
+
+  // 显示SSE配置
+  showSSEConfig = (selector = null) => {
+    this.setState({
+      mcpConfigVisible: true,
+      mcpConfigType: "sse",
+      currentSelectorForConfig: selector,
+    });
+  };
+
+  // 显示Streamable配置
+  showStreamableConfig = (selector = null) => {
+    this.setState({
+      mcpConfigVisible: true,
+      mcpConfigType: "streamable",
+      currentSelectorForConfig: selector,
+    });
+  };
+
+  // 关闭MCP配置模态框
+  handleMcpConfigCancel = () => {
+    this.setState({
+      mcpConfigVisible: false,
+      currentSelectorForConfig: null,
+    });
+  };
+
   render() {
     const {
       popup,
@@ -984,6 +1074,26 @@ export default class McpServer extends Component {
                   {getIntlContent("SHENYU.COMMON.CHANGE")}
                 </span>
               </AuthButton>
+              <span
+                style={{ marginRight: 8 }}
+                className="edit"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  this.showSSEConfig(record);
+                }}
+              >
+                {getIntlContent("SHENYU.MCP.CONFIG.SSE")}
+              </span>
+              <span
+                style={{ marginRight: 8 }}
+                className="edit"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  this.showStreamableConfig(record);
+                }}
+              >
+                {getIntlContent("SHENYU.MCP.CONFIG.STREAMABLE")}
+              </span>
               <AuthButton
                 perms={`plugin:${this.state.pluginName}Selector:delete`}
               >
@@ -1129,6 +1239,18 @@ export default class McpServer extends Component {
                   }}
                 >
                   {getIntlContent("SHENYU.COMMON.CHANGE")}
+                </span>
+              </AuthButton>
+              <AuthButton perms={`plugin:${this.state.pluginName}Rule:edit`}>
+                <span
+                  className="edit"
+                  style={{ marginRight: 8 }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    this.editToolByJson(record);
+                  }}
+                >
+                  {getIntlContent("SHENYU.MCP.EDIT.JSON")}
                 </span>
               </AuthButton>
               <AuthButton perms={`plugin:${this.state.pluginName}Rule:delete`}>
@@ -1379,6 +1501,22 @@ export default class McpServer extends Component {
           </Col>
         </Row>
         {popup}
+        {this.state.jsonEditVisible && (
+          <JsonEditModal
+            visible={this.state.jsonEditVisible}
+            data={this.state.currentJsonData}
+            onOk={this.handleJsonEditOk}
+            onCancel={this.handleJsonEditCancel}
+          />
+        )}
+        {this.state.mcpConfigVisible && (
+          <McpConfigModal
+            visible={this.state.mcpConfigVisible}
+            configType={this.state.mcpConfigType}
+            selectorList={this.state.currentSelectorForConfig ? [this.state.currentSelectorForConfig] : selectorList}
+            onCancel={this.handleMcpConfigCancel}
+          />
+        )}
       </div>
     );
   }
