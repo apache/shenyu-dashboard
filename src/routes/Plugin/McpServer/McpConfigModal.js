@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Modal, Button, message, Row, Col, Typography, Divider, Input } from "antd";
+import { Modal, Button, message, Typography, Divider, Input } from "antd";
 import ReactJson from "react-json-view";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
@@ -74,7 +74,7 @@ class McpConfigModal extends Component {
         name: `${selectorName}服务sse`,
         description: `${selectorName}服务测试sse - ${selectorDescription}`,
         headers: defaultHeaders,
-        transport: "sse"
+        transport: "sse",
       };
 
       // Streamable HTTP 配置
@@ -84,13 +84,15 @@ class McpConfigModal extends Component {
         name: `${selectorName}服务`,
         description: `${selectorName}服务测试 - ${selectorDescription}`,
         headers: defaultHeaders,
-        transport: "streamableHttp"
+        transport: "streamableHttp",
       };
     });
 
     this.setState({
       sseConfig: { mcpServers: this.filterByTransport(mcpServers, "sse") },
-      streamableConfig: { mcpServers: this.filterByTransport(mcpServers, "streamableHttp") },
+      streamableConfig: {
+        mcpServers: this.filterByTransport(mcpServers, "streamableHttp"),
+      },
     });
   };
 
@@ -100,8 +102,11 @@ class McpConfigModal extends Component {
     if (this.state.customGatewayHost && this.state.customGatewayHost.trim()) {
       let customHost = this.state.customGatewayHost.trim();
       // 确保包含协议
-      if (!customHost.startsWith('http://') && !customHost.startsWith('https://')) {
-        customHost = 'http://' + customHost;
+      if (
+        !customHost.startsWith("http://") &&
+        !customHost.startsWith("https://")
+      ) {
+        customHost = `http://${customHost}`;
       }
       return customHost;
     }
@@ -122,7 +127,8 @@ class McpConfigModal extends Component {
   getDefaultHeaders = () => {
     return {
       "X-Client-ID": "cursor-client",
-      "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.E8C6cQxv5N9Qy7JHHZzY3osVbP40TgXnyFEG-Dc2uo0"
+      Authorization:
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.E8C6cQxv5N9Qy7JHHZzY3osVbP40TgXnyFEG-Dc2uo0",
     };
   };
 
@@ -141,7 +147,7 @@ class McpConfigModal extends Component {
   // 根据传输协议过滤配置
   filterByTransport = (mcpServers, transport) => {
     const filtered = {};
-    Object.keys(mcpServers).forEach(key => {
+    Object.keys(mcpServers).forEach((key) => {
       if (mcpServers[key].transport === transport) {
         filtered[key] = mcpServers[key];
       }
@@ -157,7 +163,8 @@ class McpConfigModal extends Component {
     const key = transport === "sse" ? "shenyu-mcp-sse" : "shenyu-mcp";
     // 使用更合理的默认路径，与selector路径生成逻辑保持一致
     const basePath = "/http"; // MCP插件的默认基础路径
-    const urlPath = transport === "sse" ? `${basePath}/sse` : `${basePath}/streamablehttp`;
+    const urlPath =
+      transport === "sse" ? `${basePath}/sse` : `${basePath}/streamablehttp`;
     const nameSuffix = transport === "sse" ? "服务sse" : "服务";
     const descSuffix = transport === "sse" ? "服务测试sse" : "服务测试";
 
@@ -168,29 +175,35 @@ class McpConfigModal extends Component {
           name: `shenyuMcp${nameSuffix}`,
           description: `shenyuMcp${descSuffix}`,
           headers: defaultHeaders,
-          transport: transport
-        }
-      }
+          transport,
+        },
+      },
     };
   };
 
   // 复制配置到剪贴板
   handleCopyConfig = (config) => {
     const configText = JSON.stringify(config, null, 2);
-    navigator.clipboard.writeText(configText).then(() => {
-      message.success(getIntlContent("SHENYU.MCP.CONFIG.COPY.SUCCESS"));
-    }).catch(() => {
-      message.error(getIntlContent("SHENYU.MCP.CONFIG.COPY.FAILED"));
-    });
+    navigator.clipboard
+      .writeText(configText)
+      .then(() => {
+        message.success(getIntlContent("SHENYU.MCP.CONFIG.COPY.SUCCESS"));
+      })
+      .catch(() => {
+        message.error(getIntlContent("SHENYU.MCP.CONFIG.COPY.FAILED"));
+      });
   };
 
   // 复制JSON文本
   copyJsonText = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
-      message.success(getIntlContent("SHENYU.MCP.CONFIG.COPY.SUCCESS"));
-    }).catch(() => {
-      message.error(getIntlContent("SHENYU.MCP.CONFIG.COPY.FAILED"));
-    });
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        message.success(getIntlContent("SHENYU.MCP.CONFIG.COPY.SUCCESS"));
+      })
+      .catch(() => {
+        message.error(getIntlContent("SHENYU.MCP.CONFIG.COPY.FAILED"));
+      });
   };
 
   // 根据selector规则生成URL
@@ -200,22 +213,27 @@ class McpConfigModal extends Component {
 
     // 尝试从selector的条件中获取更具体的路径信息
     if (selector.selectorConditions && selector.selectorConditions.length > 0) {
-      for (const condition of selector.selectorConditions) {
+      for (let i = 0; i < selector.selectorConditions.length; i += 1) {
+        const condition = selector.selectorConditions[i];
         // 查找URI相关的条件
-        if (condition.paramType === 'uri' && condition.paramValue) {
+        if (condition.paramType === "uri" && condition.paramValue) {
           let conditionPath = condition.paramValue.trim();
 
           // 移除通配符和多余的字符
           conditionPath = conditionPath
-            .replace(/\/\*\*$/, '')  // 移除 /**
-            .replace(/\/\*$/, '')    // 移除 /*
-            .replace(/\*$/, '');     // 移除结尾的 *
+            .replace(/\/\*\*$/, "") // 移除 /**
+            .replace(/\/\*$/, "") // 移除 /*
+            .replace(/\*$/, ""); // 移除结尾的 *
 
           // 如果路径不为空且不是根路径，使用它作为基础路径
-          if (conditionPath && conditionPath !== '/' && conditionPath !== '/**') {
+          if (
+            conditionPath &&
+            conditionPath !== "/" &&
+            conditionPath !== "/**"
+          ) {
             // 确保路径以/开头
-            if (!conditionPath.startsWith('/')) {
-              conditionPath = '/' + conditionPath;
+            if (!conditionPath.startsWith("/")) {
+              conditionPath = `/${conditionPath}`;
             }
             basePath = conditionPath;
             break; // 找到第一个有效的URI条件就使用
@@ -229,25 +247,30 @@ class McpConfigModal extends Component {
 
   // 获取从selector提取的路径信息，用于界面显示
   getSelectorPathInfo = (selector) => {
-    if (!selector || !selector.selectorConditions || selector.selectorConditions.length === 0) {
+    if (
+      !selector ||
+      !selector.selectorConditions ||
+      selector.selectorConditions.length === 0
+    ) {
       return null;
     }
 
-    for (const condition of selector.selectorConditions) {
-      if (condition.paramType === 'uri' && condition.paramValue) {
+    for (let i = 0; i < selector.selectorConditions.length; i += 1) {
+      const condition = selector.selectorConditions[i];
+      if (condition.paramType === "uri" && condition.paramValue) {
         let conditionPath = condition.paramValue.trim();
 
         // 移除通配符和多余的字符
         conditionPath = conditionPath
-          .replace(/\/\*\*$/, '')  // 移除 /**
-          .replace(/\/\*$/, '')    // 移除 /*
-          .replace(/\*$/, '');     // 移除结尾的 *
+          .replace(/\/\*\*$/, "") // 移除 /**
+          .replace(/\/\*$/, "") // 移除 /*
+          .replace(/\*$/, ""); // 移除结尾的 *
 
         // 如果路径不为空且不是根路径，返回它
-        if (conditionPath && conditionPath !== '/' && conditionPath !== '/**') {
+        if (conditionPath && conditionPath !== "/" && conditionPath !== "/**") {
           // 确保路径以/开头
-          if (!conditionPath.startsWith('/')) {
-            conditionPath = '/' + conditionPath;
+          if (!conditionPath.startsWith("/")) {
+            conditionPath = `/${conditionPath}`;
           }
           return conditionPath;
         }
@@ -268,10 +291,11 @@ class McpConfigModal extends Component {
       : getIntlContent("SHENYU.MCP.CONFIG.STREAMABLE.TITLE");
 
     // 获取当前selector信息
-    const currentSelector = selectorList && selectorList.length === 1 ? selectorList[0] : null;
+    const currentSelector =
+      selectorList && selectorList.length === 1 ? selectorList[0] : null;
     const selectorInfo = currentSelector
-      ? ` - ${currentSelector.name || 'Unnamed Selector'}`
-      : '';
+      ? ` - ${currentSelector.name || "Unnamed Selector"}`
+      : "";
 
     return (
       <Modal
@@ -280,7 +304,11 @@ class McpConfigModal extends Component {
         onCancel={onCancel}
         width={800}
         footer={[
-          <Button key="copy" type="primary" onClick={() => this.handleCopyConfig(config)}>
+          <Button
+            key="copy"
+            type="primary"
+            onClick={() => this.handleCopyConfig(config)}
+          >
             {getIntlContent("SHENYU.MCP.JSON.EDIT.COPY")}
           </Button>,
           <Button key="close" onClick={onCancel}>
@@ -319,12 +347,14 @@ class McpConfigModal extends Component {
             <Text type="secondary">
               <>
                 <strong>Selector:</strong> {currentSelector.name}
-                {currentSelector.enabled ? ' (启用)' : ' (禁用)'}
+                {currentSelector.enabled ? " (启用)" : " (禁用)"}
                 <br />
-                <strong>基础路径:</strong> {this.getSelectorPathInfo(currentSelector)}
+                <strong>基础路径:</strong>{" "}
+                {this.getSelectorPathInfo(currentSelector)}
                 <br />
                 <small style={{ color: "#888" }}>
-                  最终URL = 网关地址 + 基础路径 + 协议后缀(/sse 或 /streamablehttp)
+                  最终URL = 网关地址 + 基础路径 + 协议后缀(/sse 或
+                  /streamablehttp)
                 </small>
               </>
             </Text>
@@ -334,16 +364,21 @@ class McpConfigModal extends Component {
         <Divider />
 
         <div style={{ marginBottom: "16px" }}>
-          <Title level={5}>{getIntlContent("SHENYU.MCP.CONFIG.SERVICE.TRANSPORT")}: {isSSE ? "SSE" : "Streamable HTTP"}</Title>
+          <Title level={5}>
+            {getIntlContent("SHENYU.MCP.CONFIG.SERVICE.TRANSPORT")}:{" "}
+            {isSSE ? "SSE" : "Streamable HTTP"}
+          </Title>
         </div>
 
-        <div style={{
-          border: "1px solid #d9d9d9",
-          borderRadius: "4px",
-          maxHeight: "500px",
-          overflow: "auto",
-          backgroundColor: "#fafafa"
-        }}>
+        <div
+          style={{
+            border: "1px solid #d9d9d9",
+            borderRadius: "4px",
+            maxHeight: "500px",
+            overflow: "auto",
+            backgroundColor: "#fafafa",
+          }}
+        >
           <ReactJson
             src={config}
             theme="monokai"
@@ -361,8 +396,17 @@ class McpConfigModal extends Component {
 
         {/* 可复制的JSON文本展示 */}
         <div style={{ marginTop: "16px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-            <Title level={5}>{getIntlContent("SHENYU.MCP.CONFIG.JSON.TITLE")}</Title>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "8px",
+            }}
+          >
+            <Title level={5}>
+              {getIntlContent("SHENYU.MCP.CONFIG.JSON.TITLE")}
+            </Title>
             <Button
               size="small"
               type="primary"
@@ -373,26 +417,43 @@ class McpConfigModal extends Component {
           </div>
           <TextArea
             value={JSON.stringify(config, null, 2)}
-            
             readOnly
             autoSize={{ minRows: 6, maxRows: 12 }}
             style={{
               fontFamily: "Monaco, Menlo, 'Ubuntu Mono', monospace",
               fontSize: "12px",
-              backgroundColor: "#f8f8f8"
+              backgroundColor: "#f8f8f8",
             }}
           />
         </div>
 
         {Object.keys(config.mcpServers || {}).length > 0 && (
           <div style={{ marginTop: "16px" }}>
-            <Title level={5}>{getIntlContent("SHENYU.MCP.CONFIG.EXPLANATION.TITLE")}</Title>
+            <Title level={5}>
+              {getIntlContent("SHENYU.MCP.CONFIG.EXPLANATION.TITLE")}
+            </Title>
             <ul style={{ fontSize: "12px", color: "#666" }}>
-              <li><strong>url</strong>: {getIntlContent("SHENYU.MCP.CONFIG.EXPLANATION.URL")}</li>
-              <li><strong>name</strong>: {getIntlContent("SHENYU.MCP.CONFIG.EXPLANATION.NAME")}</li>
-              <li><strong>description</strong>: {getIntlContent("SHENYU.MCP.CONFIG.EXPLANATION.DESCRIPTION")}</li>
-              <li><strong>headers</strong>: {getIntlContent("SHENYU.MCP.CONFIG.EXPLANATION.HEADERS")}</li>
-              <li><strong>transport</strong>: {getIntlContent("SHENYU.MCP.CONFIG.EXPLANATION.TRANSPORT")} ({isSSE ? "sse" : "streamableHttp"})</li>
+              <li>
+                <strong>url</strong>:{" "}
+                {getIntlContent("SHENYU.MCP.CONFIG.EXPLANATION.URL")}
+              </li>
+              <li>
+                <strong>name</strong>:{" "}
+                {getIntlContent("SHENYU.MCP.CONFIG.EXPLANATION.NAME")}
+              </li>
+              <li>
+                <strong>description</strong>:{" "}
+                {getIntlContent("SHENYU.MCP.CONFIG.EXPLANATION.DESCRIPTION")}
+              </li>
+              <li>
+                <strong>headers</strong>:{" "}
+                {getIntlContent("SHENYU.MCP.CONFIG.EXPLANATION.HEADERS")}
+              </li>
+              <li>
+                <strong>transport</strong>:{" "}
+                {getIntlContent("SHENYU.MCP.CONFIG.EXPLANATION.TRANSPORT")} (
+                {isSSE ? "sse" : "streamableHttp"})
+              </li>
             </ul>
           </div>
         )}

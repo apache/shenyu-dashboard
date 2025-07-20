@@ -45,25 +45,23 @@ const { TabPane } = Tabs;
 class AddModal extends Component {
   constructor(props) {
     super(props);
-    
+
     // 初始化表单参数
     const formData = this.initParameters(props);
-    
+
     // 初始化JSON模式数据
     const jsonData = this.initJsonMode(props);
-    
+
     this.state = {
       // 表单模式状态
       parameters: formData.parameters,
-      description: formData.description,
-      requestConfig: formData.requestConfig,
       questJson: formData.questJson,
       // JSON模式状态
       jsonText: jsonData.jsonText,
       jsonError: jsonData.jsonError,
       // 通用状态
       editMode: "form", // "form" 或 "json"
-      activeTab: "1"
+      activeTab: "1",
     };
   }
 
@@ -76,9 +74,11 @@ class AddModal extends Component {
       try {
         const handleObj = JSON.parse(handle);
         parameters = handleObj.parameters || [];
-        questJson = handleObj.requestConfig ? JSON.parse(handleObj.requestConfig) : {};
+        questJson = handleObj.requestConfig
+          ? JSON.parse(handleObj.requestConfig)
+          : {};
       } catch (e) {
-        console.error("Failed to parse handle JSON:", e);
+        // Failed to parse handle JSON
         parameters = [
           {
             type: "String",
@@ -101,7 +101,7 @@ class AddModal extends Component {
 
   initJsonMode = (props) => {
     const { name, description, enabled, handle } = props;
-    
+
     // 将handle内容提升到最外层，创建扁平化的JSON结构
     let flattenedJson = {
       name: name || "",
@@ -122,7 +122,7 @@ class AddModal extends Component {
           requestConfig: handleObj.requestConfig || "{}",
         };
       } catch (e) {
-        console.error("Failed to parse handle JSON:", e);
+        // Failed to parse handle JSON
       }
     }
 
@@ -142,33 +142,35 @@ class AddModal extends Component {
           name: "orderId",
           type: "string",
           description: "Order ID",
-          required: true
-        }
+          required: true,
+        },
       ],
       requestConfig: JSON.stringify({
         requestTemplate: {
-          url: "/api/orders/${orderId}",
+          url: "/api/orders/{orderId}",
           method: "GET",
           headers: [
             {
               name: "Authorization",
-              value: "Bearer ${token}"
-            }
+              value: "Bearer {token}",
+            },
           ],
-          timeout: 30000
+          timeout: 30000,
         },
         argsPosition: {
-          orderId: "url.path"
-        }
-      })
+          orderId: "url.path",
+        },
+      }),
     };
 
     this.setState({
       jsonText: JSON.stringify(template, null, 2),
-      jsonError: null
+      jsonError: null,
     });
-    
-    message.success(getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.TEMPLATE.SUCCESS"));
+
+    message.success(
+      getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.TEMPLATE.SUCCESS"),
+    );
   };
 
   handleEditModeChange = (e) => {
@@ -196,7 +198,7 @@ class AddModal extends Component {
 
           this.setState({
             jsonText: JSON.stringify(toolJson, null, 2),
-            jsonParseError: null,
+            jsonError: null,
           });
         }
       });
@@ -209,7 +211,7 @@ class AddModal extends Component {
 
     // 实时验证JSON格式
     try {
-      const parsed = JSON.parse(jsonText);
+      JSON.parse(jsonText);
       this.setState({ jsonError: null });
     } catch (error) {
       this.setState({ jsonError: error.message });
@@ -222,7 +224,7 @@ class AddModal extends Component {
       const formatted = JSON.stringify(parsed, null, 2);
       this.setState({
         jsonText: formatted,
-        jsonParseError: null,
+        jsonError: null,
       });
       message.success(getIntlContent("SHENYU.MCP.JSON.EDIT.FORMAT.SUCCESS"));
     } catch (error) {
@@ -236,7 +238,7 @@ class AddModal extends Component {
       const compressed = JSON.stringify(parsed);
       this.setState({
         jsonText: compressed,
-        jsonParseError: null,
+        jsonError: null,
       });
       message.success(getIntlContent("SHENYU.MCP.JSON.EDIT.COMPRESS.SUCCESS"));
     } catch (error) {
@@ -245,17 +247,20 @@ class AddModal extends Component {
   };
 
   handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(this.state.jsonText).then(() => {
-      message.success(getIntlContent("SHENYU.MCP.JSON.EDIT.COPY.SUCCESS"));
-    }).catch(() => {
-      message.error(getIntlContent("SHENYU.MCP.JSON.EDIT.COPY.FAILED"));
-    });
+    navigator.clipboard
+      .writeText(this.state.jsonText)
+      .then(() => {
+        message.success(getIntlContent("SHENYU.MCP.JSON.EDIT.COPY.SUCCESS"));
+      })
+      .catch(() => {
+        message.error(getIntlContent("SHENYU.MCP.JSON.EDIT.COPY.FAILED"));
+      });
   };
 
   updateJson = (obj) => {
     this.setState({
       jsonText: JSON.stringify(obj, null, 2),
-      jsonError: null
+      jsonError: null,
     });
   };
 
@@ -283,8 +288,7 @@ class AddModal extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const { handleOk } = this.props;
-    const { editMode, jsonText } = this.state;
+    const { editMode } = this.state;
 
     if (editMode === "form") {
       // 表单模式提交
@@ -300,7 +304,15 @@ class AddModal extends Component {
     const { parameters } = this.state;
 
     form.validateFieldsAndScroll((err, values) => {
-      const { name, description, enabled, sort, loged, matchMode, matchRestful } = values;
+      const {
+        name,
+        description,
+        enabled,
+        sort,
+        loged,
+        matchMode,
+        matchRestful,
+      } = values;
       if (!err) {
         const submit = this.checkParams();
         if (submit) {
@@ -346,7 +358,7 @@ class AddModal extends Component {
 
     try {
       const parsedJson = JSON.parse(jsonText);
-      
+
       // 验证必要字段
       if (!parsedJson.name || !parsedJson.name.trim()) {
         message.error(getIntlContent("SHENYU.MCP.JSON.EDIT.TOOL.NAME.ERROR"));
@@ -370,7 +382,7 @@ class AddModal extends Component {
         handle: JSON.stringify({
           parameters: finalData.parameters,
           requestConfig: finalData.requestConfig,
-          description: finalData.description
+          description: finalData.description,
         }),
         // 添加必需的规则级别字段默认值
         sort: 1,
@@ -389,7 +401,9 @@ class AddModal extends Component {
 
       handleOk(transformedData);
     } catch (error) {
-      message.error(`${getIntlContent("SHENYU.MCP.JSON.EDIT.FORMAT.ERROR")}${error.message}`);
+      message.error(
+        `${getIntlContent("SHENYU.MCP.JSON.EDIT.FORMAT.ERROR")}${error.message}`,
+      );
     }
   };
 
@@ -427,21 +441,15 @@ class AddModal extends Component {
       matchMode = "0",
       matchRestful = false,
     } = this.props;
-    const { 
-      parameters, 
-      questJson, 
-      editMode, 
-      jsonText, 
-      jsonError, 
-      activeTab 
-    } = this.state;
+    const { parameters, questJson, editMode, jsonText, jsonError, activeTab } =
+      this.state;
 
     // Parse handle JSON to get requestConfig and description
     let parsedHandle = {};
     try {
       parsedHandle = JSON.parse(handle);
     } catch (e) {
-      console.error("Failed to parse handle JSON:", e);
+      // Failed to parse handle JSON
     }
 
     const { description: handleDescription = "" } = parsedHandle;
@@ -463,12 +471,15 @@ class AddModal extends Component {
     try {
       previewJson = JSON.parse(jsonText);
     } catch (e) {
-      previewJson = { error: getIntlContent("SHENYU.MCP.JSON.EDIT.ERROR.PREFIX") + e.message };
+      previewJson = {
+        error: getIntlContent("SHENYU.MCP.JSON.EDIT.ERROR.PREFIX") + e.message,
+      };
     }
 
-    const modalTitle = editMode === "form" 
-      ? getIntlContent("SHENYU.TOOL.NAME")
-      : getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.TITLE");
+    const modalTitle =
+      editMode === "form"
+        ? getIntlContent("SHENYU.TOOL.NAME")
+        : getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.TITLE");
 
     return (
       <Modal
@@ -492,14 +503,13 @@ class AddModal extends Component {
               </Radio.Button>
             </Radio.Group>
           </div>
-          
+
           <p style={{ color: "#666", fontSize: "12px", marginBottom: "8px" }}>
-            {editMode === "form" 
+            {editMode === "form"
               ? getIntlContent("SHENYU.MCP.JSON.EDIT.DESCRIPTION")
-              : getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.DESCRIPTION")
-            }
+              : getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.DESCRIPTION")}
           </p>
-          
+
           {editMode === "json" && (
             <Row gutter={8}>
               <Col>
@@ -573,7 +583,7 @@ class AddModal extends Component {
                 />,
               )}
             </FormItem>
-            
+
             <FormItem
               label={getIntlContent("SHENYU.SELECTOR.EXEORDER")}
               {...formItemLayout}
@@ -641,7 +651,9 @@ class AddModal extends Component {
                 ],
                 initialValue: matchMode,
               })(
-                <Select placeholder={getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE")}>
+                <Select
+                  placeholder={getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE")}
+                >
                   <Option value="0">and</Option>
                   <Option value="1">or</Option>
                 </Select>,
@@ -760,13 +772,21 @@ class AddModal extends Component {
           </Form>
         ) : (
           // JSON模式
-          <Tabs activeKey={activeTab} onChange={(key) => this.setState({ activeTab: key })}>
-            <TabPane tab={getIntlContent("SHENYU.MCP.JSON.EDIT.TAB.TEXT")} key="1">
+          <Tabs
+            activeKey={activeTab}
+            onChange={(key) => this.setState({ activeTab: key })}
+          >
+            <TabPane
+              tab={getIntlContent("SHENYU.MCP.JSON.EDIT.TAB.TEXT")}
+              key="1"
+            >
               <div style={{ position: "relative" }}>
                 <TextArea
                   value={jsonText}
                   onChange={this.handleJsonTextChange}
-                  placeholder={getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.PLACEHOLDER")}
+                  placeholder={getIntlContent(
+                    "SHENYU.MCP.TOOLS.ADD.JSON.PLACEHOLDER",
+                  )}
                   autoSize={{ minRows: 15, maxRows: 25 }}
                   style={{
                     fontFamily: "Monaco, Menlo, 'Ubuntu Mono', monospace",
@@ -775,30 +795,38 @@ class AddModal extends Component {
                   }}
                 />
                 {jsonError && (
-                  <div style={{
-                    position: "absolute",
-                    bottom: "8px",
-                    right: "8px",
-                    background: "#ff4d4f",
-                    color: "white",
-                    padding: "4px 8px",
-                    borderRadius: "4px",
-                    fontSize: "12px",
-                    maxWidth: "300px",
-                    wordBreak: "break-word",
-                  }}>
-                    {getIntlContent("SHENYU.MCP.JSON.EDIT.ERROR.PREFIX")}{jsonError}
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "8px",
+                      right: "8px",
+                      background: "#ff4d4f",
+                      color: "white",
+                      padding: "4px 8px",
+                      borderRadius: "4px",
+                      fontSize: "12px",
+                      maxWidth: "300px",
+                      wordBreak: "break-word",
+                    }}
+                  >
+                    {getIntlContent("SHENYU.MCP.JSON.EDIT.ERROR.PREFIX")}
+                    {jsonError}
                   </div>
                 )}
               </div>
             </TabPane>
-            <TabPane tab={getIntlContent("SHENYU.MCP.JSON.EDIT.TAB.PREVIEW")} key="2">
-              <div style={{
-                border: "1px solid #d9d9d9",
-                borderRadius: "4px",
-                maxHeight: "400px",
-                overflow: "auto",
-              }}>
+            <TabPane
+              tab={getIntlContent("SHENYU.MCP.JSON.EDIT.TAB.PREVIEW")}
+              key="2"
+            >
+              <div
+                style={{
+                  border: "1px solid #d9d9d9",
+                  borderRadius: "4px",
+                  maxHeight: "400px",
+                  overflow: "auto",
+                }}
+              >
                 <ReactJson
                   src={previewJson}
                   theme="monokai"
@@ -818,20 +846,51 @@ class AddModal extends Component {
 
         {editMode === "json" && (
           <div style={{ marginTop: "16px", color: "#666", fontSize: "12px" }}>
-            <p><strong>{getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.STRUCTURE.TITLE")}</strong></p>
+            <p>
+              <strong>
+                {getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.STRUCTURE.TITLE")}
+              </strong>
+            </p>
             <ul>
-              <li><code>name</code>: {getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.STRUCTURE.NAME")}</li>
-              <li><code>description</code>: {getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.STRUCTURE.DESCRIPTION")}</li>
-              <li><code>enabled</code>: {getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.STRUCTURE.ENABLED")}</li>
-              <li><code>parameters</code>: {getIntlContent("SHENYU.MCP.JSON.EDIT.HANDLE.PARAMETERS")}</li>
-              <li><code>requestConfig</code>: {getIntlContent("SHENYU.MCP.JSON.EDIT.HANDLE.REQUESTCONFIG")}</li>
+              <li>
+                <code>name</code>:{" "}
+                {getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.STRUCTURE.NAME")}
+              </li>
+              <li>
+                <code>description</code>:{" "}
+                {getIntlContent(
+                  "SHENYU.MCP.TOOLS.ADD.JSON.STRUCTURE.DESCRIPTION",
+                )}
+              </li>
+              <li>
+                <code>enabled</code>:{" "}
+                {getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.STRUCTURE.ENABLED")}
+              </li>
+              <li>
+                <code>parameters</code>:{" "}
+                {getIntlContent("SHENYU.MCP.JSON.EDIT.HANDLE.PARAMETERS")}
+              </li>
+              <li>
+                <code>requestConfig</code>:{" "}
+                {getIntlContent("SHENYU.MCP.JSON.EDIT.HANDLE.REQUESTCONFIG")}
+              </li>
             </ul>
-            <p><strong>{getIntlContent("SHENYU.MCP.JSON.EDIT.OPERATION.TITLE")}</strong></p>
+            <p>
+              <strong>
+                {getIntlContent("SHENYU.MCP.JSON.EDIT.OPERATION.TITLE")}
+              </strong>
+            </p>
             <ul>
-              <li>{getIntlContent("SHENYU.MCP.JSON.EDIT.OPERATION.KEYBOARD")}</li>
+              <li>
+                {getIntlContent("SHENYU.MCP.JSON.EDIT.OPERATION.KEYBOARD")}
+              </li>
               <li>{getIntlContent("SHENYU.MCP.JSON.EDIT.OPERATION.SWITCH")}</li>
-              <li>{getIntlContent("SHENYU.MCP.JSON.EDIT.OPERATION.VALIDATE")}</li>
-              <li>{getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.OPERATION.TEMPLATE")}</li>
+              <li>
+                {getIntlContent("SHENYU.MCP.JSON.EDIT.OPERATION.VALIDATE")}
+              </li>
+              <li>
+                {getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.OPERATION.TEMPLATE")}
+              </li>
             </ul>
           </div>
         )}

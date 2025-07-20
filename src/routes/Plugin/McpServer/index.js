@@ -780,7 +780,7 @@ export default class McpServer extends Component {
   };
 
   editTool = (record) => {
-    console.log("record", record);
+    // record
     const { dispatch, currentSelector, plugins, currentNamespaceId } =
       this.props;
     const { toolPage, toolPageSize, pluginId, pluginName } = this.state;
@@ -914,14 +914,6 @@ export default class McpServer extends Component {
     });
   };
 
-  // eslint-disable-next-line react/no-unused-class-component-methods
-  changeLocales(locale) {
-    this.setState({
-      localeName: locale,
-    });
-    getCurrentLocale(this.state.localeName);
-  }
-
   editToolByJson = (record) => {
     const { dispatch, currentNamespaceId } = this.props;
     const { id } = record;
@@ -1004,6 +996,14 @@ export default class McpServer extends Component {
       currentSelectorForConfig: null,
     });
   };
+
+  // eslint-disable-next-line react/no-unused-class-component-methods
+  changeLocales(locale) {
+    this.setState({
+      localeName: locale,
+    });
+    getCurrentLocale(this.state.localeName);
+  }
 
   render() {
     const {
@@ -1513,7 +1513,11 @@ export default class McpServer extends Component {
           <McpConfigModal
             visible={this.state.mcpConfigVisible}
             configType={this.state.mcpConfigType}
-            selectorList={this.state.currentSelectorForConfig ? [this.state.currentSelectorForConfig] : selectorList}
+            selectorList={
+              this.state.currentSelectorForConfig
+                ? [this.state.currentSelectorForConfig]
+                : selectorList
+            }
             onCancel={this.handleMcpConfigCancel}
           />
         )}
