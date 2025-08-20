@@ -488,7 +488,7 @@ export default class Resource extends Component {
     return (
       <div className="plug-content-wrap">
         <Row gutter={20}>
-          <Col span={6} style={{ minWidth: 280 }}>
+          <Col span={7}>
             <h3>{getIntlContent("SHENYU.SYSTEM.RESOURCE.MENULIST.TITLE")}</h3>
             <div className="table-header">
               <div className={styles.headerSearch}>
@@ -522,7 +522,7 @@ export default class Resource extends Component {
               </Tree>
             ) : null}
           </Col>
-          <Col span={18}>
+          <Col span={17}>
             <h3>{getIntlContent("SHENYU.SYSTEM.RESOURCE.BUTTONLIST.TITLE")}</h3>
             <div className="table-header">
               <div style={{ display: "flex", alignItems: "center" }}>
