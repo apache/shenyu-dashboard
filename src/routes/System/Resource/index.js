@@ -489,8 +489,8 @@ export default class Resource extends Component {
       <div className="plug-content-wrap">
         <Row gutter={20}>
           <Col span={6} style={{ minWidth: 280 }}>
+            <h3>{getIntlContent("SHENYU.SYSTEM.RESOURCE.MENULIST.TITLE")}</h3>
             <div className="table-header">
-              <h3>{getIntlContent("SHENYU.SYSTEM.RESOURCE.MENULIST.TITLE")}</h3>
               <div className={styles.headerSearch}>
                 <AuthButton perms="system:resource:list">
                   <Search
@@ -523,11 +523,9 @@ export default class Resource extends Component {
             ) : null}
           </Col>
           <Col span={18}>
+            <h3>{getIntlContent("SHENYU.SYSTEM.RESOURCE.BUTTONLIST.TITLE")}</h3>
             <div className="table-header">
               <div style={{ display: "flex", alignItems: "center" }}>
-                <h3>
-                  {getIntlContent("SHENYU.SYSTEM.RESOURCE.BUTTONLIST.TITLE")}
-                </h3>
                 <AuthButton perms="system:resource:deleteButton">
                   <Popconfirm
                     title={getIntlContent("SHENYU.COMMON.DELETE")}
@@ -538,7 +536,7 @@ export default class Resource extends Component {
                     okText={getIntlContent("SHENYU.COMMON.SURE")}
                     cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
                   >
-                    <Button style={{ marginLeft: 20 }} type="danger">
+                    <Button type="danger">
                       {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
                     </Button>
                   </Popconfirm>
