@@ -19,6 +19,7 @@ import React, { PureComponent } from "react";
 import { Layout, Menu, Icon, Switch } from "antd";
 import pathToRegexp from "path-to-regexp";
 import { Link } from "dva/router";
+import { Resizable } from "react-resizable";
 import styles from "./index.less";
 import { urlToList } from "../_utils/pathTools";
 import { getCurrentLocale, getIntlContent } from "../../utils/IntlUtils";
@@ -86,6 +87,7 @@ export default class SiderMenu extends PureComponent {
       localeName: "",
       mode: "inline",
       theme: "dark",
+      width: 250,
     };
   }
 
@@ -276,6 +278,12 @@ export default class SiderMenu extends PureComponent {
     });
   };
 
+  onResize = (event, { size }) => {
+    this.setState({
+      width: size.width,
+    });
+  };
+
   /** Modify the menu based on the current language */
   updateMenuData() {
     if (this.props.menuData.length === 0) {
@@ -330,38 +338,55 @@ export default class SiderMenu extends PureComponent {
     }
 
     return (
-      <Sider
-        trigger={null}
-        collapsible
-        collapsed={collapsed}
-        breakpoint="lg"
-        onCollapse={onCollapse}
-        width={220}
-        className={styles.sider}
+      <Resizable
+        width={this.state.width}
+        height={0}
+        onResize={this.onResize}
+        draggableOpts={{ enableUserSelectHack: false }}
+        handle={
+          <span
+            className="react-resizable-handle"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          />
+        }
+        minConstraints={[200, 0]}
+        maxConstraints={[500, 0]}
       >
-        <Link to="/">
-          <div className={styles.logo} key="logo">
-            <img className={styles.TitleLogo} src={TitleLogo} alt="logo" />
-          </div>
-        </Link>
-        <Switch
-          onChange={this.changeMode}
-          checkedChildren="Change Mode"
-          unCheckedChildren="Change Mode"
-          className={styles.changeMode}
-        />
-        <Menu
-          key="Menu"
-          theme={this.state.theme}
-          mode={this.state.mode}
-          {...menuProps}
-          onOpenChange={this.handleOpenChange}
-          selectedKeys={selectedKeys}
-          style={{ padding: "16px 0", width: "100%" }}
+        <Sider
+          trigger={null}
+          collapsible
+          collapsed={collapsed}
+          breakpoint="lg"
+          onCollapse={onCollapse}
+          width={this.state.width}
+          className={styles.sider}
         >
-          {this.getNavMenuItems(menuData)}
-        </Menu>
-      </Sider>
+          <Link to="/">
+            <div className={styles.logo} key="logo">
+              <img className={styles.TitleLogo} src={TitleLogo} alt="logo" />
+            </div>
+          </Link>
+          <Switch
+            onChange={this.changeMode}
+            checkedChildren="Change Mode"
+            unCheckedChildren="Change Mode"
+            className={styles.changeMode}
+          />
+          <Menu
+            key="Menu"
+            theme={this.state.theme}
+            mode={this.state.mode}
+            {...menuProps}
+            onOpenChange={this.handleOpenChange}
+            selectedKeys={selectedKeys}
+            style={{ padding: "16px 0", width: "100%" }}
+          >
+            {this.getNavMenuItems(menuData)}
+          </Menu>
+        </Sider>
+      </Resizable>
     );
   }
 }
