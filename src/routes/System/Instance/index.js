@@ -170,7 +170,6 @@ export default class Instance extends Component {
 
     this.pieChartInstance.setOption(option);
 
-    // 窗口大小变化时重新调整图表
     window.addEventListener('resize', () => {
       this.pieChartInstance && this.pieChartInstance.resize();
     });
@@ -185,10 +184,10 @@ export default class Instance extends Component {
       {
         name: getIntlContent("SHENYU.INSTANCE.NO_DATA"),
         type: 'line',
-        data: [0, 0, 0, 0, 0] // 需要提供数据数组
+        data: [0, 0, 0, 0, 0]
       }
     ];
-    // 确保每个系列都有正确的格式
+
     const formattedSeries = chartData.map(item => ({
       name: item.name || 'Unknown',
       type: 'line',
@@ -244,7 +243,6 @@ export default class Instance extends Component {
 
     this.lineChartInstance.setOption(option);
 
-    // 窗口大小变化时重新调整图表
     window.addEventListener('resize', () => {
       this.lineChartInstance && this.lineChartInstance.resize();
     });
