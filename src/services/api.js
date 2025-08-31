@@ -1437,3 +1437,11 @@ export async function importSwagger(params) {
     },
   });
 }
+
+/* findInstance */
+export async function findInstanceAnalysis(params) {
+  return request(`${baseUrl}/instance/analysis/${params.namespaceId}`, {
+    method: `GET`,
+  });
+}
+
