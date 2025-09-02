@@ -105,6 +105,11 @@ export const menuData = [
         path: "instance",
         locale: "SHENYU.MENU.SYSTEM.MANAGMENT.INSTANCE",
       },
+      {
+        name: getIntlContent("SHENYU.MENU.SYSTEM.MANAGMENT.REGISTRY"),
+        path: "registry",
+        locale: "SHENYU.MENU.SYSTEM.MANAGMENT.REGISTRY",
+      },
     ],
   },
   {
