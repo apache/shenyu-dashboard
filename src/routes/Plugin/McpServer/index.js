@@ -715,9 +715,8 @@ export default class McpServer extends Component {
   };
 
   deleteSelector = (record) => {
-    const { dispatch, plugins, currentNamespaceId } = this.props;
-    const { selectorPage, selectorPageSize, pluginName } = this.state;
-    const pluginId = this.getPluginId(plugins, pluginName);
+    const { dispatch, currentNamespaceId } = this.props;
+    const { selectorPage, selectorPageSize } = this.state;
     dispatch({
       type: "common/deleteSelector",
       payload: {
@@ -725,7 +724,7 @@ export default class McpServer extends Component {
         namespaceId: currentNamespaceId,
       },
       fetchValue: {
-        pluginId,
+        pluginId: record?.pluginId,
         currentPage: selectorPage,
         pageSize: selectorPageSize,
         namespaceId: currentNamespaceId,
