@@ -1179,7 +1179,7 @@ export default class McpServer extends Component {
         key: "requestConfig",
         render: (text) => {
           const handle = JSON.parse(text);
-          const requestConfig = JSON.parse(handle.requestConfig);
+          const requestConfig = JSON.parse(handle?.requestConfig || "{}");
           return (
             <Popover
               content={
