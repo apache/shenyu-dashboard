@@ -1154,7 +1154,7 @@ export default class McpServer extends Component {
         key: "requestParams",
         render: (text) => {
           const handle = JSON.parse(text);
-          const parameters = handle.parameters;
+          const parameters = handle?.parameters || {};
           return (
             <Popover
               content={
