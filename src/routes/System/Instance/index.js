@@ -16,13 +16,24 @@
  */
 
 import React, { Component } from "react";
-import {Button, Card, Col, Input, Popover, Row, Select, Table, Tag, Typography} from "antd";
+import {
+  Button,
+  Card,
+  Col,
+  Input,
+  Popover,
+  Row,
+  Select,
+  Table,
+  Tag,
+  Typography,
+} from "antd";
 import { connect } from "dva";
+import { format } from "date-fns";
+import * as echarts from "echarts";
 import { resizableComponents } from "../../../utils/resizable";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
-import { format } from 'date-fns';
-import * as echarts from 'echarts';
 
 const { Text } = Typography;
 
@@ -48,7 +59,7 @@ export default class Instance extends Component {
       localeName: window.sessionStorage.getItem("locale")
         ? window.sessionStorage.getItem("locale")
         : "en-US",
-      columns: []
+      columns: [],
     };
   }
 
@@ -56,8 +67,10 @@ export default class Instance extends Component {
     this.query();
     this.initInstanceColumns();
     this.queryAnalysis();
-    this.pieChartInstance = echarts.init(document.getElementById('pieDataDiv'));
-    this.lineChartInstance = echarts.init(document.getElementById('lineDataDiv'));
+    this.pieChartInstance = echarts.init(document.getElementById("pieDataDiv"));
+    this.lineChartInstance = echarts.init(
+      document.getElementById("lineDataDiv"),
+    );
   }
 
   componentDidUpdate(prevProps) {
@@ -71,7 +84,6 @@ export default class Instance extends Component {
       this.query();
     }
     if (prevProps.instance.pieData !== instance.pieData) {
-      console.log("22")
       this.renderPieChart(instance.pieData);
     }
     if (prevProps.instance.lineData !== instance.lineData) {
@@ -118,11 +130,11 @@ export default class Instance extends Component {
   };
 
   queryAnalysis = () => {
-    const { dispatch , currentNamespaceId } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     dispatch({
       type: "instance/fetchAnalysis",
       payload: {
-        namespaceId:currentNamespaceId
+        namespaceId: currentNamespaceId,
       },
     });
   };
@@ -131,47 +143,45 @@ export default class Instance extends Component {
     if (!pieData || !this.pieChartInstance) {
       return;
     }
-
-    const chartData = pieData && pieData.length > 0
-      ? pieData
-      : [
-        { value: 0, name: getIntlContent("SHENYU.INSTANCE.NO_DATA") }
-      ];
+    const chartData =
+      pieData && pieData.length > 0
+        ? pieData
+        : [{ value: 0, name: getIntlContent("SHENYU.INSTANCE.NO_DATA") }];
 
     const option = {
       title: {
         text: getIntlContent("SHENYU.INSTANCE.PIE_DATA"),
-        left: 'center'
+        left: "center",
       },
       tooltip: {
-        trigger: 'item',
-        formatter: '{a} <br/>{b}: {c} ({d}%)'
+        trigger: "item",
+        formatter: "{a} <br/>{b}: {c} ({d}%)",
       },
       legend: {
-        orient: 'vertical',
-        left: 'left',
+        orient: "vertical",
+        left: "left",
       },
       series: [
         {
           name: getIntlContent("SHENYU.INSTANCE.DISTRIBUTION"),
-          type: 'pie',
-          radius: '50%',
+          type: "pie",
+          radius: "50%",
           data: chartData,
           emphasis: {
             itemStyle: {
               shadowBlur: 10,
               shadowOffsetX: 0,
-              shadowColor: 'rgba(0, 0, 0, 0.5)'
-            }
-          }
-        }
-      ]
+              shadowColor: "rgba(0, 0, 0, 0.5)",
+            },
+          },
+        },
+      ],
     };
 
     this.pieChartInstance.setOption(option);
 
-    window.addEventListener('resize', () => {
-      this.pieChartInstance && this.pieChartInstance.resize();
+    window.addEventListener("resize", () => {
+      this.pieChartInstance.resize();
     });
   };
 
@@ -180,71 +190,73 @@ export default class Instance extends Component {
       return;
     }
 
-    const chartData = lineData && lineData.length > 0 ? lineData : [
-      {
-        name: getIntlContent("SHENYU.INSTANCE.NO_DATA"),
-        type: 'line',
-        data: [0, 0, 0, 0, 0]
-      }
-    ];
+    const chartData =
+      lineData && lineData.length > 0
+        ? lineData
+        : [
+            {
+              name: getIntlContent("SHENYU.INSTANCE.NO_DATA"),
+              type: "line",
+              data: [0, 0, 0, 0, 0],
+            },
+          ];
 
-    const formattedSeries = chartData.map(item => ({
-      name: item.name || 'Unknown',
-      type: 'line',
-      data: Array.isArray(item.data) ? item.data : []
+    const formattedSeries = chartData.map((item) => ({
+      name: item.name || "Unknown",
+      type: "line",
+      data: Array.isArray(item.data) ? item.data : [],
     }));
 
-    console.log(formattedSeries)
     const option = {
       title: {
-        text: getIntlContent("SHENYU.INSTANCE.LINE_DATA")
+        text: getIntlContent("SHENYU.INSTANCE.LINE_DATA"),
       },
       tooltip: {
-        trigger: 'axis'
+        trigger: "axis",
       },
       legend: {
-        data: formattedSeries.map(series => series.name)
+        data: formattedSeries.map((series) => series.name),
       },
       grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '10%',
-        containLabel: true
+        left: "3%",
+        right: "4%",
+        bottom: "10%",
+        containLabel: true,
       },
       toolbox: {
         feature: {
-          saveAsImage: {}
-        }
+          saveAsImage: {},
+        },
       },
       xAxis: {
-        type: 'category',
+        type: "category",
         boundaryGap: false,
         show: false,
       },
       yAxis: {
-        type: 'value',
+        type: "value",
         show: true,
         min: 0,
         max: 4,
         minInterval: 1,
         interval: 1,
-        name: '数量',
+        name: "数量",
         nameTextStyle: {
-          color: '#333',
+          color: "#333",
           fontSize: 12,
-          padding: [0, 0, 0, 0]
+          padding: [0, 0, 0, 0],
         },
         axisLabel: {
-          formatter: '{value}'
-        }
+          formatter: "{value}",
+        },
       },
-      series: formattedSeries
+      series: formattedSeries,
     };
 
     this.lineChartInstance.setOption(option);
 
-    window.addEventListener('resize', () => {
-      this.lineChartInstance && this.lineChartInstance.resize();
+    window.addEventListener("resize", () => {
+      this.lineChartInstance.resize();
     });
   };
 
@@ -387,7 +399,11 @@ export default class Instance extends Component {
           width: 120,
           sorter: (a, b) => (a.instanceType > b.instanceType ? 1 : -1),
           render: (text) => {
-            return <div style={{ color: "#1f640a" }}>{ format(new Date(text), 'YYYY-MM-DD HH:mm:ss') || "----"}</div>;
+            return (
+              <div style={{ color: "#1f640a" }}>
+                {format(new Date(text), "YYYY-MM-DD HH:mm:ss") || "----"}
+              </div>
+            );
           },
         },
         {
@@ -399,7 +415,11 @@ export default class Instance extends Component {
           width: 120,
           sorter: (a, b) => (a.instanceType > b.instanceType ? 1 : -1),
           render: (text) => {
-            return <div style={{ color: "#1f640a" }}>{format(new Date(text), 'YYYY-MM-DD HH:mm:ss') || "----"}</div>;
+            return (
+              <div style={{ color: "#1f640a" }}>
+                {format(new Date(text), "YYYY-MM-DD HH:mm:ss") || "----"}
+              </div>
+            );
           },
         },
         {
@@ -432,11 +452,9 @@ export default class Instance extends Component {
             }
           },
         },
-
       ],
     });
   }
-
 
   render() {
     const { instance, loading } = this.props;
@@ -493,16 +511,21 @@ export default class Instance extends Component {
         <Row gutter={16} style={{ marginBottom: 24 }}>
           <Col span={12}>
             <Card>
-              <div id='pieDataDiv' style={{width:'800px',height:'400px'}}/>
+              <div
+                id="pieDataDiv"
+                style={{ width: "800px", height: "400px" }}
+              />
             </Card>
           </Col>
           <Col span={12}>
             <Card>
-              <div id='lineDataDiv' style={{width:'800px',height:'400px'}}/>
+              <div
+                id="lineDataDiv"
+                style={{ width: "800px", height: "400px" }}
+              />
             </Card>
           </Col>
         </Row>
-
 
         <Table
           size="small"

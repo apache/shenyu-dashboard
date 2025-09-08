@@ -1444,4 +1444,3 @@ export async function findInstanceAnalysis(params) {
     method: `GET`,
   });
 }
-

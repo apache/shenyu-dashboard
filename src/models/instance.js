@@ -15,7 +15,11 @@
  * limitations under the License.
  */
 
-import {getInstancesByNamespace, findInstance, findInstanceAnalysis} from "../services/api";
+import {
+  getInstancesByNamespace,
+  findInstance,
+  findInstanceAnalysis,
+} from "../services/api";
 
 export default {
   namespace: "instance",
@@ -23,8 +27,8 @@ export default {
   state: {
     instanceList: [],
     total: 0,
-    pieData:[],
-    lineList:[]
+    pieData: [],
+    lineList: [],
   },
 
   effects: {
@@ -56,7 +60,7 @@ export default {
           type: "saveInstancesAnalysis",
           payload: {
             pieData,
-            lineData
+            lineData,
           },
         });
       }
