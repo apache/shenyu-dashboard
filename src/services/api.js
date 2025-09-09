@@ -1444,3 +1444,44 @@ export async function findInstanceAnalysis(params) {
     method: `GET`,
   });
 }
+
+/* Registry Center Management APIs */
+
+/* get registry list */
+export async function getRegistryList(params) {
+  return request(`${baseUrl}/registry/findPageByQuery?${stringify(params)}`, {
+    method: `GET`,
+  });
+}
+
+/* get registry detail */
+export async function getRegistryDetail(params) {
+  return request(`${baseUrl}/registry/${params.id}`, {
+    method: `GET`,
+  });
+}
+
+/* add or update registry */
+export async function insertOrUpdateRegistry(params) {
+  return request(`${baseUrl}/registry/insertOrUpdate`, {
+    method: `POST`,
+    body: {
+      ...params,
+    },
+  });
+}
+
+/* delete registry */
+export async function deleteRegistry(id) {
+  return request(`${baseUrl}/registry/${id}`, {
+    method: `DELETE`,
+  });
+}
+
+/* batch delete registry */
+export async function batchDeleteRegistry(params) {
+  return request(`${baseUrl}/registry/batch`, {
+    method: `DELETE`,
+    body: [...params.list],
+  });
+}
