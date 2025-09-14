@@ -74,6 +74,10 @@ class AddModal extends Component {
       try {
         const handleObj = JSON.parse(handle);
         parameters = handleObj.parameters || [];
+
+        // 处理array类型的参数，强制设置第一个子参数的name为items
+        parameters = this.fixArrayParameterNames(parameters);
+
         questJson = handleObj.requestConfig
           ? JSON.parse(handleObj.requestConfig)
           : {};
@@ -541,6 +545,7 @@ class AddModal extends Component {
           if (value === "object") {
             targetParam[path[i]].parameters[subIndex].parameters = [];
           } else if (value === "array") {
+            // 强制设置array类型的第一个子参数name为items
             targetParam[path[i]].parameters[subIndex].parameters = [
               {
                 name: "items",
@@ -686,6 +691,45 @@ class AddModal extends Component {
             )}
         </div>
       );
+    });
+  };
+
+  // 修复array类型参数的name字段，强制设置为items
+  fixArrayParameterNames = (parameters) => {
+    if (!parameters || !Array.isArray(parameters)) {
+      return parameters;
+    }
+
+    return parameters.map((param) => {
+      // 如果当前参数是array类型且有子参数，强制设置第一个子参数的name为items
+      if (
+        param.type === "array" &&
+        param.parameters &&
+        param.parameters.length > 0
+      ) {
+        return {
+          ...param,
+          parameters: param.parameters.map((subParam, index) => {
+            if (index === 0) {
+              return {
+                ...subParam,
+                name: "items",
+              };
+            }
+            return subParam;
+          }),
+        };
+      }
+
+      // 递归处理子参数
+      if (param.parameters && Array.isArray(param.parameters)) {
+        return {
+          ...param,
+          parameters: this.fixArrayParameterNames(param.parameters),
+        };
+      }
+
+      return param;
     });
   };
 
@@ -960,7 +1004,7 @@ class AddModal extends Component {
                                 // Object 类型：清空子参数，等待用户手动添加
                                 newParameters[index].parameters = [];
                               } else if (value === "array") {
-                                // Array 类型：默认添加一个 items 子项
+                                // Array 类型：强制设置第一个子参数name为items
                                 newParameters[index].parameters = [
                                   {
                                     name: "items",
