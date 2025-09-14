@@ -81,18 +81,20 @@ class AddModal extends Component {
         // Failed to parse handle JSON
         parameters = [
           {
-            type: "String",
+            type: "string",
             name: "",
             description: "",
+            required: true,
           },
         ];
       }
     } else {
       parameters = [
         {
-          type: "String",
+          type: "string",
           name: "",
           description: "",
+          required: true,
         },
       ];
     }
@@ -267,22 +269,56 @@ class AddModal extends Component {
   checkParams = () => {
     let { parameters } = this.state;
     let result = true;
-    if (parameters) {
-      parameters.forEach((item, index) => {
+    const MAX_NESTING_DEPTH = 6; // 最大嵌套深度限制
+
+    const checkParameterRecursive = (params, path = "", depth = 0) => {
+      if (!params || !Array.isArray(params)) return true;
+
+      // 检查嵌套深度
+      if (depth > MAX_NESTING_DEPTH) {
+        message.destroy();
+        message.error(
+          `参数嵌套深度超过限制（最大${MAX_NESTING_DEPTH}层）: ${path}`,
+        );
+        return false;
+      }
+
+      for (let i = 0; i < params.length; i += 1) {
+        const item = params[i];
         const { type, name, description } = item;
+        const currentPath = path ? `${path}[${i}]` : `第${i + 1}行`;
+
         if (!type || !name || !description) {
           message.destroy();
-          message.error(`Line ${index + 1} param is incomplete`);
-          result = false;
+          message.error(`${currentPath} 参数不完整，请填写名称、类型和描述`);
+          return false;
         }
-        // eslint-disable-next-line no-lonely-if
-        if (!name) {
+
+        // 验证参数名称格式（可选：添加更严格的验证）
+        if (name && !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
           message.destroy();
-          message.error(`Line ${index + 1} param is incomplete`);
-          result = false;
+          message.warning(
+            `${currentPath} 参数名称建议使用字母、数字和下划线，且以字母或下划线开头`,
+          );
         }
-      });
-    }
+
+        // 递归检查子参数
+        if ((type === "object" || type === "array") && item.parameters) {
+          if (
+            !checkParameterRecursive(
+              item.parameters,
+              `${currentPath}.parameters`,
+              depth + 1,
+            )
+          ) {
+            return false;
+          }
+        }
+      }
+      return true;
+    };
+
+    result = checkParameterRecursive(parameters);
     return result;
   };
 
@@ -410,9 +446,10 @@ class AddModal extends Component {
   handleAdd = () => {
     let { parameters } = this.state;
     parameters.push({
-      type: "String",
+      type: "string",
       name: "",
       description: "",
+      required: true,
     });
 
     this.setState({ parameters }, () => {
@@ -426,6 +463,223 @@ class AddModal extends Component {
     let { parameters } = this.state;
     parameters.splice(index, 1);
     this.setState({ parameters });
+  };
+
+  // 添加子参数 - 支持任意深度嵌套，但有深度限制
+  handleAddSubParameter = (path) => {
+    const MAX_NESTING_DEPTH = 6; // 最大嵌套深度限制
+
+    // 检查当前路径深度
+    if (path.length >= MAX_NESTING_DEPTH) {
+      message.destroy();
+      message.warning(
+        `已达到最大嵌套深度限制（${MAX_NESTING_DEPTH}层），无法继续添加子参数`,
+      );
+      return;
+    }
+
+    let { parameters } = this.state;
+    const newParameters = [...parameters];
+
+    // 根据路径找到目标参数
+    let targetParam = newParameters;
+    for (let i = 0; i < path.length; i += 1) {
+      if (i === path.length - 1) {
+        // 最后一层，添加子参数
+        if (!targetParam[path[i]].parameters) {
+          targetParam[path[i]].parameters = [];
+        }
+        targetParam[path[i]].parameters.push({
+          name: "",
+          type: "string",
+          description: "",
+          required: true,
+        });
+      } else {
+        // 中间层，继续向下导航
+        targetParam = targetParam[path[i]].parameters;
+      }
+    }
+
+    this.setState({ parameters: newParameters });
+  };
+
+  // 删除子参数 - 支持任意深度嵌套
+  handleDeleteSubParameter = (path, subIndex) => {
+    let { parameters } = this.state;
+    const newParameters = [...parameters];
+
+    // 根据路径找到目标参数的父级
+    let targetParam = newParameters;
+    for (let i = 0; i < path.length; i += 1) {
+      if (i === path.length - 1) {
+        // 最后一层，删除子参数
+        targetParam[path[i]].parameters.splice(subIndex, 1);
+      } else {
+        // 中间层，继续向下导航
+        targetParam = targetParam[path[i]].parameters;
+      }
+    }
+
+    this.setState({ parameters: newParameters });
+  };
+
+  // 更新子参数 - 支持任意深度嵌套
+  updateSubParameter = (path, subIndex, field, value) => {
+    let { parameters } = this.state;
+    const newParameters = [...parameters];
+
+    // 根据路径找到目标参数
+    let targetParam = newParameters;
+    for (let i = 0; i < path.length; i += 1) {
+      if (i === path.length - 1) {
+        // 最后一层，更新子参数
+        targetParam[path[i]].parameters[subIndex][field] = value;
+
+        // 如果子参数类型变更为 object 或 array，也需要处理嵌套
+        if (field === "type") {
+          if (value === "object") {
+            targetParam[path[i]].parameters[subIndex].parameters = [];
+          } else if (value === "array") {
+            targetParam[path[i]].parameters[subIndex].parameters = [
+              {
+                name: "items",
+                type: "string",
+                description: "",
+                required: true,
+              },
+            ];
+          } else {
+            delete targetParam[path[i]].parameters[subIndex].parameters;
+          }
+        }
+      } else {
+        // 中间层，继续向下导航
+        targetParam = targetParam[path[i]].parameters;
+      }
+    }
+
+    this.setState({ parameters: newParameters });
+  };
+
+  // 渲染子参数 - 支持无限层级嵌套
+  renderSubParameters = (subParams, path = [], level = 1) => {
+    if (!subParams || !Array.isArray(subParams)) return null;
+
+    const indentStyle = {
+      paddingLeft: `${level * 20}px`,
+      borderLeft: level > 1 ? "2px solid #e8e8e8" : "none",
+      marginLeft: level > 1 ? "10px" : "0",
+    };
+
+    return subParams.map((subParam, subIndex) => {
+      const currentPath = [...path, subIndex];
+
+      return (
+        <div key={`${path.join("-")}-${subIndex}`} style={indentStyle}>
+          <Row gutter={8} style={{ marginTop: "8px" }}>
+            <Col span={4}>
+              <Input
+                allowClear
+                value={subParam.name}
+                placeholder={getIntlContent(
+                  "SHENYU.COMMON.PARAMETER.SUBTYPE.NAME",
+                )}
+                onChange={(e) => {
+                  this.updateSubParameter(
+                    path,
+                    subIndex,
+                    "name",
+                    e.target.value,
+                  );
+                }}
+              />
+            </Col>
+            <Col span={5}>
+              <Select
+                value={subParam.type}
+                placeholder={getIntlContent("SHENYU.COMMON.PARAMETER.SUBTYPE")}
+                onChange={(value) => {
+                  this.updateSubParameter(path, subIndex, "type", value);
+                }}
+              >
+                <Option value="string">String</Option>
+                <Option value="integer">Integer</Option>
+                <Option value="long">Long</Option>
+                <Option value="double">Double</Option>
+                <Option value="float">Float</Option>
+                <Option value="boolean">Boolean</Option>
+                <Option value="object">Object</Option>
+                <Option value="array">Array</Option>
+              </Select>
+            </Col>
+            <Col span={11}>
+              <Input
+                allowClear
+                value={subParam.description}
+                placeholder={getIntlContent(
+                  "SHENYU.COMMON.PARAMETER.SUBTYPE.DESCRIPTION",
+                )}
+                onChange={(e) => {
+                  this.updateSubParameter(
+                    path,
+                    subIndex,
+                    "description",
+                    e.target.value,
+                  );
+                }}
+              />
+            </Col>
+            <Col span={4}>
+              <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
+                {/* Object 类型显示添加按钮 */}
+                {subParam.type === "object" && (
+                  <Button
+                    type="primary"
+                    size="small"
+                    onClick={() => {
+                      this.handleAddSubParameter([...path, subIndex]);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.COMMON.PARAMETER.SUBTYPE.ADD")}
+                  </Button>
+                )}
+                <Button
+                  type="danger"
+                  size="small"
+                  onClick={() => {
+                    this.handleDeleteSubParameter(path, subIndex);
+                  }}
+                >
+                  {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                </Button>
+              </div>
+            </Col>
+          </Row>
+
+          {/* 递归渲染更深层的子参数 */}
+          {(subParam.type === "object" || subParam.type === "array") &&
+            subParam.parameters && (
+              <div
+                style={{
+                  marginTop: "8px",
+                  border: "1px solid #f0f0f0",
+                  borderRadius: "4px",
+                  padding: "8px",
+                  backgroundColor: level % 2 === 1 ? "#fafafa" : "#f5f5f5",
+                  position: "relative",
+                }}
+              >
+                {this.renderSubParameters(
+                  subParam.parameters,
+                  currentPath,
+                  level + 1,
+                )}
+              </div>
+            )}
+        </div>
+      );
+    });
   };
 
   render() {
@@ -667,68 +921,122 @@ class AddModal extends Component {
               >
                 {parameters.map((item, index) => {
                   return (
-                    <Row key={index} gutter={8}>
-                      <Col span={4}>
-                        <Input
-                          allowClear
-                          value={item.name}
-                          placeholder={getIntlContent(
-                            "SHENYU.COMMON.PARAMETER.NAME",
-                          )}
-                          onChange={(e) => {
-                            const newValue = e.target.value;
-                            const newParameters = [...parameters];
-                            newParameters[index].name = newValue;
-                            this.setState({ parameters: newParameters });
-                          }}
-                        />
-                      </Col>
-                      <Col span={5}>
-                        <Select
-                          value={item.type}
-                          placeholder={getIntlContent(
-                            "SHENYU.COMMON.PARAMETER.TYPE",
-                          )}
-                          onChange={(value) => {
-                            const newParameters = [...parameters];
-                            newParameters[index].type = value;
-                            this.setState({ parameters: newParameters });
-                          }}
-                        >
-                          <Option value="String">String</Option>
-                          <Option value="Integer">Integer</Option>
-                          <Option value="Long">Long</Option>
-                          <Option value="Double">Double</Option>
-                          <Option value="Float">Float</Option>
-                          <Option value="Boolean">Boolean</Option>
-                        </Select>
-                      </Col>
-                      <Col span={11}>
-                        <Input
-                          allowClear
-                          value={item.description}
-                          placeholder={getIntlContent(
-                            "SHENYU.COMMON.PARAMETER.DESCRIPTION",
-                          )}
-                          onChange={(e) => {
-                            const newValue = e.target.value;
-                            const newParameters = [...parameters];
-                            newParameters[index].description = newValue;
-                            this.setState({ parameters: newParameters });
-                          }}
-                        />
-                      </Col>
-                      <Col span={4}>
-                        <Button
-                          type="danger"
-                          onClick={() => {
-                            this.handleDelete(index);
-                          }}
-                        >
-                          {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
-                        </Button>
-                      </Col>
-                    </Row>
+                    <div key={index} style={{ marginBottom: "16px" }}>
+                      <Row gutter={8}>
+                        <Col span={4}>
+                          <Input
+                            allowClear
+                            value={item.name}
+                            placeholder={getIntlContent(
+                              "SHENYU.COMMON.PARAMETER.NAME",
+                            )}
+                            onChange={(e) => {
+                              const newValue = e.target.value;
+                              const newParameters = [...parameters];
+                              newParameters[index].name = newValue;
+                              this.setState({ parameters: newParameters });
+                            }}
+                          />
+                        </Col>
+                        <Col span={5}>
+                          <Select
+                            value={item.type}
+                            placeholder={getIntlContent(
+                              "SHENYU.COMMON.PARAMETER.TYPE",
+                            )}
+                            onChange={(value) => {
+                              const newParameters = [...parameters];
+                              newParameters[index].type = value;
+
+                              // 处理类型变更的逻辑
+                              if (value === "object") {
+                                // Object 类型：清空子参数，等待用户手动添加
+                                newParameters[index].parameters = [];
+                              } else if (value === "array") {
+                                // Array 类型：默认添加一个 items 子项
+                                newParameters[index].parameters = [
+                                  {
+                                    name: "items",
+                                    type: "string",
+                                    description: "",
+                                    required: true,
+                                  },
+                                ];
+                              } else {
+                                // 其他基础类型：删除子参数
+                                delete newParameters[index].parameters;
+                              }
+
+                              this.setState({ parameters: newParameters });
+                            }}
+                          >
+                            <Option value="string">String</Option>
+                            <Option value="integer">Integer</Option>
+                            <Option value="long">Long</Option>
+                            <Option value="double">Double</Option>
+                            <Option value="float">Float</Option>
+                            <Option value="boolean">Boolean</Option>
+                            <Option value="object">Object</Option>
+                            <Option value="array">Array</Option>
+                          </Select>
+                        </Col>
+                        <Col span={11}>
+                          <Input
+                            allowClear
+                            value={item.description}
+                            placeholder={getIntlContent(
+                              "SHENYU.COMMON.PARAMETER.DESCRIPTION",
+                            )}
+                            onChange={(e) => {
+                              const newValue = e.target.value;
+                              const newParameters = [...parameters];
+                              newParameters[index].description = newValue;
+                              this.setState({ parameters: newParameters });
+                            }}
+                          />
+                        </Col>
+                        <Col span={4}>
+                          <div style={{ display: "flex", gap: "4px" }}>
+                            {/* Object 类型显示添加按钮 */}
+                            {item.type === "object" && (
+                              <Button
+                                type="primary"
+                                onClick={() => {
+                                  this.handleAddSubParameter([index]);
+                                }}
+                              >
+                                {getIntlContent(
+                                  "SHENYU.COMMON.PARAMETER.SUBTYPE.ADD",
+                                )}
+                              </Button>
+                            )}
+                            <Button
+                              type="danger"
+                              onClick={() => {
+                                this.handleDelete(index);
+                              }}
+                            >
+                              {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                            </Button>
+                          </div>
+                        </Col>
+                      </Row>
+                      {/* 渲染子参数 */}
+                      {(item.type === "object" || item.type === "array") &&
+                        item.parameters && (
+                          <div
+                            style={{
+                              marginTop: "8px",
+                              border: "1px solid #f0f0f0",
+                              borderRadius: "4px",
+                              padding: "8px",
+                              backgroundColor: "#fafafa",
+                            }}
+                          >
+                            {this.renderSubParameters(item.parameters, [index])}
+                          </div>
+                        )}
+                    </div>
                   );
                 })}
               </FormItem>
