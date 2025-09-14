@@ -577,7 +577,10 @@ class AddModal extends Component {
 
       return (
         <div key={`${path.join("-")}-${subIndex}`} style={indentStyle}>
-          <Row gutter={8} style={{ marginTop: "8px" }}>
+          <Row
+            gutter={8}
+            style={{ marginTop: "8px", display: "flex", alignItems: "center" }}
+          >
             <Col span={4}>
               <Input
                 allowClear
@@ -629,6 +632,8 @@ class AddModal extends Component {
                     e.target.value,
                   );
                 }}
+                // 添加隐藏逻辑：当父表单类型为array时隐藏description输入框
+                style={{ display: parentType === "array" ? "none" : "block" }}
               />
             </Col>
             <Col span={4}>
