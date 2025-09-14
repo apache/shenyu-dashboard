@@ -563,7 +563,7 @@ class AddModal extends Component {
   };
 
   // 渲染子参数 - 支持无限层级嵌套
-  renderSubParameters = (subParams, path = [], level = 1) => {
+  renderSubParameters = (subParams, path = [], level = 1, parentType) => {
     if (!subParams || !Array.isArray(subParams)) return null;
 
     const indentStyle = {
@@ -593,6 +593,7 @@ class AddModal extends Component {
                     e.target.value,
                   );
                 }}
+                disabled={parentType === "array"}
               />
             </Col>
             <Col span={5}>
@@ -674,6 +675,7 @@ class AddModal extends Component {
                   subParam.parameters,
                   currentPath,
                   level + 1,
+                  subParam.type,
                 )}
               </div>
             )}
@@ -1033,7 +1035,12 @@ class AddModal extends Component {
                               backgroundColor: "#fafafa",
                             }}
                           >
-                            {this.renderSubParameters(item.parameters, [index])}
+                            {this.renderSubParameters(
+                              item.parameters,
+                              [index],
+                              1,
+                              item.type,
+                            )}
                           </div>
                         )}
                     </div>
