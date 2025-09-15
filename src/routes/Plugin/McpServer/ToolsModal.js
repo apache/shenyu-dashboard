@@ -289,12 +289,12 @@ class AddModal extends Component {
 
       for (let i = 0; i < params.length; i += 1) {
         const item = params[i];
-        const { type, name, description } = item;
+        const { type, name } = item;
         const currentPath = path ? `${path}[${i}]` : `第${i + 1}行`;
 
-        if (!type || !name || !description) {
+        if (!type || !name) {
           message.destroy();
-          message.error(`${currentPath} 参数不完整，请填写名称、类型和描述`);
+          message.error(`${currentPath} 参数不完整，请填写名称、类型`);
           return false;
         }
 
