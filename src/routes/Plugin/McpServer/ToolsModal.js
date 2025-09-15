@@ -120,15 +120,21 @@ class AddModal extends Component {
     if (handle) {
       try {
         const handleObj = JSON.parse(handle);
+        // 处理array类型的参数，强制设置第一个子参数的name为items
+        const fixedParameters = this.fixArrayParameterNames(
+          handleObj.parameters || [],
+        );
+
         flattenedJson = {
           name: name || "",
           description: description || "",
           enabled: enabled !== undefined ? enabled : true,
-          parameters: handleObj.parameters || [],
+          parameters: fixedParameters,
           requestConfig: handleObj.requestConfig || "{}",
         };
       } catch (e) {
         // Failed to parse handle JSON
+        console.warn("Failed to parse handle JSON in initJsonMode:", e.message);
       }
     }
 
@@ -181,34 +187,73 @@ class AddModal extends Component {
 
   handleEditModeChange = (e) => {
     const editMode = e.target.value;
-    this.setState({ editMode });
 
     // 切换到JSON模式时，同步表单数据到JSON
     if (editMode === "json") {
-      const { form } = this.props;
-      const { parameters, questJson } = this.state;
-
-      // 获取表单数据
-      form.validateFields((err, values) => {
-        if (!err) {
-          const toolJson = {
-            name: values.name || "",
-            description: values.description || "",
-            enabled: values.enabled !== undefined ? values.enabled : true,
-            handle: {
-              parameters,
-              requestConfig: questJson,
-              description: values.description || "",
-            },
-          };
-
-          this.setState({
-            jsonText: JSON.stringify(toolJson, null, 2),
-            jsonError: null,
-          });
-        }
-      });
+      this.syncFormToJson();
+    } else {
+      // 切换到表单模式时，同步JSON数据到表单
+      this.syncJsonToForm();
     }
+    this.setState({ editMode });
+  };
+
+  // 同步表单数据到JSON
+  syncFormToJson = () => {
+    const { form } = this.props;
+    const { parameters, questJson } = this.state;
+
+    // 获取表单数据
+    form.validateFields((err, values) => {
+      const toolJson = {
+        name: values.name || "",
+        description: values.description || "",
+        enabled: values.enabled !== undefined ? values.enabled : true,
+        parameters,
+        requestConfig: JSON.stringify(questJson),
+      };
+      this.setState({
+        jsonText: JSON.stringify(toolJson, null, 2),
+        jsonError: null,
+      });
+    });
+  };
+
+  // 同步JSON数据到表单
+  syncJsonToForm = () => {
+    const { jsonText } = this.state;
+    const { form } = this.props;
+    setTimeout(() => {
+      try {
+        const parsedJson = JSON.parse(jsonText);
+
+        // 更新表单字段
+        form.setFieldsValue({
+          name: parsedJson.name || "",
+          description: parsedJson.description || "",
+          enabled: parsedJson.enabled !== undefined ? parsedJson.enabled : true,
+        });
+
+        // 更新参数和请求配置
+        let questJson = {};
+        try {
+          questJson =
+            typeof parsedJson.requestConfig === "string"
+              ? JSON.parse(parsedJson.requestConfig)
+              : parsedJson.requestConfig || {};
+        } catch (e) {
+          questJson = {};
+        }
+
+        this.setState({
+          parameters: this.fixArrayParameterNames(parsedJson.parameters || []),
+          questJson,
+        });
+      } catch (error) {
+        // JSON格式错误时不进行同步
+        console.warn("JSON格式错误，无法同步到表单:", error.message);
+      }
+    }, 0);
   };
 
   handleJsonTextChange = (e) => {
@@ -219,8 +264,50 @@ class AddModal extends Component {
     try {
       JSON.parse(jsonText);
       this.setState({ jsonError: null });
+
+      // 如果JSON格式正确且当前在JSON模式，实时同步到表单
+      if (this.state.editMode === "json") {
+        this.syncJsonToFormRealtime(jsonText);
+      }
     } catch (error) {
       this.setState({ jsonError: error.message });
+    }
+  };
+
+  // 实时同步JSON到表单（不显示错误，静默更新）
+  syncJsonToFormRealtime = (jsonText) => {
+    const { form } = this.props;
+
+    try {
+      const parsedJson = JSON.parse(jsonText);
+
+      // 更新表单字段（静默更新，不触发验证）
+      const fieldsToUpdate = {};
+      if (parsedJson.name !== undefined) fieldsToUpdate.name = parsedJson.name;
+      if (parsedJson.description !== undefined)
+        fieldsToUpdate.description = parsedJson.description;
+      if (parsedJson.enabled !== undefined)
+        fieldsToUpdate.enabled = parsedJson.enabled;
+
+      form.setFieldsValue(fieldsToUpdate);
+
+      // 更新参数和请求配置
+      let questJson = {};
+      try {
+        questJson =
+          typeof parsedJson.requestConfig === "string"
+            ? JSON.parse(parsedJson.requestConfig)
+            : parsedJson.requestConfig || {};
+      } catch (e) {
+        questJson = {};
+      }
+
+      this.setState({
+        parameters: parsedJson.parameters || [],
+        questJson,
+      });
+    } catch (error) {
+      // 静默处理错误，不影响用户输入
     }
   };
 
@@ -263,11 +350,41 @@ class AddModal extends Component {
       });
   };
 
-  updateJson = (obj) => {
-    this.setState({
-      jsonText: JSON.stringify(obj, null, 2),
-      jsonError: null,
+  // 监听表单字段变化
+  handleFormValuesChange = () => {
+    // 如果当前在表单模式，实时同步到JSON
+    if (this.state.editMode === "form") {
+      // 使用setTimeout确保状态更新后再同步
+      setTimeout(() => {
+        this.syncFormToJson();
+      }, 100); // 稍微延迟以确保表单值已更新
+    }
+  };
+
+  // 参数变化时同步到JSON
+  handleParametersChange = (newParameters) => {
+    this.setState({ parameters: newParameters }, () => {
+      // 如果当前在表单模式，同步到JSON
+      if (this.state.editMode === "form") {
+        this.syncFormToJson();
+      }
     });
+  };
+
+  updateJson = (obj) => {
+    this.setState(
+      {
+        questJson: obj.src,
+        jsonText: JSON.stringify(obj, null, 2),
+        jsonError: null,
+      },
+      () => {
+        // 如果当前在表单模式，同步到JSON
+        if (this.state.editMode === "form") {
+          this.syncFormToJson();
+        }
+      },
+    );
   };
 
   checkParams = () => {
@@ -456,17 +573,16 @@ class AddModal extends Component {
       required: true,
     });
 
-    this.setState({ parameters }, () => {
-      let len = parameters.length || 0;
-      let key = `typeValueEn${len - 1}`;
-      this.setState({ [key]: true });
-    });
+    this.handleParametersChange(parameters);
+    let len = parameters.length || 0;
+    let key = `typeValueEn${len - 1}`;
+    this.setState({ [key]: true });
   };
 
   handleDelete = (index) => {
     let { parameters } = this.state;
     parameters.splice(index, 1);
-    this.setState({ parameters });
+    this.handleParametersChange(parameters);
   };
 
   // 添加子参数 - 支持任意深度嵌套，但有深度限制
@@ -505,7 +621,7 @@ class AddModal extends Component {
       }
     }
 
-    this.setState({ parameters: newParameters });
+    this.handleParametersChange(newParameters);
   };
 
   // 删除子参数 - 支持任意深度嵌套
@@ -525,7 +641,7 @@ class AddModal extends Component {
       }
     }
 
-    this.setState({ parameters: newParameters });
+    this.handleParametersChange(newParameters);
   };
 
   // 更新子参数 - 支持任意深度嵌套
@@ -564,7 +680,7 @@ class AddModal extends Component {
       }
     }
 
-    this.setState({ parameters: newParameters });
+    this.handleParametersChange(newParameters);
   };
 
   // 渲染子参数 - 支持无限层级嵌套
@@ -843,7 +959,11 @@ class AddModal extends Component {
 
         {editMode === "form" ? (
           // 表单模式
-          <Form onSubmit={this.handleSubmit} className="login-form">
+          <Form
+            onSubmit={this.handleSubmit}
+            className="login-form"
+            onValuesChange={this.handleFormValuesChange}
+          >
             <FormItem
               label={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")}
               {...formItemLayout}
@@ -985,7 +1105,7 @@ class AddModal extends Component {
                               const newValue = e.target.value;
                               const newParameters = [...parameters];
                               newParameters[index].name = newValue;
-                              this.setState({ parameters: newParameters });
+                              this.handleParametersChange(newParameters);
                             }}
                           />
                         </Col>
@@ -1018,7 +1138,7 @@ class AddModal extends Component {
                                 delete newParameters[index].parameters;
                               }
 
-                              this.setState({ parameters: newParameters });
+                              this.handleParametersChange(newParameters);
                             }}
                           >
                             <Option value="string">String</Option>
@@ -1042,7 +1162,7 @@ class AddModal extends Component {
                               const newValue = e.target.value;
                               const newParameters = [...parameters];
                               newParameters[index].description = newValue;
-                              this.setState({ parameters: newParameters });
+                              this.handleParametersChange(newParameters);
                             }}
                           />
                         </Col>
