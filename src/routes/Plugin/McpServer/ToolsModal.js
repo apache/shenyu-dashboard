@@ -75,7 +75,7 @@ class AddModal extends Component {
         const handleObj = JSON.parse(handle);
         parameters = handleObj.parameters || [];
 
-        // 处理array类型的参数，强制设置第一个子参数的name为items
+        // Handle array type parameters, force set the first sub-parameter's name to "items"
         parameters = this.fixArrayParameterNames(parameters);
 
         questJson = handleObj.requestConfig
@@ -120,7 +120,7 @@ class AddModal extends Component {
     if (handle) {
       try {
         const handleObj = JSON.parse(handle);
-        // 处理array类型的参数，强制设置第一个子参数的name为items
+        // Handle array type parameters, force set the first sub-parameter's name to "items"
         const fixedParameters = this.fixArrayParameterNames(
           handleObj.parameters || [],
         );
@@ -188,38 +188,36 @@ class AddModal extends Component {
   handleEditModeChange = (e) => {
     const editMode = e.target.value;
 
-    // 切换到JSON模式时，同步表单数据到JSON
+    // When switching to JSON mode, sync form data to JSON
     if (editMode === "json") {
       this.syncFormToJson();
     } else {
-      // 切换到表单模式时，同步JSON数据到表单
+      // When switching to form mode, sync JSON data to form
       this.syncJsonToForm();
     }
     this.setState({ editMode });
   };
 
-  // 同步表单数据到JSON
+  // Sync form data to JSON
   syncFormToJson = () => {
     const { form } = this.props;
     const { parameters, questJson } = this.state;
-
-    // 获取表单数据
-    form.validateFields((err, values) => {
-      const toolJson = {
-        name: values.name || "",
-        description: values.description || "",
-        enabled: values.enabled !== undefined ? values.enabled : true,
-        parameters,
-        requestConfig: JSON.stringify(questJson),
-      };
-      this.setState({
-        jsonText: JSON.stringify(toolJson, null, 2),
-        jsonError: null,
-      });
+    const values = form.getFieldsValue();
+    // Get form data
+    const toolJson = {
+      name: values.name || "",
+      description: values.description || "",
+      enabled: values.enabled !== undefined ? values.enabled : true,
+      parameters,
+      requestConfig: JSON.stringify(questJson),
+    };
+    this.setState({
+      jsonText: JSON.stringify(toolJson, null, 2),
+      jsonError: null,
     });
   };
 
-  // 同步JSON数据到表单
+  // Sync JSON data to form
   syncJsonToForm = () => {
     const { jsonText } = this.state;
     const { form } = this.props;
@@ -227,7 +225,7 @@ class AddModal extends Component {
       try {
         const parsedJson = JSON.parse(jsonText);
 
-        // 更新表单字段
+        // Update form fields
         form.setFieldsValue({
           name: parsedJson.name || "",
           description: parsedJson.description || "",
@@ -250,7 +248,7 @@ class AddModal extends Component {
           questJson,
         });
       } catch (error) {
-        // JSON格式错误时不进行同步
+        // Do not sync when JSON format is invalid
         console.warn("JSON格式错误，无法同步到表单:", error.message);
       }
     }, 0);
@@ -260,12 +258,12 @@ class AddModal extends Component {
     const jsonText = e.target.value;
     this.setState({ jsonText });
 
-    // 实时验证JSON格式
+    // Validate JSON format in real time
     try {
       JSON.parse(jsonText);
       this.setState({ jsonError: null });
 
-      // 如果JSON格式正确且当前在JSON模式，实时同步到表单
+      // If JSON format is valid and currently in JSON mode, sync to form in real time
       if (this.state.editMode === "json") {
         this.syncJsonToFormRealtime(jsonText);
       }
@@ -274,14 +272,14 @@ class AddModal extends Component {
     }
   };
 
-  // 实时同步JSON到表单（不显示错误，静默更新）
+  // Sync JSON data to form in real time (silent update, no validation errors)
   syncJsonToFormRealtime = (jsonText) => {
     const { form } = this.props;
 
     try {
       const parsedJson = JSON.parse(jsonText);
 
-      // 更新表单字段（静默更新，不触发验证）
+      // Update form fields (silent update, no validation triggered)
       const fieldsToUpdate = {};
       if (parsedJson.name !== undefined) fieldsToUpdate.name = parsedJson.name;
       if (parsedJson.description !== undefined)
@@ -291,7 +289,7 @@ class AddModal extends Component {
 
       form.setFieldsValue(fieldsToUpdate);
 
-      // 更新参数和请求配置
+      // Update parameters and request configuration
       let questJson = {};
       try {
         questJson =
@@ -307,7 +305,7 @@ class AddModal extends Component {
         questJson,
       });
     } catch (error) {
-      // 静默处理错误，不影响用户输入
+      // Silently handle errors to avoid affecting user input
     }
   };
 
@@ -350,21 +348,22 @@ class AddModal extends Component {
       });
   };
 
-  // 监听表单字段变化
+  // Listen for form field changes
   handleFormValuesChange = () => {
-    // 如果当前在表单模式，实时同步到JSON
+    // If currently in form mode, sync form data to JSON in real time
     if (this.state.editMode === "form") {
-      // 使用setTimeout确保状态更新后再同步
+      // Use setTimeout to ensure form values are updated before syncing
       setTimeout(() => {
+        // Slightly delay to ensure form values are updated before syncing
         this.syncFormToJson();
-      }, 100); // 稍微延迟以确保表单值已更新
+      }, 100);
     }
   };
 
-  // 参数变化时同步到JSON
+  // Sync form data to JSON when parameters change
   handleParametersChange = (newParameters) => {
     this.setState({ parameters: newParameters }, () => {
-      // 如果当前在表单模式，同步到JSON
+      // If currently in form mode, sync form data to JSON
       if (this.state.editMode === "form") {
         this.syncFormToJson();
       }
@@ -372,14 +371,28 @@ class AddModal extends Component {
   };
 
   updateJson = (obj) => {
+    const { form } = this.props;
+
+    // Get current form values
+    const values = form.getFieldsValue();
+
+    // Build complete tool configuration object
+    const toolJson = {
+      name: values.name || "",
+      description: values.description || "",
+      enabled: values.enabled !== undefined ? values.enabled : true,
+      parameters: this.state.parameters,
+      requestConfig: JSON.stringify(obj.updated_src),
+    };
+
     this.setState(
       {
-        questJson: obj.src,
-        jsonText: JSON.stringify(obj, null, 2),
+        questJson: obj.updated_src,
+        jsonText: JSON.stringify(toolJson, null, 2),
         jsonError: null,
       },
       () => {
-        // 如果当前在表单模式，同步到JSON
+        // If currently in form mode, sync form data to JSON
         if (this.state.editMode === "form") {
           this.syncFormToJson();
         }
@@ -390,12 +403,13 @@ class AddModal extends Component {
   checkParams = () => {
     let { parameters } = this.state;
     let result = true;
-    const MAX_NESTING_DEPTH = 6; // 最大嵌套深度限制
+    // Maximum nesting depth limit
+    const MAX_NESTING_DEPTH = 6;
 
     const checkParameterRecursive = (params, path = "", depth = 0) => {
       if (!params || !Array.isArray(params)) return true;
 
-      // 检查嵌套深度
+      // Check nesting depth
       if (depth > MAX_NESTING_DEPTH) {
         message.destroy();
         message.error(
@@ -415,15 +429,15 @@ class AddModal extends Component {
           return false;
         }
 
-        // 验证参数名称格式（可选：添加更严格的验证）
+        // Validate parameter name format (optional: add more strict validation)
         if (name && !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
           message.destroy();
           message.warning(
-            `${currentPath} 参数名称建议使用字母、数字和下划线，且以字母或下划线开头`,
+            `${currentPath} Parameter name suggestion: Use letters, numbers, and underscores, and start with a letter or underscore`,
           );
         }
 
-        // 递归检查子参数
+        // Recursively check child parameters
         if ((type === "object" || type === "array") && item.parameters) {
           if (
             !checkParameterRecursive(
@@ -448,10 +462,10 @@ class AddModal extends Component {
     const { editMode } = this.state;
 
     if (editMode === "form") {
-      // 表单模式提交
+      // Form mode submission
       this.handleFormSubmit();
     } else {
-      // JSON模式提交
+      // JSON mode submission
       this.handleJsonSubmit();
     }
   };
@@ -516,13 +530,19 @@ class AddModal extends Component {
     try {
       const parsedJson = JSON.parse(jsonText);
 
-      // 验证必要字段
+      // Validate required fields
       if (!parsedJson.name || !parsedJson.name.trim()) {
         message.error(getIntlContent("SHENYU.MCP.JSON.EDIT.TOOL.NAME.ERROR"));
         return;
       }
 
-      // 确保字段存在
+      // Validate required fields
+      if (!parsedJson.name || !parsedJson.name.trim()) {
+        message.error(getIntlContent("SHENYU.MCP.JSON.EDIT.TOOL.NAME.ERROR"));
+        return;
+      }
+
+      // Ensure required fields exist
       const finalData = {
         name: parsedJson.name,
         description: parsedJson.description || "",
@@ -531,7 +551,7 @@ class AddModal extends Component {
         requestConfig: parsedJson.requestConfig || "{}",
       };
 
-      // 将扁平化数据转换回原始格式，并添加必需的规则级别字段
+      // Convert flattened data back to original format and add required rule-level fields
       const transformedData = {
         name: finalData.name,
         description: finalData.description,
@@ -541,7 +561,7 @@ class AddModal extends Component {
           requestConfig: finalData.requestConfig,
           description: finalData.description,
         }),
-        // 添加必需的规则级别字段默认值
+        // Add required rule-level fields default values
         sort: 1,
         loged: true,
         matchMode: "0",
@@ -585,11 +605,12 @@ class AddModal extends Component {
     this.handleParametersChange(parameters);
   };
 
-  // 添加子参数 - 支持任意深度嵌套，但有深度限制
+  // Add sub-parameter - supports arbitrary depth nesting but with depth limit
   handleAddSubParameter = (path) => {
-    const MAX_NESTING_DEPTH = 6; // 最大嵌套深度限制
+    // Maximum nesting depth limit
+    const MAX_NESTING_DEPTH = 6;
 
-    // 检查当前路径深度
+    // Check current path depth
     if (path.length >= MAX_NESTING_DEPTH) {
       message.destroy();
       message.warning(
@@ -601,11 +622,11 @@ class AddModal extends Component {
     let { parameters } = this.state;
     const newParameters = [...parameters];
 
-    // 根据路径找到目标参数
+    // Find target parameter based on path
     let targetParam = newParameters;
     for (let i = 0; i < path.length; i += 1) {
       if (i === path.length - 1) {
-        // 最后一层，添加子参数
+        // Last level, add sub-parameter
         if (!targetParam[path[i]].parameters) {
           targetParam[path[i]].parameters = [];
         }
@@ -616,7 +637,7 @@ class AddModal extends Component {
           required: true,
         });
       } else {
-        // 中间层，继续向下导航
+        // Intermediate level, continue navigating down
         targetParam = targetParam[path[i]].parameters;
       }
     }
@@ -624,19 +645,19 @@ class AddModal extends Component {
     this.handleParametersChange(newParameters);
   };
 
-  // 删除子参数 - 支持任意深度嵌套
+  // Delete sub-parameter - supports arbitrary depth nesting
   handleDeleteSubParameter = (path, subIndex) => {
     let { parameters } = this.state;
     const newParameters = [...parameters];
 
-    // 根据路径找到目标参数的父级
+    // Find parent of target parameter based on path
     let targetParam = newParameters;
     for (let i = 0; i < path.length; i += 1) {
       if (i === path.length - 1) {
-        // 最后一层，删除子参数
+        // Last level, delete sub-parameter
         targetParam[path[i]].parameters.splice(subIndex, 1);
       } else {
-        // 中间层，继续向下导航
+        // Intermediate level, continue navigating down
         targetParam = targetParam[path[i]].parameters;
       }
     }
@@ -644,24 +665,24 @@ class AddModal extends Component {
     this.handleParametersChange(newParameters);
   };
 
-  // 更新子参数 - 支持任意深度嵌套
+  //  Update sub-parameter - supports arbitrary depth nesting
   updateSubParameter = (path, subIndex, field, value) => {
     let { parameters } = this.state;
     const newParameters = [...parameters];
 
-    // 根据路径找到目标参数
+    // Find target parameter based on path
     let targetParam = newParameters;
     for (let i = 0; i < path.length; i += 1) {
       if (i === path.length - 1) {
-        // 最后一层，更新子参数
+        // Last level, update sub-parameter
         targetParam[path[i]].parameters[subIndex][field] = value;
 
-        // 如果子参数类型变更为 object 或 array，也需要处理嵌套
+        // If sub-parameter type changes to object or array, also handle nesting
         if (field === "type") {
           if (value === "object") {
             targetParam[path[i]].parameters[subIndex].parameters = [];
           } else if (value === "array") {
-            // 强制设置array类型的第一个子参数name为items
+            // Force set the first sub-parameter name to "items" for array type
             targetParam[path[i]].parameters[subIndex].parameters = [
               {
                 name: "items",
@@ -675,7 +696,7 @@ class AddModal extends Component {
           }
         }
       } else {
-        // 中间层，继续向下导航
+        // Intermediate level, continue navigating down
         targetParam = targetParam[path[i]].parameters;
       }
     }
@@ -683,7 +704,7 @@ class AddModal extends Component {
     this.handleParametersChange(newParameters);
   };
 
-  // 渲染子参数 - 支持无限层级嵌套
+  // Render sub-parameters - supports infinite level nesting
   renderSubParameters = (subParams, path = [], level = 1, parentType) => {
     if (!subParams || !Array.isArray(subParams)) return null;
 
@@ -753,13 +774,13 @@ class AddModal extends Component {
                     e.target.value,
                   );
                 }}
-                // 添加隐藏逻辑：当父表单类型为array时隐藏description输入框
+                // Add hidden logic: hide description input when parent form type is array
                 style={{ display: parentType === "array" ? "none" : "block" }}
               />
             </Col>
             <Col span={4}>
               <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
-                {/* Object 类型显示添加按钮 */}
+                {/* Show add button for Object type */}
                 {subParam.type === "object" && (
                   <Button
                     type="primary"
@@ -784,7 +805,7 @@ class AddModal extends Component {
             </Col>
           </Row>
 
-          {/* 递归渲染更深层的子参数 */}
+          {/* Recursively render deeper sub-parameters */}
           {(subParam.type === "object" || subParam.type === "array") &&
             subParam.parameters && (
               <div
@@ -810,14 +831,14 @@ class AddModal extends Component {
     });
   };
 
-  // 修复array类型参数的name字段，强制设置为items
+  // Fix array type parameter names, force set the first sub-parameter name to "items"
   fixArrayParameterNames = (parameters) => {
     if (!parameters || !Array.isArray(parameters)) {
       return parameters;
     }
 
     return parameters.map((param) => {
-      // 如果当前参数是array类型且有子参数，强制设置第一个子参数的name为items
+      // If current parameter is array type and has sub-parameters, force set first sub-parameter's name to "items"
       if (
         param.type === "array" &&
         param.parameters &&
@@ -837,7 +858,7 @@ class AddModal extends Component {
         };
       }
 
-      // 递归处理子参数
+      // Recursively handle sub-parameters
       if (param.parameters && Array.isArray(param.parameters)) {
         return {
           ...param,
@@ -887,7 +908,7 @@ class AddModal extends Component {
       },
     };
 
-    // 用于预览的JSON对象
+    // JSON object for preview
     let previewJson = {};
     try {
       previewJson = JSON.parse(jsonText);
@@ -958,7 +979,7 @@ class AddModal extends Component {
         </div>
 
         {editMode === "form" ? (
-          // 表单模式
+          // Form mode
           <Form
             onSubmit={this.handleSubmit}
             className="login-form"
@@ -1119,12 +1140,12 @@ class AddModal extends Component {
                               const newParameters = [...parameters];
                               newParameters[index].type = value;
 
-                              // 处理类型变更的逻辑
+                              // Handle type change logic
                               if (value === "object") {
-                                // Object 类型：清空子参数，等待用户手动添加
+                                // Object type: clear sub-parameters, wait for user to manually add
                                 newParameters[index].parameters = [];
                               } else if (value === "array") {
-                                // Array 类型：强制设置第一个子参数name为items
+                                // Array type: force set first sub-parameter name to "items"
                                 newParameters[index].parameters = [
                                   {
                                     name: "items",
@@ -1134,7 +1155,7 @@ class AddModal extends Component {
                                   },
                                 ];
                               } else {
-                                // 其他基础类型：删除子参数
+                                // Other basic types: delete sub-parameters
                                 delete newParameters[index].parameters;
                               }
 
@@ -1168,7 +1189,7 @@ class AddModal extends Component {
                         </Col>
                         <Col span={4}>
                           <div style={{ display: "flex", gap: "4px" }}>
-                            {/* Object 类型显示添加按钮 */}
+                            {/* Object type: display add button */}
                             {item.type === "object" && (
                               <Button
                                 type="primary"
@@ -1192,7 +1213,7 @@ class AddModal extends Component {
                           </div>
                         </Col>
                       </Row>
-                      {/* 渲染子参数 */}
+                      {/* Render sub-parameters */}
                       {(item.type === "object" || item.type === "array") &&
                         item.parameters && (
                           <div
@@ -1255,7 +1276,7 @@ class AddModal extends Component {
             </FormItem>
           </Form>
         ) : (
-          // JSON模式
+          // JSON mode
           <Tabs
             activeKey={activeTab}
             onChange={(key) => this.setState({ activeTab: key })}
