@@ -820,9 +820,9 @@ class AddModal extends Component {
               >
                 {this.renderSubParameters(
                   subParam.parameters,
+                  subParam.type,
                   currentPath,
                   level + 1,
-                  subParam.type,
                 )}
               </div>
             )}
@@ -1227,9 +1227,9 @@ class AddModal extends Component {
                           >
                             {this.renderSubParameters(
                               item.parameters,
+                              item.type,
                               [index],
                               1,
-                              item.type,
                             )}
                           </div>
                         )}
