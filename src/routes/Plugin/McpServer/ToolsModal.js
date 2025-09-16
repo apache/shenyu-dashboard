@@ -705,7 +705,7 @@ class AddModal extends Component {
   };
 
   // Render sub-parameters - supports infinite level nesting
-  renderSubParameters = (subParams, path = [], level = 1, parentType) => {
+  renderSubParameters = (subParams, parentType, path = [], level = 1) => {
     if (!subParams || !Array.isArray(subParams)) return null;
 
     const indentStyle = {
