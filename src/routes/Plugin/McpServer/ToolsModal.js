@@ -74,6 +74,10 @@ class AddModal extends Component {
       try {
         const handleObj = JSON.parse(handle);
         parameters = handleObj.parameters || [];
+
+        // Handle array type parameters, force set the first sub-parameter's name to "items"
+        parameters = this.fixArrayParameterNames(parameters);
+
         questJson = handleObj.requestConfig
           ? JSON.parse(handleObj.requestConfig)
           : {};
@@ -81,18 +85,20 @@ class AddModal extends Component {
         // Failed to parse handle JSON
         parameters = [
           {
-            type: "String",
+            type: "string",
             name: "",
             description: "",
+            required: true,
           },
         ];
       }
     } else {
       parameters = [
         {
-          type: "String",
+          type: "string",
           name: "",
           description: "",
+          required: true,
         },
       ];
     }
@@ -114,15 +120,21 @@ class AddModal extends Component {
     if (handle) {
       try {
         const handleObj = JSON.parse(handle);
+        // Handle array type parameters, force set the first sub-parameter's name to "items"
+        const fixedParameters = this.fixArrayParameterNames(
+          handleObj.parameters || [],
+        );
+
         flattenedJson = {
           name: name || "",
           description: description || "",
           enabled: enabled !== undefined ? enabled : true,
-          parameters: handleObj.parameters || [],
+          parameters: fixedParameters,
           requestConfig: handleObj.requestConfig || "{}",
         };
       } catch (e) {
         // Failed to parse handle JSON
+        console.warn("Failed to parse handle JSON in initJsonMode:", e.message);
       }
     }
 
@@ -175,46 +187,125 @@ class AddModal extends Component {
 
   handleEditModeChange = (e) => {
     const editMode = e.target.value;
-    this.setState({ editMode });
 
-    // 切换到JSON模式时，同步表单数据到JSON
+    // When switching to JSON mode, sync form data to JSON
     if (editMode === "json") {
-      const { form } = this.props;
-      const { parameters, questJson } = this.state;
-
-      // 获取表单数据
-      form.validateFields((err, values) => {
-        if (!err) {
-          const toolJson = {
-            name: values.name || "",
-            description: values.description || "",
-            enabled: values.enabled !== undefined ? values.enabled : true,
-            handle: {
-              parameters,
-              requestConfig: questJson,
-              description: values.description || "",
-            },
-          };
-
-          this.setState({
-            jsonText: JSON.stringify(toolJson, null, 2),
-            jsonError: null,
-          });
-        }
-      });
+      this.syncFormToJson();
+    } else {
+      // When switching to form mode, sync JSON data to form
+      this.syncJsonToForm();
     }
+    this.setState({ editMode });
+  };
+
+  // Sync form data to JSON
+  syncFormToJson = () => {
+    const { form } = this.props;
+    const { parameters, questJson } = this.state;
+    const values = form.getFieldsValue();
+    // Get form data
+    const toolJson = {
+      name: values.name || "",
+      description: values.description || "",
+      enabled: values.enabled !== undefined ? values.enabled : true,
+      parameters,
+      requestConfig: JSON.stringify(questJson),
+    };
+    this.setState({
+      jsonText: JSON.stringify(toolJson, null, 2),
+      jsonError: null,
+    });
+  };
+
+  // Sync JSON data to form
+  syncJsonToForm = () => {
+    const { jsonText } = this.state;
+    const { form } = this.props;
+    setTimeout(() => {
+      try {
+        const parsedJson = JSON.parse(jsonText);
+
+        // Update form fields
+        form.setFieldsValue({
+          name: parsedJson.name || "",
+          description: parsedJson.description || "",
+          enabled: parsedJson.enabled !== undefined ? parsedJson.enabled : true,
+        });
+
+        // 更新参数和请求配置
+        let questJson = {};
+        try {
+          questJson =
+            typeof parsedJson.requestConfig === "string"
+              ? JSON.parse(parsedJson.requestConfig)
+              : parsedJson.requestConfig || {};
+        } catch (e) {
+          questJson = {};
+        }
+
+        this.setState({
+          parameters: this.fixArrayParameterNames(parsedJson.parameters || []),
+          questJson,
+        });
+      } catch (error) {
+        // Do not sync when JSON format is invalid
+        console.warn("JSON格式错误，无法同步到表单:", error.message);
+      }
+    }, 0);
   };
 
   handleJsonTextChange = (e) => {
     const jsonText = e.target.value;
     this.setState({ jsonText });
 
-    // 实时验证JSON格式
+    // Validate JSON format in real time
     try {
       JSON.parse(jsonText);
       this.setState({ jsonError: null });
+
+      // If JSON format is valid and currently in JSON mode, sync to form in real time
+      if (this.state.editMode === "json") {
+        this.syncJsonToFormRealtime(jsonText);
+      }
     } catch (error) {
       this.setState({ jsonError: error.message });
+    }
+  };
+
+  // Sync JSON data to form in real time (silent update, no validation errors)
+  syncJsonToFormRealtime = (jsonText) => {
+    const { form } = this.props;
+
+    try {
+      const parsedJson = JSON.parse(jsonText);
+
+      // Update form fields (silent update, no validation triggered)
+      const fieldsToUpdate = {};
+      if (parsedJson.name !== undefined) fieldsToUpdate.name = parsedJson.name;
+      if (parsedJson.description !== undefined)
+        fieldsToUpdate.description = parsedJson.description;
+      if (parsedJson.enabled !== undefined)
+        fieldsToUpdate.enabled = parsedJson.enabled;
+
+      form.setFieldsValue(fieldsToUpdate);
+
+      // Update parameters and request configuration
+      let questJson = {};
+      try {
+        questJson =
+          typeof parsedJson.requestConfig === "string"
+            ? JSON.parse(parsedJson.requestConfig)
+            : parsedJson.requestConfig || {};
+      } catch (e) {
+        questJson = {};
+      }
+
+      this.setState({
+        parameters: parsedJson.parameters || [],
+        questJson,
+      });
+    } catch (error) {
+      // Silently handle errors to avoid affecting user input
     }
   };
 
@@ -257,32 +348,112 @@ class AddModal extends Component {
       });
   };
 
-  updateJson = (obj) => {
-    this.setState({
-      jsonText: JSON.stringify(obj, null, 2),
-      jsonError: null,
+  // Listen for form field changes
+  handleFormValuesChange = () => {
+    // If currently in form mode, sync form data to JSON in real time
+    if (this.state.editMode === "form") {
+      // Use setTimeout to ensure form values are updated before syncing
+      setTimeout(() => {
+        // Slightly delay to ensure form values are updated before syncing
+        this.syncFormToJson();
+      }, 100);
+    }
+  };
+
+  // Sync form data to JSON when parameters change
+  handleParametersChange = (newParameters) => {
+    this.setState({ parameters: newParameters }, () => {
+      // If currently in form mode, sync form data to JSON
+      if (this.state.editMode === "form") {
+        this.syncFormToJson();
+      }
     });
+  };
+
+  updateJson = (obj) => {
+    const { form } = this.props;
+
+    // Get current form values
+    const values = form.getFieldsValue();
+
+    // Build complete tool configuration object
+    const toolJson = {
+      name: values.name || "",
+      description: values.description || "",
+      enabled: values.enabled !== undefined ? values.enabled : true,
+      parameters: this.state.parameters,
+      requestConfig: JSON.stringify(obj.updated_src),
+    };
+
+    this.setState(
+      {
+        questJson: obj.updated_src,
+        jsonText: JSON.stringify(toolJson, null, 2),
+        jsonError: null,
+      },
+      () => {
+        // If currently in form mode, sync form data to JSON
+        if (this.state.editMode === "form") {
+          this.syncFormToJson();
+        }
+      },
+    );
   };
 
   checkParams = () => {
     let { parameters } = this.state;
     let result = true;
-    if (parameters) {
-      parameters.forEach((item, index) => {
-        const { type, name, description } = item;
-        if (!type || !name || !description) {
+    // Maximum nesting depth limit
+    const MAX_NESTING_DEPTH = 6;
+
+    const checkParameterRecursive = (params, path = "", depth = 0) => {
+      if (!params || !Array.isArray(params)) return true;
+
+      // Check nesting depth
+      if (depth > MAX_NESTING_DEPTH) {
+        message.destroy();
+        message.error(
+          `参数嵌套深度超过限制（最大${MAX_NESTING_DEPTH}层）: ${path}`,
+        );
+        return false;
+      }
+
+      for (let i = 0; i < params.length; i += 1) {
+        const item = params[i];
+        const { type, name } = item;
+        const currentPath = path ? `${path}[${i}]` : `第${i + 1}行`;
+
+        if (!type || !name) {
           message.destroy();
-          message.error(`Line ${index + 1} param is incomplete`);
-          result = false;
+          message.error(`${currentPath} 参数不完整，请填写名称、类型`);
+          return false;
         }
-        // eslint-disable-next-line no-lonely-if
-        if (!name) {
+
+        // Validate parameter name format (optional: add more strict validation)
+        if (name && !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
           message.destroy();
-          message.error(`Line ${index + 1} param is incomplete`);
-          result = false;
+          message.warning(
+            `${currentPath} Parameter name suggestion: Use letters, numbers, and underscores, and start with a letter or underscore`,
+          );
         }
-      });
-    }
+
+        // Recursively check child parameters
+        if ((type === "object" || type === "array") && item.parameters) {
+          if (
+            !checkParameterRecursive(
+              item.parameters,
+              `${currentPath}.parameters`,
+              depth + 1,
+            )
+          ) {
+            return false;
+          }
+        }
+      }
+      return true;
+    };
+
+    result = checkParameterRecursive(parameters);
     return result;
   };
 
@@ -291,10 +462,10 @@ class AddModal extends Component {
     const { editMode } = this.state;
 
     if (editMode === "form") {
-      // 表单模式提交
+      // Form mode submission
       this.handleFormSubmit();
     } else {
-      // JSON模式提交
+      // JSON mode submission
       this.handleJsonSubmit();
     }
   };
@@ -359,13 +530,19 @@ class AddModal extends Component {
     try {
       const parsedJson = JSON.parse(jsonText);
 
-      // 验证必要字段
+      // Validate required fields
       if (!parsedJson.name || !parsedJson.name.trim()) {
         message.error(getIntlContent("SHENYU.MCP.JSON.EDIT.TOOL.NAME.ERROR"));
         return;
       }
 
-      // 确保字段存在
+      // Validate required fields
+      if (!parsedJson.name || !parsedJson.name.trim()) {
+        message.error(getIntlContent("SHENYU.MCP.JSON.EDIT.TOOL.NAME.ERROR"));
+        return;
+      }
+
+      // Ensure required fields exist
       const finalData = {
         name: parsedJson.name,
         description: parsedJson.description || "",
@@ -374,7 +551,7 @@ class AddModal extends Component {
         requestConfig: parsedJson.requestConfig || "{}",
       };
 
-      // 将扁平化数据转换回原始格式，并添加必需的规则级别字段
+      // Convert flattened data back to original format and add required rule-level fields
       const transformedData = {
         name: finalData.name,
         description: finalData.description,
@@ -384,7 +561,7 @@ class AddModal extends Component {
           requestConfig: finalData.requestConfig,
           description: finalData.description,
         }),
-        // 添加必需的规则级别字段默认值
+        // Add required rule-level fields default values
         sort: 1,
         loged: true,
         matchMode: "0",
@@ -410,22 +587,287 @@ class AddModal extends Component {
   handleAdd = () => {
     let { parameters } = this.state;
     parameters.push({
-      type: "String",
+      type: "string",
       name: "",
       description: "",
+      required: true,
     });
 
-    this.setState({ parameters }, () => {
-      let len = parameters.length || 0;
-      let key = `typeValueEn${len - 1}`;
-      this.setState({ [key]: true });
-    });
+    this.handleParametersChange(parameters);
+    let len = parameters.length || 0;
+    let key = `typeValueEn${len - 1}`;
+    this.setState({ [key]: true });
   };
 
   handleDelete = (index) => {
     let { parameters } = this.state;
     parameters.splice(index, 1);
-    this.setState({ parameters });
+    this.handleParametersChange(parameters);
+  };
+
+  // Add sub-parameter - supports arbitrary depth nesting but with depth limit
+  handleAddSubParameter = (path) => {
+    // Maximum nesting depth limit
+    const MAX_NESTING_DEPTH = 6;
+
+    // Check current path depth
+    if (path.length >= MAX_NESTING_DEPTH) {
+      message.destroy();
+      message.warning(
+        `已达到最大嵌套深度限制（${MAX_NESTING_DEPTH}层），无法继续添加子参数`,
+      );
+      return;
+    }
+
+    let { parameters } = this.state;
+    const newParameters = [...parameters];
+
+    // Find target parameter based on path
+    let targetParam = newParameters;
+    for (let i = 0; i < path.length; i += 1) {
+      if (i === path.length - 1) {
+        // Last level, add sub-parameter
+        if (!targetParam[path[i]].parameters) {
+          targetParam[path[i]].parameters = [];
+        }
+        targetParam[path[i]].parameters.push({
+          name: "",
+          type: "string",
+          description: "",
+          required: true,
+        });
+      } else {
+        // Intermediate level, continue navigating down
+        targetParam = targetParam[path[i]].parameters;
+      }
+    }
+
+    this.handleParametersChange(newParameters);
+  };
+
+  // Delete sub-parameter - supports arbitrary depth nesting
+  handleDeleteSubParameter = (path, subIndex) => {
+    let { parameters } = this.state;
+    const newParameters = [...parameters];
+
+    // Find parent of target parameter based on path
+    let targetParam = newParameters;
+    for (let i = 0; i < path.length; i += 1) {
+      if (i === path.length - 1) {
+        // Last level, delete sub-parameter
+        targetParam[path[i]].parameters.splice(subIndex, 1);
+      } else {
+        // Intermediate level, continue navigating down
+        targetParam = targetParam[path[i]].parameters;
+      }
+    }
+
+    this.handleParametersChange(newParameters);
+  };
+
+  //  Update sub-parameter - supports arbitrary depth nesting
+  updateSubParameter = (path, subIndex, field, value) => {
+    let { parameters } = this.state;
+    const newParameters = [...parameters];
+
+    // Find target parameter based on path
+    let targetParam = newParameters;
+    for (let i = 0; i < path.length; i += 1) {
+      if (i === path.length - 1) {
+        // Last level, update sub-parameter
+        targetParam[path[i]].parameters[subIndex][field] = value;
+
+        // If sub-parameter type changes to object or array, also handle nesting
+        if (field === "type") {
+          if (value === "object") {
+            targetParam[path[i]].parameters[subIndex].parameters = [];
+          } else if (value === "array") {
+            // Force set the first sub-parameter name to "items" for array type
+            targetParam[path[i]].parameters[subIndex].parameters = [
+              {
+                name: "items",
+                type: "string",
+                description: "",
+                required: true,
+              },
+            ];
+          } else {
+            delete targetParam[path[i]].parameters[subIndex].parameters;
+          }
+        }
+      } else {
+        // Intermediate level, continue navigating down
+        targetParam = targetParam[path[i]].parameters;
+      }
+    }
+
+    this.handleParametersChange(newParameters);
+  };
+
+  // Render sub-parameters - supports infinite level nesting
+  renderSubParameters = (subParams, parentType, path = [], level = 1) => {
+    if (!subParams || !Array.isArray(subParams)) return null;
+
+    const indentStyle = {
+      paddingLeft: `${level * 20}px`,
+      borderLeft: level > 1 ? "2px solid #e8e8e8" : "none",
+      marginLeft: level > 1 ? "10px" : "0",
+    };
+
+    return subParams.map((subParam, subIndex) => {
+      const currentPath = [...path, subIndex];
+
+      return (
+        <div key={`${path.join("-")}-${subIndex}`} style={indentStyle}>
+          <Row
+            gutter={8}
+            style={{ marginTop: "8px", display: "flex", alignItems: "center" }}
+          >
+            <Col span={4}>
+              <Input
+                allowClear
+                value={subParam.name}
+                placeholder={getIntlContent(
+                  "SHENYU.COMMON.PARAMETER.SUBTYPE.NAME",
+                )}
+                onChange={(e) => {
+                  this.updateSubParameter(
+                    path,
+                    subIndex,
+                    "name",
+                    e.target.value,
+                  );
+                }}
+                disabled={parentType === "array"}
+              />
+            </Col>
+            <Col span={5}>
+              <Select
+                value={subParam.type}
+                placeholder={getIntlContent("SHENYU.COMMON.PARAMETER.SUBTYPE")}
+                onChange={(value) => {
+                  this.updateSubParameter(path, subIndex, "type", value);
+                }}
+              >
+                <Option value="string">String</Option>
+                <Option value="integer">Integer</Option>
+                <Option value="long">Long</Option>
+                <Option value="double">Double</Option>
+                <Option value="float">Float</Option>
+                <Option value="boolean">Boolean</Option>
+                <Option value="object">Object</Option>
+                <Option value="array">Array</Option>
+              </Select>
+            </Col>
+            <Col span={11}>
+              <Input
+                allowClear
+                value={subParam.description}
+                placeholder={getIntlContent(
+                  "SHENYU.COMMON.PARAMETER.SUBTYPE.DESCRIPTION",
+                )}
+                onChange={(e) => {
+                  this.updateSubParameter(
+                    path,
+                    subIndex,
+                    "description",
+                    e.target.value,
+                  );
+                }}
+                // Add hidden logic: hide description input when parent form type is array
+                style={{ display: parentType === "array" ? "none" : "block" }}
+              />
+            </Col>
+            <Col span={4}>
+              <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
+                {/* Show add button for Object type */}
+                {subParam.type === "object" && (
+                  <Button
+                    type="primary"
+                    size="small"
+                    onClick={() => {
+                      this.handleAddSubParameter([...path, subIndex]);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.COMMON.PARAMETER.SUBTYPE.ADD")}
+                  </Button>
+                )}
+                <Button
+                  type="danger"
+                  size="small"
+                  onClick={() => {
+                    this.handleDeleteSubParameter(path, subIndex);
+                  }}
+                >
+                  {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                </Button>
+              </div>
+            </Col>
+          </Row>
+
+          {/* Recursively render deeper sub-parameters */}
+          {(subParam.type === "object" || subParam.type === "array") &&
+            subParam.parameters && (
+              <div
+                style={{
+                  marginTop: "8px",
+                  border: "1px solid #f0f0f0",
+                  borderRadius: "4px",
+                  padding: "8px",
+                  backgroundColor: level % 2 === 1 ? "#fafafa" : "#f5f5f5",
+                  position: "relative",
+                }}
+              >
+                {this.renderSubParameters(
+                  subParam.parameters,
+                  subParam.type,
+                  currentPath,
+                  level + 1,
+                )}
+              </div>
+            )}
+        </div>
+      );
+    });
+  };
+
+  // Fix array type parameter names, force set the first sub-parameter name to "items"
+  fixArrayParameterNames = (parameters) => {
+    if (!parameters || !Array.isArray(parameters)) {
+      return parameters;
+    }
+
+    return parameters.map((param) => {
+      // If current parameter is array type and has sub-parameters, force set first sub-parameter's name to "items"
+      if (
+        param.type === "array" &&
+        param.parameters &&
+        param.parameters.length > 0
+      ) {
+        return {
+          ...param,
+          parameters: param.parameters.map((subParam, index) => {
+            if (index === 0) {
+              return {
+                ...subParam,
+                name: "items",
+              };
+            }
+            return subParam;
+          }),
+        };
+      }
+
+      // Recursively handle sub-parameters
+      if (param.parameters && Array.isArray(param.parameters)) {
+        return {
+          ...param,
+          parameters: this.fixArrayParameterNames(param.parameters),
+        };
+      }
+
+      return param;
+    });
   };
 
   render() {
@@ -466,7 +908,7 @@ class AddModal extends Component {
       },
     };
 
-    // 用于预览的JSON对象
+    // JSON object for preview
     let previewJson = {};
     try {
       previewJson = JSON.parse(jsonText);
@@ -537,8 +979,12 @@ class AddModal extends Component {
         </div>
 
         {editMode === "form" ? (
-          // 表单模式
-          <Form onSubmit={this.handleSubmit} className="login-form">
+          // Form mode
+          <Form
+            onSubmit={this.handleSubmit}
+            className="login-form"
+            onValuesChange={this.handleFormValuesChange}
+          >
             <FormItem
               label={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")}
               {...formItemLayout}
@@ -667,68 +1113,127 @@ class AddModal extends Component {
               >
                 {parameters.map((item, index) => {
                   return (
-                    <Row key={index} gutter={8}>
-                      <Col span={4}>
-                        <Input
-                          allowClear
-                          value={item.name}
-                          placeholder={getIntlContent(
-                            "SHENYU.COMMON.PARAMETER.NAME",
-                          )}
-                          onChange={(e) => {
-                            const newValue = e.target.value;
-                            const newParameters = [...parameters];
-                            newParameters[index].name = newValue;
-                            this.setState({ parameters: newParameters });
-                          }}
-                        />
-                      </Col>
-                      <Col span={5}>
-                        <Select
-                          value={item.type}
-                          placeholder={getIntlContent(
-                            "SHENYU.COMMON.PARAMETER.TYPE",
-                          )}
-                          onChange={(value) => {
-                            const newParameters = [...parameters];
-                            newParameters[index].type = value;
-                            this.setState({ parameters: newParameters });
-                          }}
-                        >
-                          <Option value="String">String</Option>
-                          <Option value="Integer">Integer</Option>
-                          <Option value="Long">Long</Option>
-                          <Option value="Double">Double</Option>
-                          <Option value="Float">Float</Option>
-                          <Option value="Boolean">Boolean</Option>
-                        </Select>
-                      </Col>
-                      <Col span={11}>
-                        <Input
-                          allowClear
-                          value={item.description}
-                          placeholder={getIntlContent(
-                            "SHENYU.COMMON.PARAMETER.DESCRIPTION",
-                          )}
-                          onChange={(e) => {
-                            const newValue = e.target.value;
-                            const newParameters = [...parameters];
-                            newParameters[index].description = newValue;
-                            this.setState({ parameters: newParameters });
-                          }}
-                        />
-                      </Col>
-                      <Col span={4}>
-                        <Button
-                          type="danger"
-                          onClick={() => {
-                            this.handleDelete(index);
-                          }}
-                        >
-                          {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
-                        </Button>
-                      </Col>
-                    </Row>
+                    <div key={index} style={{ marginBottom: "16px" }}>
+                      <Row gutter={8}>
+                        <Col span={4}>
+                          <Input
+                            allowClear
+                            value={item.name}
+                            placeholder={getIntlContent(
+                              "SHENYU.COMMON.PARAMETER.NAME",
+                            )}
+                            onChange={(e) => {
+                              const newValue = e.target.value;
+                              const newParameters = [...parameters];
+                              newParameters[index].name = newValue;
+                              this.handleParametersChange(newParameters);
+                            }}
+                          />
+                        </Col>
+                        <Col span={5}>
+                          <Select
+                            value={item.type}
+                            placeholder={getIntlContent(
+                              "SHENYU.COMMON.PARAMETER.TYPE",
+                            )}
+                            onChange={(value) => {
+                              const newParameters = [...parameters];
+                              newParameters[index].type = value;
+
+                              // Handle type change logic
+                              if (value === "object") {
+                                // Object type: clear sub-parameters, wait for user to manually add
+                                newParameters[index].parameters = [];
+                              } else if (value === "array") {
+                                // Array type: force set first sub-parameter name to "items"
+                                newParameters[index].parameters = [
+                                  {
+                                    name: "items",
+                                    type: "string",
+                                    description: "",
+                                    required: true,
+                                  },
+                                ];
+                              } else {
+                                // Other basic types: delete sub-parameters
+                                delete newParameters[index].parameters;
+                              }
+
+                              this.handleParametersChange(newParameters);
+                            }}
+                          >
+                            <Option value="string">String</Option>
+                            <Option value="integer">Integer</Option>
+                            <Option value="long">Long</Option>
+                            <Option value="double">Double</Option>
+                            <Option value="float">Float</Option>
+                            <Option value="boolean">Boolean</Option>
+                            <Option value="object">Object</Option>
+                            <Option value="array">Array</Option>
+                          </Select>
+                        </Col>
+                        <Col span={11}>
+                          <Input
+                            allowClear
+                            value={item.description}
+                            placeholder={getIntlContent(
+                              "SHENYU.COMMON.PARAMETER.DESCRIPTION",
+                            )}
+                            onChange={(e) => {
+                              const newValue = e.target.value;
+                              const newParameters = [...parameters];
+                              newParameters[index].description = newValue;
+                              this.handleParametersChange(newParameters);
+                            }}
+                          />
+                        </Col>
+                        <Col span={4}>
+                          <div style={{ display: "flex", gap: "4px" }}>
+                            {/* Object type: display add button */}
+                            {item.type === "object" && (
+                              <Button
+                                type="primary"
+                                onClick={() => {
+                                  this.handleAddSubParameter([index]);
+                                }}
+                              >
+                                {getIntlContent(
+                                  "SHENYU.COMMON.PARAMETER.SUBTYPE.ADD",
+                                )}
+                              </Button>
+                            )}
+                            <Button
+                              type="danger"
+                              onClick={() => {
+                                this.handleDelete(index);
+                              }}
+                            >
+                              {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                            </Button>
+                          </div>
+                        </Col>
+                      </Row>
+                      {/* Render sub-parameters */}
+                      {(item.type === "object" || item.type === "array") &&
+                        item.parameters && (
+                          <div
+                            style={{
+                              marginTop: "8px",
+                              border: "1px solid #f0f0f0",
+                              borderRadius: "4px",
+                              padding: "8px",
+                              backgroundColor: "#fafafa",
+                            }}
+                          >
+                            {this.renderSubParameters(
+                              item.parameters,
+                              item.type,
+                              [index],
+                              1,
+                            )}
+                          </div>
+                        )}
+                    </div>
                   );
                 })}
               </FormItem>
@@ -771,7 +1276,7 @@ class AddModal extends Component {
             </FormItem>
           </Form>
         ) : (
-          // JSON模式
+          // JSON mode
           <Tabs
             activeKey={activeTab}
             onChange={(key) => this.setState({ activeTab: key })}
