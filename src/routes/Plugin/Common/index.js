@@ -38,6 +38,7 @@ import {
   getUpdateModal,
   updateNamespacePluginsEnabledByNamespace,
 } from "../../../utils/namespacePlugin";
+import ApiKeysPage from "../AiProxy/ApiKeys";
 
 const { Search } = Input;
 const { Title } = Typography;
@@ -61,6 +62,7 @@ export default class Common extends Component {
       selectorName: undefined,
       ruleName: undefined,
       isPluginEnabled: false,
+      showApiKeyManage: false,
     };
   }
 
@@ -763,9 +765,7 @@ export default class Common extends Component {
     const { selectorPageSize } = this.state;
     dispatch({
       type: "common/saveCurrentSelector",
-      payload: {
-        currentSelector: record,
-      },
+      payload: { currentSelector: record },
     });
     dispatch({
       type: "common/fetchRule",
@@ -1170,154 +1170,241 @@ export default class Common extends Component {
             </AuthButton>
           </div>
         </Row>
-        <Row gutter={20}>
-          <Col span={10}>
-            <h3>{getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
-            <div className="table-header">
-              <div className={styles.headerSearch}>
-                <AuthButton perms={`plugin:${name}Selector:query`}>
-                  <Search
-                    className={styles.search}
-                    style={{ minWidth: "130px" }}
-                    placeholder={getIntlContent(
-                      "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME",
-                    )}
-                    enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
-                    size="default"
-                    onChange={this.searchSelectorOnchange}
-                    onSearch={this.searchSelector}
-                  />
-                </AuthButton>
-                <AuthButton perms={`plugin:${name}Selector:add`}>
-                  <Button type="primary" onClick={this.addSelector}>
-                    {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.ADD")}
-                  </Button>
-                </AuthButton>
-                <AuthButton perms={`plugin:${name}Selector:edit`}>
-                  <Button
-                    type="primary"
-                    onClick={this.openSelectorClick}
-                    style={{ marginLeft: 10 }}
-                  >
-                    {getIntlContent(
-                      selectorList.some(
-                        (selector) =>
-                          selectorSelectedRowKeys.includes(selector.id) &&
-                          selector.enabled,
-                      )
-                        ? "SHENYU.PLUGIN.SELECTOR.BATCH.CLOSED"
-                        : "SHENYU.PLUGIN.SELECTOR.BATCH.OPENED",
-                    )}
-                  </Button>
-                </AuthButton>
+        {name === "aiProxy" && this.state.showApiKeyManage ? (
+          (() => {
+            const selectedId =
+              this.state.selectorSelectedRowKeys &&
+              this.state.selectorSelectedRowKeys.length === 1
+                ? this.state.selectorSelectedRowKeys[0]
+                : this.props.currentSelector?.id;
+            const selectedSelector =
+              (this.props.selectorList || []).find(
+                (s) => s.id === selectedId,
+              ) || this.props.currentSelector;
+            return (
+              <ApiKeysPage
+                initialSelectorId={selectedId}
+                initialNamespaceId={this.props.currentNamespaceId}
+                pluginId={this.state.pluginId}
+                currentSelector={selectedSelector}
+                onBack={() => this.setState({ showApiKeyManage: false })}
+              />
+            );
+          })()
+        ) : (
+          <Row gutter={20}>
+            <Col span={10}>
+              <h3>{getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}</h3>
+              <div className="table-header">
+                <div className={styles.headerSearch}>
+                  <AuthButton perms={`plugin:${name}Selector:query`}>
+                    <Search
+                      className={styles.search}
+                      style={{ minWidth: "130px" }}
+                      placeholder={getIntlContent(
+                        "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME",
+                      )}
+                      enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                      size="default"
+                      onChange={this.searchSelectorOnchange}
+                      onSearch={this.searchSelector}
+                    />
+                  </AuthButton>
+                  <AuthButton perms={`plugin:${name}Selector:add`}>
+                    <Button type="primary" onClick={this.addSelector}>
+                      {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.ADD")}
+                    </Button>
+                  </AuthButton>
+                  <AuthButton perms={`plugin:${name}Selector:edit`}>
+                    <Button
+                      type="primary"
+                      onClick={this.openSelectorClick}
+                      style={{ marginLeft: 10 }}
+                    >
+                      {getIntlContent(
+                        selectorList.some(
+                          (selector) =>
+                            selectorSelectedRowKeys.includes(selector.id) &&
+                            selector.enabled,
+                        )
+                          ? "SHENYU.PLUGIN.SELECTOR.BATCH.CLOSED"
+                          : "SHENYU.PLUGIN.SELECTOR.BATCH.OPENED",
+                      )}
+                    </Button>
+                  </AuthButton>
+                  {name === "aiProxy" ? (
+                    <AuthButton perms="system:aiProxyApiKey:list">
+                      <Button
+                        type="primary"
+                        onClick={() => {
+                          const keys = this.state.selectorSelectedRowKeys;
+                          if (!keys || keys.length === 0) {
+                            message.destroy();
+                            message.warn(
+                              getIntlContent(
+                                "SHENYU.COMMON.WARN.INPUT_SELECTOR",
+                              ),
+                            );
+                            return;
+                          }
+                          if (keys.length > 1) {
+                            message.destroy();
+                            message.warn(
+                              getIntlContent(
+                                "APIPROXY.APIKEY.ONLY_ONE_SELECTOR",
+                              ),
+                            );
+                            return;
+                          }
+                          const selectedId = keys[0];
+                          const selected =
+                            (this.props.selectorList || []).find(
+                              (s) => s.id === selectedId,
+                            ) || this.props.currentSelector;
+                          const readProxyEnabled = () => {
+                            const handle = selected && selected.handle;
+                            if (!handle) return undefined;
+                            if (typeof handle === "string") {
+                              try {
+                                const obj = JSON.parse(handle);
+                                return obj && obj.proxyEnabled;
+                              } catch (err) {
+                                return undefined;
+                              }
+                            }
+                            return handle.proxyEnabled;
+                          };
+                          const proxyEnabled = readProxyEnabled();
+                          if (`${proxyEnabled}` !== "true") {
+                            message.destroy();
+                            message.warn(
+                              getIntlContent(
+                                "APIPROXY.APIKEY.PROXY_ENABLED_REQUIRED",
+                              ),
+                            );
+                            return;
+                          }
+                          this.setState({ showApiKeyManage: true });
+                        }}
+                        style={{ marginLeft: 10 }}
+                      >
+                        {getIntlContent("APIPROXY.APIKEY.MANAGE") ||
+                          "Proxy API Key Manage"}
+                      </Button>
+                    </AuthButton>
+                  ) : null}
+                </div>
               </div>
-            </div>
-            <Table
-              size="small"
-              onRow={(record) => {
-                return {
-                  onClick: () => {
-                    this.rowClick(record);
-                  },
-                };
-              }}
-              style={{ marginTop: 30 }}
-              bordered
-              columns={selectColumns}
-              dataSource={selectorList}
-              rowSelection={selectorRowSelection}
-              pagination={{
-                total: selectorTotal,
-                showTotal: (showTotal) => `${showTotal}`,
-                showSizeChanger: true,
-                pageSizeOptions: ["12", "20", "50", "100"],
-                current: selectorPage,
-                pageSize: selectorPageSize,
-                onChange: this.pageSelectorChange,
-                onShowSizeChange: this.pageSelectorChangeSize,
-              }}
-              rowClassName={(item) => {
-                if (currentSelector && currentSelector.id === item.id) {
-                  return "table-selected";
-                } else {
-                  return "";
-                }
-              }}
-            />
-          </Col>
-          <Col span={14}>
-            <h3>{getIntlContent("SHENYU.PLUGIN.SELECTOR.RULE.LIST")}</h3>
+              <Table
+                size="small"
+                onRow={(record) => {
+                  return {
+                    onClick: () => {
+                      this.rowClick(record);
+                    },
+                  };
+                }}
+                style={{ marginTop: 30 }}
+                bordered
+                columns={selectColumns}
+                dataSource={selectorList}
+                rowSelection={selectorRowSelection}
+                pagination={{
+                  total: selectorTotal,
+                  showTotal: (showTotal) => `${showTotal}`,
+                  showSizeChanger: true,
+                  pageSizeOptions: ["12", "20", "50", "100"],
+                  current: selectorPage,
+                  pageSize: selectorPageSize,
+                  onChange: this.pageSelectorChange,
+                  onShowSizeChange: this.pageSelectorChangeSize,
+                }}
+                rowClassName={(item) => {
+                  if (currentSelector && currentSelector.id === item.id) {
+                    return "table-selected";
+                  } else {
+                    return "";
+                  }
+                }}
+              />
+            </Col>
+            <Col span={14}>
+              <h3>{getIntlContent("SHENYU.PLUGIN.SELECTOR.RULE.LIST")}</h3>
 
-            <div className="table-header">
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <AuthButton perms={`plugin:${name}:modify`}>
-                  <Button
-                    icon="reload"
-                    onClick={this.asyncClick}
-                    type="primary"
-                  >
-                    {getIntlContent("SHENYU.COMMON.SYN")} {name}
-                  </Button>
-                </AuthButton>
-              </div>
+              <div className="table-header">
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <AuthButton perms={`plugin:${name}:modify`}>
+                    <Button
+                      icon="reload"
+                      onClick={this.asyncClick}
+                      type="primary"
+                    >
+                      {getIntlContent("SHENYU.COMMON.SYN")} {name}
+                    </Button>
+                  </AuthButton>
+                </div>
 
-              <div className={`${styles.headerSearch} ${styles.marginLeft10}`}>
-                <AuthButton perms={`plugin:${name}Rule:query`}>
-                  <Search
-                    className={styles.search}
-                    placeholder={getIntlContent(
-                      "SHENYU.PLUGIN.SEARCH.RULE.NAME",
-                    )}
-                    enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
-                    size="default"
-                    onChange={this.searchRuleOnchange}
-                    onSearch={this.searchRule}
-                  />
-                </AuthButton>
-                <AuthButton perms={`plugin:${name}Rule:add`}>
-                  <Button type="primary" onClick={this.addRule}>
-                    {getIntlContent("SHENYU.COMMON.ADD.RULE")}
-                  </Button>
-                </AuthButton>
-                <AuthButton perms={`plugin:${name}Rule:edit`}>
-                  <Button
-                    type="primary"
-                    onClick={this.openRuleClick}
-                    style={{ marginLeft: 10 }}
-                  >
-                    {getIntlContent(
-                      ruleList.some(
-                        (rule) =>
-                          ruleSelectedRowKeys.includes(rule.id) && rule.enabled,
-                      )
-                        ? "SHENYU.PLUGIN.SELECTOR.BATCH.CLOSED"
-                        : "SHENYU.PLUGIN.SELECTOR.BATCH.OPENED",
-                    )}
-                  </Button>
-                </AuthButton>
+                <div
+                  className={`${styles.headerSearch} ${styles.marginLeft10}`}
+                >
+                  <AuthButton perms={`plugin:${name}Rule:query`}>
+                    <Search
+                      className={styles.search}
+                      placeholder={getIntlContent(
+                        "SHENYU.PLUGIN.SEARCH.RULE.NAME",
+                      )}
+                      enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                      size="default"
+                      onChange={this.searchRuleOnchange}
+                      onSearch={this.searchRule}
+                    />
+                  </AuthButton>
+                  <AuthButton perms={`plugin:${name}Rule:add`}>
+                    <Button type="primary" onClick={this.addRule}>
+                      {getIntlContent("SHENYU.COMMON.ADD.RULE")}
+                    </Button>
+                  </AuthButton>
+                  <AuthButton perms={`plugin:${name}Rule:edit`}>
+                    <Button
+                      type="primary"
+                      onClick={this.openRuleClick}
+                      style={{ marginLeft: 10 }}
+                    >
+                      {getIntlContent(
+                        ruleList.some(
+                          (rule) =>
+                            ruleSelectedRowKeys.includes(rule.id) &&
+                            rule.enabled,
+                        )
+                          ? "SHENYU.PLUGIN.SELECTOR.BATCH.CLOSED"
+                          : "SHENYU.PLUGIN.SELECTOR.BATCH.OPENED",
+                      )}
+                    </Button>
+                  </AuthButton>
+                </div>
               </div>
-            </div>
-            <Table
-              size="small"
-              style={{ marginTop: 30 }}
-              bordered
-              columns={rulesColumns}
-              expandedRowRender={expandedRowRender}
-              dataSource={ruleList}
-              rowSelection={ruleRowSelection}
-              pagination={{
-                total: ruleTotal,
-                showTotal: (showTotal) => `${showTotal}`,
-                showSizeChanger: true,
-                pageSizeOptions: ["12", "20", "50", "100"],
-                current: rulePage,
-                pageSize: rulePageSize,
-                onChange: this.pageRuleChange,
-                onShowSizeChange: this.pageRuleChangeSize,
-              }}
-            />
-          </Col>
-        </Row>
+              <Table
+                size="small"
+                style={{ marginTop: 30 }}
+                bordered
+                columns={rulesColumns}
+                expandedRowRender={expandedRowRender}
+                dataSource={ruleList}
+                rowSelection={ruleRowSelection}
+                pagination={{
+                  total: ruleTotal,
+                  showTotal: (showTotal) => `${showTotal}`,
+                  showSizeChanger: true,
+                  pageSizeOptions: ["12", "20", "50", "100"],
+                  current: rulePage,
+                  pageSize: rulePageSize,
+                  onChange: this.pageRuleChange,
+                  onShowSizeChange: this.pageRuleChangeSize,
+                }}
+              />
+            </Col>
+          </Row>
+        )}
         {popup}
       </div>
     );
