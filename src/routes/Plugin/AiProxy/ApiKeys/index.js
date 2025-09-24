@@ -345,6 +345,9 @@ function ApiKeysPage({
             <Button onClick={() => copy(newKey)}>
               {getIntlContent("SHENYU.COMMON.COPY") || "Copy"}
             </Button>
+            <div style={{ marginTop: 16, color: "rgba(0, 0, 0, 0.45)" }}>
+              {getIntlContent("APIPROXY.APIKEY.USAGE.HINT")}
+            </div>
           </div>
         ),
       });

@@ -644,5 +644,6 @@
   "APIPROXY.APIKEY.USAGE.DESC": "Proxy API Key is bound at selector level. When using, add header X-API-KEY: <proxyApiKey>. This check has the highest priority. The realApiKey is strongly bound to the selector configuration. To change the mapping between proxyApiKey and realApiKey, just modify the selector configuration.",
   "APIPROXY.APIKEY.USAGE.LINE1": "Proxy API Key works at selector granularity. Add header X-API-KEY: <proxyApiKey>; this check has the highest priority.",
   "APIPROXY.APIKEY.USAGE.LINE2": "The realApiKey is strongly bound to the selector configuration. To change the mapping between proxyApiKey and realApiKey, edit the selector configuration.",
+  "APIPROXY.APIKEY.USAGE.HINT": "How to use: Add this API Key to the X-API-KEY field in your request header.",
   "APIPROXY.APIKEY.PROXY_ENABLED_REQUIRED": "Please set proxyEnabled to \"true\" in this selector's configuration before entering Proxy API Key Management."
 }
