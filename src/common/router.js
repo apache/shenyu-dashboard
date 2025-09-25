@@ -119,6 +119,13 @@ export const getRouterData = (app) => {
         () => import("../routes/Plugin/Common"),
       ),
     },
+    "/plugin/ai-proxy/apikeys": {
+      component: dynamicWrapper(
+        app,
+        [],
+        () => import("../routes/Plugin/AiProxy/ApiKeys"),
+      ),
+    },
     "/system/role": {
       component: dynamicWrapper(
         app,

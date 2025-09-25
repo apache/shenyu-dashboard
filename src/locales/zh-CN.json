@@ -641,5 +641,15 @@
   "SHENYU.MCP.CONFIG.EXPLANATION.HEADERS": "请求时需要携带的HTTP头信息。X-Client-ID和Authorization需要根据实际情况填写",
   "SHENYU.MCP.CONFIG.EXPLANATION.TRANSPORT": "传输协议类型",
   "SHENYU.MCP.CONFIG.JSON.TITLE": "JSON配置（可直接复制）：",
-  "SHENYU.MCP.CONFIG.COPY.JSON": "复制JSON"
+  "SHENYU.MCP.CONFIG.COPY.JSON": "复制JSON",
+  "APIPROXY.APIKEY.MANAGE": "API Key 管理",
+  "APIPROXY.APIKEY.CREATE": "新增 API Key",
+  "APIPROXY.APIKEY.EDIT": "编辑 API Key",
+  "APIPROXY.APIKEY.ONLY_ONE_SELECTOR": "只能选择一个选择器",
+  "APIPROXY.APIKEY.USAGE.TITLE": "使用提示",
+  "APIPROXY.APIKEY.USAGE.DESC": "代理 API Key 绑定在选择器（Selector）维度。调用时在请求头添加 X-API-KEY: <proxyApiKey>，该校验优先级最高。真实 API Key 强绑定于选择器（Selector）配置，如需改变代理 API Key 与真实 API Key 的映射，只需修改选择器配置即可。",
+  "APIPROXY.APIKEY.USAGE.LINE1": "代理 API Key 以选择器（Selector）为粒度生效，请在请求头添加 X-API-KEY: <proxyApiKey>，其校验优先级最高。",
+  "APIPROXY.APIKEY.USAGE.LINE2": "真实 API Key 与选择器配置强绑定，如需变更代理与真实的映射，请修改该选择器的配置。",
+  "APIPROXY.APIKEY.USAGE.HINT": "使用提示：请将此 API Key 添加到请求头的 X-API-KEY 字段。",
+  "APIPROXY.APIKEY.PROXY_ENABLED_REQUIRED": "请先在该选择器的配置中将 proxyEnabled 设置为 \"true\"，再进入代理 API Key 管理。"
 }

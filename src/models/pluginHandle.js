@@ -114,7 +114,13 @@ export default {
         typeof handle !== "undefined" &&
         handle.indexOf("{") !== -1
       ) {
-        handleJson = JSON.parse(handle);
+        try {
+          handleJson = JSON.parse(handle);
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.error("Failed to parse plugin handle JSON:", handle, e);
+          handleJson = undefined;
+        }
       }
       const json = yield call(fetchPluginHandleByPluginId, payload);
       if (json.code === 200) {
@@ -148,17 +154,29 @@ export default {
                 typeof item.extObj !== "undefined" &&
                 item.extObj.indexOf("{") !== -1
               ) {
-                let extObj = JSON.parse(item.extObj);
-                item.required = extObj.required;
-                if (extObj.defaultValue || extObj.defaultValue === 0) {
-                  if (item.dataType === 1) {
-                    item.defaultValue = Number(extObj.defaultValue);
-                  } else {
-                    item.defaultValue = extObj.defaultValue;
+                try {
+                  let extObj = JSON.parse(item.extObj);
+                  item.required = extObj && extObj.required;
+                  if (
+                    extObj &&
+                    (extObj.defaultValue || extObj.defaultValue === 0)
+                  ) {
+                    if (item.dataType === 1) {
+                      item.defaultValue = Number(extObj.defaultValue);
+                    } else {
+                      item.defaultValue = extObj.defaultValue;
+                    }
                   }
+                  item.checkRule = extObj && extObj.rule;
+                  item.placeholder = extObj && extObj.placeholder;
+                } catch (e) {
+                  // eslint-disable-next-line no-console
+                  console.error(
+                    "Failed to parse extObj JSON:",
+                    item && item.extObj,
+                    e,
+                  );
                 }
-                item.checkRule = extObj.rule;
-                item.placeholder = extObj.placeholder;
               }
               return item;
             });

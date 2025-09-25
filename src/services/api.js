@@ -1478,3 +1478,69 @@ export async function batchDeleteRegistry(params) {
     body: [...params.list],
   });
 }
+
+/* ===== AI Proxy - API Key ===== */
+/**
+ * POST /selector/{selectorId}/ai-proxy-apikey
+ * body: { description?, enabled?, namespaceId }
+ */
+export async function addAiProxyApiKey(params) {
+  const { selectorId, description, enabled = true, namespaceId } = params;
+  return request(`${baseUrl}/selector/${selectorId}/ai-proxy-apikey`, {
+    method: `POST`,
+    body: { description, enabled, namespaceId },
+  });
+}
+
+/**
+ * GET /selector/{selectorId}/ai-proxy-apikey?namespaceId=&currentPage=&pageSize=&proxyApiKey=
+ */
+export async function getAiProxyApiKeys(params) {
+  const { selectorId, namespaceId, currentPage, pageSize, proxyApiKey } =
+    params;
+  const query = stringify({ namespaceId, currentPage, pageSize, proxyApiKey });
+  return request(`${baseUrl}/selector/${selectorId}/ai-proxy-apikey?${query}`, {
+    method: `GET`,
+  });
+}
+
+/**
+ * PUT /selector/{selectorId}/ai-proxy-apikey/{id}
+ */
+export async function updateAiProxyApiKey(params) {
+  const { selectorId, id, description, enabled, namespaceId } = params;
+  return request(`${baseUrl}/selector/${selectorId}/ai-proxy-apikey/${id}`, {
+    method: `PUT`,
+    body: { description, enabled, namespaceId },
+  });
+}
+
+/**
+ * POST /selector/{selectorId}/ai-proxy-apikey/batchDelete
+ * body: { ids: [] }
+ */
+export async function batchDeleteAiProxyApiKeys(params) {
+  const { selectorId, ids } = params;
+  return request(
+    `${baseUrl}/selector/${selectorId}/ai-proxy-apikey/batchDelete`,
+    {
+      method: `POST`,
+      body: { ids },
+    },
+  );
+}
+
+/**
+ * POST /selector/{selectorId}/ai-proxy-apikey/batchEnabled
+ * body: { ids: [], enabled: boolean }
+ */
+export async function batchEnableAiProxyApiKeys(params) {
+  const { selectorId, ids, enabled } = params;
+  return request(
+    `${baseUrl}/selector/${selectorId}/ai-proxy-apikey/batchEnabled`,
+    {
+      method: `POST`,
+      body: { ids, enabled },
+    },
+  );
+}
