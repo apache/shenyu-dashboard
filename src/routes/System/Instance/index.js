@@ -16,8 +16,21 @@
  */
 
 import React, { Component } from "react";
-import { Button, Input, Popover, Select, Table, Tag, Typography } from "antd";
+import {
+  Button,
+  Card,
+  Col,
+  Input,
+  Popover,
+  Row,
+  Select,
+  Table,
+  Tag,
+  Typography,
+} from "antd";
 import { connect } from "dva";
+import { format } from "date-fns";
+import * as echarts from "echarts";
 import { resizableComponents } from "../../../utils/resizable";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
@@ -53,10 +66,15 @@ export default class Instance extends Component {
   componentDidMount() {
     this.query();
     this.initInstanceColumns();
+    this.queryAnalysis();
+    this.pieChartInstance = echarts.init(document.getElementById("pieDataDiv"));
+    this.lineChartInstance = echarts.init(
+      document.getElementById("lineDataDiv"),
+    );
   }
 
   componentDidUpdate(prevProps) {
-    const { language, currentNamespaceId } = this.props;
+    const { language, currentNamespaceId, instance } = this.props;
     const { localeName } = this.state;
     if (language !== localeName) {
       this.initInstanceColumns();
@@ -64,6 +82,12 @@ export default class Instance extends Component {
     }
     if (prevProps.currentNamespaceId !== currentNamespaceId) {
       this.query();
+    }
+    if (prevProps.instance.pieData !== instance.pieData) {
+      this.renderPieChart(instance.pieData);
+    }
+    if (prevProps.instance.lineData !== instance.lineData) {
+      this.renderLineChart(instance.lineData);
     }
   }
 
@@ -102,6 +126,137 @@ export default class Instance extends Component {
     dispatch({
       type: "instance/fetch",
       payload: this.currentQueryPayload(),
+    });
+  };
+
+  queryAnalysis = () => {
+    const { dispatch, currentNamespaceId } = this.props;
+    dispatch({
+      type: "instance/fetchAnalysis",
+      payload: {
+        namespaceId: currentNamespaceId,
+      },
+    });
+  };
+
+  renderPieChart = (pieData) => {
+    if (!pieData || !this.pieChartInstance) {
+      return;
+    }
+    const chartData =
+      pieData && pieData.length > 0
+        ? pieData
+        : [{ value: 0, name: getIntlContent("SHENYU.INSTANCE.NO_DATA") }];
+
+    const option = {
+      title: {
+        text: getIntlContent("SHENYU.INSTANCE.PIE_DATA"),
+        left: "center",
+      },
+      tooltip: {
+        trigger: "item",
+        formatter: "{a} <br/>{b}: {c} ({d}%)",
+      },
+      legend: {
+        orient: "vertical",
+        left: "left",
+      },
+      series: [
+        {
+          name: getIntlContent("SHENYU.INSTANCE.DISTRIBUTION"),
+          type: "pie",
+          radius: "50%",
+          data: chartData,
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: "rgba(0, 0, 0, 0.5)",
+            },
+          },
+        },
+      ],
+    };
+
+    this.pieChartInstance.setOption(option);
+
+    window.addEventListener("resize", () => {
+      this.pieChartInstance.resize();
+    });
+  };
+
+  renderLineChart = (lineData) => {
+    if (!lineData || !this.lineChartInstance) {
+      return;
+    }
+
+    const chartData =
+      lineData && lineData.length > 0
+        ? lineData
+        : [
+            {
+              name: getIntlContent("SHENYU.INSTANCE.NO_DATA"),
+              type: "line",
+              data: [0, 0, 0, 0, 0],
+            },
+          ];
+
+    const formattedSeries = chartData.map((item) => ({
+      name: item.name || "Unknown",
+      type: "line",
+      data: Array.isArray(item.data) ? item.data : [],
+    }));
+
+    const option = {
+      title: {
+        text: getIntlContent("SHENYU.INSTANCE.LINE_DATA"),
+      },
+      tooltip: {
+        trigger: "axis",
+      },
+      legend: {
+        data: formattedSeries.map((series) => series.name),
+      },
+      grid: {
+        left: "3%",
+        right: "4%",
+        bottom: "10%",
+        containLabel: true,
+      },
+      toolbox: {
+        feature: {
+          saveAsImage: {},
+        },
+      },
+      xAxis: {
+        type: "category",
+        boundaryGap: false,
+        show: false,
+      },
+      yAxis: {
+        type: "value",
+        show: true,
+        min: 0,
+        max: 4,
+        minInterval: 1,
+        interval: 1,
+        name: "数量",
+        nameTextStyle: {
+          color: "#333",
+          fontSize: 12,
+          padding: [0, 0, 0, 0],
+        },
+        axisLabel: {
+          formatter: "{value}",
+        },
+      },
+      series: formattedSeries,
+    };
+
+    this.lineChartInstance.setOption(option);
+
+    window.addEventListener("resize", () => {
+      this.lineChartInstance.resize();
     });
   };
 
@@ -189,7 +344,7 @@ export default class Instance extends Component {
           dataIndex: "instanceType",
           ellipsis: true,
           key: "instanceType",
-          width: 120,
+          width: 150,
           sorter: (a, b) => (a.instanceType > b.instanceType ? 1 : -1),
           render: (text) => {
             return <div style={{ color: "#1f640a" }}>{text || "----"}</div>;
@@ -201,6 +356,7 @@ export default class Instance extends Component {
           dataIndex: "instanceInfo",
           key: "instanceInfo",
           ellipsis: true,
+          width: 200,
           render: (text, record) => {
             const tag = (
               <div>
@@ -232,6 +388,68 @@ export default class Instance extends Component {
                 <div>{text || "----"}</div>
               </Popover>
             );
+          },
+        },
+        {
+          align: "center",
+          title: getIntlContent("SHENYU.INSTANCE.SELECT.LASTBEATTIME"),
+          dataIndex: "lastHeartBeatTime",
+          ellipsis: true,
+          key: "lastHeartBeatTime",
+          width: 120,
+          sorter: (a, b) => (a.instanceType > b.instanceType ? 1 : -1),
+          render: (text) => {
+            return (
+              <div style={{ color: "#1f640a" }}>
+                {format(new Date(text), "YYYY-MM-DD HH:mm:ss") || "----"}
+              </div>
+            );
+          },
+        },
+        {
+          align: "center",
+          title: getIntlContent("SHENYU.INSTANCE.SELECT.CREATETIME"),
+          dataIndex: "dateCreated",
+          ellipsis: true,
+          key: "dateCreated",
+          width: 120,
+          sorter: (a, b) => (a.instanceType > b.instanceType ? 1 : -1),
+          render: (text) => {
+            return (
+              <div style={{ color: "#1f640a" }}>
+                {format(new Date(text), "YYYY-MM-DD HH:mm:ss") || "----"}
+              </div>
+            );
+          },
+        },
+        {
+          align: "center",
+          title: getIntlContent("SHENYU.INSTANCE.SELECT.STATE"),
+          dataIndex: "instanceState",
+          ellipsis: true,
+          key: "instanceState",
+          width: 120,
+          sorter: (a, b) => (a.instanceType > b.instanceType ? 1 : -1),
+          render: (state) => {
+            if (state === 1) {
+              return (
+                <Tag color="green">
+                  {getIntlContent("SHENYU.INSTANCE.SELECT.STATE.ONLINE")}
+                </Tag>
+              );
+            } else if (state === 0) {
+              return (
+                <Tag color="orange">
+                  {getIntlContent("SHENYU.INSTANCE.SELECT.STATE.UNKNOWN")}
+                </Tag>
+              );
+            } else if (state === 2) {
+              return (
+                <Tag color="red">
+                  {getIntlContent("SHENYU.INSTANCE.SELECT.STATE.OFFLINE")}
+                </Tag>
+              );
+            }
           },
         },
       ],
@@ -289,6 +507,25 @@ export default class Instance extends Component {
             </Button>
           </AuthButton>
         </div>
+
+        <Row gutter={16} style={{ marginBottom: 24 }}>
+          <Col span={12}>
+            <Card>
+              <div
+                id="pieDataDiv"
+                style={{ width: "800px", height: "400px" }}
+              />
+            </Card>
+          </Col>
+          <Col span={12}>
+            <Card>
+              <div
+                id="lineDataDiv"
+                style={{ width: "800px", height: "400px" }}
+              />
+            </Card>
+          </Col>
+        </Row>
 
         <Table
           size="small"
