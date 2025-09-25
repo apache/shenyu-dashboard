@@ -717,6 +717,13 @@ export default class Common extends Component {
   deleteSelector = (record) => {
     const { dispatch, plugins, currentNamespaceId } = this.props;
     const { selectorPage, selectorPageSize } = this.state;
+    // Clear local selected state if the deleted selector is currently selected to avoid stale selection after deletion
+    if (
+      Array.isArray(this.state.selectorSelectedRowKeys) &&
+      this.state.selectorSelectedRowKeys.includes(record.id)
+    ) {
+      this.setState({ selectorSelectedRowKeys: [] });
+    }
     let name = this.props.match.params ? this.props.match.params.id : "";
     const pluginId = this.getPluginId(plugins, name);
     dispatch({

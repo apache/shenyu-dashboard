@@ -45,7 +45,7 @@ import {
 const { Search } = Input;
 const { Title } = Typography;
 
-// proxyApiKey 需在管理页完整显示，因此不做掩码处理
+// proxyApiKey needs to be fully visible on the management page, so we do not mask it
 class CreateModalInner extends React.Component {
   componentDidUpdate(prevProps) {
     const { visible, defaultNamespace, form } = this.props;
