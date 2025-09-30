@@ -15,7 +15,11 @@
  * limitations under the License.
  */
 
-import { getInstancesByNamespace, findInstance } from "../services/api";
+import {
+  getInstancesByNamespace,
+  findInstance,
+  findInstanceAnalysis,
+} from "../services/api";
 
 export default {
   namespace: "instance",
@@ -23,6 +27,8 @@ export default {
   state: {
     instanceList: [],
     total: 0,
+    pieData: [],
+    lineList: [],
   },
 
   effects: {
@@ -40,6 +46,21 @@ export default {
           payload: {
             total: page.totalCount,
             dataList,
+          },
+        });
+      }
+    },
+    *fetchAnalysis(params, { call, put }) {
+      const { payload } = params;
+      const json = yield call(findInstanceAnalysis, payload);
+
+      if (json.code === 200) {
+        let { pieData, lineData } = json.data;
+        yield put({
+          type: "saveInstancesAnalysis",
+          payload: {
+            pieData,
+            lineData,
           },
         });
       }
@@ -73,6 +94,13 @@ export default {
         ...state,
         instanceList: payload.dataList,
         total: payload.total,
+      };
+    },
+    saveInstancesAnalysis(state, { payload }) {
+      return {
+        ...state,
+        pieData: payload.pieData,
+        lineData: payload.lineData,
       };
     },
   },
