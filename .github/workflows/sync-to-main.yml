@@ -1,0 +1,101 @@
+name: Sync Dashboard Build to Main Repository
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch: 
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: github.repository == 'apache/shenyu-dashboard'
+    
+    steps:
+      - name: Checkout dashboard repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build project
+        run: npm run build
+        
+      - name: Checkout main repository
+        uses: actions/checkout@v4
+        with:
+          repository: apache/shenyu
+          token: ${{ secrets.GH_PAT }}
+          path: shenyu-main
+          fetch-depth: 0
+          
+      - name: Check for changes and sync
+        run: |
+          mkdir -p shenyu-main/shenyu-admin/src/main/resources/static
+          
+          # check different.
+          if ! diff -r dist/ shenyu-main/shenyu-admin/src/main/resources/static/ > /dev/null 2>&1; then
+            echo "Changes detected, syncing files..."
+            
+            # check change,start sync code
+            rm -rf shenyu-main/shenyu-admin/src/main/resources/static/*
+            cp -r dist/* shenyu-main/shenyu-admin/src/main/resources/static/
+            
+            # create pull request git config
+            cd shenyu-main
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            
+            # create new branch to sync code
+            BRANCH_NAME="sync-dashboard-$(date +%Y%m%d-%H%M%S)"
+            git checkout -b "$BRANCH_NAME"
+            
+            # commit changes
+            git add shenyu-admin/src/main/resources/static/
+            git commit -m "admin(dashboard): sync dashboard build from apache/shenyu-dashboard@${{ github.sha }}
+            
+            Auto-sync dashboard build artifacts from shenyu-dashboard repository.
+            
+            Source commit: ${{ github.sha }}
+            Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            
+            # push
+            git push origin "$BRANCH_NAME"
+            
+            # create pull request
+            gh pr create \
+              --title "chore: sync dashboard build artifacts" \
+              --body "Auto-sync dashboard build artifacts from apache/shenyu-dashboard.
+
+            **Source Details:**
+            - Repository: apache/shenyu-dashboard  
+            - Commit: ${{ github.sha }}
+            - Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            
+            This PR contains the latest build artifacts from the dashboard repository." \
+              --head "$BRANCH_NAME" \
+              --base master
+              
+            echo "✅ Pull request created successfully"
+          else
+            echo "No changes detected, skipping sync"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          
+      - name: Result Output
+        run: |
+          echo "## Sync Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Source Repository**: apache/shenyu-dashboard" >> $GITHUB_STEP_SUMMARY  
+          echo "- **Source Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target Repository**: apache/shenyu" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target Path**: shenyu-admin/src/main/resources/static" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Status**: ✅ Completed" >> $GITHUB_STEP_SUMMARY
