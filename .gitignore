@@ -18,7 +18,6 @@ yarn-error.log
 .idea
 yarn.lock
 pnpm-lock.yaml
-package-lock.json
 *bak
 
 # visual studio
