@@ -34,7 +34,7 @@
     "lodash-decorators": "^6.0.0",
     "moment": "^2.30.1",
     "omit.js": "^1.0.0",
-    "path-to-regexp": "^2.1.0",
+    "path-to-regexp": "^3.3.0",
     "prop-types": "^15.5.10",
     "qs": "^6.5.0",
     "rc-drawer": "^7.1.0",
