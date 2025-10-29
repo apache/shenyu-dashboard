@@ -528,8 +528,8 @@ export default class Common extends Component {
                 ? selector.discoveryVO.props
                 : "{}",
             discoveryType:
-              selector.discoveryVO && selector.discoveryVO.type
-                ? selector.discoveryVO.type
+              selector.discoveryVO && selector.discoveryVO.discoveryType
+                ? selector.discoveryVO.discoveryType
                 : "local",
             serverList:
               selector.discoveryVO && selector.discoveryVO.serverList
