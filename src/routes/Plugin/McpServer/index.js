@@ -42,6 +42,7 @@ import {
   getUpdateModal,
   updateNamespacePluginsEnabledByNamespace,
 } from "../../../utils/namespacePlugin";
+import SwaggerImportModal from "./SwaggerImportModal";
 
 const { Search } = Input;
 const { Title } = Typography;
@@ -416,6 +417,31 @@ export default class McpServer extends Component {
       canceledCallback: () => {
         this.closeModal();
       },
+    });
+  };
+
+  swaggerImportClick = () => {
+    const { dispatch, currentNamespaceId } = this.props;
+    this.setState({
+      popup: (
+        <SwaggerImportModal
+          handleOk={(values) => {
+            const { swaggerUrl, projectName } = values;
+            dispatch({
+              type: "mcpServer/swaggerImport",
+              payload: {
+                swaggerUrl,
+                projectName,
+                namespaceId: currentNamespaceId,
+              },
+              callback: () => {
+                this.closeModal();
+              },
+            });
+          }}
+          handleCancel={this.closeModal}
+        />
+      ),
     });
   };
 
@@ -1331,6 +1357,11 @@ export default class McpServer extends Component {
               minHeight: 32,
             }}
           >
+            <AuthButton perms="system:plugin:edit">
+              <Button type="primary" onClick={this.swaggerImportClick}>
+                {getIntlContent("SHENYU.MCP.SWAGGER.IMPORT")}
+              </Button>
+            </AuthButton>
             <Switch
               checked={this.state.isPluginEnabled ?? false}
               onChange={this.togglePluginStatus}

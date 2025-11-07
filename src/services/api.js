@@ -1438,6 +1438,18 @@ export async function importSwagger(params) {
   });
 }
 
+/* mcpServer import swagger */
+export async function mcpSwaggerImport(params) {
+  return request(`${baseUrl}/swagger/import/mcp`, {
+    method: `POST`,
+    body: {
+      swaggerUrl: params.swaggerUrl,
+      projectName: params.projectName,
+      namespaceId: params.namespaceId,
+    },
+  });
+}
+
 /* findInstance */
 export async function findInstanceAnalysis(params) {
   return request(`${baseUrl}/instance/analysis/${params.namespaceId}`, {
