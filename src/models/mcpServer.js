@@ -4,6 +4,7 @@ import {
   addMcpServer,
   updateMcpServer,
   deleteMcpServer,
+  mcpSwaggerImport,
 } from "../services/api";
 import { getIntlContent } from "../utils/IntlUtils";
 
@@ -68,6 +69,16 @@ export default {
         type: "fetch",
         payload: { currentPage, pageSize },
       });
+    },
+    *swaggerImport({ payload, callback }, { call, put }) {
+      const json = yield call(mcpSwaggerImport, payload);
+      if (json.code === 200) {
+        message.success(json.message);
+        yield put({ type: "reload" });
+        if (callback) callback();
+      } else {
+        message.warn(json.message);
+      }
     },
   },
 
