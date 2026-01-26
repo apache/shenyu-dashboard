@@ -75,7 +75,7 @@ export default class Alert extends Component {
   };
 
   editClick = (record) => {
-    const { dispatch } = this.props;
+    const { dispatch, currentNamespaceId } = this.props;
     const { currentPage, pageSize } = this.state;
     dispatch({
       type: "alert/fetchItem",
@@ -90,7 +90,11 @@ export default class Alert extends Component {
               handleOk={(values) => {
                 dispatch({
                   type: "alert/update",
-                  payload: { ...alert, ...values },
+                  payload: {
+                    ...alert,
+                    ...values,
+                    namespaceId: currentNamespaceId,
+                  },
                   fetchValue: {
                     currentPage,
                     pageSize,
@@ -143,6 +147,7 @@ export default class Alert extends Component {
 
   addClick = () => {
     const { currentPage, pageSize } = this.state;
+    const { currentNamespaceId } = this.props;
     this.setState({
       popup: (
         <AddModal
@@ -151,7 +156,7 @@ export default class Alert extends Component {
             const { dispatch } = this.props;
             dispatch({
               type: "alert/add",
-              payload: values,
+              payload: { ...values, namespaceId: currentNamespaceId },
               fetchValue: {
                 currentPage,
                 pageSize,
@@ -186,7 +191,7 @@ export default class Alert extends Component {
   }
 
   render() {
-    const { alert, loading, dispatch } = this.props;
+    const { alert, loading, dispatch, currentNamespaceId } = this.props;
     const { alertList, total } = alert;
     const { currentPage, pageSize, selectedRowKeys, popup } = this.state;
     const alertColumns = [
@@ -241,6 +246,7 @@ export default class Alert extends Component {
                 payload: {
                   ...row,
                   enable: checked,
+                  namespaceId: currentNamespaceId,
                 },
                 callback: () => {
                   this.getAllAlerts();
