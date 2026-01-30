@@ -103,7 +103,8 @@ export default class Plugin extends Component {
   };
 
   currentQueryPayload = (override) => {
-    const { name, role, namespaceId, enabled, currentPage, pageSize } = this.state;
+    const { name, role, namespaceId, enabled, currentPage, pageSize } =
+      this.state;
     return {
       name,
       role,
@@ -504,8 +505,15 @@ export default class Plugin extends Component {
   render() {
     const { plugin, loading, authMenu } = this.props;
     const { pluginList, total } = plugin;
-    const { currentPage, pageSize, selectedRowKeys, name, role, enabled, popup } =
-      this.state;
+    const {
+      currentPage,
+      pageSize,
+      selectedRowKeys,
+      name,
+      role,
+      enabled,
+      popup,
+    } = this.state;
     const columns = this.state.columns.map((col, index) => ({
       ...col,
       onHeaderCell: (column) => ({
@@ -543,7 +551,7 @@ export default class Plugin extends Component {
             placeholder={getIntlContent("SHENYU.PLUGIN.INPUTNAME")}
             style={{ width: 240 }}
           />
-           <Input
+          <Input
             allowClear
             value={role}
             onChange={this.searchOnRolechange}

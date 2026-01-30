@@ -295,10 +295,12 @@ class AddModal extends Component {
             {getFieldDecorator("enabled", {
               initialValue: enabled,
               valuePropName: "checked",
-            })(<Switch 
-              checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-              unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-            />)}
+            })(
+              <Switch
+                checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+                unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+              />,
+            )}
           </FormItem>
         </Form>
       </Modal>
