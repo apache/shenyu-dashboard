@@ -61,6 +61,7 @@ export default class Plugin extends Component {
       pageSize: 12,
       selectedRowKeys: [],
       name: "",
+      role: "",
       enabled: null,
       popup: "",
       localeName: window.sessionStorage.getItem("locale")
@@ -102,9 +103,11 @@ export default class Plugin extends Component {
   };
 
   currentQueryPayload = (override) => {
-    const { name, namespaceId, enabled, currentPage, pageSize } = this.state;
+    const { name, role, namespaceId, enabled, currentPage, pageSize } =
+      this.state;
     return {
       name,
+      role,
       namespaceId,
       enabled,
       currentPage,
@@ -208,8 +211,12 @@ export default class Plugin extends Component {
     });
   };
 
-  searchOnchange = (e) => {
+  searchOnNamechange = (e) => {
     this.setState({ name: e.target.value }, this.query);
+  };
+
+  searchOnRolechange = (e) => {
+    this.setState({ role: e.target.value }, this.query);
   };
 
   enabledOnchange = (e) => {
@@ -420,7 +427,7 @@ export default class Plugin extends Component {
           dataIndex: "enabled",
           key: "enabled",
           ellipsis: true,
-          width: 80,
+          width: 85,
           sorter: (a, b) =>
             (a.enabled || "-1") > (b.enabled || "-1") ? 1 : -1,
           render: (text, row) => (
@@ -498,8 +505,15 @@ export default class Plugin extends Component {
   render() {
     const { plugin, loading, authMenu } = this.props;
     const { pluginList, total } = plugin;
-    const { currentPage, pageSize, selectedRowKeys, name, enabled, popup } =
-      this.state;
+    const {
+      currentPage,
+      pageSize,
+      selectedRowKeys,
+      name,
+      role,
+      enabled,
+      popup,
+    } = this.state;
     const columns = this.state.columns.map((col, index) => ({
       ...col,
       onHeaderCell: (column) => ({
@@ -533,9 +547,16 @@ export default class Plugin extends Component {
           <Input
             allowClear
             value={name}
-            onChange={this.searchOnchange}
+            onChange={this.searchOnNamechange}
             placeholder={getIntlContent("SHENYU.PLUGIN.INPUTNAME")}
             style={{ width: 240 }}
+          />
+          <Input
+            allowClear
+            value={role}
+            onChange={this.searchOnRolechange}
+            placeholder={getIntlContent("SHENYU.SYSTEM.ROLE")}
+            style={{ width: 200, marginLeft: 20 }}
           />
           <Select
             value={enabled != null ? enabled : undefined}

@@ -252,7 +252,7 @@ class AddModal extends Component {
               rules: [
                 {
                   required: true,
-                  message: getIntlContent("SHENYU.SYSTEM.SELECTROLE"),
+                  message: getIntlContent("SHENYU.SYSTEM.INPUTROLE"),
                 },
               ],
               initialValue: role,
@@ -270,7 +270,7 @@ class AddModal extends Component {
                 },
               ],
               initialValue: sort,
-            })(<InputNumber precision={0} style={{ width: "100%" }} />)}
+            })(<InputNumber precision={0} min={0} style={{ width: "100%" }} />)}
           </FormItem>
 
           <FormItem
@@ -295,7 +295,12 @@ class AddModal extends Component {
             {getFieldDecorator("enabled", {
               initialValue: enabled,
               valuePropName: "checked",
-            })(<Switch />)}
+            })(
+              <Switch
+                checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
+                unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
+              />,
+            )}
           </FormItem>
         </Form>
       </Modal>
