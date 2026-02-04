@@ -953,28 +953,36 @@ class AddModal extends Component {
           </p>
 
           {editMode === "json" && (
-            <Row gutter={8}>
-              <Col>
-                <Button size="small" onClick={this.generateTemplate}>
-                  {getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.TEMPLATE")}
-                </Button>
-              </Col>
-              <Col>
-                <Button size="small" onClick={this.handleFormatJson}>
-                  {getIntlContent("SHENYU.MCP.JSON.EDIT.FORMAT")}
-                </Button>
-              </Col>
-              <Col>
-                <Button size="small" onClick={this.handleCompressJson}>
-                  {getIntlContent("SHENYU.MCP.JSON.EDIT.COMPRESS")}
-                </Button>
-              </Col>
-              <Col>
-                <Button size="small" onClick={this.handleCopyToClipboard}>
-                  {getIntlContent("SHENYU.MCP.JSON.EDIT.COPY")}
-                </Button>
-              </Col>
-            </Row>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <Button
+                type="dashed"
+                size="small"
+                onClick={this.generateTemplate}
+              >
+                {getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.TEMPLATE")}
+              </Button>
+              <Button
+                type="dashed"
+                size="small"
+                onClick={this.handleFormatJson}
+              >
+                {getIntlContent("SHENYU.MCP.JSON.EDIT.FORMAT")}
+              </Button>
+              <Button
+                type="dashed"
+                size="small"
+                onClick={this.handleCompressJson}
+              >
+                {getIntlContent("SHENYU.MCP.JSON.EDIT.COMPRESS")}
+              </Button>
+              <Button
+                type="dashed"
+                size="small"
+                onClick={this.handleCopyToClipboard}
+              >
+                {getIntlContent("SHENYU.MCP.JSON.EDIT.COPY")}
+              </Button>
+            </div>
           )}
         </div>
 
