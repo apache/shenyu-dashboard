@@ -34,6 +34,7 @@ import TextArea from "antd/lib/input/TextArea";
 import ReactJson from "react-json-view";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import { clipboardCopy } from "../../../utils/utils";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -338,8 +339,7 @@ class AddModal extends Component {
   };
 
   handleCopyToClipboard = () => {
-    navigator.clipboard
-      .writeText(this.state.jsonText)
+    clipboardCopy(this.state.jsonText)
       .then(() => {
         message.success(getIntlContent("SHENYU.MCP.JSON.EDIT.COPY.SUCCESS"));
       })

@@ -19,6 +19,7 @@ import React, { Component } from "react";
 import { Modal, Button, message, Typography, Divider, Input } from "antd";
 import ReactJson from "react-json-view";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import { clipboardCopy } from "../../../utils/utils";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -184,8 +185,7 @@ class McpConfigModal extends Component {
   // 复制配置到剪贴板
   handleCopyConfig = (config) => {
     const configText = JSON.stringify(config, null, 2);
-    navigator.clipboard
-      .writeText(configText)
+    clipboardCopy(configText)
       .then(() => {
         message.success(getIntlContent("SHENYU.MCP.CONFIG.COPY.SUCCESS"));
       })
@@ -196,8 +196,7 @@ class McpConfigModal extends Component {
 
   // 复制JSON文本
   copyJsonText = (text) => {
-    navigator.clipboard
-      .writeText(text)
+    clipboardCopy(text)
       .then(() => {
         message.success(getIntlContent("SHENYU.MCP.CONFIG.COPY.SUCCESS"));
       })
