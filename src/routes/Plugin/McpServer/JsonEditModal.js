@@ -19,6 +19,7 @@ import React, { Component } from "react";
 import { Button, Modal, message, Input, Tabs, Radio } from "antd";
 import ReactJson from "react-json-view";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import { clipboardCopy } from "../../../utils/utils";
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
@@ -286,8 +287,7 @@ class JsonEditModal extends Component {
         ? this.state.flattenedText
         : this.state.unifiedText;
 
-    navigator.clipboard
-      .writeText(textToCopy)
+    clipboardCopy(textToCopy)
       .then(() => {
         message.success(getIntlContent("SHENYU.MCP.JSON.EDIT.COPY.SUCCESS"));
       })

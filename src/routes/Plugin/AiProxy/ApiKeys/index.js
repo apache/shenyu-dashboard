@@ -41,6 +41,7 @@ import {
   batchDeleteAiProxyApiKeys,
   batchEnableAiProxyApiKeys,
 } from "../../../../services/api";
+import { clipboardCopy } from "../../../../utils/utils";
 
 const { Search } = Input;
 const { Title } = Typography;
@@ -308,25 +309,13 @@ function ApiKeysPage({
     const newKey = res && res.data && res.data.proxyApiKey;
     if (newKey) {
       const copy = async (text) => {
-        try {
-          if (
-            navigator &&
-            navigator.clipboard &&
-            navigator.clipboard.writeText
-          ) {
-            await navigator.clipboard.writeText(text);
-          } else {
-            const ta = document.createElement("textarea");
-            ta.value = text;
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand("copy");
-            document.body.removeChild(ta);
-          }
-          message.success(getIntlContent("SHENYU.COMMON.COPY") || "Copy");
-        } catch (e) {
-          message.warn("Copy failed");
-        }
+        clipboardCopy(text)
+          .then(() => {
+            message.success(getIntlContent("SHENYU.COMMON.COPY") || "Copy");
+          })
+          .catch(() => {
+            message.warn("Copy failed");
+          });
       };
       Modal.success({
         title: getIntlContent("APIPROXY.APIKEY.CREATE") || "Create API Key",
