@@ -23,7 +23,7 @@ jobs:
           node-version: "20"
       -
         name: Setup Dependencies
-        run: npm install
+        run: yarn install
       -
         name: Build Site
         run: npm run build
