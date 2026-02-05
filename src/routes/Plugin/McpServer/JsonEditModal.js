@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Button, Modal, message, Input, Row, Col, Tabs, Radio } from "antd";
+import { Button, Modal, message, Input, Tabs, Radio } from "antd";
 import ReactJson from "react-json-view";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
@@ -449,23 +449,27 @@ class JsonEditModal extends Component {
               : getIntlContent("SHENYU.MCP.JSON.EDIT.UNIFIED.DESCRIPTION")}
           </p>
 
-          <Row gutter={8}>
-            <Col>
-              <Button size="small" onClick={this.handleFormatJson}>
-                {getIntlContent("SHENYU.MCP.JSON.EDIT.FORMAT")}
-              </Button>
-            </Col>
-            <Col>
-              <Button size="small" onClick={this.handleCompressJson}>
-                {getIntlContent("SHENYU.MCP.JSON.EDIT.COMPRESS")}
-              </Button>
-            </Col>
-            <Col>
-              <Button size="small" onClick={this.handleCopyToClipboard}>
-                {getIntlContent("SHENYU.MCP.JSON.EDIT.COPY")}
-              </Button>
-            </Col>
-          </Row>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <Button type="dashed" size="small" onClick={this.handleFormatJson}>
+              {getIntlContent("SHENYU.MCP.JSON.EDIT.FORMAT")}
+            </Button>
+
+            <Button
+              type="dashed"
+              size="small"
+              onClick={this.handleCompressJson}
+            >
+              {getIntlContent("SHENYU.MCP.JSON.EDIT.COMPRESS")}
+            </Button>
+
+            <Button
+              type="dashed"
+              size="small"
+              onClick={this.handleCopyToClipboard}
+            >
+              {getIntlContent("SHENYU.MCP.JSON.EDIT.COPY")}
+            </Button>
+          </div>
         </div>
 
         {editMode === "separate" ? (
