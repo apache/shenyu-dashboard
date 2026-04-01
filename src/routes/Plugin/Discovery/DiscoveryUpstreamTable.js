@@ -22,10 +22,13 @@ import {
   Form,
   Input,
   InputNumber,
+  message,
+  Modal,
   Popconfirm,
   Select,
   Switch,
   Table,
+  Tooltip,
 } from "antd";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
@@ -110,7 +113,12 @@ class EditableTable extends Component {
     this.state = {
       editingKey: "",
       isLocal: this.props.isLocal,
+      metadataModalVisible: false,
+      metadataModalKey: null,
+      metadataModalValue: "",
+      pendingMetadata: {},
     };
+    const isDivide = this.props.pluginName === "divide";
     this.columns = [
       {
         title: "protocol",
@@ -178,6 +186,48 @@ class EditableTable extends Component {
           );
         },
       },
+      ...(isDivide
+        ? [
+            {
+              title: "metadata",
+              dataIndex: "metadata",
+              editable: false,
+              align: "center",
+              render: (text, record) => {
+                const pendingValue = this.state.pendingMetadata[record.key];
+                const displayValue =
+                  pendingValue !== undefined ? pendingValue : text || "";
+                if (this.isEditing(record)) {
+                  return (
+                    <a
+                      onClick={() =>
+                        this.openMetadataModal(record.key, displayValue)
+                      }
+                    >
+                      {displayValue
+                        ? displayValue.length > 20
+                          ? `${displayValue.substring(0, 20)}...`
+                          : displayValue
+                        : getIntlContent(
+                            "SHENYU.DISCOVERY.SELECTOR.UPSTREAM.EDIT",
+                          )}
+                    </a>
+                  );
+                }
+                if (!displayValue) {
+                  return "";
+                }
+                return displayValue.length > 20 ? (
+                  <Tooltip title={displayValue}>
+                    <span>{displayValue.substring(0, 20)}...</span>
+                  </Tooltip>
+                ) : (
+                  displayValue
+                );
+              },
+            },
+          ]
+        : []),
       {
         title: getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.OPERATION"),
         dataIndex: "operation",
@@ -249,8 +299,57 @@ class EditableTable extends Component {
 
   isEditing = (record) => record.key === this.state.editingKey;
 
+  openMetadataModal = (key, value) => {
+    this.setState({
+      metadataModalVisible: true,
+      metadataModalKey: key,
+      metadataModalValue: value || "",
+    });
+  };
+
+  saveMetadata = () => {
+    const { metadataModalKey, metadataModalValue } = this.state;
+    if (metadataModalValue && metadataModalValue.trim()) {
+      try {
+        const parsed = JSON.parse(metadataModalValue);
+        if (
+          parsed === null ||
+          typeof parsed !== "object" ||
+          Array.isArray(parsed)
+        ) {
+          message.error("Metadata must be a JSON object");
+          return;
+        }
+      } catch (e) {
+        message.error("Metadata must be valid JSON");
+        return;
+      }
+    }
+    this.setState((prevState) => ({
+      pendingMetadata: {
+        ...prevState.pendingMetadata,
+        [metadataModalKey]: metadataModalValue,
+      },
+      metadataModalVisible: false,
+      metadataModalKey: null,
+      metadataModalValue: "",
+    }));
+  };
+
+  cancelMetadata = () => {
+    this.setState({
+      metadataModalVisible: false,
+      metadataModalKey: null,
+      metadataModalValue: "",
+    });
+  };
+
   cancel = () => {
-    this.setState({ editingKey: "" });
+    this.setState((prevState) => {
+      const { [prevState.editingKey]: removed, ...pendingMetadata } =
+        prevState.pendingMetadata;
+      return { editingKey: "", pendingMetadata };
+    });
   };
 
   handleDelete = (key) => {
@@ -271,6 +370,7 @@ class EditableTable extends Component {
       startupTime: 0,
       warmupTime: 10,
       gray: false,
+      ...(this.props.pluginName === "divide" ? { metadata: "" } : {}),
     };
     this.props.onTableChange([...dataSource, newData]);
     this.props.onCountChange(newRecordCount);
@@ -283,21 +383,36 @@ class EditableTable extends Component {
       }
       const newData = [...this.props.dataSource];
       const index = newData.findIndex((item) => key === item.key);
+      const pendingMetadata = this.state.pendingMetadata[key];
       if (index > -1) {
         const item = newData[index];
         newData.splice(index, 1, {
           ...item,
           ...row,
+          ...(pendingMetadata !== undefined
+            ? { metadata: pendingMetadata }
+            : {}),
         });
         this.props.onTableChange(newData);
-        this.setState({ editingKey: "" });
+        this.setState((prevState) => {
+          const { [key]: removed, ...restPendingMetadata } =
+            prevState.pendingMetadata;
+          return { editingKey: "", pendingMetadata: restPendingMetadata };
+        });
       } else {
         const { recordCount } = this.props;
         row.key = recordCount + 1;
+        if (pendingMetadata !== undefined) {
+          row.metadata = pendingMetadata;
+        }
         newData.push(row);
         this.props.onCountChange(recordCount + 1);
         this.props.onTableChange(newData);
-        this.setState({ editingKey: "" });
+        this.setState((prevState) => {
+          const { [key]: removed, ...restPendingMetadata } =
+            prevState.pendingMetadata;
+          return { editingKey: "", pendingMetadata: restPendingMetadata };
+        });
       }
     });
   }
@@ -384,6 +499,23 @@ class EditableTable extends Component {
             }}
           />
         </EditableContext.Provider>
+        <Modal
+          title="Edit Metadata (JSON)"
+          visible={this.state.metadataModalVisible}
+          onOk={this.saveMetadata}
+          onCancel={this.cancelMetadata}
+          okText={getIntlContent("SHENYU.COMMON.SURE")}
+          cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+        >
+          <Input.TextArea
+            rows={6}
+            value={this.state.metadataModalValue}
+            onChange={(e) =>
+              this.setState({ metadataModalValue: e.target.value })
+            }
+            placeholder='{"key":"value"}'
+          />
+        </Modal>
       </div>
     );
   }
