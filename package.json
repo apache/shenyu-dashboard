@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0-beta.36",
-    "antd": "^3.26.19",
+    "antd": "^6.3.6",
     "classnames": "^2.2.5",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.8.17",
