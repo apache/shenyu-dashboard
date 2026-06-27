@@ -547,8 +547,13 @@ export async function queryPlatform() {
 
 /* login */
 export async function queryLogin(params) {
-  return request(`${baseUrl}/platform/login?${stringify(params)}`, {
-    method: `GET`,
+  return request(`${baseUrl}/platform/login`, {
+    method: `POST`,
+    body: {
+      userName: params.userName,
+      password: params.password,
+      clientId: params.clientId,
+    },
   });
 }
 
