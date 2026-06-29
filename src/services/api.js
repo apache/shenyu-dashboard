@@ -546,7 +546,7 @@ export async function queryPlatform() {
 }
 
 /* login */
-export async function queryLogin(params) {
+export async function queryLogin(params = {}) {
   return request(`${baseUrl}/platform/login`, {
     method: `POST`,
     body: {
