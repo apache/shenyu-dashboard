@@ -753,6 +753,7 @@ class ProxySelectorModal extends Component {
                       </Divider>
                       <EditableFormTable
                         isLocal={false}
+                        pluginName={this.props.pluginName}
                         dataSource={upstreams}
                         recordCount={recordCount}
                         onTableChange={this.handleTableChange}
@@ -768,6 +769,7 @@ class ProxySelectorModal extends Component {
                   </Divider>
                   <EditableFormTable
                     isLocal={true}
+                    pluginName={this.props.pluginName}
                     dataSource={upstreams}
                     recordCount={recordCount}
                     onTableChange={this.handleTableChange}
