@@ -513,10 +513,12 @@ export default class DiscoveryProxy extends Component {
 
   handleConfigDelete = (id) => {
     if (id !== undefined) {
+      const { currentNamespaceId } = this.props;
       this.props.dispatch({
         type: "discovery/deleteConfig",
         payload: {
           discoveryId: id,
+          namespaceId: currentNamespaceId,
         },
       });
     } else {

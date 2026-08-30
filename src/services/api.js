@@ -1134,12 +1134,14 @@ export function refreshProxySelector(params) {
 }
 
 export function deleteDiscovery(params) {
-  return request(`${baseUrl}/discovery/${params.discoveryId}`, {
-    method: `DELETE`,
-    body: {
-      ...params,
+  return request(
+    `${baseUrl}/discovery/${params.discoveryId}?${stringify({
+      namespaceId: params.namespaceId,
+    })}`,
+    {
+      method: `DELETE`,
     },
-  });
+  );
 }
 
 export function getAlertReceivers(params) {
