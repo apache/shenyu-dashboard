@@ -27,6 +27,7 @@ import {
   Tag,
   Typography,
 } from "antd";
+import { serializeUpstreamProps } from "../../../utils/upstreamLabels";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import discoveryStyles from "./discovery.less";
 import DiscoveryConfigModal from "./DiscoveryConfigModal";
@@ -336,10 +337,7 @@ export default class DiscoveryProxy extends Component {
                   status: parseInt(item.status, 10),
                   weight: item.weight,
                   startupTime: item.startupTime,
-                  props: JSON.stringify({
-                    warmupTime: item.warmupTime,
-                    gray: `${item.gray}`,
-                  }),
+                  props: serializeUpstreamProps(item),
                 }));
                 dispatch({
                   type: "discovery/add",
@@ -446,10 +444,7 @@ export default class DiscoveryProxy extends Component {
               status: parseInt(item.status, 10),
               weight: item.weight,
               startupTime: item.startupTime,
-              props: JSON.stringify({
-                warmupTime: item.warmupTime,
-                gray: `${item.gray}`,
-              }),
+              props: serializeUpstreamProps(item),
             }));
             dispatch({
               type: "discovery/update",
