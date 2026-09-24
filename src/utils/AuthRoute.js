@@ -28,6 +28,7 @@ const notCheckRouteUrl = ["/", "/home"];
 
 // menuItem cache
 let menuCache = [];
+let menuCacheSource;
 // menus cache
 let authMenusCache = {};
 
@@ -45,6 +46,7 @@ function formatRouteUrl(routeUrl) {
  */
 export function resetAuthMenuCache() {
   menuCache = [];
+  menuCacheSource = undefined;
   authMenusCache = {};
 }
 
@@ -64,7 +66,9 @@ export function checkMenuAuth(routeUrl, permissions) {
     return routeUrl;
   }
   if (permissions && permissions.menu && permissions.menu.length > 0) {
-    if (!menuCache || menuCache.length === 0) {
+    if (menuCacheSource !== permissions.menu) {
+      menuCache = [];
+      menuCacheSource = permissions.menu;
       permissions.menu.forEach((m) => {
         filterTree(m, (menuItem) => {
           menuCache.push(menuItem);

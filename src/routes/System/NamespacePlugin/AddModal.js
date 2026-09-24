@@ -20,6 +20,10 @@ import { Divider, Form, Input, InputNumber, Modal, Select, Switch } from "antd";
 import { connect } from "dva";
 import ReactJson from "react-json-view";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import {
+  getConfigFieldValue,
+  serializePluginConfig,
+} from "../../../utils/pluginConfig";
 
 const { Option } = Select;
 const FormItem = Form.Item;
@@ -65,28 +69,24 @@ class AddModal extends Component {
   };
 
   handleSubmit = (e) => {
-    const { form, handleOk, id = "", data } = this.props;
+    const {
+      form,
+      handleOk,
+      id = "",
+      data,
+      config: originalConfig,
+    } = this.props;
     const { jsonKey, jsonValue } = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        let { name, enabled, config, sort } = values;
-        if (data && data.length > 0) {
-          config = {};
-          data.forEach((item) => {
-            let fieldName = `__${item.field}__`;
-            if (values[fieldName]) {
-              config[item.field] = values[fieldName];
-            }
-          });
-          if (data.some((i) => i.dataType === 4)) {
-            config[jsonKey] = jsonValue;
-          }
-          config = JSON.stringify(config);
-          if (config === "{}") {
-            config = "";
-          }
-        }
+        const { name, enabled, sort } = values;
+        const config = serializePluginConfig({
+          fields: data,
+          values,
+          config: originalConfig,
+          jsonValues: jsonKey ? { [jsonKey]: jsonValue } : {},
+        });
         handleOk({ name, enabled, config, id, sort });
       }
     });
@@ -163,9 +163,11 @@ class AddModal extends Component {
                 if (eachField.extObj) {
                   let extObj = JSON.parse(eachField.extObj);
                   required = extObj.required === "0" ? "" : extObj.required;
-                  if (!fieldInitialValue) {
-                    fieldInitialValue = extObj.defaultValue;
-                  }
+                  fieldInitialValue = getConfigFieldValue(
+                    config,
+                    eachField.field,
+                    extObj.defaultValue,
+                  );
                   if (extObj.rule) {
                     checkRule = extObj.rule;
                   }

@@ -177,7 +177,9 @@ export async function findUser(params) {
 export async function addPlugin(params) {
   const formData = new FormData();
   formData.append("name", params.name);
-  if (params.config) formData.append("config", params.config);
+  if (params.config !== undefined && params.config !== null) {
+    formData.append("config", params.config);
+  }
   formData.append("sort", params.sort);
   formData.append("role", params.role);
   formData.append("enabled", params.enabled);
@@ -232,7 +234,9 @@ export async function updatePlugin(params) {
   const formData = new FormData();
   formData.append("ids", params.id);
   formData.append("name", params.name);
-  if (params.config) formData.append("config", params.config);
+  if (params.config !== undefined && params.config !== null) {
+    formData.append("config", params.config);
+  }
   formData.append("sort", params.sort);
   formData.append("role", params.role);
   formData.append("enabled", params.enabled);

@@ -84,3 +84,42 @@ describe("test CheckPermissions", () => {
     expect(checkPermissions(null, ["user"], target, error)).toEqual("ok");
   });
 });
+
+describe("permission boundaries", () => {
+  it.each(["adm", "min", "", "superadmin"])(
+    "does not grant admin to the partial role %p",
+    (role) => {
+      expect(checkPermissions("admin", [role], target, error)).toBe(error);
+    },
+  );
+
+  it("denies an empty set of accepted roles", () => {
+    expect(checkPermissions([], ["admin"], target, error)).toBe(error);
+  });
+
+  it("passes the current authority to a permission predicate", () => {
+    const predicate = jest.fn(() => false);
+    expect(checkPermissions(predicate, ["reader"], target, error)).toBe(error);
+    expect(predicate).toHaveBeenCalledWith(["reader"]);
+  });
+
+  it("propagates errors from permission predicates", () => {
+    const failure = new Error("Invalid permission rule");
+    expect(() =>
+      checkPermissions(
+        () => {
+          throw failure;
+        },
+        "admin",
+        target,
+        error,
+      ),
+    ).toThrow(failure);
+  });
+
+  it("rejects unsupported authority values", () => {
+    expect(() => checkPermissions(42, "admin", target, error)).toThrow(
+      "unsupported parameters",
+    );
+  });
+});

@@ -65,7 +65,7 @@ const checkPermissions = (authority, currentAuthority, target, Exception) => {
     if (Array.isArray(currentAuthority)) {
       for (let i = 0; i < currentAuthority.length; i += 1) {
         const element = currentAuthority[i];
-        if (authority.indexOf(element) >= 0) {
+        if (authority === element) {
           return target;
         }
       }

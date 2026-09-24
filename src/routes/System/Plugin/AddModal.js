@@ -28,6 +28,10 @@ import {
 } from "antd";
 import { connect } from "dva";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import {
+  getConfigFieldValue,
+  serializePluginConfig,
+} from "../../../utils/pluginConfig";
 
 const { Option } = Select;
 const FormItem = Form.Item;
@@ -61,24 +65,22 @@ const ChooseFile = forwardRef(({ onChange, file }, ref) => {
 }))
 class AddModal extends Component {
   handleSubmit = (e) => {
-    const { form, handleOk, id = "", data } = this.props;
+    const {
+      form,
+      handleOk,
+      id = "",
+      data,
+      config: originalConfig,
+    } = this.props;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        let { name, role, enabled, config, sort, file } = values;
-        if (data && data.length > 0) {
-          config = {};
-          data.forEach((item) => {
-            let fieldName = `__${item.field}__`;
-            if (values[fieldName]) {
-              config[item.field] = values[fieldName];
-            }
-          });
-          config = JSON.stringify(config);
-          if (config === "{}") {
-            config = "";
-          }
-        }
+        const { name, role, enabled, sort, file } = values;
+        const config = serializePluginConfig({
+          fields: data,
+          values,
+          config: originalConfig,
+        });
         handleOk({ name, role, enabled, config, id, sort, file });
       }
     });
@@ -156,9 +158,11 @@ class AddModal extends Component {
                 if (eachField.extObj) {
                   let extObj = JSON.parse(eachField.extObj);
                   required = extObj.required === "0" ? "" : extObj.required;
-                  if (!fieldInitialValue) {
-                    fieldInitialValue = extObj.defaultValue;
-                  }
+                  fieldInitialValue = getConfigFieldValue(
+                    config,
+                    eachField.field,
+                    extObj.defaultValue,
+                  );
                   if (extObj.rule) {
                     checkRule = extObj.rule;
                   }
