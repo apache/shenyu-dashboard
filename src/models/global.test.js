@@ -225,3 +225,29 @@ it("resets permissions on logout without changing unrelated layout state", async
   expect(state.permissions).toEqual({ menu: [], button: [] });
   expect(state.collapsed).toBe(collapsed);
 });
+
+it("returns explicit-namespace plugins to the caller without overwriting shared plugins", async () => {
+  const sharedPlugins = state.plugins;
+  let resolveRequest;
+  getPluginsByNamespace.mockReturnValue(
+    new Promise((resolve) => {
+      resolveRequest = resolve;
+    }),
+  );
+  const callback = jest.fn();
+  const task = runEffect("fetchPluginsByNamespace", {
+    namespaceId: "modal-namespace",
+    callback,
+  });
+  expect(getPluginsByNamespace).toHaveBeenCalledWith({
+    namespaceId: "modal-namespace",
+    currentPage: 1,
+    pageSize: 50,
+  });
+  const plugins = [{ id: "modal-plugin" }];
+  resolveRequest({ code: 200, data: { dataList: plugins } });
+  await task;
+  expect(callback).toHaveBeenCalledWith(plugins);
+  expect(state.plugins).toBe(sharedPlugins);
+  expect(actions).toEqual([]);
+});

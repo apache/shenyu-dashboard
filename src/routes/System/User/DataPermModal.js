@@ -41,7 +41,6 @@ const { Search } = Input;
 @connect(({ dataPermission, resource, global, loading }) => ({
   dataPermission,
   resource,
-  global,
   namespaces: global.namespaces,
   selectorPermisionLoading:
     loading.effects["dataPermission/fetchDataPermisionSelectors"],
@@ -49,10 +48,13 @@ const { Search } = Input;
     loading.effects["dataPermission/fetchDataPermisionRules"],
 }))
 export default class DataPermModal extends Component {
+  pluginRequestId = 0;
+
   constructor(props) {
     super(props);
     this.state = {
       currentPlugin: null,
+      plugins: [],
       currentPermissionSelectorPage: 1,
       selectorData: null,
       pageSize: 12,
@@ -67,16 +69,32 @@ export default class DataPermModal extends Component {
     this.getPluginTreeData();
   }
 
+  componentWillUnmount() {
+    this.pluginRequestId += 1;
+  }
+
   getPluginTreeData = () => {
     const { dispatch } = this.props;
-    const { currentNamespaceId } = this.state;
     dispatch({
       type: "resource/fetchMenuTree",
     });
+    this.loadPlugins();
+  };
+
+  loadPlugins = () => {
+    const { dispatch } = this.props;
+    const { currentNamespaceId } = this.state;
+    this.pluginRequestId += 1;
+    const requestId = this.pluginRequestId;
     dispatch({
       type: "global/fetchPluginsByNamespace",
       payload: {
         namespaceId: currentNamespaceId,
+        callback: (plugins) => {
+          if (requestId === this.pluginRequestId) {
+            this.setState({ plugins });
+          }
+        },
       },
     });
   };
@@ -226,10 +244,9 @@ export default class DataPermModal extends Component {
 
   filterPlugin = () => {
     let {
-      global: { plugins },
       resource: { menuTree },
     } = this.props;
-    const { searchValue } = this.state;
+    const { searchValue, plugins } = this.state;
     let pluginMenuList = menuTree.filter((e) => e.url === "/plug");
     if (pluginMenuList && pluginMenuList.length > 0) {
       pluginMenuList = pluginMenuList[0].children;
@@ -429,20 +446,18 @@ export default class DataPermModal extends Component {
   };
 
   handleNamespacesValueChange = (value) => {
-    const { currentPlugin } = this.state;
-    const { dispatch } = this.props;
-    this.setState({ currentNamespaceId: value.key }, () => {
-      if (currentPlugin) {
-        this.setState({ selectorExpandedRowKeys: [] });
-        this.getPermissionSelectorList(1);
-      }
-      dispatch({
-        type: "global/fetchPluginsByNamespace",
-        payload: {
-          namespaceId: value.key,
-        },
-      });
-    });
+    this.setState(
+      {
+        currentNamespaceId: value.key,
+        plugins: [],
+        currentPlugin: null,
+        selectorData: null,
+        currentPermissionSelectorPage: 1,
+        selectorExpandedRowKeys: [],
+        ruleListMap: {},
+      },
+      this.loadPlugins,
+    );
   };
 
   render() {

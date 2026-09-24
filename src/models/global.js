@@ -92,7 +92,7 @@ export default {
         });
       }
     },
-    *fetchPluginsByNamespace({ payload }, { call, put }) {
+    *fetchPluginsByNamespace({ payload }, { call }) {
       const { callback, namespaceId } = payload ?? {};
       const params = {
         namespaceId,
@@ -106,12 +106,6 @@ export default {
         if (callback) {
           callback(dataList);
         }
-        yield put({
-          type: "savePlugins",
-          payload: {
-            dataList,
-          },
-        });
       }
     },
     *asyncPlugin(params, { call }) {

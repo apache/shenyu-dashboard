@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { checkMenuAuth, resetAuthMenuCache } from "./AuthRoute";
+import { checkMenuAuth, getAuthMenus, resetAuthMenuCache } from "./AuthRoute";
 
 jest.mock("./IntlUtils", () => ({ getIntlContent: (key) => key }));
 
@@ -56,4 +56,93 @@ it("uses the new namespace's permissions even when a previous menu was cached", 
   expect(checkMenuAuth("/system/user", first)).toBe("/system/user");
   expect(checkMenuAuth("/system/user", second)).toBe(false);
   expect(checkMenuAuth("/system/role", second)).toBe("/system/role");
+});
+
+const sidebarPermissions = {
+  menu: [
+    { url: "/plug", meta: {}, children: [{ url: "/plug/divide", meta: {} }] },
+    {
+      url: "/system",
+      meta: {},
+      children: [
+        { url: "/system/role", meta: {} },
+        { url: "/system/manage", meta: {} },
+      ],
+    },
+  ],
+};
+
+it("clears cached sidebar entries immediately when permissions are cleared", () => {
+  const plugins = [];
+  const tree = [];
+  expect(
+    getAuthMenus(plugins, tree, sidebarPermissions, true).length,
+  ).toBeGreaterThan(0);
+  expect(getAuthMenus(plugins, tree, { menu: [], button: [] }, true)).toEqual(
+    [],
+  );
+});
+
+it("rebuilds cached plugin entries when plugins finish loading or change namespace", () => {
+  const tree = [];
+  getAuthMenus([], tree, sidebarPermissions, true);
+  const first = getAuthMenus(
+    [{ name: "divide", role: "0", id: "plugin-A" }],
+    tree,
+    sidebarPermissions,
+    true,
+  );
+  expect(first[0].children[0].children[0].id).toBe("plugin-A");
+  const second = getAuthMenus(
+    [{ name: "divide", role: "0", id: "plugin-B" }],
+    tree,
+    sidebarPermissions,
+    true,
+  );
+  expect(second[0].children[0].children[0].id).toBe("plugin-B");
+});
+
+it("rebuilds cached sidebar entries when the resource menu tree changes", () => {
+  const plugins = [];
+  function treeFor(child) {
+    return [
+      {
+        name: "system",
+        url: "/system",
+        meta: { title: "System" },
+        children: [{ url: `/system/${child}`, meta: { title: child } }],
+      },
+    ];
+  }
+  const first = getAuthMenus(
+    plugins,
+    treeFor("role"),
+    sidebarPermissions,
+    true,
+  );
+  expect(first.find((menu) => menu.path === "/system").children[0].path).toBe(
+    "/system/role",
+  );
+  const second = getAuthMenus(
+    plugins,
+    treeFor("manage"),
+    sidebarPermissions,
+    true,
+  );
+  expect(second.find((menu) => menu.path === "/system").children[0].path).toBe(
+    "/system/manage",
+  );
+});
+
+it("keeps locale-specific caches consistent after their permission source changes", () => {
+  const plugins = [];
+  const tree = [];
+  window.sessionStorage.setItem("locale", "en-US");
+  getAuthMenus(plugins, tree, sidebarPermissions, true);
+  window.sessionStorage.setItem("locale", "zh-CN");
+  const emptyPermissions = { menu: [] };
+  expect(getAuthMenus(plugins, tree, emptyPermissions, true)).toEqual([]);
+  window.sessionStorage.setItem("locale", "en-US");
+  expect(getAuthMenus(plugins, tree, emptyPermissions, true)).toEqual([]);
+  window.sessionStorage.removeItem("locale");
 });

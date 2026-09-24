@@ -37,6 +37,7 @@ class AddModal extends Component {
     this.state = {
       jsonKey: null,
       jsonValue: {},
+      jsonEdited: false,
     };
     this.parseJson();
   }
@@ -56,16 +57,8 @@ class AddModal extends Component {
     }
   };
 
-  updateJson = (obj, fieldName) => {
-    const { form } = this.props;
-    let fieldsValue = form.getFieldsValue();
-    this.state.jsonValue = obj.updated_src;
-    const value = { [fieldName]: this.state.jsonValue };
-    if (!fieldsValue[fieldName]) {
-      form.setFields({ [fieldName]: { value } });
-    } else {
-      form.setFieldsValue(value);
-    }
+  updateJson = (obj) => {
+    this.setState({ jsonValue: obj.updated_src, jsonEdited: true });
   };
 
   handleSubmit = (e) => {
@@ -76,7 +69,7 @@ class AddModal extends Component {
       data,
       config: originalConfig,
     } = this.props;
-    const { jsonKey, jsonValue } = this.state;
+    const { jsonKey, jsonValue, jsonEdited } = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -85,7 +78,7 @@ class AddModal extends Component {
           fields: data,
           values,
           config: originalConfig,
-          jsonValues: jsonKey ? { [jsonKey]: jsonValue } : {},
+          jsonValues: jsonEdited && jsonKey ? { [jsonKey]: jsonValue } : {},
         });
         handleOk({ name, enabled, config, id, sort });
       }
@@ -247,9 +240,9 @@ class AddModal extends Component {
                         theme="monokai"
                         displayDataTypes={false}
                         name={false}
-                        onAdd={(obj) => this.updateJson(obj, fieldName)}
-                        onEdit={(obj) => this.updateJson(obj, fieldName)}
-                        onDelete={(obj) => this.updateJson(obj, fieldName)}
+                        onAdd={this.updateJson}
+                        onEdit={this.updateJson}
+                        onDelete={this.updateJson}
                         style={{ borderRadius: 4, padding: 16 }}
                       />
                     </FormItem>
