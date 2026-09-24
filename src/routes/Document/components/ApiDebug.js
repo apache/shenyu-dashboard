@@ -193,7 +193,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
         };
         let rs = await createOrUpdateMockRequest(params);
         if (rs.code !== 200) {
-          message.error(rs.msg);
+          message.error(rs.message);
         } else {
           const {
             code,
@@ -215,7 +215,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
     if (initialValue.id) {
       let rs = await deleteMockRequest(initialValue.id);
       if (rs.code !== 200) {
-        message.error(rs.msg);
+        message.error(rs.message);
       } else {
         message.success(rs.message);
       }
