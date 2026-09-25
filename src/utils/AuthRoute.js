@@ -28,8 +28,10 @@ const notCheckRouteUrl = ["/", "/home"];
 
 // menuItem cache
 let menuCache = [];
+let menuCacheSource;
 // menus cache
 let authMenusCache = {};
+let authMenusCacheSource;
 
 function formatRouteUrl(routeUrl) {
   if (routeUrl.startsWith("/plug/")) {
@@ -45,7 +47,9 @@ function formatRouteUrl(routeUrl) {
  */
 export function resetAuthMenuCache() {
   menuCache = [];
+  menuCacheSource = undefined;
   authMenusCache = {};
+  authMenusCacheSource = undefined;
 }
 
 /**
@@ -64,7 +68,9 @@ export function checkMenuAuth(routeUrl, permissions) {
     return routeUrl;
   }
   if (permissions && permissions.menu && permissions.menu.length > 0) {
-    if (!menuCache || menuCache.length === 0) {
+    if (menuCacheSource !== permissions.menu) {
+      menuCache = [];
+      menuCacheSource = permissions.menu;
       permissions.menu.forEach((m) => {
         filterTree(m, (menuItem) => {
           menuCache.push(menuItem);
@@ -92,6 +98,16 @@ export function checkMenuAuth(routeUrl, permissions) {
  * @param {Boolean} beginCache
  */
 export function getAuthMenus(plugins, menuTree, permissions, beginCache) {
+  const permissionMenu = permissions && permissions.menu;
+  if (
+    !authMenusCacheSource ||
+    authMenusCacheSource.plugins !== plugins ||
+    authMenusCacheSource.menuTree !== menuTree ||
+    authMenusCacheSource.permissionMenu !== permissionMenu
+  ) {
+    authMenusCache = {};
+    authMenusCacheSource = { plugins, menuTree, permissionMenu };
+  }
   if (beginCache && authMenusCache && Object.keys(authMenusCache).length > 0) {
     let locale = window.sessionStorage.getItem("locale");
     let authCacheMenus = authMenusCache[locale];
