@@ -217,7 +217,7 @@ const SearchApi = React.forwardRef((props, ref) => {
 
   const handleApiCancel = () => {
     setOpenApi(false);
-    tagForm.resetFields();
+    apiForm.resetFields();
   };
 
   const handleApiOk = (data) => {
