@@ -99,7 +99,7 @@ class AddModal extends Component {
                 },
                 {
                   max: 20,
-                  message: getIntlContent("SHENYU.REGISTRY.ADDRESS.LENGTH"),
+                  message: getIntlContent("SHENYU.REGISTRY.REGISTRY_ID.LENGTH"),
                 },
               ],
               initialValue: registryId,
@@ -142,7 +142,7 @@ class AddModal extends Component {
                 },
                 {
                   max: 256,
-                  message: getIntlContent("SHENYU.REGISTRY.REGISTRY_ID.LENGTH"),
+                  message: getIntlContent("SHENYU.REGISTRY.ADDRESS.LENGTH"),
                 },
               ],
               initialValue: address,
