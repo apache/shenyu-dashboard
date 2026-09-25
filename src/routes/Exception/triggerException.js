@@ -22,7 +22,7 @@ import PropTypes from "prop-types";
 import styles from "./style.less";
 
 @connect(({ loading }) => ({
-  isloading: loading.effects["error/query"],
+  isloading: !!loading.effects["error/query"],
 }))
 export default class TriggerException extends PureComponent {
   triggerError = (code) => {
