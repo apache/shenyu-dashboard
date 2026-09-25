@@ -29,7 +29,7 @@ import {
   Typography,
 } from "antd";
 import { connect } from "dva";
-import { format } from "date-fns";
+import dayjs from "dayjs";
 import * as echarts from "echarts";
 import { resizableComponents } from "../../../utils/resizable";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
@@ -401,7 +401,7 @@ export default class Instance extends Component {
           render: (text) => {
             return (
               <div style={{ color: "#1f640a" }}>
-                {format(new Date(text), "YYYY-MM-DD HH:mm:ss") || "----"}
+                {dayjs(text).format("YYYY-MM-DD HH:mm:ss") || "----"}
               </div>
             );
           },
@@ -417,7 +417,7 @@ export default class Instance extends Component {
           render: (text) => {
             return (
               <div style={{ color: "#1f640a" }}>
-                {format(new Date(text), "YYYY-MM-DD HH:mm:ss") || "----"}
+                {dayjs(text).format("YYYY-MM-DD HH:mm:ss") || "----"}
               </div>
             );
           },
