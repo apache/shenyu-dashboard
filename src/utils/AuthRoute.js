@@ -207,7 +207,7 @@ export function getAuthMenus(plugins, menuTree, permissions, beginCache) {
   }
 
   if (Array.isArray(authMenus) && authMenus.length) {
-    removeEmptyMenu(authMenus);
+    authMenus = removeEmptyMenu(authMenus);
   }
 
   if (beginCache) {

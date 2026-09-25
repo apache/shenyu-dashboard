@@ -146,3 +146,17 @@ it("keeps locale-specific caches consistent after their permission source change
   expect(getAuthMenus(plugins, tree, emptyPermissions, true)).toEqual([]);
   window.sessionStorage.removeItem("locale");
 });
+
+it("removes parent menus when none of their children are authorized", () => {
+  const menuTree = [
+    {
+      name: "system",
+      url: "/system",
+      meta: { title: "System" },
+      children: [{ url: "/system/role", meta: { title: "Role" } }],
+    },
+  ];
+  const permissions = { menu: [{ url: "/system", meta: {} }] };
+
+  expect(getAuthMenus([], menuTree, permissions, false)).toEqual([]);
+});
