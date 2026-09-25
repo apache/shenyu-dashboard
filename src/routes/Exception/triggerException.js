@@ -18,23 +18,14 @@
 import React, { PureComponent } from "react";
 import { Button, Spin, Card } from "antd";
 import { connect } from "dva";
+import PropTypes from "prop-types";
 import styles from "./style.less";
 
-@connect((state) => ({
-  isloading: state.error.isloading,
+@connect(({ loading }) => ({
+  isloading: loading.effects["error/query"],
 }))
 export default class TriggerException extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isloading: false,
-    };
-  }
-
   triggerError = (code) => {
-    this.setState({
-      isloading: true,
-    });
     const { dispatch } = this.props;
     dispatch({
       type: "error/query",
@@ -45,7 +36,7 @@ export default class TriggerException extends PureComponent {
   };
 
   render() {
-    const { isloading } = this.state;
+    const { isloading } = this.props;
     return (
       <Card>
         <Spin spinning={isloading} wrapperClassName={styles.trigger}>
@@ -66,3 +57,12 @@ export default class TriggerException extends PureComponent {
     );
   }
 }
+
+TriggerException.propTypes = {
+  isloading: PropTypes.bool,
+  dispatch: PropTypes.func.isRequired,
+};
+
+TriggerException.defaultProps = {
+  isloading: false,
+};
