@@ -50,7 +50,7 @@ import HeadersEditor from "./HeadersEditor";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { Method } from "./globalData";
-import { buildEnvironmentHost } from "../../../utils/UrlUtils";
+import { buildEnvironmentHost, isValidHttpUrl } from "../../../utils/UrlUtils";
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -263,7 +263,13 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
             {
               type: "string",
               required: true,
-              pattern: /^https?:\/\/([^:]+):(\d+)(\/.+)$/,
+              validator: (_, value, callback) => {
+                if (!isValidHttpUrl(value)) {
+                  callback("Please enter a valid HTTP(S) URL");
+                  return;
+                }
+                callback();
+              },
             },
           ],
         })(

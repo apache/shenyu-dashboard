@@ -19,3 +19,16 @@ export const buildEnvironmentHost = (addressUrl) => {
   const url = new URL(addressUrl);
   return `${url.protocol}//${url.host}`;
 };
+
+export const isValidHttpUrl = (value) => {
+  if (typeof value !== "string" || !value) {
+    return false;
+  }
+
+  try {
+    const url = new URL(value);
+    return ["http:", "https:"].includes(url.protocol) && Boolean(url.hostname);
+  } catch (e) {
+    return false;
+  }
+};
