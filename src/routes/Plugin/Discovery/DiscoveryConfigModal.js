@@ -19,6 +19,7 @@ import React, { Component } from "react";
 import { Button, Col, Form, Input, Modal, Popconfirm, Row, Select } from "antd";
 import { connect } from "dva";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import { getDiscoveryProps } from "./optionalFields";
 
 const FormItem = Form.Item;
 
@@ -50,7 +51,9 @@ class DiscoveryConfigModal extends Component {
         },
       });
     } else {
-      this.setState({ configPropsJson: JSON.parse(data.props) });
+      this.setState({
+        configPropsJson: getDiscoveryProps(JSON.parse(data?.props || "{}")),
+      });
     }
   }
 
