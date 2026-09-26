@@ -1,9 +1,9 @@
 name: Sync Dashboard Build to Main Repository
 
 on:
-  push:
-    branches:
-      - master
+  schedule:
+    # Run once daily at 00:00 UTC (08:00 Asia/Shanghai)
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
@@ -39,14 +39,15 @@ jobs:
           fetch-depth: 0
 
       - name: Check for changes and sync
+        id: sync_step
         run: |
           mkdir -p shenyu-main/shenyu-admin/src/main/resources/static
 
-          # check different.
+          # check difference
           if ! diff -r dist/ shenyu-main/shenyu-admin/src/main/resources/static/ > /dev/null 2>&1; then
             echo "Changes detected, syncing files..."
 
-            # check change,start sync code
+            # check change, start sync code
             rm -rf shenyu-main/shenyu-admin/src/main/resources/static/*
             cp -r dist/* shenyu-main/shenyu-admin/src/main/resources/static/
 
@@ -54,6 +55,21 @@ jobs:
             cd shenyu-main
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
+
+            # check and close existing open sync PRs before creating a new one
+            EXISTING_PRS=$(gh pr list --repo apache/shenyu --state open --search "chore: sync dashboard build artifacts in:title" --json number --jq '.[].number')
+            CLOSED_PRS=""
+            if [ -n "$EXISTING_PRS" ]; then
+              echo "Found open sync PR(s) that have not been merged: $EXISTING_PRS"
+              for pr_num in $EXISTING_PRS; do
+                echo "Closing outdated sync PR #$pr_num..."
+                if gh pr close "$pr_num" --repo apache/shenyu --comment "Superseded by newer dashboard build artifacts sync." --delete-branch; then
+                  CLOSED_PRS="${CLOSED_PRS}#${pr_num} "
+                else
+                  CLOSED_PRS="${CLOSED_PRS}#${pr_num}(close-failed) "
+                fi
+              done
+            fi
 
             # create new branch to sync code
             BRANCH_NAME="sync-dashboard-$(date +%Y%m%d-%H%M%S)"
@@ -72,31 +88,46 @@ jobs:
             git push origin "$BRANCH_NAME"
 
             # create pull request
-            gh pr create \
+            PR_URL=$(gh pr create \
+              --repo apache/shenyu \
               --title "chore: sync dashboard build artifacts" \
               --body "Auto-sync dashboard build artifacts from apache/shenyu-dashboard.
 
-            **Source Details:**
-            - Repository: apache/shenyu-dashboard
-            - Commit: ${{ github.sha }}
-            - Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+**Source Details:**
+- Repository: apache/shenyu-dashboard
+- Commit: ${{ github.sha }}
+- Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-            This PR contains the latest build artifacts from the dashboard repository." \
+This PR contains the latest build artifacts from the dashboard repository." \
               --head "$BRANCH_NAME" \
-              --base master
+              --base master)
 
-            echo "✅ Pull request created successfully"
+            echo "✅ Pull request created successfully: $PR_URL"
+            echo "SYNC_STATUS=created" >> $GITHUB_ENV
+            echo "PR_URL=$PR_URL" >> $GITHUB_ENV
+            echo "CLOSED_PRS=${CLOSED_PRS:-None}" >> $GITHUB_ENV
           else
-            echo "No changes detected, skipping sync"
+            echo "No changes detected between dashboard build artifacts and main repository, skipping sync."
+            echo "SYNC_STATUS=skipped" >> $GITHUB_ENV
           fi
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
 
       - name: Result Output
+        if: always()
         run: |
           echo "## Sync Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger Event**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Source Repository**: apache/shenyu-dashboard" >> $GITHUB_STEP_SUMMARY
           echo "- **Source Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Target Repository**: apache/shenyu" >> $GITHUB_STEP_SUMMARY
           echo "- **Target Path**: shenyu-admin/src/main/resources/static" >> $GITHUB_STEP_SUMMARY
-          echo "- **Build Status**: ✅ Completed" >> $GITHUB_STEP_SUMMARY
+          if [ "$SYNC_STATUS" = "created" ]; then
+            echo "- **Status**: ✅ Changes detected. New pull request created." >> $GITHUB_STEP_SUMMARY
+            echo "- **Pull Request**: $PR_URL" >> $GITHUB_STEP_SUMMARY
+            echo "- **Closed Outdated PRs**: $CLOSED_PRS" >> $GITHUB_STEP_SUMMARY
+          elif [ "$SYNC_STATUS" = "skipped" ]; then
+            echo "- **Status**: ℹ️ No changes detected between dashboard build artifacts and main repository. No pull request needed." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Status**: ⚠️ Workflow completed with status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          fi
