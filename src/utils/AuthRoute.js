@@ -87,6 +87,16 @@ export function checkMenuAuth(routeUrl, permissions) {
   }
 }
 
+export function getBaseRedirectPath(routerData, permissions) {
+  if (routerData["/home"] && checkMenuAuth("/home", permissions)) {
+    return "/home";
+  }
+
+  return Object.keys(routerData).find(
+    (route) => route !== "/" && checkMenuAuth(route, permissions),
+  );
+}
+
 /**
  *  get all authorized menus
  *  if authMenusCache is not empty,return from cache,
