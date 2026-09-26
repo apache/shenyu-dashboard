@@ -254,14 +254,22 @@ export default {
     },
 
     *exportAll(_, { call }) {
-      yield call(asyncConfigExport);
+      try {
+        yield call(asyncConfigExport);
+      } catch (error) {
+        message.error(error.message);
+      }
     },
 
     *exportByNamespace(params, { call }) {
       const { callback } = params;
-      yield call(asyncConfigExportByNamespace, params);
-      if (callback) {
-        callback();
+      try {
+        yield call(asyncConfigExportByNamespace, params);
+        if (callback) {
+          callback();
+        }
+      } catch (error) {
+        message.error(error.message);
       }
     },
 
