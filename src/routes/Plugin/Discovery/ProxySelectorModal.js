@@ -23,6 +23,7 @@ import {
   Divider,
   Form,
   Input,
+  message,
   Modal,
   Row,
   Select,
@@ -40,12 +41,7 @@ const FormItem = Form.Item;
 const { TabPane } = Tabs;
 const { Option } = Select;
 
-@connect(({ discovery, pluginHandle, shenyuDict }) => ({
-  ...discovery,
-  ...pluginHandle,
-  ...shenyuDict,
-}))
-class ProxySelectorModal extends Component {
+export class ProxySelectorModalComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -179,6 +175,10 @@ class ProxySelectorModal extends Component {
 
   handleCopyData = (copyData) => {
     const { form, dispatch } = this.props;
+    if (!copyData || !copyData.discovery) {
+      message.warn(getIntlContent("SHENYU.COMMON.WARN.INPUT_SELECTOR"));
+      return;
+    }
     const { name, forwardPort, discovery, listenerNode } = copyData;
     const formData = {
       name,
@@ -783,4 +783,12 @@ class ProxySelectorModal extends Component {
   }
 }
 
-export default Form.create()(ProxySelectorModal);
+const ConnectedProxySelectorModal = connect(
+  ({ discovery, pluginHandle, shenyuDict }) => ({
+    ...discovery,
+    ...pluginHandle,
+    ...shenyuDict,
+  }),
+)(ProxySelectorModalComponent);
+
+export default Form.create()(ConnectedProxySelectorModal);
