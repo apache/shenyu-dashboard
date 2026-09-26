@@ -31,12 +31,19 @@ export default {
   effects: {
     *login({ payload }, { call, put, select }) {
       const { callback } = payload;
-      const response = yield call(queryLogin, payload);
+      let response;
+      let requestError;
+      try {
+        response = yield call(queryLogin, payload);
+      } catch (error) {
+        requestError = error;
+        response = error.response?.data ?? error.response;
+      }
       yield call(callback, response);
       const namespaces = yield select((state) => state.global.namespaces);
 
       // Login successfully
-      if (response.data) {
+      if (response?.data) {
         yield put({
           type: "changeLoginStatus",
           payload: {
@@ -76,10 +83,12 @@ export default {
         yield put(routerRedux.push("/home"));
       } else {
         message.destroy();
-        if (response.code === 404) {
+        if (response?.code === 404) {
           message.error("Incorrect user name or password");
         } else {
-          message.error(response.message);
+          message.error(
+            response?.message || requestError?.message || "Login failed",
+          );
         }
       }
     },
