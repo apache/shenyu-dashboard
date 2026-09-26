@@ -186,6 +186,29 @@ export default class DiscoveryProxy extends Component {
     });
   };
 
+  buildDiscoveryUpstreamProps = (item) =>
+    JSON.stringify({
+      warmupTime: item.warmupTime,
+      gray: `${item.gray}`,
+    });
+
+  parseDiscoveryUpstream = (item, pluginName) => {
+    let propsObj = JSON.parse(item.props || "{}");
+    if (item.props === null) {
+      propsObj = {
+        warmupTime: 10,
+        gray: "false",
+      };
+    }
+    return {
+      ...item,
+      key: item.id,
+      warmupTime: propsObj.warmupTime,
+      gray: propsObj.gray,
+      ...(pluginName === "divide" ? { metadata: item.metadata || "" } : {}),
+    };
+  };
+
   addConfiguration = () => {
     const { dispatch, typeEnums, currentNamespaceId } = this.props;
     const { discoveryDics, pluginName } = this.state;
@@ -310,6 +333,7 @@ export default class DiscoveryProxy extends Component {
           popup: (
             <ProxySelectorModal
               pluginId={plugin.id}
+              pluginName={pluginName}
               recordCount={cardData.discoveryUpstreams.length}
               typeEnums={typeEnums}
               data={cardData}
@@ -336,10 +360,10 @@ export default class DiscoveryProxy extends Component {
                   status: parseInt(item.status, 10),
                   weight: item.weight,
                   startupTime: item.startupTime,
-                  props: JSON.stringify({
-                    warmupTime: item.warmupTime,
-                    gray: `${item.gray}`,
-                  }),
+                  props: this.buildDiscoveryUpstreamProps(item),
+                  ...(pluginName === "divide"
+                    ? { metadata: item.metadata || "" }
+                    : {}),
                 }));
                 dispatch({
                   type: "discovery/add",
@@ -402,24 +426,13 @@ export default class DiscoveryProxy extends Component {
     if (data.discovery.serverList === null && data.type !== "local") {
       isSetConfig = true;
     }
-    const updateArray = data.discoveryUpstreams.map((item) => {
-      let propsObj = JSON.parse(item.props || "{}");
-      if (item.props === null) {
-        propsObj = {
-          warmupTime: 10,
-          gray: "false",
-        };
-      }
-      return {
-        ...item,
-        key: item.id,
-        warmupTime: propsObj.warmupTime,
-        gray: propsObj.gray,
-      };
-    });
+    const updateArray = data.discoveryUpstreams.map((item) =>
+      this.parseDiscoveryUpstream(item, pluginName),
+    );
     this.setState({
       popup: (
         <ProxySelectorModal
+          pluginName={pluginName}
           recordCount={updateArray.length}
           discoveryUpstreams={updateArray}
           discoveryType={data.discovery.type}
@@ -446,10 +459,10 @@ export default class DiscoveryProxy extends Component {
               status: parseInt(item.status, 10),
               weight: item.weight,
               startupTime: item.startupTime,
-              props: JSON.stringify({
-                warmupTime: item.warmupTime,
-                gray: `${item.gray}`,
-              }),
+              props: this.buildDiscoveryUpstreamProps(item),
+              ...(pluginName === "divide"
+                ? { metadata: item.metadata || "" }
+                : {}),
             }));
             dispatch({
               type: "discovery/update",

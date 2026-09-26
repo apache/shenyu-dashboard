@@ -1679,6 +1679,7 @@ class AddModal extends Component {
                 <EditableFormTable
                   wrappedComponentRef={this.editableFormTableRef}
                   isLocal={false}
+                  pluginName={this.props.pluginName}
                   dataSource={upstreams}
                   recordCount={recordCount}
                   onTableChange={this.handleTableChange}
@@ -1696,6 +1697,7 @@ class AddModal extends Component {
             <EditableFormTable
               wrappedComponentRef={this.editableFormTableRef}
               isLocal={true}
+              pluginName={this.props.pluginName}
               dataSource={upstreams}
               recordCount={recordCount}
               onTableChange={this.handleTableChange}
