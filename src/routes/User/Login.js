@@ -22,35 +22,9 @@ import { Alert } from "antd";
 import UUID from "uuid";
 import Login from "components/Login";
 import styles from "./Login.less";
-import { querySecretInfo } from "../../services/api";
+import { ensureSecret, getSecret } from "./loginSecret";
 
 const { UserName, Password, Submit, VerifyCode, LoginCode } = Login;
-
-let secretKey = "";
-let secretIv = "";
-async function initSecret() {
-  try {
-    let promise = await querySecretInfo();
-    if (typeof promise !== "undefined") {
-      if (promise.status === 200) {
-        let body = await promise.json();
-        let secret = JSON.parse(atob(body.data));
-        if (
-          secret.key != null &&
-          secret.key !== "" &&
-          secret.iv != null &&
-          secret.iv !== ""
-        ) {
-          secretKey = secret.key;
-          secretIv = secret.iv;
-        }
-      }
-    }
-  } catch (e) {
-    // ignore error
-  }
-}
-initSecret().then(() => {});
 @connect(({ login, loading }) => ({
   login,
   submitting: loading.effects["login/login"],
@@ -70,7 +44,7 @@ export default class LoginPage extends Component {
     this.ChildRef.current?.handleChange();
   }
 
-  handleSubmit = (err, values) => {
+  handleSubmit = async (err, values) => {
     const { dispatch } = this.props;
     const { needCode } = this.state;
     if (!err) {
@@ -79,7 +53,11 @@ export default class LoginPage extends Component {
         this.ChildRef.current.handleChange();
         return;
       }
-      if (secretKey !== "" && secretIv !== "") {
+      if (!(await ensureSecret())) {
+        return;
+      }
+      const { key: secretKey, iv: secretIv } = getSecret();
+      if (secretKey && secretIv) {
         const keyByte = CryptoJS.enc.Utf8.parse(secretKey);
         const ivByte = CryptoJS.enc.Utf8.parse(secretIv);
         const encryptedPassword = CryptoJS.AES.encrypt(
@@ -99,13 +77,15 @@ export default class LoginPage extends Component {
         payload: {
           ...values,
           clientId: UUID.v4().replaceAll("-", ""),
-          callback: (res) => {
-            if (res.code === 500) {
-              this.setState({ needCode: true });
-            }
-          },
+          callback: this.handleLoginResponse,
         },
       });
+    }
+  };
+
+  handleLoginResponse = (res) => {
+    if (res?.code === 500) {
+      this.setState({ needCode: true });
     }
   };
 
