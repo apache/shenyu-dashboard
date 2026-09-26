@@ -258,7 +258,11 @@ export default {
     },
 
     *exportByNamespace(params, { call }) {
+      const { callback } = params;
       yield call(asyncConfigExportByNamespace, params);
+      if (callback) {
+        callback();
+      }
     },
 
     *import(params, { call }) {
