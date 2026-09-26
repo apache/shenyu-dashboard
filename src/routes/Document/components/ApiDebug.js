@@ -50,6 +50,7 @@ import HeadersEditor from "./HeadersEditor";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { Method } from "./globalData";
+import { buildEnvironmentHost } from "../../../utils/UrlUtils";
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -271,8 +272,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
               style={{ width: "40%" }}
               onChange={(envId) => {
                 const env = Object.values(envProps)[envId];
-                const url = new URL(env.addressUrl);
-                const host = `${url.protocol}//${url.hostname}:${url.port || "80"}`;
+                const host = buildEnvironmentHost(env.addressUrl);
                 setInitialValue({ ...initialValue, host, envId });
                 const requestUrl = `${host}${initialValue.url ?? ""}`;
                 form.setFieldsValue({ requestUrl });
