@@ -609,7 +609,7 @@ export class ProxySelectorModalComponent extends Component {
                           style={{ width: "100%" }}
                         >
                           {(() => {
-                            if (discoveryHandler != null) {
+                            if (discoveryHandler?.[0] != null) {
                               let item = discoveryHandler[0];
                               let checkRule = item.checkRule;
                               let required = item.required === "1";
