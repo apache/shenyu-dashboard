@@ -142,7 +142,7 @@ class AddModal extends Component {
                 },
                 {
                   max: 256,
-                  message: getIntlContent("SHENYU.REGISTRY.REGISTRY_ID.LENGTH"),
+                  message: getIntlContent("SHENYU.REGISTRY.ADDRESS.LENGTH"),
                 },
               ],
               initialValue: address,
@@ -185,15 +185,13 @@ class AddModal extends Component {
               rules: [
                 {
                   max: 128,
-                  message: getIntlContent("SHENYU.REGISTRY.DESCRIPTION.LENGTH"),
+                  message: getIntlContent("SHENYU.REGISTRY.NAMESPACE.LENGTH"),
                 },
               ],
               initialValue: namespace,
             })(
               <Input
-                placeholder={getIntlContent(
-                  "SHENYU.REGISTRY.DESCRIPTION.INPUT",
-                )}
+                placeholder={getIntlContent("SHENYU.REGISTRY.NAMESPACE.INPUT")}
               />,
             )}
           </FormItem>
@@ -205,9 +203,7 @@ class AddModal extends Component {
               initialValue: group,
             })(
               <Input
-                placeholder={getIntlContent(
-                  "SHENYU.REGISTRY.DESCRIPTION.INPUT",
-                )}
+                placeholder={getIntlContent("SHENYU.REGISTRY.GROUP.INPUT")}
               />,
             )}
           </FormItem>
