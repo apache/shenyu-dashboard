@@ -36,6 +36,7 @@ import styles from "../index.less";
 import ProxySelectorCopy from "./ProxySelectorCopy.js";
 import { findKeyByValue } from "../../../utils/utils";
 import EditableFormTable from "./DiscoveryUpstreamTable";
+import { getDefaultValueList, getDiscoveryProps } from "./optionalFields";
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
@@ -60,7 +61,7 @@ export class ProxySelectorModalComponent extends Component {
     const { isAdd, isSetConfig, discoveryType, data, pluginId, dispatch } =
       this.props;
     const { discoveryDicts } = this.state;
-    const { props } = this.props.data || {};
+    const props = getDiscoveryProps(this.props.data?.props);
 
     if (!isAdd || isSetConfig) {
       this.setState({
@@ -109,8 +110,9 @@ export class ProxySelectorModalComponent extends Component {
             pluginHandles[0] = filteredArray;
             this.setState({ pluginHandleList: pluginHandles });
 
-            let defaultValue = handlerArray[0].defaultValue;
-            this.setState({ defaultValueList: defaultValue.split(",") });
+            this.setState({
+              defaultValueList: getDefaultValueList(handlerArray[0]),
+            });
           }
         },
       },
