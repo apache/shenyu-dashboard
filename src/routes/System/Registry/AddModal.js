@@ -21,7 +21,7 @@ import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;
 
-class AddModal extends Component {
+export class RegistryAddModal extends Component {
   handleSubmit = (e) => {
     const { form, handleOk } = this.props;
     const { id } = this.props?.detail || {};
@@ -37,7 +37,7 @@ class AddModal extends Component {
           namespace,
           group,
         } = values;
-        handleOk({
+        const submitValues = {
           registryId,
           protocol,
           address,
@@ -46,7 +46,16 @@ class AddModal extends Component {
           namespace,
           group,
           id,
-        });
+        };
+        if (
+          id &&
+          (submitValues.password === "" ||
+            submitValues.password === undefined ||
+            submitValues.password === null)
+        ) {
+          delete submitValues.password;
+        }
+        handleOk(submitValues);
       }
     });
   };
@@ -59,7 +68,6 @@ class AddModal extends Component {
       protocol = "",
       address = "",
       username = "",
-      password = "",
       namespace = "",
       group = "",
       id = "",
@@ -108,7 +116,7 @@ class AddModal extends Component {
                 placeholder={getIntlContent(
                   "SHENYU.REGISTRY.REGISTRY_ID.INPUT",
                 )}
-                disabled={id}
+                disabled={Boolean(id)}
               />,
             )}
           </FormItem>
@@ -169,10 +177,8 @@ class AddModal extends Component {
             label={getIntlContent("SHENYU.REGISTRY.PASSPORT")}
             {...formItemLayout}
           >
-            {getFieldDecorator("password", {
-              initialValue: password,
-            })(
-              <Input
+            {getFieldDecorator("password")(
+              <Input.Password
                 placeholder={getIntlContent("SHENYU.REGISTRY.PASSPORT.INPUT")}
               />,
             )}
@@ -213,4 +219,4 @@ class AddModal extends Component {
   }
 }
 
-export default Form.create()(AddModal);
+export default Form.create()(RegistryAddModal);
