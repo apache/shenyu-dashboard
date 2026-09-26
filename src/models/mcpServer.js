@@ -1,96 +1,39 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { message } from "antd";
-import {
-  fetchMcpServer,
-  addMcpServer,
-  updateMcpServer,
-  deleteMcpServer,
-  mcpSwaggerImport,
-} from "../services/api";
-import { getIntlContent } from "../utils/IntlUtils";
+import { mcpSwaggerImport } from "../services/api";
 
 export default {
   namespace: "mcpServer",
 
-  state: {
-    list: [],
-    total: 0,
-    currentPage: 1,
-    pageSize: 12,
-  },
-
   effects: {
-    *fetch({ payload }, { call, put }) {
-      const response = yield call(fetchMcpServer, payload);
-      if (response) {
-        yield put({
-          type: "saveList",
-          payload: {
-            list: response.data,
-            total: response.total,
-            currentPage: payload.currentPage,
-            pageSize: payload.pageSize,
-          },
-        });
-      }
-    },
-    *add({ payload, callback }, { call, put }) {
-      const response = yield call(addMcpServer, payload);
-      if (response) {
-        message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
-        yield put({ type: "reload" });
-      }
-      if (callback) callback();
-    },
-    *update({ payload, callback }, { call, put }) {
-      const response = yield call(updateMcpServer, payload);
-      if (response) {
-        message.success(
-          getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
-        );
-        yield put({ type: "reload" });
-      }
-      if (callback) callback();
-    },
-    *delete({ payload, callback }, { call, put }) {
-      const response = yield call(deleteMcpServer, payload);
-      if (response) {
-        message.success(
-          getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
-        );
-        yield put({ type: "reload" });
-      }
-      if (callback) callback();
-    },
-    *reload(_, { put, select }) {
-      const { currentPage, pageSize } = yield select(
-        (state) => state.mcpServer,
-      );
-      yield put({
-        type: "fetch",
-        payload: { currentPage, pageSize },
-      });
-    },
-    *swaggerImport({ payload, callback }, { call, put }) {
+    *swaggerImport({ payload, fetchValue, callback }, { call, put }) {
       const json = yield call(mcpSwaggerImport, payload);
       if (json.code === 200) {
         message.success(json.message);
-        yield put({ type: "reload" });
+        yield put({
+          type: "common/fetchSelector",
+          payload: fetchValue,
+        });
         if (callback) callback();
       } else {
         message.warn(json.message);
       }
-    },
-  },
-
-  reducers: {
-    saveList(state, { payload }) {
-      return {
-        ...state,
-        list: payload.list,
-        total: payload.total,
-        currentPage: payload.currentPage,
-        pageSize: payload.pageSize,
-      };
     },
   },
 };
