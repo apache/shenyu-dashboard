@@ -36,6 +36,7 @@ import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
+import { sortByNumber } from "../../../utils/sorter";
 import { refreshAuthMenus } from "../../../utils/AuthRoute";
 import { getUpdateModal, updatePluginsEnabled } from "../../../utils/plugin";
 
@@ -377,7 +378,7 @@ export default class Plugin extends Component {
           ellipsis: true,
           key: "sort",
           width: 120,
-          sorter: (a, b) => (a.role > b.role ? 1 : -1),
+          sorter: sortByNumber("sort"),
           render: (text) => {
             return <div style={{ color: "#014955" }}>{text}</div>;
           },
