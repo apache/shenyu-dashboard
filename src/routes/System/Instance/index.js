@@ -39,6 +39,14 @@ const { Text } = Typography;
 
 const { Option } = Select;
 
+export const resizeCharts = (...charts) => {
+  charts.filter(Boolean).forEach((chart) => chart.resize());
+};
+
+export const disposeCharts = (...charts) => {
+  charts.filter(Boolean).forEach((chart) => chart.dispose());
+};
+
 @connect(({ instance, loading, global }) => ({
   instance,
   language: global.language,
@@ -71,6 +79,7 @@ export default class Instance extends Component {
     this.lineChartInstance = echarts.init(
       document.getElementById("lineDataDiv"),
     );
+    window.addEventListener("resize", this.handleChartResize);
   }
 
   componentDidUpdate(prevProps) {
@@ -91,6 +100,13 @@ export default class Instance extends Component {
     }
   }
 
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.handleChartResize);
+    disposeCharts(this.pieChartInstance, this.lineChartInstance);
+    this.pieChartInstance = null;
+    this.lineChartInstance = null;
+  }
+
   handleResize =
     (index) =>
     (e, { size }) => {
@@ -103,6 +119,10 @@ export default class Instance extends Component {
         return { columns: nextColumns };
       });
     };
+
+  handleChartResize = () => {
+    resizeCharts(this.pieChartInstance, this.lineChartInstance);
+  };
 
   onSelectChange = (selectedRowKeys) => {
     this.setState({ selectedRowKeys });
@@ -179,10 +199,6 @@ export default class Instance extends Component {
     };
 
     this.pieChartInstance.setOption(option);
-
-    window.addEventListener("resize", () => {
-      this.pieChartInstance.resize();
-    });
   };
 
   renderLineChart = (lineData) => {
@@ -254,10 +270,6 @@ export default class Instance extends Component {
     };
 
     this.lineChartInstance.setOption(option);
-
-    window.addEventListener("resize", () => {
-      this.lineChartInstance.resize();
-    });
   };
 
   pageOnchange = (page) => {
