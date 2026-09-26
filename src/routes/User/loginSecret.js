@@ -2,6 +2,7 @@ import { querySecretInfo } from "../../services/api";
 
 let secretKey = "";
 let secretIv = "";
+let secretInitialized = false;
 let secretPromise;
 
 async function loadSecret() {
@@ -13,11 +14,15 @@ async function loadSecret() {
 
     const body = await response.json();
     const secret = JSON.parse(atob(body.data));
-    if (secret.key && secret.iv) {
-      secretKey = secret.key;
-      secretIv = secret.iv;
-      return true;
+    const hasKey = Boolean(secret.key);
+    const hasIv = Boolean(secret.iv);
+    if (hasKey !== hasIv) {
+      return false;
     }
+    secretKey = secret.key || "";
+    secretIv = secret.iv || "";
+    secretInitialized = true;
+    return true;
   } catch (error) {
     // The submit path retries once when the initial request is still unavailable.
   }
@@ -25,7 +30,7 @@ async function loadSecret() {
 }
 
 export async function ensureSecret() {
-  if (secretKey && secretIv) {
+  if (secretInitialized) {
     return true;
   }
 
@@ -33,11 +38,11 @@ export async function ensureSecret() {
     secretPromise = loadSecret();
   }
   const loaded = await secretPromise;
-  if (!loaded && !(secretKey && secretIv)) {
+  if (!loaded && !secretInitialized) {
     secretPromise = loadSecret();
     await secretPromise;
   }
-  return Boolean(secretKey && secretIv);
+  return secretInitialized;
 }
 
 export function getSecret() {

@@ -77,13 +77,15 @@ export default class LoginPage extends Component {
         payload: {
           ...values,
           clientId: UUID.v4().replaceAll("-", ""),
-          callback: (res) => {
-            if (res.code === 500) {
-              this.setState({ needCode: true });
-            }
-          },
+          callback: this.handleLoginResponse,
         },
       });
+    }
+  };
+
+  handleLoginResponse = (res) => {
+    if (res?.code === 500) {
+      this.setState({ needCode: true });
     }
   };
 
