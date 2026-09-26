@@ -15,7 +15,18 @@
  * limitations under the License.
  */
 
-import { isValidHandleJSON, validateHandleJSON } from "./CommonRuleHandle";
+import React from "react";
+import { Form } from "antd";
+import { act, render } from "@testing-library/react";
+import CommonRuleHandle, {
+  isValidHandleJSON,
+  validateHandleJSON,
+} from "./CommonRuleHandle";
+import { initIntl } from "../../../utils/IntlUtils";
+
+beforeAll(() => {
+  initIntl("en-US");
+});
 
 describe("isValidHandleJSON", () => {
   it("accepts values while the structured form is active", () => {
@@ -26,7 +37,7 @@ describe("isValidHandleJSON", () => {
     expect(isValidHandleJSON("2", '{"enabled":true}')).toBe(true);
   });
 
-  it.each(["", "null", "[]", "true", "not-json"])(
+  it.each([undefined, null, "", "null", "[]", "true", "not-json"])(
     "rejects non-object JSON input %p",
     (value) => {
       expect(isValidHandleJSON("2", value)).toBe(false);
@@ -46,5 +57,38 @@ describe("validateHandleJSON", () => {
 
     expect(callback).toHaveBeenCalledTimes(1);
     expect(callback).toHaveBeenCalledWith(error);
+  });
+
+  it("rejects an untouched JSON textarea in the actual form", async () => {
+    let form;
+    const Harness = Form.create()((props) => {
+      form = props.form;
+      return (
+        <Form>
+          <CommonRuleHandle
+            form={props.form}
+            pluginHandleList={[]}
+            multiRuleHandle={false}
+          />
+        </Form>
+      );
+    });
+
+    render(<Harness />);
+
+    let errors;
+    await act(
+      () =>
+        new Promise((resolve) => {
+          form.validateFields((validationErrors) => {
+            errors = validationErrors;
+            resolve();
+          });
+        }),
+    );
+
+    expect(form.getFieldValue("handleType")).toBe("2");
+    expect(form.getFieldValue("handleJSON")).toBeUndefined();
+    expect(errors.handleJSON.errors).toHaveLength(1);
   });
 });

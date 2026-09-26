@@ -34,8 +34,12 @@ const formItemLayout = {
 };
 
 export const isValidHandleJSON = (handleType, value) => {
-  if (handleType !== "2" || typeof value !== "string") {
+  if (handleType !== "2") {
     return true;
+  }
+
+  if (typeof value !== "string") {
+    return false;
   }
 
   try {
