@@ -33,6 +33,32 @@ const formItemLayout = {
   },
 };
 
+export const isValidHandleJSON = (handleType, value) => {
+  if (handleType !== "2") {
+    return true;
+  }
+
+  if (typeof value !== "string") {
+    return false;
+  }
+
+  try {
+    const parsed = JSON.parse(value);
+    return parsed !== null && parsed.constructor === Object;
+  } catch (e) {
+    return false;
+  }
+};
+
+export const validateHandleJSON = (
+  handleType,
+  value,
+  callback,
+  invalidMessage,
+) => {
+  callback(isValidHandleJSON(handleType, value) ? undefined : invalidMessage);
+};
+
 export default class CommonRuleHandle extends Component {
   render() {
     const labelWidth = 160;
@@ -241,28 +267,12 @@ export default class CommonRuleHandle extends Component {
             rules: [
               {
                 validator(rule, value, callback) {
-                  if (
-                    getFieldValue("handleType") === "1" ||
-                    typeof value !== "string"
-                  ) {
-                    callback();
-                  }
-                  if (getFieldValue("handleType") === "2") {
-                    try {
-                      const obj = JSON.parse(value);
-                      if (obj.constructor === Object) {
-                        callback();
-                      } else {
-                        callback(
-                          getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID"),
-                        );
-                      }
-                    } catch (e) {
-                      callback(
-                        getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID"),
-                      );
-                    }
-                  }
+                  validateHandleJSON(
+                    getFieldValue("handleType"),
+                    value,
+                    callback,
+                    getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID"),
+                  );
                 },
               },
             ],
