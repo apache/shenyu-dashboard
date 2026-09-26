@@ -35,16 +35,18 @@ import styles from "../index.less";
 import ProxySelectorCopy from "./ProxySelectorCopy.js";
 import { findKeyByValue } from "../../../utils/utils";
 import EditableFormTable from "./DiscoveryUpstreamTable";
+import { getDefaultValueList, getDiscoveryProps } from "./optionalFields";
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
 const { Option } = Select;
 
-@connect(({ discovery, pluginHandle, shenyuDict }) => ({
+const mapStateToProps = ({ discovery, pluginHandle, shenyuDict }) => ({
   ...discovery,
   ...pluginHandle,
   ...shenyuDict,
-}))
+});
+
 class ProxySelectorModal extends Component {
   constructor(props) {
     super(props);
@@ -64,7 +66,7 @@ class ProxySelectorModal extends Component {
     const { isAdd, isSetConfig, discoveryType, data, pluginId, dispatch } =
       this.props;
     const { discoveryDicts } = this.state;
-    const { props } = this.props.data || {};
+    const props = getDiscoveryProps(this.props.data?.props);
 
     if (!isAdd || isSetConfig) {
       this.setState({
@@ -113,8 +115,9 @@ class ProxySelectorModal extends Component {
             pluginHandles[0] = filteredArray;
             this.setState({ pluginHandleList: pluginHandles });
 
-            let defaultValue = handlerArray[0].defaultValue;
-            this.setState({ defaultValueList: defaultValue.split(",") });
+            this.setState({
+              defaultValueList: getDefaultValueList(handlerArray[0]),
+            });
           }
         },
       },
@@ -607,7 +610,7 @@ class ProxySelectorModal extends Component {
                           style={{ width: "100%" }}
                         >
                           {(() => {
-                            if (discoveryHandler != null) {
+                            if (discoveryHandler?.[0] != null) {
                               let item = discoveryHandler[0];
                               let checkRule = item.checkRule;
                               let required = item.required === "1";
@@ -783,4 +786,6 @@ class ProxySelectorModal extends Component {
   }
 }
 
-export default Form.create()(ProxySelectorModal);
+export { ProxySelectorModal };
+
+export default Form.create()(connect(mapStateToProps)(ProxySelectorModal));
