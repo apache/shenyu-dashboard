@@ -41,11 +41,12 @@ const FormItem = Form.Item;
 const { TabPane } = Tabs;
 const { Option } = Select;
 
-@connect(({ discovery, pluginHandle, shenyuDict }) => ({
+const mapStateToProps = ({ discovery, pluginHandle, shenyuDict }) => ({
   ...discovery,
   ...pluginHandle,
   ...shenyuDict,
-}))
+});
+
 class ProxySelectorModal extends Component {
   constructor(props) {
     super(props);
@@ -609,7 +610,7 @@ class ProxySelectorModal extends Component {
                           style={{ width: "100%" }}
                         >
                           {(() => {
-                            if (discoveryHandler != null) {
+                            if (discoveryHandler?.[0] != null) {
                               let item = discoveryHandler[0];
                               let checkRule = item.checkRule;
                               let required = item.required === "1";
@@ -785,4 +786,6 @@ class ProxySelectorModal extends Component {
   }
 }
 
-export default Form.create()(ProxySelectorModal);
+export { ProxySelectorModal };
+
+export default Form.create()(connect(mapStateToProps)(ProxySelectorModal));

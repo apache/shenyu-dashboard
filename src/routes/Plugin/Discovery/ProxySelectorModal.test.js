@@ -1,0 +1,56 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React from "react";
+import { render } from "@testing-library/react";
+
+jest.mock("./ProxySelectorCopy.js", () => () => null);
+jest.mock("./DiscoveryUpstreamTable", () => () => null);
+
+const { ProxySelectorModal } = require("./ProxySelectorModal");
+
+describe("ProxySelectorModal", () => {
+  it("renders when another plugin handle exists without a discovery handler", () => {
+    const props = {
+      chosenType: "zookeeper",
+      data: {
+        discovery: { props: "{}", serverList: [] },
+        handler: "{}",
+      },
+      discoveryDicts: [],
+      discoveryType: "zookeeper",
+      typeEnums: ["local", "zookeeper"],
+      dispatch: ({ payload }) => {
+        if (payload.callBack) {
+          payload.callBack([[{ field: "loadBalance", dataType: 1 }]]);
+        }
+      },
+      form: {
+        getFieldDecorator: () => (element) => element,
+      },
+      handleCancel: jest.fn(),
+      handleOk: jest.fn(),
+      isAdd: true,
+      isSetConfig: false,
+      pluginId: "plugin-id",
+      recordCount: 0,
+      discoveryUpstreams: [],
+    };
+
+    expect(() => render(<ProxySelectorModal {...props} />)).not.toThrow();
+  });
+});
