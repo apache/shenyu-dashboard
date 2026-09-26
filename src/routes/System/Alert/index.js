@@ -26,12 +26,20 @@ import { Type } from "./globalData";
 
 const DEFAULT_ALERT_TYPE = 1;
 
-@connect(({ alert, loading, global }) => ({
-  alert,
-  loading: loading.effects["alert/fetch"],
-  currentNamespaceId: global.currentNamespaceId,
-}))
-export default class Alert extends Component {
+export const getAlertPageAfterDelete = (
+  total,
+  deletedCount,
+  currentPage,
+  pageSize,
+) => {
+  const remainingPages = Math.max(
+    1,
+    Math.ceil((total - deletedCount) / pageSize),
+  );
+  return Math.min(currentPage, remainingPages);
+};
+
+export class AlertComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -123,20 +131,31 @@ export default class Alert extends Component {
   };
 
   deleteClick = () => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      currentNamespaceId,
+      alert: { total },
+    } = this.props;
     const { currentPage, pageSize, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
+      const nextPage = getAlertPageAfterDelete(
+        total,
+        selectedRowKeys.length,
+        currentPage,
+        pageSize,
+      );
       dispatch({
         type: "alert/delete",
         payload: {
           list: selectedRowKeys,
         },
         fetchValue: {
-          currentPage,
+          currentPage: nextPage,
           pageSize,
+          namespaceId: currentNamespaceId,
         },
         callback: () => {
-          this.setState({ selectedRowKeys: [] });
+          this.setState({ selectedRowKeys: [], currentPage: nextPage });
         },
       });
     } else {
@@ -350,3 +369,11 @@ export default class Alert extends Component {
     );
   }
 }
+
+const ConnectedAlert = connect(({ alert, loading, global }) => ({
+  alert,
+  loading: loading.effects["alert/fetch"],
+  currentNamespaceId: global.currentNamespaceId,
+}))(AlertComponent);
+
+export default ConnectedAlert;
