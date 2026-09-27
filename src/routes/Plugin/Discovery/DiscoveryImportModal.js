@@ -20,9 +20,12 @@ import { Modal } from "antd";
 import { connect } from "dva";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
-@connect(({ discovery }) => ({
+export const mapStateToProps = ({ discovery, global }) => ({
   discovery,
-}))
+  currentNamespaceId: global.currentNamespaceId,
+});
+
+@connect(mapStateToProps)
 class DiscoveryImportModal extends Component {
   constructor(props) {
     super(props);
