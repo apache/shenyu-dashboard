@@ -1045,8 +1045,8 @@ export default class McpServer extends Component {
       ruleList,
       selectorList,
       selectorTotal,
+      ruleTotal,
       currentSelector,
-      toolTotal,
     } = this.props;
 
     const selectColumns = [
@@ -1522,7 +1522,7 @@ export default class McpServer extends Component {
               dataSource={ruleList}
               rowSelection={toolRowSelection}
               pagination={{
-                total: toolTotal,
+                total: ruleTotal,
                 showTotal: (showTotal) => `${showTotal}`,
                 showSizeChanger: true,
                 pageSizeOptions: ["12", "20", "50", "100"],
