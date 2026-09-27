@@ -15,7 +15,12 @@
  * limitations under the License.
  */
 
-import { checkMenuAuth, getAuthMenus, resetAuthMenuCache } from "./AuthRoute";
+import {
+  checkMenuAuth,
+  getAuthMenus,
+  getBaseRedirectPath,
+  resetAuthMenuCache,
+} from "./AuthRoute";
 
 jest.mock("./IntlUtils", () => ({ getIntlContent: (key) => key }));
 
@@ -48,6 +53,33 @@ it("matches a plugin instance against its normalized permission route", () => {
   const permissions = { menu: [{ url: "/plug/divide" }] };
   expect(checkMenuAuth("/plug/42/divide", permissions)).toBe("/plug/42/divide");
   expect(checkMenuAuth("/plug/42/dubbo", permissions)).toBe(false);
+});
+
+it("prefers Home over earlier authorized routes", () => {
+  const routerData = {
+    "/": {},
+    "/plug/Mcp/mcpServer": {},
+    "/home": {},
+    "/system/user": {},
+  };
+  const permissions = {
+    menu: [{ url: "/plug/mcpServer" }, { url: "/system/user" }],
+  };
+
+  expect(getBaseRedirectPath(routerData, permissions)).toBe("/home");
+});
+
+it("falls back to the first authorized route when Home is unavailable", () => {
+  const routerData = {
+    "/": {},
+    "/system/user": {},
+    "/system/role": {},
+  };
+  const permissions = {
+    menu: [{ url: "/system/role" }],
+  };
+
+  expect(getBaseRedirectPath(routerData, permissions)).toBe("/system/role");
 });
 
 it("uses the new namespace's permissions even when a previous menu was cached", () => {

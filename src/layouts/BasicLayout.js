@@ -29,7 +29,10 @@ import GlobalHeader from "../components/GlobalHeader";
 import SiderMenu from "../components/SiderMenu";
 import NotFound from "../routes/Exception/404";
 import { getRoutes } from "../utils/utils";
-import AuthRoute, { checkMenuAuth, getAuthMenus } from "../utils/AuthRoute";
+import AuthRoute, {
+  getAuthMenus,
+  getBaseRedirectPath,
+} from "../utils/AuthRoute";
 import { getMenuData } from "../common/menu";
 import logo from "../assets/logo.svg";
 import TitleLogo from "../assets/TitleLogo.svg";
@@ -199,10 +202,7 @@ class BasicLayout extends React.PureComponent {
       window.history.replaceState(null, "redirect", urlParams.href);
     } else {
       const { routerData, permissions } = this.props;
-      // get the first authorized route path in routerData
-      return Object.keys(routerData).find(
-        (item) => checkMenuAuth(item, permissions) && item !== "/",
-      );
+      return getBaseRedirectPath(routerData, permissions);
     }
     return redirect;
   };
