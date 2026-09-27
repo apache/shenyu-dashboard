@@ -368,6 +368,7 @@ export default class DiscoveryProxy extends Component {
                   fetchValue: {
                     currentPage,
                     pageSize,
+                    namespaceId: currentNamespaceId,
                   },
                 });
               }}
@@ -489,7 +490,7 @@ export default class DiscoveryProxy extends Component {
   };
 
   handleDelete = (id) => {
-    const { currentPage, pageSize } = this.props;
+    const { currentPage, pageSize, currentNamespaceId } = this.props;
     this.props.dispatch({
       type: "discovery/delete",
       payload: {
@@ -498,6 +499,7 @@ export default class DiscoveryProxy extends Component {
       fetchValue: {
         currentPage,
         pageSize,
+        namespaceId: currentNamespaceId,
       },
     });
   };
