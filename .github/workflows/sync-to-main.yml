@@ -93,12 +93,12 @@ jobs:
               --title "chore: sync dashboard build artifacts" \
               --body "Auto-sync dashboard build artifacts from apache/shenyu-dashboard.
 
-**Source Details:**
-- Repository: apache/shenyu-dashboard
-- Commit: ${{ github.sha }}
-- Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          **Source Details:**
+          - Repository: apache/shenyu-dashboard
+          - Commit: ${{ github.sha }}
+          - Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-This PR contains the latest build artifacts from the dashboard repository." \
+          This PR contains the latest build artifacts from the dashboard repository." \
               --head "$BRANCH_NAME" \
               --base master)
 
