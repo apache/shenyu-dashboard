@@ -20,6 +20,7 @@ import HystrixRuleHandle from "./HystrixRuleHandle";
 import ParamPluginRuleHandle from "./ParamPluginRuleHandle";
 import ResponseRuleHandle from "./ResponseRuleHandle";
 import GeneralContextRuleHandle from "./GeneralContextRuleHandle";
+import DivideRuleHandle from "./DivideRuleHandle";
 
 export default {
   request: RequestRuleHandle,
@@ -27,4 +28,5 @@ export default {
   modifyResponse: ResponseRuleHandle,
   hystrix: HystrixRuleHandle,
   paramMapping: ParamPluginRuleHandle,
+  divide: DivideRuleHandle,
 };

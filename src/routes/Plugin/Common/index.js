@@ -191,6 +191,29 @@ export default class Common extends Component {
     this.setState({ popup: "" });
   };
 
+  buildDiscoveryUpstreamProps = (item) =>
+    JSON.stringify({
+      warmupTime: item.warmupTime,
+      gray: `${item.gray}`,
+    });
+
+  parseDiscoveryUpstream = (item, pluginName) => {
+    let propsObj = JSON.parse(item.props || "{}");
+    if (item.props === null) {
+      propsObj = {
+        warmupTime: 10,
+        gray: "false",
+      };
+    }
+    return {
+      ...item,
+      key: item.id,
+      warmupTime: propsObj.warmupTime,
+      gray: propsObj.gray,
+      ...(pluginName === "divide" ? { metadata: item.metadata || "" } : {}),
+    };
+  };
+
   searchSelectorOnchange = (e) => {
     const selectorName = e.target.value;
     this.setState({ selectorName });
@@ -430,16 +453,17 @@ export default class Common extends Component {
 
   getUpstreamsWithProps = (upstreams) => {
     const { currentNamespaceId } = this.props;
+    const pluginName = this.props.match.params
+      ? this.props.match.params.id
+      : "";
     return upstreams.map((item) => ({
       protocol: item.protocol,
       url: item.url,
       status: parseInt(item.status, 10),
       weight: item.weight,
       startupTime: item.startupTime,
-      props: JSON.stringify({
-        warmupTime: item.warmupTime,
-        gray: `${item.gray}`,
-      }),
+      props: this.buildDiscoveryUpstreamProps(item),
+      ...(pluginName === "divide" ? { metadata: item.metadata || "" } : {}),
       namespaceId: currentNamespaceId,
     }));
   };
@@ -483,15 +507,16 @@ export default class Common extends Component {
 
   updateDiscoveryUpstream = (discoveryHandlerId, upstreams) => {
     const { dispatch, currentNamespaceId } = this.props;
+    const pluginName = this.props.match.params
+      ? this.props.match.params.id
+      : "";
     const upstreamsWithHandlerId = upstreams.map((item) => ({
       protocol: item.protocol,
       url: item.url,
       status: parseInt(item.status, 10),
       weight: item.weight,
-      props: JSON.stringify({
-        warmupTime: item.warmupTime,
-        gray: `${item.gray}`,
-      }),
+      props: this.buildDiscoveryUpstreamProps(item),
+      ...(pluginName === "divide" ? { metadata: item.metadata || "" } : {}),
       discoveryHandlerId,
       namespaceId: currentNamespaceId,
     }));
@@ -547,21 +572,9 @@ export default class Common extends Component {
           };
           let updateArray = [];
           if (selector.discoveryUpstreams) {
-            updateArray = selector.discoveryUpstreams.map((item) => {
-              let propsObj = JSON.parse(item.props || "{}");
-              if (item.props === null) {
-                propsObj = {
-                  warmupTime: 10,
-                  gray: "false",
-                };
-              }
-              return {
-                ...item,
-                key: item.id,
-                warmupTime: propsObj.warmupTime,
-                gray: propsObj.gray,
-              };
-            });
+            updateArray = selector.discoveryUpstreams.map((item) =>
+              this.parseDiscoveryUpstream(item, name),
+            );
           }
           let discoveryHandlerId = selector.discoveryHandler
             ? selector.discoveryHandler.id

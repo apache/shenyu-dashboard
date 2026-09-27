@@ -218,6 +218,9 @@ class AddModal extends Component {
           if (this.handleComponentRef) {
             // customizationRule
             const customHandle = this.handleComponentRef.getData(values);
+            if (customHandle === null) {
+              return;
+            }
             handle = JSON.stringify({
               ...JSON.parse(handle ?? "{}"),
               ...JSON.parse(customHandle),
