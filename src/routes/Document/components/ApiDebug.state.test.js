@@ -103,3 +103,56 @@ it("keeps the saved mock id when the API path effect runs", async () => {
     expect(deleteMockRequest).toHaveBeenCalledWith("mock-1");
   });
 });
+
+it("does not delete the previous API mock while the next API mock is loading", async () => {
+  deleteMockRequest.mockResolvedValue({ code: 200, message: "Deleted" });
+
+  const apiMock = {
+    body: "{}",
+    header: { "X-Test": "value" },
+    host: "api.example.com",
+    id: "mock-a",
+    pathVariable: "",
+    port: "443",
+    query: "[]",
+    url: "https://api.example.com/a",
+  };
+  const apiData = { envProps: [] };
+  const { rerender } = render(
+    <ApiContext.Provider
+      value={{
+        apiData,
+        apiDetail: {
+          apiPath: "/a",
+          httpMethod: 0,
+          id: "api-a",
+        },
+        apiMock,
+      }}
+    >
+      <ApiDebug />
+    </ApiContext.Provider>,
+  );
+
+  rerender(
+    <ApiContext.Provider
+      value={{
+        apiData,
+        apiDetail: {
+          apiPath: "/b",
+          httpMethod: 0,
+          id: "api-b",
+        },
+        apiMock,
+      }}
+    >
+      <ApiDebug />
+    </ApiContext.Provider>,
+  );
+
+  fireEvent.click(screen.getByText("SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.RESET"));
+
+  await waitFor(() => {
+    expect(deleteMockRequest).not.toHaveBeenCalled();
+  });
+});
