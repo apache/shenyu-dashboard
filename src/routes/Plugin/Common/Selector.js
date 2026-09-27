@@ -50,6 +50,7 @@ import {
 } from "../../../utils/utils";
 import DiscoveryImportModal from "../Discovery/DiscoveryImportModal";
 import EditableFormTable from "../Discovery/DiscoveryUpstreamTable.js";
+import { buildHandle } from "./selectorHandle";
 
 const { Item } = Form;
 const { TabPane } = Tabs;
@@ -264,7 +265,6 @@ class AddModal extends Component {
       upstreams,
       importedDiscoveryId,
     } = this.state;
-    let handle = [];
 
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -308,35 +308,7 @@ class AddModal extends Component {
               importedDiscoveryId,
             });
           } else {
-            pluginHandleList.forEach((handleList, index) => {
-              handle[index] = {};
-              handleList.forEach((item) => {
-                if (isDivideUpstreamsRequiresForPlugin(pluginId)) {
-                  const { keys, divideUpstreams } = values;
-                  const data = {
-                    [item.field]: values[item.field],
-                    gray: values.gray,
-                  };
-
-                  if (
-                    Array.isArray(divideUpstreams) &&
-                    divideUpstreams.length
-                  ) {
-                    data.divideUpstreams = keys.map(
-                      (key) => divideUpstreams[key],
-                    );
-                  }
-                  handle[index] = data;
-                  delete values[item.field];
-                  delete values.divideUpstreams;
-                  delete values.gray;
-                  delete values.key;
-                } else {
-                  handle[index][item.field] = values[item.field + index];
-                  delete values[item.field + index];
-                }
-              });
-            });
+            const handle = buildHandle(pluginHandleList, values, pluginId);
             handleOk({
               ...values,
               handle: multiSelectorHandle
