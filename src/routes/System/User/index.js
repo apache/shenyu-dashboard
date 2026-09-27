@@ -106,16 +106,9 @@ export default class Manage extends Component {
               {...user}
               allRoles={allRoles}
               handleOk={(values) => {
-                const { userName, password, roles, enabled, id } = values;
                 dispatch({
                   type: "manage/update",
-                  payload: {
-                    userName,
-                    password,
-                    roles,
-                    enabled,
-                    id,
-                  },
+                  payload: values,
                   fetchValue: {
                     userName: name,
                     currentPage,
