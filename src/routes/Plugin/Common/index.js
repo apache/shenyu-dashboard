@@ -769,7 +769,8 @@ export default class Common extends Component {
   rowClick = (record) => {
     const { id } = record;
     const { dispatch, currentNamespaceId } = this.props;
-    const { selectorPageSize } = this.state;
+    const { rulePageSize } = this.state;
+    this.setState({ rulePage: 1 });
     dispatch({
       type: "common/saveCurrentSelector",
       payload: { currentSelector: record },
@@ -778,7 +779,7 @@ export default class Common extends Component {
       type: "common/fetchRule",
       payload: {
         currentPage: 1,
-        pageSize: selectorPageSize,
+        pageSize: rulePageSize,
         selectorId: id,
         namespaceId: currentNamespaceId,
       },

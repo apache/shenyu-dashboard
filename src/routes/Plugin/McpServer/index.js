@@ -775,7 +775,8 @@ export default class McpServer extends Component {
   rowClick = (record) => {
     const { id } = record;
     const { dispatch, currentNamespaceId } = this.props;
-    const { selectorPageSize } = this.state;
+    const { toolPageSize } = this.state;
+    this.setState({ toolPage: 1 });
     dispatch({
       type: "common/saveCurrentSelector",
       payload: {
@@ -786,7 +787,7 @@ export default class McpServer extends Component {
       type: "common/fetchRule",
       payload: {
         currentPage: 1,
-        pageSize: selectorPageSize,
+        pageSize: toolPageSize,
         selectorId: id,
         namespaceId: currentNamespaceId,
       },
