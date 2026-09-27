@@ -17,6 +17,25 @@
 
 import fetch from "dva/fetch";
 
+async function getDownloadErrorMessage(response) {
+  const fallbackMessage =
+    !response.ok && response.statusText
+      ? response.statusText
+      : `Export failed (${response.status})`;
+
+  try {
+    const result = await response.json();
+    if (result && result.message) {
+      return result.message;
+    }
+    return result && result.code
+      ? `Export failed (${result.code})`
+      : fallbackMessage;
+  } catch (error) {
+    return fallbackMessage;
+  }
+}
+
 /**
  * Requests a URL, for downloading.
  *
@@ -42,6 +61,16 @@ export default async function download(url, options) {
   try {
     const response = await fetch(url, newOptions);
     const disposition = response.headers.get("Content-Disposition");
+    const isAttachment =
+      response.ok &&
+      disposition &&
+      disposition.toLowerCase().includes("attachment");
+
+    if (!isAttachment) {
+      const errorMessage = await getDownloadErrorMessage(response);
+      throw new Error(errorMessage);
+    }
+
     const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
     const matches = filenameRegex.exec(disposition);
     let filename = "download";
@@ -58,6 +87,6 @@ export default async function download(url, options) {
     a.click();
     document.body.removeChild(a);
   } catch (error) {
-    throw new Error(`下载文件失败：${error}`);
+    throw new Error(`下载文件失败：${error.message || error}`);
   }
 }

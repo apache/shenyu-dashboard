@@ -22,6 +22,7 @@ import { withRouter } from "dva/router";
 import ImportModal from "./ImportModal";
 import ExportModal from "./ExportModal";
 import ImportResultModal from "./ImportResultModal";
+import parseImportResult from "./parseImportResult";
 import styles from "./index.less";
 import { getCurrentLocale, getIntlContent } from "../../utils/IntlUtils";
 import { checkUserPassword } from "../../services/api";
@@ -188,7 +189,10 @@ class GlobalHeader extends PureComponent {
               payload: values,
               callback: (res) => {
                 this.closeModal(true);
-                this.showImportRestlt(JSON.parse(res));
+                const importResult = parseImportResult(res);
+                if (importResult) {
+                  this.showImportRestlt(importResult);
+                }
               },
             });
           }}
@@ -232,9 +236,8 @@ class GlobalHeader extends PureComponent {
             dispatch({
               type: "common/exportByNamespace",
               payload: values,
-              callback: (res) => {
+              callback: () => {
                 this.closeModal(true);
-                this.showImportRestlt(JSON.parse(res));
               },
             });
           }}
