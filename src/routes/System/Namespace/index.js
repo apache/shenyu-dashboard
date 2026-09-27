@@ -115,7 +115,7 @@ export default class Namespace extends Component {
       this.setState({ popup: "", currentPage: 1 }, this.query);
       return;
     }
-    this.setState({ popup: "", currentPage: 1 });
+    this.setState({ popup: "" });
   };
 
   editClick = (record) => {
@@ -177,14 +177,12 @@ export default class Namespace extends Component {
       namespace: { namespaceList },
     } = this.props;
     const { selectedRowKeys } = this.state;
-    if (record) {
-      selectedRowKeys.push(record.id);
-    }
-    if (selectedRowKeys && selectedRowKeys.length > 0) {
+    const deleteKeys = record ? [record.id] : selectedRowKeys;
+    if (deleteKeys && deleteKeys.length > 0) {
       dispatch({
         type: "namespace/delete",
         payload: {
-          list: selectedRowKeys,
+          list: deleteKeys,
         },
         fetchValue: this.currentQueryPayload({
           pageSize: 12,
@@ -194,9 +192,7 @@ export default class Namespace extends Component {
           refreshAuthMenus({ dispatch });
           let deletedCurrentNamespace =
             namespaceList.find((namespace) =>
-              selectedRowKeys.some(
-                (namespaceId) => namespaceId === namespace.id,
-              ),
+              deleteKeys.some((namespaceId) => namespaceId === namespace.id),
             )?.namespaceId === currentNamespaceId;
           if (deletedCurrentNamespace) {
             dispatch({
