@@ -422,8 +422,13 @@ export default class McpServer extends Component {
 
   swaggerImportClick = () => {
     const { dispatch, currentNamespaceId, plugins } = this.props;
-    const { pluginName, selectorName, selectorPage, selectorPageSize } =
-      this.state;
+    const {
+      pluginName,
+      selectorName,
+      selectorPage,
+      selectorPageSize,
+      toolPageSize,
+    } = this.state;
     const pluginId = this.getPlugin(plugins, pluginName)?.pluginId;
     this.setState({
       popup: (
@@ -443,8 +448,10 @@ export default class McpServer extends Component {
                 pageSize: selectorPageSize,
                 name: selectorName,
                 namespaceId: currentNamespaceId,
+                rulePageSize: toolPageSize,
               },
               callback: () => {
+                this.setState({ toolPage: 1 });
                 this.closeModal();
               },
             });

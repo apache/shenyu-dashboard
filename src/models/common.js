@@ -48,8 +48,8 @@ export default {
 
   effects: {
     *fetchSelector({ payload }, { call, put }) {
-      const { namespaceId } = payload;
-      const json = yield call(getAllSelectors, { ...payload });
+      const { namespaceId, rulePageSize = 12, ...selectorPayload } = payload;
+      const json = yield call(getAllSelectors, { ...selectorPayload, namespaceId });
       if (json.code === 200) {
         let { page, dataList } = json.data;
         dataList = dataList.map((item) => {
@@ -75,7 +75,7 @@ export default {
             type: "fetchRule",
             payload: {
               currentPage: 1,
-              pageSize: 12,
+              pageSize: rulePageSize,
               selectorId: dataList[0].id,
               namespaceId,
             },

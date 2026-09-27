@@ -58,6 +58,8 @@ it("passes the active selector context to Swagger import refresh", () => {
     selectorPage: 3,
     selectorPageSize: 20,
     selectorName: "orders",
+    toolPage: 3,
+    toolPageSize: 50,
   };
   component.setState = (update) => {
     const next =
@@ -86,10 +88,13 @@ it("passes the active selector context to Swagger import refresh", () => {
       pageSize: 20,
       name: "orders",
       namespaceId: "namespace-1",
+      rulePageSize: 50,
     },
     callback: expect.any(Function),
   });
 
   dispatch.mock.calls[0][0].callback();
   expect(component.state.popup).toBe("");
+  expect(component.state.toolPage).toBe(1);
+  expect(component.state.toolPageSize).toBe(50);
 });
