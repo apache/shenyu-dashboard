@@ -84,8 +84,7 @@ export default class Namespace extends Component {
   };
 
   currentQueryPayload = (override) => {
-    const { name, currentPage, pageSize } = this.state;
-    const { namespaceId } = this.props;
+    const { name, namespaceId, currentPage, pageSize } = this.state;
     return {
       name,
       namespaceId,
