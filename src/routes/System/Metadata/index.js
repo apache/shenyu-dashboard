@@ -47,7 +47,6 @@ export default class Metadata extends Component {
       currentPage: 1,
       pageSize: 12,
       selectedRowKeys: [],
-      appName: "",
       path: "",
       popup: "",
       localeName: window.sessionStorage.getItem("locale")
@@ -119,8 +118,7 @@ export default class Metadata extends Component {
 
   editClick = (record, copy) => {
     const { dispatch, currentNamespaceId } = this.props;
-    const { currentPage, pageSize } = this.state;
-    const name = this.state.appName;
+    const { currentPage, pageSize, path: filterPath } = this.state;
     dispatch({
       type: "metadata/fetchItem",
       payload: {
@@ -166,7 +164,7 @@ export default class Metadata extends Component {
                   type: `metadata/${copy ? "add" : "update"}`,
                   payload,
                   fetchValue: {
-                    appName: name,
+                    path: filterPath,
                     currentPage,
                     pageSize,
                     namespaceId: currentNamespaceId,
@@ -196,7 +194,7 @@ export default class Metadata extends Component {
 
   deleteClick = () => {
     const { dispatch, currentNamespaceId } = this.props;
-    const { appName, currentPage, pageSize, selectedRowKeys } = this.state;
+    const { path, currentPage, pageSize, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "metadata/delete",
@@ -205,7 +203,7 @@ export default class Metadata extends Component {
           namespaceId: currentNamespaceId,
         },
         fetchValue: {
-          appName,
+          path,
           currentPage,
           pageSize,
           namespaceId: currentNamespaceId,
@@ -221,8 +219,7 @@ export default class Metadata extends Component {
   };
 
   addClick = () => {
-    const { currentPage, pageSize } = this.state;
-    const name = this.state.appName;
+    const { currentPage, pageSize, path: filterPath } = this.state;
     this.setState({
       popup: (
         <AddModal
@@ -255,7 +252,7 @@ export default class Metadata extends Component {
                 namespaceId: currentNamespaceId,
               },
               fetchValue: {
-                appName: name,
+                path: filterPath,
                 currentPage,
                 pageSize,
                 namespaceId: currentNamespaceId,
@@ -279,7 +276,7 @@ export default class Metadata extends Component {
 
   statusSwitch = ({ list, enabled, callback }) => {
     const { dispatch, currentNamespaceId } = this.props;
-    const { appName, currentPage, pageSize } = this.state;
+    const { path, currentPage, pageSize } = this.state;
     dispatch({
       type: "metadata/updateEn",
       payload: {
@@ -288,7 +285,7 @@ export default class Metadata extends Component {
         namespaceId: currentNamespaceId,
       },
       fetchValue: {
-        appName,
+        path,
         currentPage,
         pageSize,
         namespaceId: currentNamespaceId,
