@@ -32,6 +32,14 @@ class AddAndUpdateTag extends Component {
     onCancel: PropTypes.func,
   };
 
+  static defaultProps = {
+    form: null,
+    visible: false,
+    formLoaded: () => {},
+    onOk: () => {},
+    onCancel: () => {},
+  };
+
   componentDidMount() {
     const { form, formLoaded } = this.props;
     formLoaded?.(form);
