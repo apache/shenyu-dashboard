@@ -35,6 +35,7 @@ import AddAndUpdateTag from "./AddAndUpdateTag";
 import AddAndUpdateApiDoc from "./AddAndUpdateApiDoc";
 import ImportSwaggerModal from "./ImportSwaggerModal";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import { updateTreeNodes } from "./searchApiTree";
 
 const { Text } = Typography;
 
@@ -247,17 +248,11 @@ const SearchApi = React.forwardRef((props, ref) => {
       queryRootTag();
       return;
     }
-    let allNodes = treeData.flatMap((i) =>
-      i.children ? [...i.children, i] : i,
-    );
-    let curNodeIdx = allNodes.findIndex((t) => t.id && t.id === data.id) ?? -1;
-    if (curNodeIdx === -1) {
-      return;
-    }
+    let title;
     if (refType === "tag") {
-      allNodes[curNodeIdx].title = data.name;
+      title = data.name;
     } else if (refType === "api") {
-      allNodes[curNodeIdx].title = (
+      title = (
         <>
           <Text code>{Method[data.httpMethod]}</Text>
           <Tooltip placement="topLeft" arrowPointAtCenter title={data.apiPath}>
@@ -266,9 +261,11 @@ const SearchApi = React.forwardRef((props, ref) => {
         </>
       );
     }
-    // forceUpdate tree
-    setTreeData();
-    setTreeData(treeData);
+    const result = updateTreeNodes(treeData, data.id, title);
+    if (!result.updated) {
+      return;
+    }
+    setTreeData(result.nodes);
     afterUpdate(data, refType);
   };
 
