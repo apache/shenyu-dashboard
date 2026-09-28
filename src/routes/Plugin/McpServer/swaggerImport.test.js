@@ -98,3 +98,68 @@ it("passes the active selector context to Swagger import refresh", () => {
   expect(component.state.toolPage).toBe(1);
   expect(component.state.toolPageSize).toBe(50);
 });
+
+it("does not open Swagger import before plugin metadata is available", () => {
+  const dispatch = jest.fn();
+  const component = new McpServer({
+    dispatch,
+    currentNamespaceId: "namespace-1",
+    plugins: [],
+  });
+  component.setState = (update) => {
+    const next =
+      typeof update === "function"
+        ? update(component.state, component.props)
+        : update;
+    component.state = { ...component.state, ...next };
+  };
+
+  component.swaggerImportClick();
+
+  expect(component.state.popup).toBe("");
+  expect(dispatch).not.toHaveBeenCalled();
+});
+
+it("revalidates the plugin id when the Swagger import is submitted", () => {
+  const dispatch = jest.fn();
+  const component = new McpServer({
+    dispatch,
+    currentNamespaceId: "namespace-1",
+    plugins: [
+      {
+        name: "mcpServer",
+        pluginId: "plugin-1",
+      },
+    ],
+  });
+  component.setState = (update) => {
+    const next =
+      typeof update === "function"
+        ? update(component.state, component.props)
+        : update;
+    component.state = { ...component.state, ...next };
+  };
+
+  component.swaggerImportClick();
+  component.props = {
+    ...component.props,
+    plugins: [
+      {
+        name: "mcpServer",
+        pluginId: "plugin-2",
+      },
+    ],
+  };
+  component.state.popup.props.handleOk({
+    swaggerUrl: "https://example.test/openapi.json",
+    projectName: "example",
+  });
+
+  expect(dispatch).toHaveBeenCalledWith(
+    expect.objectContaining({
+      fetchValue: expect.objectContaining({
+        pluginId: "plugin-2",
+      }),
+    }),
+  );
+});
