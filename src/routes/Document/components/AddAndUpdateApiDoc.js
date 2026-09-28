@@ -27,12 +27,20 @@ import { getIntlContent } from "../../../utils/IntlUtils";
 import { addApi, updateApi } from "../../../services/api";
 
 class AddAndUpdateApiDoc extends Component {
-  static defaultProps = {
+  static propTypes = {
     form: PropTypes.object,
     visible: PropTypes.bool,
     formLoaded: PropTypes.func,
     onOk: PropTypes.func,
     onCancel: PropTypes.func,
+  };
+
+  static defaultProps = {
+    form: null,
+    visible: false,
+    formLoaded: () => {},
+    onOk: () => {},
+    onCancel: () => {},
   };
 
   componentDidMount() {
