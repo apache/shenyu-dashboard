@@ -145,8 +145,13 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   }, [apiDetail.httpMethod]);
 
   useEffect(() => {
-    setInitialValue({ url: apiDetail.apiPath });
-  }, [apiDetail.apiPath]);
+    setInitialValue((prev) => ({
+      ...prev,
+      id: prev.apiId === apiDetail.id ? prev.id : null,
+      apiId: apiDetail.id,
+      url: apiDetail.apiPath,
+    }));
+  }, [apiDetail.id, apiDetail.apiPath]);
 
   useEffect(() => {
     form.setFieldsValue({
