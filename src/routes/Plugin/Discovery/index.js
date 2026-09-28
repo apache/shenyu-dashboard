@@ -30,7 +30,7 @@ import {
 import { getIntlContent } from "../../../utils/IntlUtils";
 import discoveryStyles from "./discovery.less";
 import DiscoveryConfigModal from "./DiscoveryConfigModal";
-import ProxySelectorModal from "./ProxySelectorModal";
+import ConnectedProxySelectorModal from "./ProxySelectorModal";
 import { DiscoveryCard } from "./DiscoveryCard";
 import AuthButton from "../../../utils/AuthButton";
 import { getUpdateModal, updatePluginsEnabled } from "../../../utils/plugin";
@@ -308,7 +308,7 @@ export default class DiscoveryProxy extends Component {
         }
         this.setState({
           popup: (
-            <ProxySelectorModal
+            <ConnectedProxySelectorModal
               pluginId={plugin.id}
               recordCount={cardData.discoveryUpstreams.length}
               typeEnums={typeEnums}
@@ -420,7 +420,7 @@ export default class DiscoveryProxy extends Component {
     });
     this.setState({
       popup: (
-        <ProxySelectorModal
+        <ConnectedProxySelectorModal
           recordCount={updateArray.length}
           discoveryUpstreams={updateArray}
           discoveryType={data.discovery.type}

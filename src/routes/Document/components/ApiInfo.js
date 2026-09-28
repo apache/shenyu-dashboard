@@ -21,6 +21,7 @@ import ApiDebug from "./ApiDebug";
 import ApiContext from "./ApiContext";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { Method } from "./globalData";
+import { getLastTagName } from "../../Plugin/Discovery/optionalFields";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -159,9 +160,7 @@ function ApiInfo(props) {
       >
         <Row gutter={24}>
           <Col span={12}>
-            <Title level={2}>
-              {apiDetail.tags[apiDetail.tags.length - 1].name}
-            </Title>
+            <Title level={2}>{getLastTagName(apiDetail.tags)}</Title>
           </Col>
           <Col span={12} style={{ textAlign: "right" }}>
             <Button onClick={handleUpdate}>
