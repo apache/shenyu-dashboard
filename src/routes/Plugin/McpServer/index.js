@@ -421,11 +421,29 @@ export default class McpServer extends Component {
   };
 
   swaggerImportClick = () => {
-    const { dispatch, currentNamespaceId } = this.props;
+    const { dispatch, currentNamespaceId, plugins } = this.props;
+    const {
+      pluginName,
+      selectorName,
+      selectorPage,
+      selectorPageSize,
+      toolPageSize,
+    } = this.state;
+    const pluginId = this.getPlugin(plugins || [], pluginName)?.pluginId;
+    if (!pluginId) {
+      return;
+    }
     this.setState({
       popup: (
         <SwaggerImportModal
           handleOk={(values) => {
+            const currentPluginId = this.getPlugin(
+              this.props.plugins || [],
+              pluginName,
+            )?.pluginId;
+            if (!currentPluginId) {
+              return;
+            }
             const { swaggerUrl, projectName } = values;
             dispatch({
               type: "mcpServer/swaggerImport",
@@ -434,7 +452,16 @@ export default class McpServer extends Component {
                 projectName,
                 namespaceId: currentNamespaceId,
               },
+              fetchValue: {
+                pluginId: currentPluginId,
+                currentPage: selectorPage,
+                pageSize: selectorPageSize,
+                name: selectorName,
+                namespaceId: currentNamespaceId,
+                rulePageSize: toolPageSize,
+              },
               callback: () => {
+                this.setState({ toolPage: 1 });
                 this.closeModal();
               },
             });

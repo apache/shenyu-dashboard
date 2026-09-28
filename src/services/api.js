@@ -1367,12 +1367,6 @@ export async function asyncNamespacePlugin(params) {
   });
 }
 
-/* get mcpServer list */
-export async function fetchMcpServer(params) {
-  return request(`${baseUrl}/mcpServer/list?${stringify(params)}`, {
-    method: `GET`,
-  });
-}
 /* getInstancesByNamespace */
 export async function getInstancesByNamespace(params) {
   return request(`${baseUrl}/instance?${stringify(params)}`, {
@@ -1380,33 +1374,6 @@ export async function getInstancesByNamespace(params) {
   });
 }
 
-/* add mcpServer */
-export async function addMcpServer(params) {
-  return request(`${baseUrl}/mcpServer/add`, {
-    method: `POST`,
-    body: {
-      ...params,
-    },
-  });
-}
-
-/* update mcpServer */
-export async function updateMcpServer(params) {
-  return request(`${baseUrl}/mcpServer/update`, {
-    method: `PUT`,
-    body: {
-      ...params,
-    },
-  });
-}
-
-/* delete mcpServer */
-export async function deleteMcpServer(params) {
-  return request(`${baseUrl}/mcpServer/delete`, {
-    method: `DELETE`,
-    body: [...params.list],
-  });
-}
 /* findInstance */
 export async function findInstance(params) {
   return request(`${baseUrl}/instance/${params.id}`, {
