@@ -17,12 +17,12 @@
 
 import fetch from "dva/fetch";
 import { notification } from "antd";
-import store from "../index";
+import { handleUnauthorized } from "./request";
 import download from "./download";
 
 jest.mock("dva/fetch", () => jest.fn());
 jest.mock("antd", () => ({ notification: { error: jest.fn() } }));
-jest.mock("../index", () => ({ dispatch: jest.fn() }));
+jest.mock("./request", () => ({ handleUnauthorized: jest.fn() }));
 
 const createHeaders = (headers = {}) => ({
   get: jest.fn((name) => headers[name.toLowerCase()] || null),
@@ -51,7 +51,7 @@ describe("download", () => {
     fetch.mockReset();
     window.sessionStorage.clear();
     notification.error.mockReset();
-    store.dispatch.mockReset();
+    handleUnauthorized.mockReset();
     Object.defineProperty(window.URL, "createObjectURL", {
       configurable: true,
       value: jest.fn(() => "blob:config"),
@@ -111,10 +111,7 @@ describe("download", () => {
       "Authentication failed",
     );
 
-    expect(store.dispatch.mock.calls).toEqual([
-      [{ type: "login/logout" }],
-      [{ type: "global/resetPermission" }],
-    ]);
+    expect(handleUnauthorized).toHaveBeenCalledTimes(1);
     expect(notification.error).toHaveBeenCalledWith({
       message: "请求错误 401: undefined",
       description: "Authentication failed",

@@ -72,6 +72,16 @@ const checkResponseCode = (response) => {
   }
 };
 
+export const handleUnauthorized = () => {
+  const { dispatch } = store;
+  dispatch({
+    type: "login/logout",
+  });
+  dispatch({
+    type: "global/resetPermission",
+  });
+};
+
 /**
  * Requests a URL, returning a promise.
  *
@@ -128,15 +138,9 @@ export default function request(url, options) {
       }
     })
     .catch((e) => {
-      const { dispatch } = store;
       const status = e.name;
       if (status === 401) {
-        dispatch({
-          type: "login/logout",
-        });
-        dispatch({
-          type: "global/resetPermission",
-        });
+        handleUnauthorized();
       }
       throw e;
     });

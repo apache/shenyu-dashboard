@@ -17,7 +17,7 @@
 
 import fetch from "dva/fetch";
 import { notification } from "antd";
-import store from "../index";
+import { handleUnauthorized } from "./request";
 
 async function checkStatus(response) {
   if (response.ok) {
@@ -38,8 +38,7 @@ async function checkStatus(response) {
     description: errorText,
   });
   if (response.status === 401) {
-    store.dispatch({ type: "login/logout" });
-    store.dispatch({ type: "global/resetPermission" });
+    handleUnauthorized();
   }
   const error = new Error(errorText);
   error.name = response.status;
