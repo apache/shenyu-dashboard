@@ -24,10 +24,17 @@ jest.mock("antd", () => ({
     success: jest.fn(),
     warn: jest.fn(),
   },
+  notification: {
+    error: jest.fn(),
+  },
 }));
 
 jest.mock("dva/fetch", () => jest.fn());
-jest.mock("../utils/request", () => jest.fn());
+jest.mock("../utils/request", () => ({
+  __esModule: true,
+  default: jest.fn(),
+  handleUnauthorized: jest.fn(),
+}));
 
 document.body.innerHTML = '<div id="httpPath"></div>';
 
