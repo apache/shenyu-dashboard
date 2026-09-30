@@ -16,9 +16,11 @@
  */
 
 import fetch from "dva/fetch";
+import store from "../index";
 import download from "./download";
 
 jest.mock("dva/fetch", () => jest.fn());
+jest.mock("../index", () => ({ dispatch: jest.fn() }));
 
 const createHeaders = (headers = {}) => ({
   get: jest.fn((name) => headers[name.toLowerCase()] || null),
@@ -45,6 +47,7 @@ describe("download", () => {
 
   beforeEach(() => {
     window.sessionStorage.clear();
+    store.dispatch.mockClear();
     Object.defineProperty(window.URL, "createObjectURL", {
       configurable: true,
       value: jest.fn(() => "blob:config"),
@@ -91,6 +94,41 @@ describe("download", () => {
     expect(clickSpy).not.toHaveBeenCalled();
   });
 
+  it("dispatches login/logout and resetPermission on an HTTP 401", async () => {
+    const response = createResponse({
+      ok: false,
+      status: 401,
+      statusText: "Unauthorized",
+      json: { code: 401, message: "Authentication failed", data: null },
+    });
+    fetch.mockResolvedValue(response);
+
+    await expect(
+      download("/configs/export", { method: "GET" }),
+    ).rejects.toThrow("Authentication failed");
+
+    expect(store.dispatch).toHaveBeenCalledWith({ type: "login/logout" });
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: "global/resetPermission",
+    });
+  });
+
+  it("dispatches login/logout and resetPermission on an HTTP 200 Admin error with code 401", async () => {
+    const response = createResponse({
+      json: { code: 401, message: "Authentication failed", data: null },
+    });
+    fetch.mockResolvedValue(response);
+
+    await expect(
+      download("/configs/export", { method: "GET" }),
+    ).rejects.toThrow("Authentication failed");
+
+    expect(store.dispatch).toHaveBeenCalledWith({ type: "login/logout" });
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: "global/resetPermission",
+    });
+  });
+
   it.each([601, 500])(
     "rejects an HTTP 200 Admin error with code %s",
     async (code) => {
@@ -105,6 +143,7 @@ describe("download", () => {
 
       expect(response.blob).not.toHaveBeenCalled();
       expect(clickSpy).not.toHaveBeenCalled();
+      expect(store.dispatch).not.toHaveBeenCalled();
     },
   );
 });

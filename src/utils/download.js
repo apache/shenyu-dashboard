@@ -16,6 +16,7 @@
  */
 
 import fetch from "dva/fetch";
+import store from "../index";
 
 async function getDownloadErrorMessage(response) {
   const fallbackMessage =
@@ -23,17 +24,25 @@ async function getDownloadErrorMessage(response) {
       ? response.statusText
       : `Export failed (${response.status})`;
 
+  let result = null;
   try {
-    const result = await response.json();
-    if (result && result.message) {
-      return result.message;
-    }
-    return result && result.code
-      ? `Export failed (${result.code})`
-      : fallbackMessage;
+    result = await response.json();
   } catch (error) {
-    return fallbackMessage;
+    result = null;
   }
+
+  if (response.status === 401 || (result && result.code === 401)) {
+    const { dispatch } = store;
+    dispatch({ type: "login/logout" });
+    dispatch({ type: "global/resetPermission" });
+  }
+
+  if (result && result.message) {
+    return result.message;
+  }
+  return result && result.code
+    ? `Export failed (${result.code})`
+    : fallbackMessage;
 }
 
 /**
