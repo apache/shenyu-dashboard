@@ -63,6 +63,13 @@ class AddModal extends Component {
       // 通用状态
       editMode: "form", // "form" 或 "json"
       activeTab: "1",
+      formRuleValues: {
+        sort: props.sort,
+        loged: props.loged,
+        matchMode: props.matchMode,
+        matchRestful: props.matchRestful,
+        ruleConditions: props.ruleConditions,
+      },
     };
   }
 
@@ -202,8 +209,16 @@ class AddModal extends Component {
   // Sync form data to JSON
   syncFormToJson = () => {
     const { form } = this.props;
-    const { parameters, questJson } = this.state;
-    const values = form.getFieldsValue();
+    const { parameters, questJson, jsonText, formRuleValues = {} } = this.state;
+    const values = form && form.getFieldsValue ? form.getFieldsValue() : {};
+
+    let existingJson = {};
+    try {
+      existingJson = JSON.parse(jsonText);
+    } catch (e) {
+      existingJson = {};
+    }
+
     // Get form data
     const toolJson = {
       name: values.name || "",
@@ -212,10 +227,87 @@ class AddModal extends Component {
       parameters,
       requestConfig: JSON.stringify(questJson),
     };
-    this.setState({
+
+    if (
+      existingJson.sort !== undefined ||
+      values.sort !== undefined ||
+      formRuleValues.sort !== undefined
+    ) {
+      const rawSort =
+        values.sort !== undefined
+          ? values.sort
+          : existingJson.sort !== undefined
+            ? existingJson.sort
+            : formRuleValues.sort;
+      const parsedSort = parseInt(rawSort, 10);
+      if (!isNaN(parsedSort)) {
+        toolJson.sort = parsedSort;
+      }
+    }
+
+    if (
+      existingJson.loged !== undefined ||
+      values.loged !== undefined ||
+      formRuleValues.loged !== undefined
+    ) {
+      toolJson.loged =
+        values.loged !== undefined
+          ? values.loged
+          : existingJson.loged !== undefined
+            ? existingJson.loged
+            : formRuleValues.loged;
+    }
+
+    if (
+      existingJson.matchMode !== undefined ||
+      values.matchMode !== undefined ||
+      formRuleValues.matchMode !== undefined
+    ) {
+      const mm =
+        values.matchMode !== undefined
+          ? values.matchMode
+          : existingJson.matchMode !== undefined
+            ? existingJson.matchMode
+            : formRuleValues.matchMode;
+      toolJson.matchMode = String(mm);
+    }
+
+    if (
+      existingJson.matchRestful !== undefined ||
+      values.matchRestful !== undefined ||
+      formRuleValues.matchRestful !== undefined
+    ) {
+      toolJson.matchRestful =
+        values.matchRestful !== undefined
+          ? values.matchRestful
+          : existingJson.matchRestful !== undefined
+            ? existingJson.matchRestful
+            : formRuleValues.matchRestful;
+    }
+
+    if (
+      existingJson.ruleConditions !== undefined ||
+      formRuleValues.ruleConditions !== undefined
+    ) {
+      toolJson.ruleConditions =
+        existingJson.ruleConditions !== undefined
+          ? existingJson.ruleConditions
+          : formRuleValues.ruleConditions;
+    }
+
+    this.setState((prevState) => ({
       jsonText: JSON.stringify(toolJson, null, 2),
       jsonError: null,
-    });
+      formRuleValues: {
+        ...prevState.formRuleValues,
+        ...(values.sort !== undefined && { sort: values.sort }),
+        ...(values.loged !== undefined && { loged: values.loged }),
+        ...(values.matchMode !== undefined && { matchMode: values.matchMode }),
+        ...(values.matchRestful !== undefined && {
+          matchRestful: values.matchRestful,
+        }),
+      },
+    }));
   };
 
   // Sync JSON data to form
@@ -227,11 +319,31 @@ class AddModal extends Component {
         const parsedJson = JSON.parse(jsonText);
 
         // Update form fields
-        form.setFieldsValue({
+        const fieldsToUpdate = {
           name: parsedJson.name || "",
           description: parsedJson.description || "",
           enabled: parsedJson.enabled !== undefined ? parsedJson.enabled : true,
-        });
+        };
+
+        if (parsedJson.sort !== undefined) {
+          const parsedSort = parseInt(parsedJson.sort, 10);
+          fieldsToUpdate.sort = !isNaN(parsedSort)
+            ? parsedSort
+            : parsedJson.sort;
+        }
+        if (parsedJson.loged !== undefined) {
+          fieldsToUpdate.loged = parsedJson.loged;
+        }
+        if (parsedJson.matchMode !== undefined) {
+          fieldsToUpdate.matchMode = String(parsedJson.matchMode);
+        }
+        if (parsedJson.matchRestful !== undefined) {
+          fieldsToUpdate.matchRestful = parsedJson.matchRestful;
+        }
+
+        if (form && form.setFieldsValue) {
+          form.setFieldsValue(fieldsToUpdate);
+        }
 
         // 更新参数和请求配置
         let questJson = {};
@@ -244,10 +356,28 @@ class AddModal extends Component {
           questJson = {};
         }
 
-        this.setState({
+        this.setState((prevState) => ({
           parameters: this.fixArrayParameterNames(parsedJson.parameters || []),
           questJson,
-        });
+          formRuleValues: {
+            ...prevState.formRuleValues,
+            ...(fieldsToUpdate.sort !== undefined && {
+              sort: fieldsToUpdate.sort,
+            }),
+            ...(fieldsToUpdate.loged !== undefined && {
+              loged: fieldsToUpdate.loged,
+            }),
+            ...(fieldsToUpdate.matchMode !== undefined && {
+              matchMode: fieldsToUpdate.matchMode,
+            }),
+            ...(fieldsToUpdate.matchRestful !== undefined && {
+              matchRestful: fieldsToUpdate.matchRestful,
+            }),
+            ...(parsedJson.ruleConditions !== undefined && {
+              ruleConditions: parsedJson.ruleConditions,
+            }),
+          },
+        }));
       } catch (error) {
         // Do not sync when JSON format is invalid
         console.warn("JSON格式错误，无法同步到表单:", error.message);
@@ -287,8 +417,20 @@ class AddModal extends Component {
         fieldsToUpdate.description = parsedJson.description;
       if (parsedJson.enabled !== undefined)
         fieldsToUpdate.enabled = parsedJson.enabled;
+      if (parsedJson.sort !== undefined) {
+        const parsedSort = parseInt(parsedJson.sort, 10);
+        fieldsToUpdate.sort = !isNaN(parsedSort) ? parsedSort : parsedJson.sort;
+      }
+      if (parsedJson.loged !== undefined)
+        fieldsToUpdate.loged = parsedJson.loged;
+      if (parsedJson.matchMode !== undefined)
+        fieldsToUpdate.matchMode = String(parsedJson.matchMode);
+      if (parsedJson.matchRestful !== undefined)
+        fieldsToUpdate.matchRestful = parsedJson.matchRestful;
 
-      form.setFieldsValue(fieldsToUpdate);
+      if (form && form.setFieldsValue) {
+        form.setFieldsValue(fieldsToUpdate);
+      }
 
       // Update parameters and request configuration
       let questJson = {};
@@ -301,10 +443,28 @@ class AddModal extends Component {
         questJson = {};
       }
 
-      this.setState({
+      this.setState((prevState) => ({
         parameters: parsedJson.parameters || [],
         questJson,
-      });
+        formRuleValues: {
+          ...prevState.formRuleValues,
+          ...(fieldsToUpdate.sort !== undefined && {
+            sort: fieldsToUpdate.sort,
+          }),
+          ...(fieldsToUpdate.loged !== undefined && {
+            loged: fieldsToUpdate.loged,
+          }),
+          ...(fieldsToUpdate.matchMode !== undefined && {
+            matchMode: fieldsToUpdate.matchMode,
+          }),
+          ...(fieldsToUpdate.matchRestful !== undefined && {
+            matchRestful: fieldsToUpdate.matchRestful,
+          }),
+          ...(parsedJson.ruleConditions !== undefined && {
+            ruleConditions: parsedJson.ruleConditions,
+          }),
+        },
+      }));
     } catch (error) {
       // Silently handle errors to avoid affecting user input
     }
@@ -519,8 +679,16 @@ class AddModal extends Component {
   };
 
   handleJsonSubmit = () => {
-    const { jsonText } = this.state;
-    const { handleOk } = this.props;
+    const { jsonText, formRuleValues = {} } = this.state;
+    const {
+      form,
+      handleOk,
+      sort: propsSort = 1,
+      loged: propsLoged = true,
+      matchMode: propsMatchMode = "0",
+      matchRestful: propsMatchRestful = false,
+      ruleConditions: propsRuleConditions,
+    } = this.props;
 
     if (!jsonText.trim()) {
       message.error(getIntlContent("SHENYU.MCP.JSON.EDIT.EMPTY.ERROR"));
@@ -529,12 +697,6 @@ class AddModal extends Component {
 
     try {
       const parsedJson = JSON.parse(jsonText);
-
-      // Validate required fields
-      if (!parsedJson.name || !parsedJson.name.trim()) {
-        message.error(getIntlContent("SHENYU.MCP.JSON.EDIT.TOOL.NAME.ERROR"));
-        return;
-      }
 
       // Validate required fields
       if (!parsedJson.name || !parsedJson.name.trim()) {
@@ -551,7 +713,67 @@ class AddModal extends Component {
         requestConfig: parsedJson.requestConfig || "{}",
       };
 
-      // Convert flattened data back to original format and add required rule-level fields
+      const currentFormValues =
+        form && form.getFieldsValue ? form.getFieldsValue() : {};
+
+      const rawSort =
+        parsedJson.sort !== undefined
+          ? parsedJson.sort
+          : currentFormValues.sort !== undefined
+            ? currentFormValues.sort
+            : formRuleValues.sort !== undefined
+              ? formRuleValues.sort
+              : propsSort;
+      const parsedSort = parseInt(rawSort, 10);
+      const finalSort = !isNaN(parsedSort) ? parsedSort : 1;
+
+      const finalLoged =
+        parsedJson.loged !== undefined
+          ? parsedJson.loged
+          : currentFormValues.loged !== undefined
+            ? currentFormValues.loged
+            : formRuleValues.loged !== undefined
+              ? formRuleValues.loged
+              : propsLoged;
+
+      const rawMatchMode =
+        parsedJson.matchMode !== undefined
+          ? parsedJson.matchMode
+          : currentFormValues.matchMode !== undefined
+            ? currentFormValues.matchMode
+            : formRuleValues.matchMode !== undefined
+              ? formRuleValues.matchMode
+              : propsMatchMode;
+      const finalMatchMode =
+        rawMatchMode !== undefined ? String(rawMatchMode) : "0";
+
+      const finalMatchRestful =
+        parsedJson.matchRestful !== undefined
+          ? parsedJson.matchRestful
+          : currentFormValues.matchRestful !== undefined
+            ? currentFormValues.matchRestful
+            : formRuleValues.matchRestful !== undefined
+              ? formRuleValues.matchRestful
+              : propsMatchRestful;
+
+      const finalRuleConditions =
+        parsedJson.ruleConditions && parsedJson.ruleConditions.length > 0
+          ? parsedJson.ruleConditions
+          : formRuleValues.ruleConditions &&
+              formRuleValues.ruleConditions.length > 0
+            ? formRuleValues.ruleConditions
+            : propsRuleConditions && propsRuleConditions.length > 0
+              ? propsRuleConditions
+              : [
+                  {
+                    paramType: "uri",
+                    operator: "pathPattern",
+                    paramName: "/",
+                    paramValue: "/**",
+                  },
+                ];
+
+      // Convert flattened data back to original format and preserve rule-level fields
       const transformedData = {
         name: finalData.name,
         description: finalData.description,
@@ -561,19 +783,11 @@ class AddModal extends Component {
           requestConfig: finalData.requestConfig,
           description: finalData.description,
         }),
-        // Add required rule-level fields default values
-        sort: 1,
-        loged: true,
-        matchMode: "0",
-        matchRestful: false,
-        ruleConditions: [
-          {
-            paramType: "uri",
-            operator: "pathPattern",
-            paramName: "/",
-            paramValue: "/**",
-          },
-        ],
+        sort: finalSort,
+        loged: finalLoged,
+        matchMode: finalMatchMode,
+        matchRestful: finalMatchRestful,
+        ruleConditions: finalRuleConditions,
       };
 
       handleOk(transformedData);
@@ -1412,4 +1626,5 @@ class AddModal extends Component {
   }
 }
 
+export { AddModal };
 export default Form.create()(AddModal);
