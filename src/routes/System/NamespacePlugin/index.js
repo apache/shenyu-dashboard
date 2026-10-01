@@ -162,11 +162,11 @@ export default class NamespacePlugin extends Component {
   };
 
   searchOnchange = (e) => {
-    this.setState({ name: e.target.value }, this.query);
+    this.setState({ name: e.target.value, currentPage: 1 }, this.query);
   };
 
   enabledOnchange = (e) => {
-    this.setState({ enabled: e }, this.query);
+    this.setState({ enabled: e, currentPage: 1 }, this.query);
   };
 
   searchClick = () => {
@@ -183,9 +183,7 @@ export default class NamespacePlugin extends Component {
           list: selectedRowKeys,
           namespaceId: currentNamespaceId,
         },
-        fetchValue: this.currentQueryPayload({
-          pageSize: 12,
-        }),
+        fetchValue: this.currentQueryPayload(),
         callback: () => {
           this.setState({ selectedRowKeys: [] });
           refreshAuthMenus({ dispatch });

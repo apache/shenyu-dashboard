@@ -123,7 +123,7 @@ export default class Role extends Component {
   };
 
   searchClick = () => {
-    this.getAllRoles();
+    this.setState({ currentPage: 1 }, this.getAllRoles);
   };
 
   deleteClick = () => {

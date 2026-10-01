@@ -94,18 +94,20 @@ export default class Common extends Component {
         type: "common/resetData",
       });
 
-      if (prevProps.plugins && prevProps.plugins.length > 0) {
-        this.getAllSelectors(selectorPage, selectorPageSize, prevProps.plugins);
-      } else {
-        dispatch({
-          type: "global/fetchPlugins",
-          payload: {
-            callback: (pluginList) => {
-              this.getAllSelectors(selectorPage, selectorPageSize, pluginList);
+      this.setState({ selectorPage: 1 }, () => {
+        if (prevProps.plugins && prevProps.plugins.length > 0) {
+          this.getAllSelectors(1, selectorPageSize, prevProps.plugins);
+        } else {
+          dispatch({
+            type: "global/fetchPlugins",
+            payload: {
+              callback: (pluginList) => {
+                this.getAllSelectors(1, selectorPageSize, pluginList);
+              },
             },
-          },
-        });
-      }
+          });
+        }
+      });
     }
     if (prevProps.currentNamespaceId !== currentNamespaceId) {
       if (plugins) {
@@ -198,8 +200,10 @@ export default class Common extends Component {
 
   searchSelector = () => {
     const { plugins } = this.props;
-    const { selectorPage, selectorPageSize } = this.state;
-    this.getAllSelectors(selectorPage, selectorPageSize, plugins);
+    const { selectorPageSize } = this.state;
+    this.setState({ selectorPage: 1 }, () => {
+      this.getAllSelectors(1, selectorPageSize, plugins);
+    });
   };
 
   isDiscovery = (pluginId) => {
