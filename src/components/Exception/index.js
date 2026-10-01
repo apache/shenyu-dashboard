@@ -18,7 +18,8 @@
 import React, { createElement } from "react";
 import classNames from "classnames";
 import { Button } from "antd";
-import config from "./typeConfig";
+import getTypeConfig from "./typeConfig";
+import { getIntlContent } from "../../utils/IntlUtils";
 import styles from "./index.less";
 
 const Exception = ({
@@ -31,6 +32,7 @@ const Exception = ({
   actions,
   ...rest
 }) => {
+  const config = getTypeConfig();
   const pageType = type in config ? type : "404";
   const clsString = classNames(styles.exception, className);
   return (
@@ -52,7 +54,9 @@ const Exception = ({
                 to: "/",
                 href: "/",
               },
-              <Button type="primary">返回首页</Button>,
+              <Button type="primary">
+                {getIntlContent("SHENYU.EXCEPTION.BACK.HOME")}
+              </Button>,
             )}
         </div>
       </div>

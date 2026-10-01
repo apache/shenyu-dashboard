@@ -72,8 +72,8 @@ class McpConfigModal extends Component {
       const sseKey = `shenyu-mcp-sse-${selectorName}`;
       mcpServers[sseKey] = {
         url: `${selectorUrl}/sse`,
-        name: `${selectorName}服务sse`,
-        description: `${selectorName}服务测试sse - ${selectorDescription}`,
+        name: `${selectorName}${getIntlContent("SHENYU.MCP.CONFIG.NAME.SERVICE.SSE")}`,
+        description: `${selectorName}${getIntlContent("SHENYU.MCP.CONFIG.DESC.SERVICE.SSE")} - ${selectorDescription}`,
         headers: defaultHeaders,
         transport: "sse",
       };
@@ -82,8 +82,8 @@ class McpConfigModal extends Component {
       const streamableKey = `shenyu-mcp-${selectorName}`;
       mcpServers[streamableKey] = {
         url: `${selectorUrl}/streamablehttp`,
-        name: `${selectorName}服务`,
-        description: `${selectorName}服务测试 - ${selectorDescription}`,
+        name: `${selectorName}${getIntlContent("SHENYU.MCP.CONFIG.NAME.SERVICE")}`,
+        description: `${selectorName}${getIntlContent("SHENYU.MCP.CONFIG.DESC.SERVICE")} - ${selectorDescription}`,
         headers: defaultHeaders,
         transport: "streamableHttp",
       };
@@ -135,13 +135,17 @@ class McpConfigModal extends Component {
 
   // 从selector的handle字段获取描述信息
   getHandleDescription = (handle) => {
-    if (!handle) return "默认MCP服务";
+    if (!handle)
+      return getIntlContent("SHENYU.MCP.CONFIG.DEFAULT.SERVICE.NAME");
 
     try {
       const handleObj = JSON.parse(handle);
-      return handleObj.description || "默认MCP服务";
+      return (
+        handleObj.description ||
+        getIntlContent("SHENYU.MCP.CONFIG.DEFAULT.SERVICE.NAME")
+      );
     } catch (e) {
-      return "默认MCP服务";
+      return getIntlContent("SHENYU.MCP.CONFIG.DEFAULT.SERVICE.NAME");
     }
   };
 
@@ -166,8 +170,14 @@ class McpConfigModal extends Component {
     const basePath = "/http"; // MCP插件的默认基础路径
     const urlPath =
       transport === "sse" ? `${basePath}/sse` : `${basePath}/streamablehttp`;
-    const nameSuffix = transport === "sse" ? "服务sse" : "服务";
-    const descSuffix = transport === "sse" ? "服务测试sse" : "服务测试";
+    const nameSuffix =
+      transport === "sse"
+        ? getIntlContent("SHENYU.MCP.CONFIG.NAME.SERVICE.SSE")
+        : getIntlContent("SHENYU.MCP.CONFIG.NAME.SERVICE");
+    const descSuffix =
+      transport === "sse"
+        ? getIntlContent("SHENYU.MCP.CONFIG.DESC.SERVICE.SSE")
+        : getIntlContent("SHENYU.MCP.CONFIG.DESC.SERVICE");
 
     return {
       mcpServers: {
@@ -323,10 +333,14 @@ class McpConfigModal extends Component {
 
         <div style={{ marginBottom: "16px" }}>
           <div style={{ marginBottom: "8px" }}>
-            <Text strong>网关地址配置:</Text>
+            <Text strong>
+              {getIntlContent("SHENYU.MCP.CONFIG.GATEWAY.TITLE")}
+            </Text>
           </div>
           <Input
-            placeholder="输入自定义网关地址，如: http://localhost:9195 (留空使用默认)"
+            placeholder={getIntlContent(
+              "SHENYU.MCP.CONFIG.GATEWAY.PLACEHOLDER",
+            )}
             value={this.state.customGatewayHost}
             onChange={(e) => {
               this.setState({ customGatewayHost: e.target.value }, () => {
@@ -337,7 +351,8 @@ class McpConfigModal extends Component {
             style={{ marginBottom: "8px" }}
           />
           <div style={{ fontSize: "12px", color: "#666" }}>
-            当前使用: <strong>{this.getGatewayHost()}</strong>
+            {getIntlContent("SHENYU.MCP.CONFIG.GATEWAY.CURRENT")}{" "}
+            <strong>{this.getGatewayHost()}</strong>
           </div>
         </div>
 
@@ -346,14 +361,17 @@ class McpConfigModal extends Component {
             <Text type="secondary">
               <>
                 <strong>Selector:</strong> {currentSelector.name}
-                {currentSelector.enabled ? " (启用)" : " (禁用)"}
+                {currentSelector.enabled
+                  ? getIntlContent("SHENYU.MCP.CONFIG.SELECTOR.ENABLED")
+                  : getIntlContent("SHENYU.MCP.CONFIG.SELECTOR.DISABLED")}
                 <br />
-                <strong>基础路径:</strong>{" "}
+                <strong>
+                  {getIntlContent("SHENYU.MCP.CONFIG.BASE.PATH")}
+                </strong>{" "}
                 {this.getSelectorPathInfo(currentSelector)}
                 <br />
                 <small style={{ color: "#888" }}>
-                  最终URL = 网关地址 + 基础路径 + 协议后缀(/sse 或
-                  /streamablehttp)
+                  {getIntlContent("SHENYU.MCP.CONFIG.URL.EXPLAIN")}
                 </small>
               </>
             </Text>

@@ -413,7 +413,7 @@ class AddModal extends Component {
       if (depth > MAX_NESTING_DEPTH) {
         message.destroy();
         message.error(
-          `参数嵌套深度超过限制（最大${MAX_NESTING_DEPTH}层）: ${path}`,
+          `${getIntlContent("SHENYU.MCP.TOOLS.PARAM.DEPTH.EXCEEDED")}${getIntlContent("SHENYU.MCP.TOOLS.PARAM.DEPTH.MAX.PREFIX")}${MAX_NESTING_DEPTH}${getIntlContent("SHENYU.MCP.TOOLS.PARAM.DEPTH.MAX.SUFFIX")}: ${path}`,
         );
         return false;
       }
@@ -421,11 +421,15 @@ class AddModal extends Component {
       for (let i = 0; i < params.length; i += 1) {
         const item = params[i];
         const { type, name } = item;
-        const currentPath = path ? `${path}[${i}]` : `第${i + 1}行`;
+        const currentPath = path
+          ? `${path}[${i}]`
+          : `${getIntlContent("SHENYU.MCP.TOOLS.PARAM.ROW.PREFIX")}${i + 1}${getIntlContent("SHENYU.MCP.TOOLS.PARAM.ROW.SUFFIX")}`;
 
         if (!type || !name) {
           message.destroy();
-          message.error(`${currentPath} 参数不完整，请填写名称、类型`);
+          message.error(
+            `${currentPath} ${getIntlContent("SHENYU.MCP.TOOLS.PARAM.INCOMPLETE")}`,
+          );
           return false;
         }
 
@@ -614,7 +618,7 @@ class AddModal extends Component {
     if (path.length >= MAX_NESTING_DEPTH) {
       message.destroy();
       message.warning(
-        `已达到最大嵌套深度限制（${MAX_NESTING_DEPTH}层），无法继续添加子参数`,
+        `${getIntlContent("SHENYU.MCP.TOOLS.PARAM.DEPTH.MAX.REACHED")}${getIntlContent("SHENYU.MCP.TOOLS.PARAM.DEPTH.MAX.PREFIX")}${MAX_NESTING_DEPTH}${getIntlContent("SHENYU.MCP.TOOLS.PARAM.DEPTH.MAX.SUFFIX")}${getIntlContent("SHENYU.MCP.TOOLS.PARAM.DEPTH.MAX.CANNOT.ADD")}`,
       );
       return;
     }
