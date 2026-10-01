@@ -209,8 +209,16 @@ class AddModal extends Component {
   // Sync form data to JSON
   syncFormToJson = () => {
     const { form } = this.props;
-    const { parameters, questJson } = this.state;
+    const { parameters, questJson, jsonText, formRuleValues = {} } = this.state;
     const values = form && form.getFieldsValue ? form.getFieldsValue() : {};
+
+    let existingJson = {};
+    try {
+      existingJson = JSON.parse(jsonText);
+    } catch (e) {
+      existingJson = {};
+    }
+
     // Get form data
     const toolJson = {
       name: values.name || "",
@@ -219,6 +227,74 @@ class AddModal extends Component {
       parameters,
       requestConfig: JSON.stringify(questJson),
     };
+
+    if (
+      existingJson.sort !== undefined ||
+      values.sort !== undefined ||
+      formRuleValues.sort !== undefined
+    ) {
+      const rawSort =
+        values.sort !== undefined
+          ? values.sort
+          : existingJson.sort !== undefined
+            ? existingJson.sort
+            : formRuleValues.sort;
+      const parsedSort = parseInt(rawSort, 10);
+      if (!isNaN(parsedSort)) {
+        toolJson.sort = parsedSort;
+      }
+    }
+
+    if (
+      existingJson.loged !== undefined ||
+      values.loged !== undefined ||
+      formRuleValues.loged !== undefined
+    ) {
+      toolJson.loged =
+        values.loged !== undefined
+          ? values.loged
+          : existingJson.loged !== undefined
+            ? existingJson.loged
+            : formRuleValues.loged;
+    }
+
+    if (
+      existingJson.matchMode !== undefined ||
+      values.matchMode !== undefined ||
+      formRuleValues.matchMode !== undefined
+    ) {
+      const mm =
+        values.matchMode !== undefined
+          ? values.matchMode
+          : existingJson.matchMode !== undefined
+            ? existingJson.matchMode
+            : formRuleValues.matchMode;
+      toolJson.matchMode = String(mm);
+    }
+
+    if (
+      existingJson.matchRestful !== undefined ||
+      values.matchRestful !== undefined ||
+      formRuleValues.matchRestful !== undefined
+    ) {
+      toolJson.matchRestful =
+        values.matchRestful !== undefined
+          ? values.matchRestful
+          : existingJson.matchRestful !== undefined
+            ? existingJson.matchRestful
+            : formRuleValues.matchRestful;
+    }
+
+    if (
+      existingJson.ruleConditions !== undefined ||
+      formRuleValues.ruleConditions !== undefined
+    ) {
+      toolJson.ruleConditions =
+        existingJson.ruleConditions !== undefined
+          ? existingJson.ruleConditions
+          : formRuleValues.ruleConditions;
+    }
+
     this.setState((prevState) => ({
       jsonText: JSON.stringify(toolJson, null, 2),
       jsonError: null,
@@ -243,11 +319,31 @@ class AddModal extends Component {
         const parsedJson = JSON.parse(jsonText);
 
         // Update form fields
-        form.setFieldsValue({
+        const fieldsToUpdate = {
           name: parsedJson.name || "",
           description: parsedJson.description || "",
           enabled: parsedJson.enabled !== undefined ? parsedJson.enabled : true,
-        });
+        };
+
+        if (parsedJson.sort !== undefined) {
+          const parsedSort = parseInt(parsedJson.sort, 10);
+          fieldsToUpdate.sort = !isNaN(parsedSort)
+            ? parsedSort
+            : parsedJson.sort;
+        }
+        if (parsedJson.loged !== undefined) {
+          fieldsToUpdate.loged = parsedJson.loged;
+        }
+        if (parsedJson.matchMode !== undefined) {
+          fieldsToUpdate.matchMode = String(parsedJson.matchMode);
+        }
+        if (parsedJson.matchRestful !== undefined) {
+          fieldsToUpdate.matchRestful = parsedJson.matchRestful;
+        }
+
+        if (form && form.setFieldsValue) {
+          form.setFieldsValue(fieldsToUpdate);
+        }
 
         // 更新参数和请求配置
         let questJson = {};
@@ -260,10 +356,28 @@ class AddModal extends Component {
           questJson = {};
         }
 
-        this.setState({
+        this.setState((prevState) => ({
           parameters: this.fixArrayParameterNames(parsedJson.parameters || []),
           questJson,
-        });
+          formRuleValues: {
+            ...prevState.formRuleValues,
+            ...(fieldsToUpdate.sort !== undefined && {
+              sort: fieldsToUpdate.sort,
+            }),
+            ...(fieldsToUpdate.loged !== undefined && {
+              loged: fieldsToUpdate.loged,
+            }),
+            ...(fieldsToUpdate.matchMode !== undefined && {
+              matchMode: fieldsToUpdate.matchMode,
+            }),
+            ...(fieldsToUpdate.matchRestful !== undefined && {
+              matchRestful: fieldsToUpdate.matchRestful,
+            }),
+            ...(parsedJson.ruleConditions !== undefined && {
+              ruleConditions: parsedJson.ruleConditions,
+            }),
+          },
+        }));
       } catch (error) {
         // Do not sync when JSON format is invalid
         console.warn("JSON格式错误，无法同步到表单:", error.message);
@@ -303,8 +417,20 @@ class AddModal extends Component {
         fieldsToUpdate.description = parsedJson.description;
       if (parsedJson.enabled !== undefined)
         fieldsToUpdate.enabled = parsedJson.enabled;
+      if (parsedJson.sort !== undefined) {
+        const parsedSort = parseInt(parsedJson.sort, 10);
+        fieldsToUpdate.sort = !isNaN(parsedSort) ? parsedSort : parsedJson.sort;
+      }
+      if (parsedJson.loged !== undefined)
+        fieldsToUpdate.loged = parsedJson.loged;
+      if (parsedJson.matchMode !== undefined)
+        fieldsToUpdate.matchMode = String(parsedJson.matchMode);
+      if (parsedJson.matchRestful !== undefined)
+        fieldsToUpdate.matchRestful = parsedJson.matchRestful;
 
-      form.setFieldsValue(fieldsToUpdate);
+      if (form && form.setFieldsValue) {
+        form.setFieldsValue(fieldsToUpdate);
+      }
 
       // Update parameters and request configuration
       let questJson = {};
@@ -317,10 +443,28 @@ class AddModal extends Component {
         questJson = {};
       }
 
-      this.setState({
+      this.setState((prevState) => ({
         parameters: parsedJson.parameters || [],
         questJson,
-      });
+        formRuleValues: {
+          ...prevState.formRuleValues,
+          ...(fieldsToUpdate.sort !== undefined && {
+            sort: fieldsToUpdate.sort,
+          }),
+          ...(fieldsToUpdate.loged !== undefined && {
+            loged: fieldsToUpdate.loged,
+          }),
+          ...(fieldsToUpdate.matchMode !== undefined && {
+            matchMode: fieldsToUpdate.matchMode,
+          }),
+          ...(fieldsToUpdate.matchRestful !== undefined && {
+            matchRestful: fieldsToUpdate.matchRestful,
+          }),
+          ...(parsedJson.ruleConditions !== undefined && {
+            ruleConditions: parsedJson.ruleConditions,
+          }),
+        },
+      }));
     } catch (error) {
       // Silently handle errors to avoid affecting user input
     }

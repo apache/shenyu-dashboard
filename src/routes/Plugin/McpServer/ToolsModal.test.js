@@ -197,4 +197,142 @@ describe("ToolsModal JSON mode submit rule-level values", () => {
     expect(payload.matchMode).toBe("1");
     expect(payload.matchRestful).toBe(true);
   });
+
+  it("synchronizes rule fields to form and state when switching between JSON mode and form mode (round-trip)", () => {
+    jest.useFakeTimers();
+    const handleOk = jest.fn();
+    let currentFormValues = {
+      name: "initialTool",
+      description: "initialDesc",
+      enabled: true,
+      sort: 1,
+      loged: true,
+      matchMode: "0",
+      matchRestful: false,
+    };
+
+    const form = {
+      getFieldsValue: jest.fn(() => currentFormValues),
+      setFieldsValue: jest.fn((newValues) => {
+        currentFormValues = { ...currentFormValues, ...newValues };
+      }),
+    };
+
+    const customConditions = [
+      {
+        paramType: "uri",
+        operator: "pathPattern",
+        paramName: "/",
+        paramValue: "/custom/**",
+      },
+    ];
+
+    const component = createComponent({
+      name: "initialTool",
+      sort: 1,
+      loged: true,
+      matchMode: "0",
+      matchRestful: false,
+      form,
+      handleOk,
+    });
+
+    // 1. User edits rule fields in JSON mode
+    const customJson = {
+      name: "toolAfterRoundTrip",
+      description: "Round trip description",
+      enabled: true,
+      sort: 42,
+      loged: false,
+      matchMode: "1",
+      matchRestful: true,
+      ruleConditions: customConditions,
+      parameters: [],
+      requestConfig: "{}",
+    };
+    component.state.jsonText = JSON.stringify(customJson);
+
+    // 2. User switches from JSON mode to Form mode -> syncJsonToForm runs
+    component.syncJsonToForm();
+    jest.runAllTimers();
+
+    // Verify form was updated with JSON rule values
+    expect(form.setFieldsValue).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "toolAfterRoundTrip",
+        sort: 42,
+        loged: false,
+        matchMode: "1",
+        matchRestful: true,
+      }),
+    );
+    expect(component.state.formRuleValues.sort).toBe(42);
+    expect(component.state.formRuleValues.loged).toBe(false);
+    expect(component.state.formRuleValues.matchMode).toBe("1");
+    expect(component.state.formRuleValues.matchRestful).toBe(true);
+    expect(component.state.formRuleValues.ruleConditions).toEqual(
+      customConditions,
+    );
+
+    // 3. User switches back from Form mode to JSON mode -> syncFormToJson runs
+    component.syncFormToJson();
+
+    // 4. Submit from JSON mode
+    component.handleJsonSubmit();
+
+    expect(handleOk).toHaveBeenCalledTimes(1);
+    const payload = handleOk.mock.calls[0][0];
+    expect(payload.name).toBe("toolAfterRoundTrip");
+    expect(payload.sort).toBe(42);
+    expect(payload.loged).toBe(false);
+    expect(payload.matchMode).toBe("1");
+    expect(payload.matchRestful).toBe(true);
+    expect(payload.ruleConditions).toEqual(customConditions);
+
+    jest.useRealTimers();
+  });
+
+  it("synchronizes rule fields in real time via syncJsonToFormRealtime", () => {
+    let currentFormValues = {
+      name: "tool",
+      sort: 1,
+      loged: true,
+      matchMode: "0",
+      matchRestful: false,
+    };
+    const form = {
+      getFieldsValue: jest.fn(() => currentFormValues),
+      setFieldsValue: jest.fn((newValues) => {
+        currentFormValues = { ...currentFormValues, ...newValues };
+      }),
+    };
+
+    const component = createComponent({
+      form,
+    });
+
+    const jsonText = JSON.stringify({
+      name: "realtimeTool",
+      sort: 77,
+      loged: false,
+      matchMode: "1",
+      matchRestful: true,
+    });
+
+    component.syncJsonToFormRealtime(jsonText);
+
+    expect(form.setFieldsValue).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "realtimeTool",
+        sort: 77,
+        loged: false,
+        matchMode: "1",
+        matchRestful: true,
+      }),
+    );
+    expect(component.state.formRuleValues.sort).toBe(77);
+    expect(component.state.formRuleValues.loged).toBe(false);
+    expect(component.state.formRuleValues.matchMode).toBe("1");
+    expect(component.state.formRuleValues.matchRestful).toBe(true);
+  });
 });
