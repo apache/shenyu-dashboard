@@ -153,8 +153,8 @@ export default {
     },
     *reload(params, { put }) {
       const { fetchValue } = params;
-      const { name, currentPage, pageSize, namespaceId } = fetchValue;
-      const payload = { name, currentPage, pageSize, namespaceId };
+      const { appKey, phone, currentPage, pageSize, namespaceId } = fetchValue;
+      const payload = { appKey, phone, currentPage, pageSize, namespaceId };
       yield put({ type: "fetch", payload });
     },
     *updateEn(params, { call, put }) {
@@ -164,7 +164,9 @@ export default {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
         );
-        callback();
+        if (callback) {
+          callback();
+        }
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
@@ -177,7 +179,9 @@ export default {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
         );
-        callback();
+        if (callback) {
+          callback();
+        }
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
