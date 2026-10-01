@@ -184,9 +184,7 @@ export default class Namespace extends Component {
         payload: {
           list: deleteKeys,
         },
-        fetchValue: this.currentQueryPayload({
-          pageSize: 12,
-        }),
+        fetchValue: this.currentQueryPayload(),
         callback: () => {
           this.setState({ selectedRowKeys: [] });
           refreshAuthMenus({ dispatch });

@@ -66,3 +66,69 @@ it("resets rule pagination and uses rule page size when selecting a selector", (
     },
   });
 });
+
+const makeSearchComponent = (plugins = [{ name: "divide", pluginId: "5" }]) => {
+  const dispatch = jest.fn();
+  const component = new Common({
+    dispatch,
+    plugins,
+    match: { params: { id: "divide" } },
+    currentNamespaceId: "namespace-1",
+  });
+  component.state = {
+    ...component.state,
+    selectorPage: 3,
+    selectorPageSize: 50,
+    selectorName: "demo",
+  };
+  component.setState = (update, callback) => {
+    component.state = { ...component.state, ...update };
+    if (callback) callback();
+  };
+  return { component, dispatch };
+};
+
+it("searches selectors from page one while preserving the filter and page size", () => {
+  const { component, dispatch } = makeSearchComponent();
+  component.searchSelector();
+  expect(component.state.selectorPage).toBe(1);
+  expect(dispatch).toHaveBeenCalledWith({
+    type: "common/fetchSelector",
+    payload: {
+      currentPage: 1,
+      pageSize: 50,
+      pluginId: "5",
+      name: "demo",
+      namespaceId: "namespace-1",
+    },
+  });
+});
+
+it.each([true, false])(
+  "resets selector pagination when switching plugins (cached: %s)",
+  (cached) => {
+    const plugins = [{ name: "divide", pluginId: "5" }];
+    const { component, dispatch } = makeSearchComponent(cached ? plugins : []);
+    component.componentDidUpdate({
+      ...component.props,
+      match: { params: { id: "old-plugin" } },
+    });
+    if (!cached) {
+      const fetch = dispatch.mock.calls.find(
+        ([action]) => action.type === "global/fetchPlugins",
+      );
+      fetch[0].payload.callback(plugins);
+    }
+    expect(component.state.selectorPage).toBe(1);
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "common/fetchSelector",
+        payload: expect.objectContaining({
+          currentPage: 1,
+          pageSize: 50,
+          pluginId: "5",
+        }),
+      }),
+    );
+  },
+);

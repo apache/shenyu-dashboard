@@ -198,7 +198,7 @@ export default class Scale extends Component {
   };
 
   searchClick = () => {
-    this.getScaleRules();
+    this.setState({ currentPage: 1 }, this.getScaleRules);
   };
 
   deleteClick = () => {
