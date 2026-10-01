@@ -16,9 +16,13 @@
  */
 
 import fetch from "dva/fetch";
+import { notification } from "antd";
+import { handleUnauthorized } from "./request";
 import download from "./download";
 
 jest.mock("dva/fetch", () => jest.fn());
+jest.mock("antd", () => ({ notification: { error: jest.fn() } }));
+jest.mock("./request", () => ({ handleUnauthorized: jest.fn() }));
 
 const createHeaders = (headers = {}) => ({
   get: jest.fn((name) => headers[name.toLowerCase()] || null),
@@ -44,7 +48,10 @@ describe("download", () => {
   let clickSpy;
 
   beforeEach(() => {
+    fetch.mockReset();
     window.sessionStorage.clear();
+    notification.error.mockReset();
+    handleUnauthorized.mockReset();
     Object.defineProperty(window.URL, "createObjectURL", {
       configurable: true,
       value: jest.fn(() => "blob:config"),
@@ -89,6 +96,26 @@ describe("download", () => {
 
     expect(response.blob).not.toHaveBeenCalled();
     expect(clickSpy).not.toHaveBeenCalled();
+  });
+
+  it("clears session and permissions for an unauthorized response", async () => {
+    const response = createResponse({
+      ok: false,
+      status: 401,
+      statusText: "Unauthorized",
+      json: { code: 401, message: "Authentication failed", data: null },
+    });
+    fetch.mockResolvedValue(response);
+
+    await expect(download("/configs/export")).rejects.toThrow(
+      "Authentication failed",
+    );
+
+    expect(handleUnauthorized).toHaveBeenCalledTimes(1);
+    expect(notification.error).toHaveBeenCalledWith({
+      message: "请求错误 401: undefined",
+      description: "Authentication failed",
+    });
   });
 
   it.each([601, 500])(
