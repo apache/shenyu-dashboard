@@ -131,3 +131,34 @@ it("validates HTTP(S) URLs with or without an explicit port", () => {
   expect(isValidHttpUrl("http://api.example.test:8080/orders")).toBe(true);
   expect(isValidHttpUrl("ftp://api.example.test/orders")).toBe(false);
 });
+
+it("renders a non-JSON response body as literal text instead of HTML", async () => {
+  const body =
+    '<img id="injected" src="x"><b>upstream</b>\n  <form id="fake"></form>';
+  fetch.mockResolvedValue({
+    text: async () => body,
+    headers: { get: () => null },
+  });
+  jest.spyOn(console, "error").mockImplementation(() => {});
+
+  const requestUrl = "https://api.example.test/orders";
+  const { container } = render(
+    <ApiContext.Provider
+      value={{
+        ...contextValue,
+        apiDetail: { ...contextValue.apiDetail, apiPath: requestUrl },
+      }}
+    >
+      <ApiDebug />
+    </ApiContext.Provider>,
+  );
+
+  fireEvent.submit(container.querySelector("form"));
+
+  await waitFor(() => expect(container.querySelector("pre")).not.toBeNull());
+  const pre = container.querySelector("pre");
+  expect(pre.textContent).toBe(body);
+  expect(pre.children).toHaveLength(0);
+  expect(container.querySelector("#injected")).toBeNull();
+  expect(container.querySelector("#fake")).toBeNull();
+});
