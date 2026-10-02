@@ -48,6 +48,7 @@ import {
   formatDateString,
   formatTimeString,
 } from "../../../utils/utils";
+import { parseRegExpRule } from "../../../utils/regExpRule";
 import DiscoveryImportModal from "../Discovery/DiscoveryImportModal";
 import EditableFormTable from "../Discovery/DiscoveryUpstreamTable.js";
 import { buildHandle } from "./selectorHandle";
@@ -751,10 +752,10 @@ class AddModal extends Component {
                                 item.label,
                             });
                           }
-                          if (checkRule) {
+                          let checkPattern = parseRegExpRule(checkRule);
+                          if (checkPattern) {
                             rules.push({
-                              // eslint-disable-next-line no-eval
-                              pattern: eval(checkRule),
+                              pattern: checkPattern,
                               message: `${getIntlContent(
                                 "SHENYU.PLUGIN.RULE.INVALID",
                               )}:(${checkRule})`,
@@ -1522,10 +1523,10 @@ class AddModal extends Component {
                                 item.label,
                             });
                           }
-                          if (checkRule) {
+                          let checkPattern = parseRegExpRule(checkRule);
+                          if (checkPattern) {
                             rules.push({
-                              // eslint-disable-next-line no-eval
-                              pattern: eval(checkRule),
+                              pattern: checkPattern,
                               message: `${getIntlContent(
                                 "SHENYU.PLUGIN.RULE.INVALID",
                               )}:(${checkRule})`,
