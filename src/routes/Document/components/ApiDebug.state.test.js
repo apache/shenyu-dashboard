@@ -41,7 +41,6 @@ jest.mock("antd", () => {
 });
 
 jest.mock("dva/fetch", () => jest.fn());
-jest.mock("react-html-parser", () => jest.fn(() => null));
 jest.mock("react-json-view", () => () => null);
 jest.mock("./HeadersEditor", () => {
   const ReactModule = jest.requireActual("react");
