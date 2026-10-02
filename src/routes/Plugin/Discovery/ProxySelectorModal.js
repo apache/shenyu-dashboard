@@ -35,6 +35,7 @@ import { getIntlContent } from "../../../utils/IntlUtils";
 import styles from "../index.less";
 import ProxySelectorCopy from "./ProxySelectorCopy.js";
 import { findKeyByValue } from "../../../utils/utils";
+import { parseRegExpRule } from "../../../utils/regExpRule";
 import EditableFormTable from "./DiscoveryUpstreamTable";
 import { getDefaultValueList, getDiscoveryProps } from "./optionalFields";
 
@@ -390,10 +391,10 @@ export class ProxySelectorModalComponent extends Component {
                                     ) + item.label,
                                 });
                               }
-                              if (checkRule) {
+                              let checkPattern = parseRegExpRule(checkRule);
+                              if (checkPattern) {
                                 rules.push({
-                                  // eslint-disable-next-line no-eval
-                                  pattern: eval(checkRule),
+                                  pattern: checkPattern,
                                   message: `${getIntlContent(
                                     "SHENYU.PLUGIN.RULE.INVALID",
                                   )}:(${checkRule})`,
@@ -623,10 +624,10 @@ export class ProxySelectorModalComponent extends Component {
                                     ) + item.label,
                                 });
                               }
-                              if (checkRule) {
+                              let checkPattern = parseRegExpRule(checkRule);
+                              if (checkPattern) {
                                 rules.push({
-                                  // eslint-disable-next-line no-eval
-                                  pattern: eval(checkRule),
+                                  pattern: checkPattern,
                                   message: `${getIntlContent(
                                     "SHENYU.PLUGIN.RULE.INVALID",
                                   )}:(${checkRule})`,

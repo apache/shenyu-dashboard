@@ -24,6 +24,7 @@ import {
   getConfigFieldValue,
   serializePluginConfig,
 } from "../../../utils/pluginConfig";
+import { parseRegExpRule } from "../../../utils/regExpRule";
 
 const { Option } = Select;
 const FormItem = Form.Item;
@@ -172,10 +173,10 @@ class AddModal extends Component {
                     message: getIntlContent("SHENYU.COMMON.PLEASEINPUT"),
                   });
                 }
-                if (checkRule) {
+                let checkPattern = parseRegExpRule(checkRule);
+                if (checkPattern) {
                   rules.push({
-                    // eslint-disable-next-line no-eval
-                    pattern: eval(checkRule),
+                    pattern: checkPattern,
                     message: `${getIntlContent(
                       "SHENYU.PLUGIN.RULE.INVALID",
                     )}:(${checkRule})`,

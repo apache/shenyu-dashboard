@@ -20,6 +20,7 @@ import { Button, Form, Input, Popconfirm, Select, Tooltip } from "antd";
 import classnames from "classnames";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import { parseRegExpRule } from "../../../utils/regExpRule";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -125,10 +126,10 @@ export default class CommonRuleHandle extends Component {
                             item.label,
                         });
                       }
-                      if (checkRule) {
+                      let checkPattern = parseRegExpRule(checkRule);
+                      if (checkPattern) {
                         rules.push({
-                          // eslint-disable-next-line no-eval
-                          pattern: eval(checkRule),
+                          pattern: checkPattern,
                           message: `${getIntlContent(
                             "SHENYU.PLUGIN.RULE.INVALID",
                           )}:(${checkRule})`,
