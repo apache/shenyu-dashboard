@@ -440,14 +440,16 @@ class AddModal extends Component {
       payload: {
         type,
         callBack: (dics) => {
-          this.state[`${type}Dics`] = dics;
+          const nextState = { [`${type}Dics`]: dics };
           if (type === "discoveryMode" && isAdd) {
             let configProps = dics.filter(
               (item) => item.dictName === "zookeeper",
             );
-            let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
-            this.setState({ configPropsJson: propsEntries });
+            nextState.configPropsJson = JSON.parse(
+              configProps[0]?.dictValue || "{}",
+            );
           }
+          this.setState(nextState);
         },
       },
     });
@@ -953,19 +955,21 @@ class AddModal extends Component {
       id: discoveryId = "",
       props = "{}",
     } = configData || {};
+    const configPropsJson = JSON.parse(props);
     const formData = {
       selectedDiscoveryType: type,
       serverList,
+      ...configPropsJson,
     };
     this.setState(
       {
         selectedDiscoveryValue: type,
         showDiscoveryImportModal: false,
         importedDiscoveryId: discoveryId,
+        configPropsJson,
       },
       () => {
         form.setFieldsValue(formData);
-        this.state.configPropsJson = JSON.parse(props);
       },
     );
   };
