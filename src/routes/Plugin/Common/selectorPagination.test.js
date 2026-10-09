@@ -117,6 +117,7 @@ it.each([true, false])(
       const fetch = dispatch.mock.calls.find(
         ([action]) => action.type === "global/fetchPlugins",
       );
+      expect(fetch).toBeDefined();
       fetch[0].payload.callback(plugins);
     }
     expect(component.state.selectorPage).toBe(1);
@@ -130,5 +131,31 @@ it.each([true, false])(
         }),
       }),
     );
+  },
+);
+
+it.each([[[]], [[{ name: "divide", pluginId: "stale-id" }]]])(
+  "uses the current plugin list when navigation and a store update occur together (case %#)",
+  (previousPlugins) => {
+    const { component, dispatch } = makeSearchComponent();
+    component.componentDidUpdate({
+      ...component.props,
+      plugins: previousPlugins,
+      match: { params: { id: "old-plugin" } },
+    });
+    expect(component.state.selectorPage).toBe(1);
+    expect(dispatch).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: "global/fetchPlugins" }),
+    );
+    expect(dispatch).toHaveBeenCalledWith({
+      type: "common/fetchSelector",
+      payload: {
+        currentPage: 1,
+        pageSize: 50,
+        pluginId: "5",
+        name: "demo",
+        namespaceId: "namespace-1",
+      },
+    });
   },
 );

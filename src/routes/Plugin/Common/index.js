@@ -95,8 +95,8 @@ export default class Common extends Component {
       });
 
       this.setState({ selectorPage: 1 }, () => {
-        if (prevProps.plugins && prevProps.plugins.length > 0) {
-          this.getAllSelectors(1, selectorPageSize, prevProps.plugins);
+        if (plugins && plugins.length > 0) {
+          this.getAllSelectors(1, selectorPageSize, plugins);
         } else {
           dispatch({
             type: "global/fetchPlugins",

@@ -132,9 +132,13 @@ it.each([
   },
 );
 
-it.each([ConnectedPlugin, ConnectedNamespacePlugin, ConnectedNamespace])(
+it.each([
+  [ConnectedPlugin, "filter-namespace"],
+  [ConnectedNamespacePlugin, "namespace-1"],
+  [ConnectedNamespace, "filter-namespace"],
+])(
   "preserves the selected page size and filters after deletion (case %#)",
-  (Connected) => {
+  (Connected, namespaceId) => {
     const { component, dispatch } = makeComponent(Connected);
     component.state = {
       ...component.state,
@@ -147,6 +151,7 @@ it.each([ConnectedPlugin, ConnectedNamespacePlugin, ConnectedNamespace])(
         currentPage: 3,
         pageSize: 50,
         name: "demo",
+        namespaceId,
       }),
     );
   },
