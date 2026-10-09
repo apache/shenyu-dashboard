@@ -955,7 +955,12 @@ class AddModal extends Component {
       id: discoveryId = "",
       props = "{}",
     } = configData || {};
-    const configPropsJson = JSON.parse(props);
+    let configPropsJson = {};
+    try {
+      configPropsJson = JSON.parse(props) || {};
+    } catch (e) {
+      configPropsJson = {};
+    }
     const formData = {
       selectedDiscoveryType: type,
       serverList,

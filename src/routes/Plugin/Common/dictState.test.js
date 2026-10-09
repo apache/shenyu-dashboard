@@ -40,6 +40,10 @@ const unwrap = (component) => Form.create()(component.WrappedComponent);
 const Selector = unwrap(ConnectedSelector);
 const Rule = unwrap(ConnectedRule);
 
+beforeEach(() => {
+  importModalProps = undefined;
+});
+
 const matchModeDics = [
   { dictValue: "0", dictName: "and" },
   { dictValue: "1", dictName: "or" },
@@ -53,7 +57,12 @@ const createDispatch = () => {
       pending[payload.type] = payload.callBack;
     }
   });
-  const resolve = (type, dics) => act(() => pending[type](dics));
+  const resolve = (type, dics) => {
+    if (typeof pending[type] !== "function") {
+      throw new Error(`no dictionary request registered for "${type}"`);
+    }
+    act(() => pending[type](dics));
+  };
   return { dispatch, resolve };
 };
 
@@ -145,6 +154,7 @@ describe("Selector discovery import", () => {
     fireEvent.click(
       screen.getByText("SHENYU.DISCOVERY.SELECTOR.CONFIG.DISCOVERY"),
     );
+    expect(importModalProps && importModalProps.onOk).toBeInstanceOf(Function);
     const importConfig = (props) =>
       act(() =>
         importModalProps.onOk({
@@ -166,6 +176,40 @@ describe("Selector discovery import", () => {
     expect(screen.getByText("namespace")).toBeTruthy();
     expect(screen.getByDisplayValue("public")).toBeTruthy();
     expect(screen.getByDisplayValue("SECOND")).toBeTruthy();
+    expect(screen.getByDisplayValue("127.0.0.1:8848")).toBeTruthy();
+  });
+
+  it("keeps the modal state consistent when props is malformed JSON", () => {
+    const { dispatch, resolve } = createDispatch();
+    render(
+      <Selector
+        dispatch={dispatch}
+        platform={{ selectorTypeEnums: [] }}
+        discovery={{ typeEnums: ["local", "zookeeper", "nacos"] }}
+        pluginId="5"
+        type={1}
+        isDiscovery
+        isAdd
+        discoveryConfig={{ discoveryType: "local" }}
+        onCancel={jest.fn()}
+        handleOk={jest.fn()}
+      />,
+    );
+    resolve("discoveryMode", []);
+    fireEvent.click(
+      screen.getByText("SHENYU.DISCOVERY.SELECTOR.CONFIG.DISCOVERY"),
+    );
+    expect(importModalProps && importModalProps.onOk).toBeInstanceOf(Function);
+    expect(() =>
+      act(() =>
+        importModalProps.onOk({
+          type: "nacos",
+          serverList: "127.0.0.1:8848",
+          id: "discovery-1",
+          props: "{not json",
+        }),
+      ),
+    ).not.toThrow();
     expect(screen.getByDisplayValue("127.0.0.1:8848")).toBeTruthy();
   });
 });
