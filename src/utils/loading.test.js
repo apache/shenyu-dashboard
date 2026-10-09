@@ -63,6 +63,17 @@ describe("createLoading", () => {
     });
   });
 
+  it("returns the wrapped effect's result", async () => {
+    const { run } = setup();
+    function* withResult() {
+      return yield effects.call(() => Promise.resolve("result"));
+    }
+
+    await expect(
+      run(withResult, { namespace: "demo" }, "demo/result").done,
+    ).resolves.toBe("result");
+  });
+
   it("hides loading when a request rejects inside an effect", async () => {
     queryPlatform.mockRejectedValue(new Error("network down"));
     const { run, actions, getState } = setup();
@@ -83,7 +94,7 @@ describe("createLoading", () => {
     });
   });
 
-  it("hides loading when an effect is cancelled", () => {
+  it("hides loading when an effect is cancelled", async () => {
     const { run, getState } = setup();
     function* pending() {
       yield effects.call(() => new Promise(() => {}));
@@ -92,6 +103,7 @@ describe("createLoading", () => {
     const task = run(pending, { namespace: "demo" }, "demo/pending");
     expect(getState().effects["demo/pending"]).toBe(true);
     task.cancel();
+    await task.done;
 
     expect(getState().global).toBe(false);
     expect(getState().effects["demo/pending"]).toBe(false);

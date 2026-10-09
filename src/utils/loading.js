@@ -37,7 +37,7 @@ export default function createLoading(opts = {}) {
     return function* loadingEffect(...args) {
       yield put({ type: SHOW, payload });
       try {
-        yield effect(...args);
+        return yield effect(...args);
       } finally {
         yield put({ type: HIDE, payload });
       }
