@@ -213,15 +213,15 @@ export default class Plugin extends Component {
   };
 
   searchOnNamechange = (e) => {
-    this.setState({ name: e.target.value }, this.query);
+    this.setState({ name: e.target.value, currentPage: 1 }, this.query);
   };
 
   searchOnRolechange = (e) => {
-    this.setState({ role: e.target.value }, this.query);
+    this.setState({ role: e.target.value, currentPage: 1 }, this.query);
   };
 
   enabledOnchange = (e) => {
-    this.setState({ enabled: e }, this.query);
+    this.setState({ enabled: e, currentPage: 1 }, this.query);
   };
 
   searchClick = () => {
@@ -237,9 +237,7 @@ export default class Plugin extends Component {
         payload: {
           list: selectedRowKeys,
         },
-        fetchValue: this.currentQueryPayload({
-          pageSize: 12,
-        }),
+        fetchValue: this.currentQueryPayload(),
         callback: () => {
           this.setState({ selectedRowKeys: [] });
           refreshAuthMenus({ dispatch });
