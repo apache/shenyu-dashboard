@@ -23,6 +23,7 @@ import download from "./download";
 jest.mock("dva/fetch", () => jest.fn());
 jest.mock("antd", () => ({ notification: { error: jest.fn() } }));
 jest.mock("./request", () => ({ handleUnauthorized: jest.fn() }));
+jest.mock("./IntlUtils", () => ({ getIntlContent: (key) => key }));
 
 const createHeaders = (headers = {}) => ({
   get: jest.fn((name) => headers[name.toLowerCase()] || null),
@@ -113,7 +114,7 @@ describe("download", () => {
 
     expect(handleUnauthorized).toHaveBeenCalledTimes(1);
     expect(notification.error).toHaveBeenCalledWith({
-      message: "请求错误 401: undefined",
+      message: "SHENYU.REQUEST.ERROR 401: undefined",
       description: "Authentication failed",
     });
   });
