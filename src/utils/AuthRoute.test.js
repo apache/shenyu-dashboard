@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
+import { Redirect, Route } from "dva/router";
 import AuthRoute, {
   checkMenuAuth,
   getAuthMenus,
   getBaseRedirectPath,
   resetAuthMenuCache,
 } from "./AuthRoute";
-import { Redirect, Route } from "dva/router";
 
 jest.mock("./IntlUtils", () => ({ getIntlContent: (key) => key }));
 
