@@ -63,7 +63,6 @@ class AddModal extends Component {
     };
 
     this.initRuleCondition(props);
-    this.initDics();
   }
 
   componentDidMount() {
@@ -76,6 +75,7 @@ class AddModal extends Component {
       currentNamespaceId,
     } = this.props;
     this.setState({ pluginHandleList: [] });
+    this.initDics();
     let type = 2;
     dispatch({
       type: "pluginHandle/fetchByPluginId",
@@ -134,7 +134,7 @@ class AddModal extends Component {
       payload: {
         type,
         callBack: (dics) => {
-          this.state[`${type}Dics`] = dics;
+          this.setState({ [`${type}Dics`]: dics });
         },
       },
     });
