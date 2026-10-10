@@ -21,7 +21,7 @@ import dva from "dva";
 import { createHashHistory as createHistory } from "history";
 // user BrowserHistory
 // import createHistory from 'history/createBrowserHistory';
-import createLoading from "dva-loading";
+import createLoading from "./utils/loading";
 import { initIntl } from "./utils/IntlUtils";
 
 // import 'moment/locale/zh-cn';
