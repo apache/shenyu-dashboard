@@ -20,9 +20,13 @@
 // The value is admin-editable data, so it must be parsed, never evaluated.
 const VALID_FLAGS = /^[dgimsuvy]*$/;
 
+// JavaScript line terminators: LF, CR, LINE SEPARATOR, PARAGRAPH SEPARATOR.
+const LINE_TERMINATOR = /[\n\r\u2028\u2029]/;
+
 // Splits "/source/flags" at the first "/" that closes the literal, following
 // JavaScript regular expression literal rules: "\/" and "/" inside a
-// character class do not end the literal.
+// character class do not end the literal, and a line terminator (escaped or
+// not) is not allowed anywhere in the literal.
 function splitRegExpLiteral(literal) {
   if (literal[0] !== "/") {
     return null;
@@ -30,8 +34,14 @@ function splitRegExpLiteral(literal) {
   let inClass = false;
   for (let i = 1; i < literal.length; i += 1) {
     const char = literal[i];
+    if (LINE_TERMINATOR.test(char)) {
+      return null;
+    }
     if (char === "\\") {
       i += 1;
+      if (LINE_TERMINATOR.test(literal[i])) {
+        return null;
+      }
     } else if (char === "[") {
       inClass = true;
     } else if (char === "]") {
@@ -64,4 +74,39 @@ export function parseRegExpRule(rule) {
     // Invalid pattern or flag combination (e.g. duplicated flags).
     return undefined;
   }
+}
+
+const reportedInvalidRules = new Set();
+
+/**
+ * Returns the pattern a form field should be validated against for a stored
+ * check rule.
+ *
+ * An empty rule means the field has no pattern check. A rule that is not a
+ * valid regular expression literal used to make eval() throw while the form
+ * rendered; it now produces a pattern that matches nothing, so any non-empty
+ * value fails validation with the rule shown in the message, and the problem
+ * is reported once in the console instead of validation being skipped.
+ *
+ * @param {*} rule rule in "/source/flags" form
+ * @returns {RegExp|undefined} the pattern to validate against, or undefined
+ *   when the rule is empty
+ */
+export function checkRulePattern(rule) {
+  if (!rule || (typeof rule === "string" && !rule.trim())) {
+    return undefined;
+  }
+  const pattern = parseRegExpRule(rule);
+  if (pattern) {
+    return pattern;
+  }
+  if (!reportedInvalidRules.has(String(rule))) {
+    reportedInvalidRules.add(String(rule));
+    // eslint-disable-next-line no-console
+    console.error(
+      "Invalid plugin handle check rule, expected a /pattern/flags literal:",
+      rule,
+    );
+  }
+  return /(?!)/;
 }

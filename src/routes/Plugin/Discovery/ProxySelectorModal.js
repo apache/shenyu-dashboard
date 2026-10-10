@@ -35,7 +35,7 @@ import { getIntlContent } from "../../../utils/IntlUtils";
 import styles from "../index.less";
 import ProxySelectorCopy from "./ProxySelectorCopy.js";
 import { findKeyByValue } from "../../../utils/utils";
-import { parseRegExpRule } from "../../../utils/regExpRule";
+import { checkRulePattern } from "../../../utils/regExpRule";
 import EditableFormTable from "./DiscoveryUpstreamTable";
 import { getDefaultValueList, getDiscoveryProps } from "./optionalFields";
 
@@ -391,7 +391,7 @@ export class ProxySelectorModalComponent extends Component {
                                     ) + item.label,
                                 });
                               }
-                              let checkPattern = parseRegExpRule(checkRule);
+                              let checkPattern = checkRulePattern(checkRule);
                               if (checkPattern) {
                                 rules.push({
                                   pattern: checkPattern,
@@ -624,7 +624,7 @@ export class ProxySelectorModalComponent extends Component {
                                     ) + item.label,
                                 });
                               }
-                              let checkPattern = parseRegExpRule(checkRule);
+                              let checkPattern = checkRulePattern(checkRule);
                               if (checkPattern) {
                                 rules.push({
                                   pattern: checkPattern,

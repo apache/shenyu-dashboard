@@ -20,7 +20,7 @@ import { Button, Form, Input, Popconfirm, Select, Tooltip } from "antd";
 import classnames from "classnames";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
-import { parseRegExpRule } from "../../../utils/regExpRule";
+import { checkRulePattern } from "../../../utils/regExpRule";
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -126,7 +126,7 @@ export default class CommonRuleHandle extends Component {
                             item.label,
                         });
                       }
-                      let checkPattern = parseRegExpRule(checkRule);
+                      let checkPattern = checkRulePattern(checkRule);
                       if (checkPattern) {
                         rules.push({
                           pattern: checkPattern,

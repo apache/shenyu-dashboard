@@ -48,7 +48,7 @@ import {
   formatDateString,
   formatTimeString,
 } from "../../../utils/utils";
-import { parseRegExpRule } from "../../../utils/regExpRule";
+import { checkRulePattern } from "../../../utils/regExpRule";
 import DiscoveryImportModal from "../Discovery/DiscoveryImportModal";
 import EditableFormTable from "../Discovery/DiscoveryUpstreamTable.js";
 import { buildHandle } from "./selectorHandle";
@@ -752,7 +752,7 @@ class AddModal extends Component {
                                 item.label,
                             });
                           }
-                          let checkPattern = parseRegExpRule(checkRule);
+                          let checkPattern = checkRulePattern(checkRule);
                           if (checkPattern) {
                             rules.push({
                               pattern: checkPattern,
@@ -1523,7 +1523,7 @@ class AddModal extends Component {
                                 item.label,
                             });
                           }
-                          let checkPattern = parseRegExpRule(checkRule);
+                          let checkPattern = checkRulePattern(checkRule);
                           if (checkPattern) {
                             rules.push({
                               pattern: checkPattern,

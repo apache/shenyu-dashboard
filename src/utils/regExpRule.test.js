@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { parseRegExpRule } from "./regExpRule";
+import { checkRulePattern, parseRegExpRule } from "./regExpRule";
 
 describe("parseRegExpRule", () => {
   afterEach(() => {
@@ -74,6 +74,29 @@ describe("parseRegExpRule", () => {
     },
   );
 
+  // JavaScript rejects these as regular expression literals (SyntaxError).
+  it.each([
+    ["LF", "/a\nb/"],
+    ["CR", "/a\rb/"],
+    ["LINE SEPARATOR", "/a\u2028b/"],
+    ["PARAGRAPH SEPARATOR", "/a\u2029b/"],
+    ["LF in a character class", "/[\n]/"],
+    ["escaped LF", "/a\\\nb/"],
+    ["escaped LINE SEPARATOR", "/a\\\u2028b/"],
+  ])("rejects a line terminator inside the literal: %s", (name, rule) => {
+    expect(parseRegExpRule(rule)).toBeUndefined();
+  });
+
+  it("ignores line terminators around the literal", () => {
+    expect(parseRegExpRule("\n/^a$/i\r\n").test("A")).toBe(true);
+    expect(parseRegExpRule("\u2028/^a$/\u2029").test("a")).toBe(true);
+  });
+
+  it("accepts an escaped line terminator written as an escape sequence", () => {
+    expect(parseRegExpRule("/^a\\nb$/").test("a\nb")).toBe(true);
+    expect(parseRegExpRule("/^a\\u2028b$/").test("a\u2028b")).toBe(true);
+  });
+
   it.each([
     "alert(1)",
     "(()=>{globalThis.pwned=1})()",
@@ -83,6 +106,53 @@ describe("parseRegExpRule", () => {
     "globalThis.pwned=1,/x/",
   ])("does not execute code stored in the rule: %s", (rule) => {
     expect(parseRegExpRule(rule)).toBeUndefined();
+    expect(global.pwned).toBeUndefined();
+  });
+});
+
+describe("checkRulePattern", () => {
+  it.each([undefined, null, "", "   ", "\t\r\n"])(
+    "adds no pattern for an empty rule: %p",
+    (rule) => {
+      const error = jest.spyOn(console, "error").mockImplementation(() => {});
+      expect(checkRulePattern(rule)).toBeUndefined();
+      expect(error).not.toHaveBeenCalled();
+    },
+  );
+
+  it("returns the parsed pattern for a valid rule", () => {
+    const error = jest.spyOn(console, "error").mockImplementation(() => {});
+    const pattern = checkRulePattern("/^(true|false)$/");
+    expect(pattern.test("true")).toBe(true);
+    expect(pattern.test("yes")).toBe(false);
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it.each(["^\\d+$", "abc", "/(/", "/a\u2028b/", "//", 1, {}])(
+    "fails validation for an invalid rule instead of skipping it: %p",
+    (rule) => {
+      const error = jest.spyOn(console, "error").mockImplementation(() => {});
+      const pattern = checkRulePattern(rule);
+      expect(pattern).toBeInstanceOf(RegExp);
+      ["", "a", "true", "123", "\n"].forEach((value) => {
+        expect(pattern.test(value)).toBe(false);
+      });
+      expect(error).toHaveBeenCalledTimes(1);
+      expect(error.mock.calls[0]).toContain(rule);
+    },
+  );
+
+  it("reports the same invalid rule only once", () => {
+    const error = jest.spyOn(console, "error").mockImplementation(() => {});
+    checkRulePattern("not-a-literal-once");
+    checkRulePattern("not-a-literal-once");
+    expect(checkRulePattern("not-a-literal-once").test("x")).toBe(false);
+    expect(error).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not execute code stored in an invalid rule", () => {
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    checkRulePattern("(()=>{globalThis.pwned=1})()");
     expect(global.pwned).toBeUndefined();
   });
 });

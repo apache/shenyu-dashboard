@@ -32,7 +32,7 @@ import {
   getConfigFieldValue,
   serializePluginConfig,
 } from "../../../utils/pluginConfig";
-import { parseRegExpRule } from "../../../utils/regExpRule";
+import { checkRulePattern } from "../../../utils/regExpRule";
 
 const { Option } = Select;
 const FormItem = Form.Item;
@@ -175,7 +175,7 @@ class AddModal extends Component {
                     message: getIntlContent("SHENYU.COMMON.PLEASEINPUT"),
                   });
                 }
-                let checkPattern = parseRegExpRule(checkRule);
+                let checkPattern = checkRulePattern(checkRule);
                 if (checkPattern) {
                   rules.push({
                     pattern: checkPattern,
