@@ -148,7 +148,7 @@ export default class Manage extends Component {
   };
 
   searchClick = () => {
-    this.getAllUsers();
+    this.setState({ currentPage: 1 }, this.getAllUsers);
   };
 
   deleteClick = () => {

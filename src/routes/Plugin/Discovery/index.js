@@ -78,7 +78,11 @@ export default class DiscoveryProxy extends Component {
   }
 
   componentDidMount() {
-    const { dispatch, currentPage, pageSize, currentNamespaceId } = this.props;
+    const { dispatch, currentPage, pageSize, currentNamespaceId, plugins } =
+      this.props;
+    if (plugins && plugins.length > 0) {
+      this.syncPluginEnabled(plugins);
+    }
     dispatch({
       type: "discovery/fetchProxySelectors",
       payload: {
@@ -103,6 +107,21 @@ export default class DiscoveryProxy extends Component {
       },
     });
   }
+
+  componentDidUpdate(prevProps) {
+    const { plugins } = this.props;
+    if (plugins && plugins !== prevProps.plugins) {
+      this.syncPluginEnabled(plugins);
+    }
+  }
+
+  syncPluginEnabled = (plugins) => {
+    const { pluginName } = this.state;
+    const plugin = this.getPlugin(plugins, pluginName);
+    if (plugin) {
+      this.setState({ isPluginEnabled: plugin.enabled ?? false });
+    }
+  };
 
   // eslint-disable-next-line react/sort-comp
   renderCards(proxySelectorList = []) {

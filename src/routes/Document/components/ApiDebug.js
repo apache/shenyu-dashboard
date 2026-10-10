@@ -37,7 +37,6 @@ import React, {
   useState,
 } from "react";
 import ReactJson from "react-json-view";
-import ReactHtmlParser from "react-html-parser";
 import fetch from "dva/fetch";
 import {
   createOrUpdateMockRequest,
@@ -501,7 +500,10 @@ function ApiDebug() {
           Object.keys(responseInfo).length ? (
             <ReactJson src={responseInfo.body} name={false} />
           ) : responseInfo.body ? (
-            ReactHtmlParser(responseInfo.body)
+            // Non-JSON upstream bodies are untrusted: show them as text only.
+            <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+              {responseInfo.body}
+            </pre>
           ) : (
             <Empty description={false} />
           )}

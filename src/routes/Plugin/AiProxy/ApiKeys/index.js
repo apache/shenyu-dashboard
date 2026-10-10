@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { connect } from "dva";
 import {
   Button,
@@ -213,6 +213,44 @@ function ApiKeysPage({
     // eslint-disable-next-line
   }, [selectorId, namespaceId]);
 
+  // Declared before `columns` so the memoized renderers always capture the
+  // latest page/filter/selector state instead of stale first-render values.
+  const fetchList = useCallback(
+    async (p = page, ps = pageSize) => {
+      if (!selectorId) return;
+      const res = await getAiProxyApiKeys({
+        selectorId,
+        namespaceId,
+        currentPage: p,
+        pageSize: ps,
+        proxyApiKey:
+          queryKey && queryKey.trim() !== "" ? queryKey.trim() : undefined,
+      });
+      const list = res?.data?.dataList || [];
+      setData(list);
+      setTotal(res?.data?.totalCount || 0);
+    },
+    [selectorId, namespaceId, page, pageSize, queryKey],
+  );
+
+  const onToggle = useCallback(
+    async (ids, enabled) => {
+      if (!selectorId) return;
+      await batchEnableAiProxyApiKeys({ selectorId, ids, enabled });
+      fetchList();
+    },
+    [selectorId, fetchList],
+  );
+
+  const onBatchDelete = useCallback(
+    async (ids) => {
+      if (!selectorId) return;
+      await batchDeleteAiProxyApiKeys({ selectorId, ids });
+      fetchList();
+    },
+    [selectorId, fetchList],
+  );
+
   const columns = useMemo(
     () => [
       { title: "proxyApiKey", dataIndex: "proxyApiKey", key: "proxyApiKey" },
@@ -272,35 +310,8 @@ function ApiKeysPage({
         ),
       },
     ],
-    [namespaceId, onToggle],
+    [namespaceId, onToggle, onBatchDelete],
   );
-
-  const fetchList = async (p = page, ps = pageSize) => {
-    if (!selectorId) return;
-    const res = await getAiProxyApiKeys({
-      selectorId,
-      namespaceId,
-      currentPage: p,
-      pageSize: ps,
-      proxyApiKey:
-        queryKey && queryKey.trim() !== "" ? queryKey.trim() : undefined,
-    });
-    const list = res?.data?.dataList || [];
-    setData(list);
-    setTotal(res?.data?.totalCount || 0);
-  };
-
-  const onToggle = async (ids, enabled) => {
-    if (!selectorId) return;
-    await batchEnableAiProxyApiKeys({ selectorId, ids, enabled });
-    fetchList();
-  };
-
-  const onBatchDelete = async (ids) => {
-    if (!selectorId) return;
-    await batchDeleteAiProxyApiKeys({ selectorId, ids });
-    fetchList();
-  };
 
   const onCreate = async (values) => {
     if (!selectorId) return;

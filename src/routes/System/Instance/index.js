@@ -282,11 +282,11 @@ export default class Instance extends Component {
   };
 
   instanceIpOnchange = (e) => {
-    this.setState({ instanceIp: e.target.value }, this.query);
+    this.setState({ instanceIp: e.target.value, currentPage: 1 }, this.query);
   };
 
   instanceTypeOnchange = (e) => {
-    this.setState({ instanceType: e }, this.query);
+    this.setState({ instanceType: e, currentPage: 1 }, this.query);
   };
 
   searchClick = () => {
