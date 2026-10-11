@@ -72,12 +72,23 @@ const checkResponseCode = (response) => {
   }
 };
 
+export const handleUnauthorized = () => {
+  const { dispatch } = store;
+  dispatch({
+    type: "login/logout",
+  });
+  dispatch({
+    type: "global/resetPermission",
+  });
+};
+
 /**
  * Requests a URL, returning a promise.
  *
  * @param  {string} url       The URL we want to request
  * @param  {object} [options] The options we want to pass to "fetch"
- * @return {object}           An object containing either "data" or "err"
+ * @return {Promise}          The API payload, or null for HTTP 204. Rejects on
+ *                            HTTP, authentication, network, or JSON errors.
  */
 export default function request(url, options) {
   const defaultOptions = {};
@@ -116,26 +127,21 @@ export default function request(url, options) {
   return fetch(url, newOptions)
     .then(checkStatus)
     .then((response) => {
-      if (newOptions.method === "DELETE" || response.status === 204) {
-        return response.json();
+      if (response.status === 204) {
+        return null;
       }
       return response.json();
     })
     .then((res) => {
-      if (checkResponseCode(res)) {
+      if (res === null || checkResponseCode(res)) {
         return res;
       }
     })
     .catch((e) => {
-      const { dispatch } = store;
       const status = e.name;
       if (status === 401) {
-        dispatch({
-          type: "login/logout",
-        });
-        dispatch({
-          type: "global/resetPermission",
-        });
+        handleUnauthorized();
       }
+      throw e;
     });
 }

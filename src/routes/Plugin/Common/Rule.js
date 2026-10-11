@@ -68,7 +68,6 @@ class AddModal extends Component {
   }
 
   componentDidMount() {
-    this.initDics();
     const {
       dispatch,
       pluginId,
@@ -78,6 +77,7 @@ class AddModal extends Component {
       currentNamespaceId,
     } = this.props;
     this.setState({ pluginHandleList: [] });
+    this.initDics();
     let type = 2;
     dispatch({
       type: "pluginHandle/fetchByPluginId",

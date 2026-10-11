@@ -177,7 +177,9 @@ export async function findUser(params) {
 export async function addPlugin(params) {
   const formData = new FormData();
   formData.append("name", params.name);
-  if (params.config) formData.append("config", params.config);
+  if (params.config !== undefined && params.config !== null) {
+    formData.append("config", params.config);
+  }
   formData.append("sort", params.sort);
   formData.append("role", params.role);
   formData.append("enabled", params.enabled);
@@ -232,7 +234,9 @@ export async function updatePlugin(params) {
   const formData = new FormData();
   formData.append("ids", params.id);
   formData.append("name", params.name);
-  if (params.config) formData.append("config", params.config);
+  if (params.config !== undefined && params.config !== null) {
+    formData.append("config", params.config);
+  }
   formData.append("sort", params.sort);
   formData.append("role", params.role);
   formData.append("enabled", params.enabled);
@@ -1134,12 +1138,14 @@ export function refreshProxySelector(params) {
 }
 
 export function deleteDiscovery(params) {
-  return request(`${baseUrl}/discovery/${params.discoveryId}`, {
-    method: `DELETE`,
-    body: {
-      ...params,
+  return request(
+    `${baseUrl}/discovery/${params.discoveryId}?${stringify({
+      namespaceId: params.namespaceId,
+    })}`,
+    {
+      method: `DELETE`,
     },
-  });
+  );
 }
 
 export function getAlertReceivers(params) {
@@ -1361,12 +1367,6 @@ export async function asyncNamespacePlugin(params) {
   });
 }
 
-/* get mcpServer list */
-export async function fetchMcpServer(params) {
-  return request(`${baseUrl}/mcpServer/list?${stringify(params)}`, {
-    method: `GET`,
-  });
-}
 /* getInstancesByNamespace */
 export async function getInstancesByNamespace(params) {
   return request(`${baseUrl}/instance?${stringify(params)}`, {
@@ -1374,33 +1374,6 @@ export async function getInstancesByNamespace(params) {
   });
 }
 
-/* add mcpServer */
-export async function addMcpServer(params) {
-  return request(`${baseUrl}/mcpServer/add`, {
-    method: `POST`,
-    body: {
-      ...params,
-    },
-  });
-}
-
-/* update mcpServer */
-export async function updateMcpServer(params) {
-  return request(`${baseUrl}/mcpServer/update`, {
-    method: `PUT`,
-    body: {
-      ...params,
-    },
-  });
-}
-
-/* delete mcpServer */
-export async function deleteMcpServer(params) {
-  return request(`${baseUrl}/mcpServer/delete`, {
-    method: `DELETE`,
-    body: [...params.list],
-  });
-}
 /* findInstance */
 export async function findInstance(params) {
   return request(`${baseUrl}/instance/${params.id}`, {

@@ -16,11 +16,12 @@
  */
 
 import React from "react";
-import { shallow } from "enzyme";
+import { render, screen } from "@testing-library/react";
 import Success from "./Success";
 
-it("renders with Result", () => {
-  const wrapper = shallow(<Success />);
-  expect(wrapper.find("Result").length).toBe(1);
-  expect(wrapper.find("Result").prop("type")).toBe("success");
+it("renders the success result and its actions", () => {
+  render(<Success />);
+  expect(screen.getByText("提交成功")).toBeTruthy();
+  expect(screen.getByLabelText("icon: check-circle")).toBeTruthy();
+  expect(screen.getByRole("button", { name: "返回列表" })).toBeTruthy();
 });

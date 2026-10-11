@@ -23,8 +23,8 @@ import {
   Divider,
   Form,
   Input,
-  Modal,
   message,
+  Modal,
   Row,
   Select,
   Tabs,
@@ -37,17 +37,13 @@ import ProxySelectorCopy from "./ProxySelectorCopy.js";
 import { findKeyByValue } from "../../../utils/utils";
 import { getUpstreamLabels } from "../../../utils/upstreamLabels";
 import EditableFormTable from "./DiscoveryUpstreamTable";
+import { getDefaultValueList, getDiscoveryProps } from "./optionalFields";
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
 const { Option } = Select;
 
-@connect(({ discovery, pluginHandle, shenyuDict }) => ({
-  ...discovery,
-  ...pluginHandle,
-  ...shenyuDict,
-}))
-class ProxySelectorModal extends Component {
+export class ProxySelectorModalComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -67,7 +63,7 @@ class ProxySelectorModal extends Component {
     const { isAdd, isSetConfig, discoveryType, data, pluginId, dispatch } =
       this.props;
     const { discoveryDicts } = this.state;
-    const { props } = this.props.data || {};
+    const props = getDiscoveryProps(this.props.data?.props);
 
     if (!isAdd || isSetConfig) {
       this.setState({
@@ -116,8 +112,9 @@ class ProxySelectorModal extends Component {
             pluginHandles[0] = filteredArray;
             this.setState({ pluginHandleList: pluginHandles });
 
-            let defaultValue = handlerArray[0].defaultValue;
-            this.setState({ defaultValueList: defaultValue.split(",") });
+            this.setState({
+              defaultValueList: getDefaultValueList(handlerArray[0]),
+            });
           }
         },
       },
@@ -189,6 +186,10 @@ class ProxySelectorModal extends Component {
 
   handleCopyData = (copyData) => {
     const { form, dispatch } = this.props;
+    if (!copyData || !copyData.discovery) {
+      message.warn(getIntlContent("SHENYU.COMMON.WARN.INPUT_SELECTOR"));
+      return;
+    }
     const { name, forwardPort, discovery, listenerNode } = copyData;
     const formData = {
       name,
@@ -618,7 +619,7 @@ class ProxySelectorModal extends Component {
                           style={{ width: "100%" }}
                         >
                           {(() => {
-                            if (discoveryHandler != null) {
+                            if (discoveryHandler?.[0] != null) {
                               let item = discoveryHandler[0];
                               let checkRule = item.checkRule;
                               let required = item.required === "1";
@@ -800,4 +801,12 @@ class ProxySelectorModal extends Component {
   }
 }
 
-export default Form.create()(ProxySelectorModal);
+const ConnectedProxySelectorModal = connect(
+  ({ discovery, pluginHandle, shenyuDict }) => ({
+    ...discovery,
+    ...pluginHandle,
+    ...shenyuDict,
+  }),
+)(ProxySelectorModalComponent);
+
+export default Form.create()(ConnectedProxySelectorModal);

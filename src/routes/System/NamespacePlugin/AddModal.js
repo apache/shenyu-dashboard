@@ -20,6 +20,10 @@ import { Divider, Form, Input, InputNumber, Modal, Select, Switch } from "antd";
 import { connect } from "dva";
 import ReactJson from "react-json-view";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import {
+  getConfigFieldValue,
+  serializePluginConfig,
+} from "../../../utils/pluginConfig";
 
 const { Option } = Select;
 const FormItem = Form.Item;
@@ -33,6 +37,7 @@ class AddModal extends Component {
     this.state = {
       jsonKey: null,
       jsonValue: {},
+      jsonEdited: false,
     };
     this.parseJson();
   }
@@ -52,41 +57,29 @@ class AddModal extends Component {
     }
   };
 
-  updateJson = (obj, fieldName) => {
-    const { form } = this.props;
-    let fieldsValue = form.getFieldsValue();
-    this.state.jsonValue = obj.updated_src;
-    const value = { [fieldName]: this.state.jsonValue };
-    if (!fieldsValue[fieldName]) {
-      form.setFields({ [fieldName]: { value } });
-    } else {
-      form.setFieldsValue(value);
-    }
+  updateJson = (obj) => {
+    this.setState({ jsonValue: obj.updated_src, jsonEdited: true });
   };
 
   handleSubmit = (e) => {
-    const { form, handleOk, id = "", data } = this.props;
-    const { jsonKey, jsonValue } = this.state;
+    const {
+      form,
+      handleOk,
+      id = "",
+      data,
+      config: originalConfig,
+    } = this.props;
+    const { jsonKey, jsonValue, jsonEdited } = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        let { name, enabled, config, sort } = values;
-        if (data && data.length > 0) {
-          config = {};
-          data.forEach((item) => {
-            let fieldName = `__${item.field}__`;
-            if (values[fieldName]) {
-              config[item.field] = values[fieldName];
-            }
-          });
-          if (data.some((i) => i.dataType === 4)) {
-            config[jsonKey] = jsonValue;
-          }
-          config = JSON.stringify(config);
-          if (config === "{}") {
-            config = "";
-          }
-        }
+        const { name, enabled, sort } = values;
+        const config = serializePluginConfig({
+          fields: data,
+          values,
+          config: originalConfig,
+          jsonValues: jsonEdited && jsonKey ? { [jsonKey]: jsonValue } : {},
+        });
         handleOk({ name, enabled, config, id, sort });
       }
     });
@@ -163,9 +156,11 @@ class AddModal extends Component {
                 if (eachField.extObj) {
                   let extObj = JSON.parse(eachField.extObj);
                   required = extObj.required === "0" ? "" : extObj.required;
-                  if (!fieldInitialValue) {
-                    fieldInitialValue = extObj.defaultValue;
-                  }
+                  fieldInitialValue = getConfigFieldValue(
+                    config,
+                    eachField.field,
+                    extObj.defaultValue,
+                  );
                   if (extObj.rule) {
                     checkRule = extObj.rule;
                   }
@@ -245,9 +240,9 @@ class AddModal extends Component {
                         theme="monokai"
                         displayDataTypes={false}
                         name={false}
-                        onAdd={(obj) => this.updateJson(obj, fieldName)}
-                        onEdit={(obj) => this.updateJson(obj, fieldName)}
-                        onDelete={(obj) => this.updateJson(obj, fieldName)}
+                        onAdd={this.updateJson}
+                        onEdit={this.updateJson}
+                        onDelete={this.updateJson}
                         style={{ borderRadius: 4, padding: 16 }}
                       />
                     </FormItem>

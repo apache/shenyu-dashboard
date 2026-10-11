@@ -96,8 +96,8 @@ export default {
     },
     *reload(params, { put }) {
       const { fetchValue } = params;
-      const { userName, currentPage, pageSize } = fetchValue;
-      const payload = { userName, currentPage, pageSize };
+      const { currentPage, pageSize, namespaceId } = fetchValue;
+      const payload = { currentPage, pageSize, namespaceId };
       yield put({ type: "fetch", payload });
     },
   },

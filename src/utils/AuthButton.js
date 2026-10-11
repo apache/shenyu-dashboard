@@ -20,17 +20,6 @@ import { Button, Popconfirm } from "antd";
 import PropTypes from "prop-types";
 import { connect } from "dva";
 
-// button cache
-let buttonCache = {};
-
-/**
- *  reset authorized button cache
- *
- */
-export function resetAuthButtonCache() {
-  buttonCache = {};
-}
-
 /**
  * check button's authority
  *
@@ -44,18 +33,12 @@ export function checkButtonAuth(perms, permissions) {
     permissions.button &&
     permissions.button.length > 0
   ) {
-    if (buttonCache && buttonCache[perms]) {
-      return buttonCache[perms];
-    }
     let { button: functionsList } = permissions;
     let authFunctions = functionsList.filter((item) => {
       return item.perms === perms;
     });
     const authFunction =
       authFunctions && authFunctions.length > 0 ? authFunctions[0] : null;
-    if (authFunction) {
-      buttonCache.perms = authFunction;
-    }
     return authFunction;
   } else {
     return false;
@@ -66,16 +49,6 @@ export function checkButtonAuth(perms, permissions) {
   global,
 }))
 export default class AuthButton extends Component {
-  constructor(props) {
-    super(props);
-    const {
-      global: { permissions },
-    } = props;
-    if (!permissions || !permissions.menu || permissions.menu.length === 0) {
-      resetAuthButtonCache();
-    }
-  }
-
   render() {
     const {
       perms,

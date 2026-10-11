@@ -95,18 +95,20 @@ export default class Common extends Component {
         type: "common/resetData",
       });
 
-      if (prevProps.plugins && prevProps.plugins.length > 0) {
-        this.getAllSelectors(selectorPage, selectorPageSize, prevProps.plugins);
-      } else {
-        dispatch({
-          type: "global/fetchPlugins",
-          payload: {
-            callback: (pluginList) => {
-              this.getAllSelectors(selectorPage, selectorPageSize, pluginList);
+      this.setState({ selectorPage: 1 }, () => {
+        if (plugins && plugins.length > 0) {
+          this.getAllSelectors(1, selectorPageSize, plugins);
+        } else {
+          dispatch({
+            type: "global/fetchPlugins",
+            payload: {
+              callback: (pluginList) => {
+                this.getAllSelectors(1, selectorPageSize, pluginList);
+              },
             },
-          },
-        });
-      }
+          });
+        }
+      });
     }
     if (prevProps.currentNamespaceId !== currentNamespaceId) {
       if (plugins) {
@@ -199,8 +201,10 @@ export default class Common extends Component {
 
   searchSelector = () => {
     const { plugins } = this.props;
-    const { selectorPage, selectorPageSize } = this.state;
-    this.getAllSelectors(selectorPage, selectorPageSize, plugins);
+    const { selectorPageSize } = this.state;
+    this.setState({ selectorPage: 1 }, () => {
+      this.getAllSelectors(1, selectorPageSize, plugins);
+    });
   };
 
   isDiscovery = (pluginId) => {
@@ -764,7 +768,8 @@ export default class Common extends Component {
   rowClick = (record) => {
     const { id } = record;
     const { dispatch, currentNamespaceId } = this.props;
-    const { selectorPageSize } = this.state;
+    const { rulePageSize } = this.state;
+    this.setState({ rulePage: 1 });
     dispatch({
       type: "common/saveCurrentSelector",
       payload: { currentSelector: record },
@@ -773,7 +778,7 @@ export default class Common extends Component {
       type: "common/fetchRule",
       payload: {
         currentPage: 1,
-        pageSize: selectorPageSize,
+        pageSize: rulePageSize,
         selectorId: id,
         namespaceId: currentNamespaceId,
       },

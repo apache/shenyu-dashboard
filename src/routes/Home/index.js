@@ -88,7 +88,7 @@ export default class Home extends Component {
 
   pluginOnClick = (plugin) => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`plug/${plugin.role}/${plugin.name}`));
+    dispatch(routerRedux.push(`/plug/${plugin.role}/${plugin.name}`));
   };
 
   getEventLogTitle = (log) => {

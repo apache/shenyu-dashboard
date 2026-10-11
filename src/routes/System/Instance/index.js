@@ -29,15 +29,24 @@ import {
   Typography,
 } from "antd";
 import { connect } from "dva";
-import { format } from "date-fns";
+import dayjs from "dayjs";
 import * as echarts from "echarts";
 import { resizableComponents } from "../../../utils/resizable";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
+import { sortByDate, sortByNumber } from "../../../utils/sorter";
 
 const { Text } = Typography;
 
 const { Option } = Select;
+
+export const resizeCharts = (...charts) => {
+  charts.filter(Boolean).forEach((chart) => chart.resize());
+};
+
+export const disposeCharts = (...charts) => {
+  charts.filter(Boolean).forEach((chart) => chart.dispose());
+};
 
 @connect(({ instance, loading, global }) => ({
   instance,
@@ -71,6 +80,7 @@ export default class Instance extends Component {
     this.lineChartInstance = echarts.init(
       document.getElementById("lineDataDiv"),
     );
+    window.addEventListener("resize", this.handleChartResize);
   }
 
   componentDidUpdate(prevProps) {
@@ -91,6 +101,13 @@ export default class Instance extends Component {
     }
   }
 
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.handleChartResize);
+    disposeCharts(this.pieChartInstance, this.lineChartInstance);
+    this.pieChartInstance = null;
+    this.lineChartInstance = null;
+  }
+
   handleResize =
     (index) =>
     (e, { size }) => {
@@ -103,6 +120,10 @@ export default class Instance extends Component {
         return { columns: nextColumns };
       });
     };
+
+  handleChartResize = () => {
+    resizeCharts(this.pieChartInstance, this.lineChartInstance);
+  };
 
   onSelectChange = (selectedRowKeys) => {
     this.setState({ selectedRowKeys });
@@ -179,10 +200,6 @@ export default class Instance extends Component {
     };
 
     this.pieChartInstance.setOption(option);
-
-    window.addEventListener("resize", () => {
-      this.pieChartInstance.resize();
-    });
   };
 
   renderLineChart = (lineData) => {
@@ -254,10 +271,6 @@ export default class Instance extends Component {
     };
 
     this.lineChartInstance.setOption(option);
-
-    window.addEventListener("resize", () => {
-      this.lineChartInstance.resize();
-    });
   };
 
   pageOnchange = (page) => {
@@ -269,11 +282,11 @@ export default class Instance extends Component {
   };
 
   instanceIpOnchange = (e) => {
-    this.setState({ instanceIp: e.target.value }, this.query);
+    this.setState({ instanceIp: e.target.value, currentPage: 1 }, this.query);
   };
 
   instanceTypeOnchange = (e) => {
-    this.setState({ instanceType: e }, this.query);
+    this.setState({ instanceType: e, currentPage: 1 }, this.query);
   };
 
   searchClick = () => {
@@ -397,11 +410,11 @@ export default class Instance extends Component {
           ellipsis: true,
           key: "lastHeartBeatTime",
           width: 120,
-          sorter: (a, b) => (a.instanceType > b.instanceType ? 1 : -1),
+          sorter: sortByDate("lastHeartBeatTime"),
           render: (text) => {
             return (
               <div style={{ color: "#1f640a" }}>
-                {format(new Date(text), "YYYY-MM-DD HH:mm:ss") || "----"}
+                {dayjs(text).format("YYYY-MM-DD HH:mm:ss") || "----"}
               </div>
             );
           },
@@ -413,11 +426,11 @@ export default class Instance extends Component {
           ellipsis: true,
           key: "dateCreated",
           width: 120,
-          sorter: (a, b) => (a.instanceType > b.instanceType ? 1 : -1),
+          sorter: sortByDate("dateCreated"),
           render: (text) => {
             return (
               <div style={{ color: "#1f640a" }}>
-                {format(new Date(text), "YYYY-MM-DD HH:mm:ss") || "----"}
+                {dayjs(text).format("YYYY-MM-DD HH:mm:ss") || "----"}
               </div>
             );
           },
@@ -429,7 +442,7 @@ export default class Instance extends Component {
           ellipsis: true,
           key: "instanceState",
           width: 120,
-          sorter: (a, b) => (a.instanceType > b.instanceType ? 1 : -1),
+          sorter: sortByNumber("instanceState"),
           render: (state) => {
             if (state === 1) {
               return (

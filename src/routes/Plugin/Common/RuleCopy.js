@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { Modal, TreeSelect, Dropdown, Menu, Button, Icon } from "antd";
+import { Modal, TreeSelect, Dropdown, Menu, Button, Icon, message } from "antd";
 import { connect } from "dva";
 import {
   getPluginDropDownListByNamespace,
@@ -38,8 +38,9 @@ class RuleCopy extends Component {
       ruleTree: [],
       value: undefined,
       loading: false,
-      currentNamespaceId: defaultNamespaceId,
+      currentNamespaceId: props.currentNamespaceId || defaultNamespaceId,
     };
+    this.ruleRequestId = 0;
   }
 
   componentDidMount() {
@@ -47,48 +48,87 @@ class RuleCopy extends Component {
   }
 
   handleNamespacesValueChange = (value) => {
-    this.setState({ currentNamespaceId: value.key }, () => {
-      this.getAllRule();
-    });
+    this.setState(
+      {
+        currentNamespaceId: value.key,
+        value: undefined,
+        ruleTree: [],
+      },
+      () => {
+        this.getAllRule();
+      },
+    );
   };
 
   getAllRule = async () => {
-    const { currentNamespaceId } = this.props;
+    const { currentNamespaceId } = this.state;
+    this.ruleRequestId += 1;
+    const requestId = this.ruleRequestId;
+    const pageSize = 9999;
+
     const { code: pluginCode, data: pluginList = [] } =
       await getPluginDropDownListByNamespace({
         namespace: currentNamespaceId,
       });
-    const {
-      code: selectorCode,
-      data: { dataList: selectorList = [] },
-    } = await getAllSelectors({
+    if (requestId !== this.ruleRequestId) {
+      return;
+    }
+
+    const selectorResponse = await getAllSelectors({
       currentPage: 1,
-      pageSize: 9999,
+      pageSize,
       namespaceId: currentNamespaceId,
     });
-    const {
-      code: ruleCode,
-      data: { dataList: ruleList = [] },
-    } = await getAllRules({
+    if (requestId !== this.ruleRequestId) {
+      return;
+    }
+
+    const ruleResponse = await getAllRules({
       currentPage: 1,
-      pageSize: 9999,
+      pageSize,
       namespaceId: currentNamespaceId,
     });
+    if (requestId !== this.ruleRequestId) {
+      return;
+    }
+
+    const { code: selectorCode, data: selectorData = {} } = selectorResponse;
+    const { dataList: selectorList = [], page: selectorPage = {} } =
+      selectorData;
+    const { code: ruleCode, data: ruleData = {} } = ruleResponse;
+    const { dataList: ruleList = [], page: rulePage = {} } = ruleData;
 
     const pluginMap = {};
     const selectorMap = {};
     const ruleTree = [];
+    let incomplete =
+      pluginCode !== 200 ||
+      selectorCode !== 200 ||
+      ruleCode !== 200 ||
+      Number(selectorPage.totalCount || 0) > selectorList.length ||
+      Number(rulePage.totalCount || 0) > ruleList.length;
+
     if (ruleCode === 200) {
-      ruleList.forEach((v) => {
-        if (!selectorMap[v.selectorId]) {
-          selectorMap[v.selectorId] = [];
+      ruleList.forEach((rule) => {
+        if (!selectorMap[rule.selectorId]) {
+          selectorMap[rule.selectorId] = [];
         }
-        selectorMap[v.selectorId].push({ title: v.name, value: v.id });
+        selectorMap[rule.selectorId].push({
+          title: rule.name,
+          value: rule.id,
+        });
       });
     }
+
     if (Object.keys(selectorMap).length && selectorCode === 200) {
       Object.keys(selectorMap).forEach((selectorId) => {
-        const currentSelector = selectorList.find((v) => v.id === selectorId);
+        const currentSelector = selectorList.find(
+          (selector) => selector.id === selectorId,
+        );
+        if (!currentSelector) {
+          incomplete = true;
+          return;
+        }
         if (!pluginMap[currentSelector.pluginId]) {
           pluginMap[currentSelector.pluginId] = [];
         }
@@ -100,16 +140,30 @@ class RuleCopy extends Component {
         });
       });
     }
+
     if (Object.keys(pluginMap).length && pluginCode === 200) {
-      Object.keys(pluginMap).forEach((key) => {
-        const plugin = pluginList.find((v) => v.id === key);
+      Object.keys(pluginMap).forEach((pluginId) => {
+        const plugin = pluginList.find((item) => item.id === pluginId);
+        if (!plugin) {
+          incomplete = true;
+          return;
+        }
         ruleTree.push({
           title: plugin.name,
           value: plugin.id,
           disabled: true,
-          children: pluginMap[key],
+          children: pluginMap[pluginId],
         });
       });
+    }
+
+    if (requestId !== this.ruleRequestId) {
+      return;
+    }
+    if (incomplete) {
+      message.warn(
+        "Some source rules could not be loaded. Please refresh and try again.",
+      );
     }
     this.setState({ ruleTree });
   };

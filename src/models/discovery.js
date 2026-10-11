@@ -114,8 +114,8 @@ export default {
 
     *reload(params, { put }) {
       const { fetchValue } = params;
-      const { name = "", currentPage, pageSize } = fetchValue;
-      const payload = { name, currentPage, pageSize };
+      const { name = "", currentPage, pageSize, namespaceId } = fetchValue;
+      const payload = { name, currentPage, pageSize, namespaceId };
       yield put({ type: "fetchProxySelectors", payload });
     },
 

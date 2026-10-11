@@ -128,8 +128,8 @@ export default {
     },
     *reload(params, { put }) {
       const { fetchValue } = params;
-      const { appName, currentPage, pageSize, namespaceId } = fetchValue;
-      const payload = { appName, currentPage, pageSize, namespaceId };
+      const { path, currentPage, pageSize, namespaceId } = fetchValue;
+      const payload = { path, currentPage, pageSize, namespaceId };
       yield put({ type: "fetch", payload });
     },
   },

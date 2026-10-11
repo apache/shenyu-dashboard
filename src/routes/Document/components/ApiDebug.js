@@ -37,7 +37,6 @@ import React, {
   useState,
 } from "react";
 import ReactJson from "react-json-view";
-import ReactHtmlParser from "react-html-parser";
 import fetch from "dva/fetch";
 import {
   createOrUpdateMockRequest,
@@ -50,6 +49,7 @@ import HeadersEditor from "./HeadersEditor";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { Method } from "./globalData";
+import { buildEnvironmentHost, isValidHttpUrl } from "../../../utils/UrlUtils";
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -144,8 +144,13 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   }, [apiDetail.httpMethod]);
 
   useEffect(() => {
-    setInitialValue({ url: apiDetail.apiPath });
-  }, [apiDetail.apiPath]);
+    setInitialValue((prev) => ({
+      ...prev,
+      id: prev.apiId === apiDetail.id ? prev.id : null,
+      apiId: apiDetail.id,
+      url: apiDetail.apiPath,
+    }));
+  }, [apiDetail.id, apiDetail.apiPath]);
 
   useEffect(() => {
     form.setFieldsValue({
@@ -193,7 +198,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
         };
         let rs = await createOrUpdateMockRequest(params);
         if (rs.code !== 200) {
-          message.error(rs.msg);
+          message.error(rs.message);
         } else {
           const {
             code,
@@ -215,7 +220,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
     if (initialValue.id) {
       let rs = await deleteMockRequest(initialValue.id);
       if (rs.code !== 200) {
-        message.error(rs.msg);
+        message.error(rs.message);
       } else {
         message.success(rs.message);
       }
@@ -262,7 +267,13 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
             {
               type: "string",
               required: true,
-              pattern: /^https?:\/\/([^:]+):(\d+)(\/.+)$/,
+              validator: (_, value, callback) => {
+                if (!isValidHttpUrl(value)) {
+                  callback("Please enter a valid HTTP(S) URL");
+                  return;
+                }
+                callback();
+              },
             },
           ],
         })(
@@ -271,8 +282,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
               style={{ width: "40%" }}
               onChange={(envId) => {
                 const env = Object.values(envProps)[envId];
-                const url = new URL(env.addressUrl);
-                const host = `${url.protocol}//${url.hostname}:${url.port || "80"}`;
+                const host = buildEnvironmentHost(env.addressUrl);
                 setInitialValue({ ...initialValue, host, envId });
                 const requestUrl = `${host}${initialValue.url ?? ""}`;
                 form.setFieldsValue({ requestUrl });
@@ -490,7 +500,10 @@ function ApiDebug() {
           Object.keys(responseInfo).length ? (
             <ReactJson src={responseInfo.body} name={false} />
           ) : responseInfo.body ? (
-            ReactHtmlParser(responseInfo.body)
+            // Non-JSON upstream bodies are untrusted: show them as text only.
+            <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+              {responseInfo.body}
+            </pre>
           ) : (
             <Empty description={false} />
           )}

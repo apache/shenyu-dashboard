@@ -31,7 +31,7 @@ import { serializeUpstreamProps } from "../../../utils/upstreamLabels";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import discoveryStyles from "./discovery.less";
 import DiscoveryConfigModal from "./DiscoveryConfigModal";
-import ProxySelectorModal from "./ProxySelectorModal";
+import ConnectedProxySelectorModal from "./ProxySelectorModal";
 import { DiscoveryCard } from "./DiscoveryCard";
 import AuthButton from "../../../utils/AuthButton";
 import { getUpdateModal, updatePluginsEnabled } from "../../../utils/plugin";
@@ -79,7 +79,11 @@ export default class DiscoveryProxy extends Component {
   }
 
   componentDidMount() {
-    const { dispatch, currentPage, pageSize, currentNamespaceId } = this.props;
+    const { dispatch, currentPage, pageSize, currentNamespaceId, plugins } =
+      this.props;
+    if (plugins && plugins.length > 0) {
+      this.syncPluginEnabled(plugins);
+    }
     dispatch({
       type: "discovery/fetchProxySelectors",
       payload: {
@@ -104,6 +108,21 @@ export default class DiscoveryProxy extends Component {
       },
     });
   }
+
+  componentDidUpdate(prevProps) {
+    const { plugins } = this.props;
+    if (plugins && plugins !== prevProps.plugins) {
+      this.syncPluginEnabled(plugins);
+    }
+  }
+
+  syncPluginEnabled = (plugins) => {
+    const { pluginName } = this.state;
+    const plugin = this.getPlugin(plugins, pluginName);
+    if (plugin) {
+      this.setState({ isPluginEnabled: plugin.enabled ?? false });
+    }
+  };
 
   // eslint-disable-next-line react/sort-comp
   renderCards(proxySelectorList = []) {
@@ -309,7 +328,7 @@ export default class DiscoveryProxy extends Component {
         }
         this.setState({
           popup: (
-            <ProxySelectorModal
+            <ConnectedProxySelectorModal
               pluginId={plugin.id}
               recordCount={cardData.discoveryUpstreams.length}
               typeEnums={typeEnums}
@@ -366,6 +385,7 @@ export default class DiscoveryProxy extends Component {
                   fetchValue: {
                     currentPage,
                     pageSize,
+                    namespaceId: currentNamespaceId,
                   },
                 });
               }}
@@ -417,7 +437,7 @@ export default class DiscoveryProxy extends Component {
     });
     this.setState({
       popup: (
-        <ProxySelectorModal
+        <ConnectedProxySelectorModal
           recordCount={updateArray.length}
           discoveryUpstreams={updateArray}
           discoveryType={data.discovery.type}
@@ -484,7 +504,7 @@ export default class DiscoveryProxy extends Component {
   };
 
   handleDelete = (id) => {
-    const { currentPage, pageSize } = this.props;
+    const { currentPage, pageSize, currentNamespaceId } = this.props;
     this.props.dispatch({
       type: "discovery/delete",
       payload: {
@@ -493,6 +513,7 @@ export default class DiscoveryProxy extends Component {
       fetchValue: {
         currentPage,
         pageSize,
+        namespaceId: currentNamespaceId,
       },
     });
   };
@@ -508,10 +529,12 @@ export default class DiscoveryProxy extends Component {
 
   handleConfigDelete = (id) => {
     if (id !== undefined) {
+      const { currentNamespaceId } = this.props;
       this.props.dispatch({
         type: "discovery/deleteConfig",
         payload: {
           discoveryId: id,
+          namespaceId: currentNamespaceId,
         },
       });
     } else {

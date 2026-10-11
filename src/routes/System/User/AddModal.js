@@ -22,13 +22,22 @@ import { getIntlContent } from "../../../utils/IntlUtils";
 const FormItem = Form.Item;
 const { Option } = Select;
 
-class AddModal extends Component {
+export class UserAddModal extends Component {
   handleSubmit = (e) => {
     const { form, handleOk, id = "" } = this.props;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        handleOk({ ...values, id });
+        const submitValues = { ...values, id };
+        if (
+          id &&
+          (submitValues.password === "" ||
+            submitValues.password === undefined ||
+            submitValues.password === null)
+        ) {
+          delete submitValues.password;
+        }
+        handleOk(submitValues);
       }
     });
   };
@@ -38,10 +47,10 @@ class AddModal extends Component {
       handleCancel,
       form,
       userName = "",
-      password = "",
       roles = [],
       enabled = true,
       allRoles = [],
+      id = "",
     } = this.props;
 
     const { getFieldDecorator } = form;
@@ -92,13 +101,12 @@ class AddModal extends Component {
             {getFieldDecorator("password", {
               rules: [
                 {
-                  required: true,
+                  required: !id,
                   message: getIntlContent("SHENYU.SYSTEM.USER.PASSWORD"),
                 },
               ],
-              initialValue: password,
             })(
-              <Input
+              <Input.Password
                 allowClear
                 placeholder={getIntlContent("SHENYU.SYSTEM.PASSWORD")}
               />,
@@ -145,4 +153,4 @@ class AddModal extends Component {
   }
 }
 
-export default Form.create()(AddModal);
+export default Form.create()(UserAddModal);

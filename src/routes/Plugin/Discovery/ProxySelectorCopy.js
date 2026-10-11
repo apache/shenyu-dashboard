@@ -16,15 +16,12 @@
  */
 
 import React, { Component } from "react";
-import { Modal, Select } from "antd";
+import { message, Modal, Select } from "antd";
 import { connect } from "dva";
 import { fetchProxySelector } from "../../../services/api";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
-@connect(({ global }) => ({
-  currentNamespaceId: global.currentNamespaceId,
-}))
-class ProxySelectorCopy extends Component {
+export class ProxySelectorCopyComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -61,6 +58,10 @@ class ProxySelectorCopy extends Component {
     this.setState({
       loading: false,
     });
+    if (!data) {
+      message.warn(getIntlContent("SHENYU.COMMON.WARN.INPUT_SELECTOR"));
+      return;
+    }
     // eslint-disable-next-line no-unused-expressions
     onOk && onOk(data);
   };
@@ -88,7 +89,10 @@ class ProxySelectorCopy extends Component {
 
   render() {
     const { visible = false, disabled } = this.props;
-    const { loading } = this.state;
+    const { loading, selectedValue, selectorList } = this.state;
+    const hasValidSelection = selectorList.some(
+      (selector) => selector.id === selectedValue,
+    );
     return (
       <Modal
         visible={visible}
@@ -97,6 +101,7 @@ class ProxySelectorCopy extends Component {
         onCancel={this.handleCancel}
         onOk={this.handleOk}
         confirmLoading={loading}
+        okButtonProps={{ disabled: !hasValidSelection }}
       >
         <Select
           disabled={disabled}
@@ -117,4 +122,6 @@ class ProxySelectorCopy extends Component {
   }
 }
 
-export default ProxySelectorCopy;
+export default connect(({ global }) => ({
+  currentNamespaceId: global.currentNamespaceId,
+}))(ProxySelectorCopyComponent);

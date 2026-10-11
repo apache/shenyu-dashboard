@@ -51,6 +51,7 @@ import {
 import DiscoveryImportModal from "../Discovery/DiscoveryImportModal";
 import { getUpstreamLabels } from "../../../utils/upstreamLabels";
 import EditableFormTable from "../Discovery/DiscoveryUpstreamTable.js";
+import { buildHandle } from "./selectorHandle";
 
 const { Item } = Form;
 const { TabPane } = Tabs;
@@ -264,7 +265,6 @@ class AddModal extends Component {
         return;
       }
     }
-    let handle = [];
 
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -308,35 +308,7 @@ class AddModal extends Component {
               importedDiscoveryId,
             });
           } else {
-            pluginHandleList.forEach((handleList, index) => {
-              handle[index] = {};
-              handleList.forEach((item) => {
-                if (isDivideUpstreamsRequiresForPlugin(pluginId)) {
-                  const { keys, divideUpstreams } = values;
-                  const data = {
-                    [item.field]: values[item.field],
-                    gray: values.gray,
-                  };
-
-                  if (
-                    Array.isArray(divideUpstreams) &&
-                    divideUpstreams.length
-                  ) {
-                    data.divideUpstreams = keys.map(
-                      (key) => divideUpstreams[key],
-                    );
-                  }
-                  handle[index] = data;
-                  delete values[item.field];
-                  delete values.divideUpstreams;
-                  delete values.gray;
-                  delete values.key;
-                } else {
-                  handle[index][item.field] = values[item.field + index];
-                  delete values[item.field + index];
-                }
-              });
-            });
+            const handle = buildHandle(pluginHandleList, values, pluginId);
             handleOk({
               ...values,
               handle: multiSelectorHandle
@@ -468,14 +440,16 @@ class AddModal extends Component {
       payload: {
         type,
         callBack: (dics) => {
-          this.state[`${type}Dics`] = dics;
+          const nextState = { [`${type}Dics`]: dics };
           if (type === "discoveryMode" && isAdd) {
             let configProps = dics.filter(
               (item) => item.dictName === "zookeeper",
             );
-            let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
-            this.setState({ configPropsJson: propsEntries });
+            nextState.configPropsJson = JSON.parse(
+              configProps[0]?.dictValue || "{}",
+            );
           }
+          this.setState(nextState);
         },
       },
     });
@@ -981,19 +955,26 @@ class AddModal extends Component {
       id: discoveryId = "",
       props = "{}",
     } = configData || {};
+    let configPropsJson = {};
+    try {
+      configPropsJson = JSON.parse(props) || {};
+    } catch (e) {
+      configPropsJson = {};
+    }
     const formData = {
       selectedDiscoveryType: type,
       serverList,
+      ...configPropsJson,
     };
     this.setState(
       {
         selectedDiscoveryValue: type,
         showDiscoveryImportModal: false,
         importedDiscoveryId: discoveryId,
+        configPropsJson,
       },
       () => {
         form.setFieldsValue(formData);
-        this.state.configPropsJson = JSON.parse(props);
       },
     );
   };

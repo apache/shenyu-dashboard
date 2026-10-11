@@ -23,7 +23,6 @@ export default {
 
   state: {
     error: "",
-    isloading: false,
   },
 
   effects: {

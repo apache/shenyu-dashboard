@@ -48,8 +48,11 @@ export default {
 
   effects: {
     *fetchSelector({ payload }, { call, put }) {
-      const { namespaceId } = payload;
-      const json = yield call(getAllSelectors, { ...payload });
+      const { namespaceId, rulePageSize = 12, ...selectorPayload } = payload;
+      const json = yield call(getAllSelectors, {
+        ...selectorPayload,
+        namespaceId,
+      });
       if (json.code === 200) {
         let { page, dataList } = json.data;
         dataList = dataList.map((item) => {
@@ -75,7 +78,7 @@ export default {
             type: "fetchRule",
             payload: {
               currentPage: 1,
-              pageSize: 12,
+              pageSize: rulePageSize,
               selectorId: dataList[0].id,
               namespaceId,
             },
@@ -254,11 +257,23 @@ export default {
     },
 
     *exportAll(_, { call }) {
-      yield call(asyncConfigExport);
+      try {
+        yield call(asyncConfigExport);
+      } catch (error) {
+        message.error(error.message);
+      }
     },
 
     *exportByNamespace(params, { call }) {
-      yield call(asyncConfigExportByNamespace, params);
+      const { callback } = params;
+      try {
+        yield call(asyncConfigExportByNamespace, params);
+        if (callback) {
+          callback();
+        }
+      } catch (error) {
+        message.error(error.message);
+      }
     },
 
     *import(params, { call }) {

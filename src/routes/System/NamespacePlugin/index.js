@@ -33,6 +33,7 @@ import { Link } from "dva/router";
 import { resizableComponents } from "../../../utils/resizable";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
+import { sortByNumber } from "../../../utils/sorter";
 import { refreshAuthMenus } from "../../../utils/AuthRoute";
 import {
   getUpdateModal,
@@ -161,11 +162,11 @@ export default class NamespacePlugin extends Component {
   };
 
   searchOnchange = (e) => {
-    this.setState({ name: e.target.value }, this.query);
+    this.setState({ name: e.target.value, currentPage: 1 }, this.query);
   };
 
   enabledOnchange = (e) => {
-    this.setState({ enabled: e }, this.query);
+    this.setState({ enabled: e, currentPage: 1 }, this.query);
   };
 
   searchClick = () => {
@@ -182,9 +183,7 @@ export default class NamespacePlugin extends Component {
           list: selectedRowKeys,
           namespaceId: currentNamespaceId,
         },
-        fetchValue: this.currentQueryPayload({
-          pageSize: 12,
-        }),
+        fetchValue: this.currentQueryPayload(),
         callback: () => {
           this.setState({ selectedRowKeys: [] });
           refreshAuthMenus({ dispatch });
@@ -299,7 +298,7 @@ export default class NamespacePlugin extends Component {
           ellipsis: true,
           key: "sort",
           width: 120,
-          sorter: (a, b) => (a.role > b.role ? 1 : -1),
+          sorter: sortByNumber("sort"),
           render: (text) => {
             return <div style={{ color: "#014955" }}>{text}</div>;
           },

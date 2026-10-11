@@ -373,7 +373,7 @@ export default class PluginHandle extends Component {
                   </div>
                 );
               } else {
-                return <div>text</div>;
+                return <div>{text}</div>;
               }
             }
           },

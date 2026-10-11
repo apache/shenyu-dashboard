@@ -81,9 +81,11 @@ export const getMenuMatchKeys = (flatMenuKeys, paths) =>
 export default class SiderMenu extends PureComponent {
   constructor(props) {
     super(props);
-    this.flatMenuKeys = getFlatMenuKeys(props.menuData);
     this.state = {
-      openKeys: SiderMenu.getDefaultCollapsedSubMenus(props, this.flatMenuKeys),
+      openKeys: SiderMenu.getDefaultCollapsedSubMenus(
+        props,
+        getFlatMenuKeys(props.menuData),
+      ),
       localeName: "",
       mode: "inline",
       theme: "dark",
@@ -230,11 +232,14 @@ export default class SiderMenu extends PureComponent {
   // Get the currently selected menu
   getSelectedMenuKeys = () => {
     const {
+      menuData,
       location: { pathname },
     } = this.props;
 
-    // console.log(this.flatMenuKeys, urlToList(pathname));
-    return getMenuMatchKeys(this.flatMenuKeys, urlToList(pathname));
+    // Derive flatMenuKeys from the current menuData on every call instead of
+    // caching it, since menuData can change after construction (e.g. plugin
+    // or permission menus that load asynchronously).
+    return getMenuMatchKeys(getFlatMenuKeys(menuData), urlToList(pathname));
   };
 
   // conversion Path

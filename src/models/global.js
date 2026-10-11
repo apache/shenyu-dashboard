@@ -72,6 +72,12 @@ export default {
         pageSize: 50,
       };
       const json = yield call(getPluginsByNamespace, params);
+      const currentNamespaceId = yield select(
+        ({ global }) => global.currentNamespaceId,
+      );
+      if (currentNamespaceId !== namespaceId) {
+        return;
+      }
       if (json.code === 200) {
         let { dataList } = json.data;
 
@@ -86,7 +92,7 @@ export default {
         });
       }
     },
-    *fetchPluginsByNamespace({ payload }, { call, put }) {
+    *fetchPluginsByNamespace({ payload }, { call }) {
       const { callback, namespaceId } = payload ?? {};
       const params = {
         namespaceId,
@@ -100,12 +106,6 @@ export default {
         if (callback) {
           callback(dataList);
         }
-        yield put({
-          type: "savePlugins",
-          payload: {
-            dataList,
-          },
-        });
       }
     },
     *asyncPlugin(params, { call }) {
@@ -127,6 +127,12 @@ export default {
       if (token && namespaceId) {
         const params = { token, namespaceId };
         const json = yield call(getUserPermissionByNamespace, params);
+        const currentNamespaceId = yield select(
+          ({ global }) => global.currentNamespaceId,
+        );
+        if (currentNamespaceId !== namespaceId) {
+          return;
+        }
         if (json.code === 200) {
           let { menu, currentAuth } = json.data;
           permissions = { menu, button: currentAuth };
@@ -156,6 +162,12 @@ export default {
       if (token && namespaceId) {
         const params = { token, namespaceId };
         const json = yield call(getUserPermissionByNamespace, params);
+        const currentNamespaceId = yield select(
+          ({ global }) => global.currentNamespaceId,
+        );
+        if (currentNamespaceId !== namespaceId) {
+          return;
+        }
         if (json.code === 200) {
           let { menu, currentAuth } = json.data;
           permissions = { menu, button: currentAuth };
@@ -207,9 +219,14 @@ export default {
     },
     saveCurrentNamespaceId(state, { payload }) {
       window.sessionStorage.setItem("currentNamespaceId", payload);
+      if (state.currentNamespaceId === payload) {
+        return state;
+      }
       return {
         ...state,
         currentNamespaceId: payload,
+        plugins: [],
+        permissions: { menu: [], button: [] },
       };
     },
     savePlugins(state, { payload }) {

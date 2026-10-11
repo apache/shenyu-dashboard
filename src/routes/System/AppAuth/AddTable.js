@@ -32,7 +32,34 @@ import { getIntlContent } from "../../../utils/IntlUtils";
 const FormItem = Form.Item;
 const { Option } = Select;
 
-class AddTable extends Component {
+export const getNextPathRowKey = (rows) =>
+  rows.reduce(
+    (maxKey, item) =>
+      Number.isInteger(item.key) ? Math.max(maxKey, item.key) : maxKey,
+    -1,
+  ) + 1;
+
+export const normalizePathRows = (rows) => {
+  const usedKeys = new Set();
+  let nextKey = getNextPathRowKey(rows);
+
+  return rows.map((item) => {
+    if (Number.isInteger(item.key) && !usedKeys.has(item.key)) {
+      usedKeys.add(item.key);
+      return item;
+    }
+
+    while (usedKeys.has(nextKey)) {
+      nextKey += 1;
+    }
+    const normalized = { ...item, key: nextKey };
+    usedKeys.add(nextKey);
+    nextKey += 1;
+    return normalized;
+  });
+};
+
+export class AddTableComponent extends Component {
   constructor(props) {
     super(props);
     this.columns = [
@@ -69,7 +96,7 @@ class AddTable extends Component {
           this.state.allData.length > 1 ? (
             <Popconfirm
               title={getIntlContent("SHENYU.COMMON.DELETE")}
-              onConfirm={() => this.handleDelete(record.path)}
+              onConfirm={() => this.handleDelete(record.key)}
             >
               <a>{getIntlContent("SHENYU.COMMON.DELETE.NAME")}</a>
             </Popconfirm>
@@ -77,7 +104,6 @@ class AddTable extends Component {
       },
     ];
     this.state = {
-      tableInput: [],
       allData: [],
       newSelectInput: [],
       pathTableVisible: true,
@@ -88,9 +114,9 @@ class AddTable extends Component {
   handleChange = (value) => {
     this.props.form.setFieldsValue({ appName: value });
     this.setState({
-      allData:
+      allData: normalizePathRows(
         this.props.metaGroup[value] === undefined ||
-        this.props.metaGroup[value] === null
+          this.props.metaGroup[value] === null
           ? [
               {
                 key: 0,
@@ -99,6 +125,7 @@ class AddTable extends Component {
               },
             ]
           : this.props.metaGroup[value],
+      ),
     });
   };
 
@@ -127,38 +154,29 @@ class AddTable extends Component {
   };
 
   handleTableInput = (value, record) => {
-    // eslint-disable-next-line no-unused-vars
-    for (let i in value) {
-      if (Object.prototype.hasOwnProperty.call(value, i)) {
-        record[i] = value[i]; // 这一句是必须的，不然状态无法更改
-        this.setState({
-          // eslint-disable-next-line react/no-access-state-in-setstate
-          tableInput: this.state.tableInput.map((item) =>
-            item.key === record.key ? { ...item, [i]: value[i] } : item,
-          ),
-        });
-      }
-    }
+    this.setState((prev) => ({
+      allData: prev.allData.map((item) =>
+        item.key === record.key ? { ...item, ...value } : item,
+      ),
+    }));
   };
 
   handleAddTd = () => {
-    const allData = this.state.allData;
-
-    const newData = {
-      key: allData.length,
-      path: "",
-      pathDesc: "",
-    };
-
-    this.setState({
-      allData: [...allData, newData],
-    });
+    this.setState((prev) => ({
+      allData: [
+        ...prev.allData,
+        {
+          key: getNextPathRowKey(prev.allData),
+          path: "",
+          pathDesc: "",
+        },
+      ],
+    }));
   };
 
   handleDelete = (key) => {
-    // const allData = [...this.state.allData];
     this.setState((prev) => ({
-      allData: prev.allData.filter((item) => item.path !== key),
+      allData: prev.allData.filter((item) => item.key !== key),
     }));
   };
 
@@ -334,7 +352,7 @@ class AddTable extends Component {
                 columns={columns}
                 dataSource={data}
                 onChange={this.handleTableChange}
-                rowKey={(record) => record.id}
+                rowKey={(record) => record.key}
                 pagination={{ current: this.state.pagination, pageSize: 10 }}
               />
             </div>
@@ -345,4 +363,4 @@ class AddTable extends Component {
   }
 }
 
-export default Form.create()(AddTable);
+export default Form.create()(AddTableComponent);
