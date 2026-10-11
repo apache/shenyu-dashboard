@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-import {
+import { Redirect, Route } from "dva/router";
+import AuthRoute, {
   checkMenuAuth,
   getAuthMenus,
   getBaseRedirectPath,
@@ -191,4 +192,42 @@ it("removes parent menus when none of their children are authorized", () => {
   const permissions = { menu: [{ url: "/system", meta: {} }] };
 
   expect(getAuthMenus([], menuTree, permissions, false)).toEqual([]);
+});
+
+// Regression test for issue #604: unauthorized routes must redirect instead
+// of rendering a dead route (blank page).
+const WrappedAuthRoute = AuthRoute.WrappedComponent;
+
+function renderAuthRoute({ path, permissions, redirectPath }) {
+  resetAuthMenuCache();
+  const instance = new WrappedAuthRoute({
+    loading: false,
+    path,
+    component: () => null,
+    global: { permissions },
+    redirectPath,
+    location: { pathname: path },
+  });
+  return instance.render();
+}
+
+it("redirects to the redirect path when permissions are denied", () => {
+  const redirectPath = "/exception/403";
+  const rendered = renderAuthRoute({
+    path: "/system/role",
+    permissions: { menu: [{ url: "/system/user" }] },
+    redirectPath,
+  });
+  expect(rendered.type).toBe(Redirect);
+  expect(rendered.props.to).toBe(redirectPath);
+});
+
+it("renders the route when permissions are granted", () => {
+  const rendered = renderAuthRoute({
+    path: "/system/role",
+    permissions: { menu: [{ url: "/system/role" }] },
+    redirectPath: "/exception/403",
+  });
+  expect(rendered.type).toBe(Route);
+  expect(rendered.props.path).toBe("/system/role");
 });
