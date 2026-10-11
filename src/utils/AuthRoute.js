@@ -17,7 +17,7 @@
 
 import React, { Component } from "react";
 import { connect } from "dva";
-import { Route } from "dva/router";
+import { Redirect, Route } from "dva/router";
 import { Spin } from "antd";
 import { filterTree } from "./utils";
 import { getIntlContent } from "./IntlUtils";
@@ -347,7 +347,7 @@ export default class AuthRoute extends Component {
       if (checkMenuAuth(paths, permissions)) {
         return <Route path={path} component={component} />;
       } else {
-        return <Route path={redirectPath} component={null} />;
+        return <Redirect to={redirectPath} />;
       }
     }
   }
