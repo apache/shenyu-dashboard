@@ -714,7 +714,7 @@
   "SHENYU.MCP.TOOLS.PARAM.DEPTH.MAX.CANNOT.ADD": ", cannot add more sub-parameters",
   "SHENYU.MCP.TOOLS.PARAM.ROW.PREFIX": "Row ",
   "SHENYU.MCP.TOOLS.PARAM.ROW.SUFFIX": "",
-  "SHENYU.MCP.TOOLS.PARAM.INCOMPLETE": "parameters incomplete, please fill in the name and type",
+  "SHENYU.MCP.TOOLS.PARAM.INCOMPLETE": "parameters are incomplete; please fill in the name and type",
   "SHENYU.EXCEPTION.403.DESC": "Sorry, you don't have access to this page",
   "SHENYU.EXCEPTION.404.DESC": "Sorry, the page you visited does not exist",
   "SHENYU.EXCEPTION.500.DESC": "Sorry, something went wrong with the server",
