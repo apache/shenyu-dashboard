@@ -24,6 +24,7 @@ import PropTypes from "prop-types";
 import ReactJson from "react-json-view";
 import { Method, RPCTYPE, API_SOURCE_TYPE, STATE_TYPE } from "./globalData";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import { parseJsonObject } from "../../../utils/jsonObject";
 import { addApi, updateApi } from "../../../services/api";
 
 class AddAndUpdateApiDoc extends Component {
@@ -114,6 +115,8 @@ class AddAndUpdateApiDoc extends Component {
       updateExt = () => {},
     } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
+    const extJson = parseJsonObject(ext);
+    const documentJson = parseJsonObject(document);
     const formItemLayout = {
       labelCol: {
         sm: { span: 6 },
@@ -309,17 +312,29 @@ class AddAndUpdateApiDoc extends Component {
           <Form.Item
             label={getIntlContent("SHENYU.DOCUMENT.APIDOC.EXT")}
             {...formItemLayout}
+            validateStatus={extJson.error ? "error" : undefined}
+            help={
+              extJson.error
+                ? getIntlContent("SHENYU.DOCUMENT.APIDOC.EXT.INFO")
+                : undefined
+            }
           >
-            <ReactJson
-              src={JSON.parse(ext)}
-              theme="monokai"
-              displayDataTypes={false}
-              name={false}
-              onAdd={updateExt}
-              onEdit={updateExt}
-              onDelete={updateExt}
-              style={{ borderRadius: 4, padding: 16, overflow: "auto" }}
-            />
+            {extJson.error ? (
+              <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                {ext}
+              </pre>
+            ) : (
+              <ReactJson
+                src={extJson.value || {}}
+                theme="monokai"
+                displayDataTypes={false}
+                name={false}
+                onAdd={updateExt}
+                onEdit={updateExt}
+                onDelete={updateExt}
+                style={{ borderRadius: 4, padding: 16, overflow: "auto" }}
+              />
+            )}
           </Form.Item>
           <Form.Item
             label={getIntlContent("SHENYU.DOCUMENT.APIDOC.APIOWNER")}
@@ -386,17 +401,29 @@ class AddAndUpdateApiDoc extends Component {
           <Form.Item
             label={getIntlContent("SHENYU.DOCUMENT.APIDOC.DOCUMENT")}
             {...formItemLayout}
+            validateStatus={documentJson.error ? "error" : undefined}
+            help={
+              documentJson.error
+                ? getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID")
+                : undefined
+            }
           >
-            <ReactJson
-              src={JSON.parse(document)}
-              theme="monokai"
-              displayDataTypes={false}
-              name={false}
-              onAdd={updateDocument}
-              onEdit={updateDocument}
-              onDelete={updateDocument}
-              style={{ borderRadius: 4, padding: 16, overflow: "auto" }}
-            />
+            {documentJson.error ? (
+              <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                {document}
+              </pre>
+            ) : (
+              <ReactJson
+                src={documentJson.value || {}}
+                theme="monokai"
+                displayDataTypes={false}
+                name={false}
+                onAdd={updateDocument}
+                onEdit={updateDocument}
+                onDelete={updateDocument}
+                style={{ borderRadius: 4, padding: 16, overflow: "auto" }}
+              />
+            )}
           </Form.Item>
 
           <Form.Item hidden>

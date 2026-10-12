@@ -34,6 +34,7 @@ import { resizableComponents } from "../../../utils/resizable";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { sortByNumber } from "../../../utils/sorter";
+import { formatJsonObject } from "../../../utils/jsonObject";
 import { refreshAuthMenus } from "../../../utils/AuthRoute";
 import {
   getUpdateModal,
@@ -317,11 +318,7 @@ export default class NamespacePlugin extends Component {
                 <Tag color="#3b9a9c">{record.sort}</Tag>
               </div>
             );
-            const t = JSON.stringify(
-              JSON.parse(text !== null && text.length > 0 ? text : "{}"),
-              null,
-              4,
-            );
+            const t = formatJsonObject(text);
             const content = (
               <div>
                 <Text type="secondary">{`${getIntlContent("SHENYU.SYSTEM.CREATETIME")}: ${record.dateCreated}`}</Text>

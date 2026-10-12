@@ -35,6 +35,7 @@ import { connect } from "dva";
 import { routerRedux } from "dva/router";
 import styles from "./home.less";
 import { getIntlContent } from "../../utils/IntlUtils";
+import { formatJsonObject } from "../../utils/jsonObject";
 import {
   activePluginSnapshotByNamespace,
   getNewEventRecodLogList,
@@ -138,13 +139,7 @@ export default class Home extends Component {
           <hr />
           <div style={contextStyle}>
             <pre>
-              <code>
-                {JSON.stringify(
-                  JSON.parse(p.config ? p.config : "{}"),
-                  null,
-                  4,
-                )}
-              </code>
+              <code>{formatJsonObject(p.config)}</code>
             </pre>
           </div>
         </div>
