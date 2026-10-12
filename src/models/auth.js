@@ -65,7 +65,9 @@ export default {
       const json = yield call(findAuthData, payload);
       if (json.code === 200) {
         const auth = json.data;
-        callback(auth);
+        if (typeof callback === "function") {
+          callback(auth);
+        }
       }
     },
     *fetchItemDel(params, { call }) {
@@ -73,7 +75,9 @@ export default {
       const json = yield call(findAuthDataDel, payload);
       if (json.code === 200) {
         const auth = json.data;
-        callback({ auth });
+        if (typeof callback === "function") {
+          callback({ auth });
+        }
       }
     },
     *fetchMeta(params, { call }) {
@@ -89,14 +93,18 @@ export default {
           };
           return item;
         });
-        callback({ dataList });
+        if (typeof callback === "function") {
+          callback({ dataList });
+        }
       }
     },
     *fetchMetaGroup(params, { call }) {
       const { payload, callback } = params;
       const json = yield call(getfetchMetaGroup, payload);
       if (json.code === 200) {
-        callback(json.data);
+        if (typeof callback === "function") {
+          callback(json.data);
+        }
       }
     },
     *add(params, { call, put }) {
@@ -104,7 +112,9 @@ export default {
       const json = yield call(addAuthData, payload);
       if (json.code === 200) {
         message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
-        callback();
+        if (typeof callback === "function") {
+          callback();
+        }
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
@@ -118,7 +128,9 @@ export default {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
         );
-        callback();
+        if (typeof callback === "function") {
+          callback();
+        }
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
@@ -132,7 +144,9 @@ export default {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
         );
-        callback();
+        if (typeof callback === "function") {
+          callback();
+        }
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
@@ -145,7 +159,9 @@ export default {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
         );
-        callback();
+        if (typeof callback === "function") {
+          callback();
+        }
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
@@ -164,7 +180,7 @@ export default {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
         );
-        if (callback) {
+        if (typeof callback === "function") {
           callback();
         }
         yield put({ type: "reload", fetchValue });
@@ -179,7 +195,7 @@ export default {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
         );
-        if (callback) {
+        if (typeof callback === "function") {
           callback();
         }
         yield put({ type: "reload", fetchValue });

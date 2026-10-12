@@ -106,9 +106,11 @@ it("passes the current query to update without issuing a second fetch", () => {
   component.editClick({ id: "auth-1" });
   component.state.popup.props.handleOk({ appKey: "updated-app-key" });
 
-  const updateAction = dispatch.mock.calls.find(
+  const updateCall = dispatch.mock.calls.find(
     ([action]) => action.type === "auth/update",
-  )[0];
+  );
+  expect(updateCall).toBeDefined();
+  const [updateAction] = updateCall;
   expect(updateAction.fetchValue).toEqual({
     appKey: "app-key",
     phone: "13800000000",
