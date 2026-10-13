@@ -126,7 +126,7 @@ export default class CommonRuleHandle extends Component {
                             item.label,
                         });
                       }
-                      let checkPattern = checkRulePattern(checkRule);
+                      const checkPattern = checkRulePattern(checkRule);
                       if (checkPattern) {
                         rules.push({
                           pattern: checkPattern,

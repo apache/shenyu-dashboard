@@ -111,6 +111,10 @@ describe("parseRegExpRule", () => {
 });
 
 describe("checkRulePattern", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it.each([undefined, null, "", "   ", "\t\r\n"])(
     "adds no pattern for an empty rule: %p",
     (rule) => {

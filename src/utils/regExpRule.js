@@ -76,6 +76,10 @@ export function parseRegExpRule(rule) {
   }
 }
 
+// Rules already reported, so each invalid rule is logged once. Capped so a
+// long-lived page that sees many distinct invalid rules cannot grow it
+// without bound.
+const MAX_REPORTED_INVALID_RULES = 100;
 const reportedInvalidRules = new Set();
 
 /**
@@ -101,6 +105,9 @@ export function checkRulePattern(rule) {
     return pattern;
   }
   if (!reportedInvalidRules.has(String(rule))) {
+    if (reportedInvalidRules.size >= MAX_REPORTED_INVALID_RULES) {
+      reportedInvalidRules.clear();
+    }
     reportedInvalidRules.add(String(rule));
     // eslint-disable-next-line no-console
     console.error(

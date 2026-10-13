@@ -391,7 +391,7 @@ export class ProxySelectorModalComponent extends Component {
                                     ) + item.label,
                                 });
                               }
-                              let checkPattern = checkRulePattern(checkRule);
+                              const checkPattern = checkRulePattern(checkRule);
                               if (checkPattern) {
                                 rules.push({
                                   pattern: checkPattern,
@@ -624,7 +624,7 @@ export class ProxySelectorModalComponent extends Component {
                                     ) + item.label,
                                 });
                               }
-                              let checkPattern = checkRulePattern(checkRule);
+                              const checkPattern = checkRulePattern(checkRule);
                               if (checkPattern) {
                                 rules.push({
                                   pattern: checkPattern,

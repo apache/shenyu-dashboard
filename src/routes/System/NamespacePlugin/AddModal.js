@@ -173,7 +173,7 @@ class AddModal extends Component {
                     message: getIntlContent("SHENYU.COMMON.PLEASEINPUT"),
                   });
                 }
-                let checkPattern = checkRulePattern(checkRule);
+                const checkPattern = checkRulePattern(checkRule);
                 if (checkPattern) {
                   rules.push({
                     pattern: checkPattern,

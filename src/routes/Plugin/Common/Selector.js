@@ -752,7 +752,7 @@ class AddModal extends Component {
                                 item.label,
                             });
                           }
-                          let checkPattern = checkRulePattern(checkRule);
+                          const checkPattern = checkRulePattern(checkRule);
                           if (checkPattern) {
                             rules.push({
                               pattern: checkPattern,
@@ -1523,7 +1523,7 @@ class AddModal extends Component {
                                 item.label,
                             });
                           }
-                          let checkPattern = checkRulePattern(checkRule);
+                          const checkPattern = checkRulePattern(checkRule);
                           if (checkPattern) {
                             rules.push({
                               pattern: checkPattern,
