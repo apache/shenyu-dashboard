@@ -21,7 +21,7 @@ import { Col, Row, Card, Empty, message } from "antd";
 import React, { useEffect, useState } from "react";
 import {
   getApi,
-  getDocMenus,
+  fetchShenYuDictByType,
   getApiDetail,
   deleteApi,
   getTagDetail,
@@ -42,24 +42,18 @@ function ApiDoc() {
   const searchApiRef = React.createRef();
 
   const initData = async () => {
-    const { code, data = {} } = await getDocMenus();
+    const { code, data = [] } = await fetchShenYuDictByType({
+      type: "apidocEnv",
+    });
     if (code === 200) {
-      const { menuProjects = [] } = data;
-      const createKey = (treeData, keys) => {
-        treeData.forEach((item, index) => {
-          const { children, id, name } = item;
-          const key = [...keys, index].join("-");
-          item.key = key;
-          item.id = id;
-          item.name = name;
-          if (children?.length) {
-            createKey(children, [...keys, index]);
-          }
-        });
-      };
-      createKey(menuProjects, []);
-      data.menuProjects = menuProjects;
-      setApiData(data);
+      const envProps = data
+        .filter(({ enabled }) => enabled)
+        .map(({ dictName, dictValue, desc }) => ({
+          envLabel: dictName,
+          addressUrl: dictValue,
+          envDesc: desc,
+        }));
+      setApiData({ envProps });
     }
   };
 
