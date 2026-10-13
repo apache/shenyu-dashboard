@@ -83,34 +83,32 @@ export default class Auth extends Component {
     this.setState({ selectedRowKeys }, this.query);
   };
 
+  currentQueryPayload = (currentPage = this.state.currentPage) => {
+    const { currentNamespaceId } = this.props;
+    const { appKey, phone, pageSize } = this.state;
+    return {
+      appKey,
+      phone,
+      currentPage,
+      pageSize,
+      namespaceId: currentNamespaceId,
+    };
+  };
+
   query = () => {
-    const { dispatch, currentNamespaceId } = this.props;
-    const { appKey, phone, currentPage, pageSize } = this.state;
+    const { dispatch } = this.props;
     dispatch({
       type: "auth/fetch",
-      payload: {
-        appKey,
-        phone,
-        currentPage,
-        pageSize,
-        namespaceId: currentNamespaceId,
-      },
+      payload: this.currentQueryPayload(),
     });
   };
 
   // eslint-disable-next-line react/no-unused-class-component-methods
   getAllAuths = (page) => {
-    const { dispatch, currentNamespaceId } = this.props;
-    const { appKey, phone, pageSize } = this.state;
+    const { dispatch } = this.props;
     dispatch({
       type: "auth/fetch",
-      payload: {
-        appKey,
-        phone,
-        currentPage: page,
-        pageSize,
-        namespaceId: currentNamespaceId,
-      },
+      payload: this.currentQueryPayload(page),
     });
   };
 
@@ -122,10 +120,7 @@ export default class Auth extends Component {
     this.setState({ currentPage: 1, pageSize }, this.query);
   };
 
-  closeModal = (refresh) => {
-    if (refresh) {
-      this.setState({ popup: "" }, this.query);
-    }
+  closeModal = () => {
     this.setState({ popup: "" });
   };
 
@@ -150,13 +145,9 @@ export default class Auth extends Component {
                     ...values,
                     namespaceId: currentNamespaceId,
                   },
-                  fetchValue: {
-                    currentPage,
-                    pageSize: 20,
-                    namespaceId: currentNamespaceId,
-                  },
+                  fetchValue: this.currentQueryPayload(currentPage),
                   callback: () => {
-                    this.closeModal(true);
+                    this.closeModal();
                   },
                 });
               }}
@@ -172,7 +163,7 @@ export default class Auth extends Component {
 
   editClickMeta = (record) => {
     const { currentPage } = this.state;
-    const { dispatch, currentNamespaceId } = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: "auth/fetchItemDel",
       payload: {
@@ -205,13 +196,9 @@ export default class Auth extends Component {
                     dispatch({
                       type: "auth/updateDel",
                       payload: values,
-                      fetchValue: {
-                        currentPage,
-                        pageSize: 20,
-                        namespaceId: currentNamespaceId,
-                      },
+                      fetchValue: this.currentQueryPayload(currentPage),
                       callback: () => {
-                        this.closeModal(true);
+                        this.closeModal();
                       },
                     });
                   }}
@@ -232,7 +219,7 @@ export default class Auth extends Component {
   };
 
   deleteClick = () => {
-    const { dispatch, currentNamespaceId } = this.props;
+    const { dispatch } = this.props;
     const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
@@ -240,11 +227,9 @@ export default class Auth extends Component {
         payload: {
           list: selectedRowKeys,
         },
-        fetchValue: {
-          namespaceId: currentNamespaceId,
-        },
+        fetchValue: this.currentQueryPayload(1),
         callback: () => {
-          this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
+          this.setState({ selectedRowKeys: [], currentPage: 1 });
         },
       });
     } else {
@@ -256,7 +241,6 @@ export default class Auth extends Component {
   // 添加表格数据事件
 
   addClick = () => {
-    const { currentPage } = this.state;
     const { dispatch, currentNamespaceId } = this.props;
     dispatch({
       type: "auth/fetchMetaGroup",
@@ -270,14 +254,10 @@ export default class Auth extends Component {
                 dispatch({
                   type: "auth/add",
                   payload: { ...values, namespaceId: currentNamespaceId },
-                  fetchValue: {
-                    currentPage,
-                    pageSize: 20,
-                    namespaceId: currentNamespaceId,
-                  },
+                  fetchValue: this.currentQueryPayload(1),
                   callback: () => {
                     this.setState({ selectedRowKeys: [], currentPage: 1 });
-                    this.closeModal(true);
+                    this.closeModal();
                   },
                 });
               }}
@@ -292,16 +272,14 @@ export default class Auth extends Component {
   };
 
   openSwitch = ({ list, enabled, callback }) => {
-    const { dispatch, currentNamespaceId } = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: "auth/updateOp",
       payload: {
         list,
         enabled,
       },
-      fetchValue: {
-        namespaceId: currentNamespaceId,
-      },
+      fetchValue: this.currentQueryPayload(),
       callback,
     });
   };
@@ -320,7 +298,7 @@ export default class Auth extends Component {
             list: selectedRowKeys,
             enabled: !user.open,
             callback: () => {
-              this.setState({ selectedRowKeys: [] }, this.query);
+              this.setState({ selectedRowKeys: [] });
             },
           });
         },
@@ -332,16 +310,14 @@ export default class Auth extends Component {
   };
 
   statusSwitch = ({ list, enabled, callback }) => {
-    const { dispatch, currentNamespaceId } = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: "auth/updateEn",
       payload: {
         list,
         enabled,
       },
-      fetchValue: {
-        namespaceId: currentNamespaceId,
-      },
+      fetchValue: this.currentQueryPayload(),
       callback,
     });
   };
@@ -360,7 +336,7 @@ export default class Auth extends Component {
             list: selectedRowKeys,
             enabled: !user.enabled,
             callback: () => {
-              this.setState({ selectedRowKeys: [] }, this.query);
+              this.setState({ selectedRowKeys: [] });
             },
           });
         },
@@ -453,7 +429,6 @@ export default class Auth extends Component {
                   this.openSwitch({
                     list: [row.id],
                     enabled: checked,
-                    callback: this.query,
                   });
                 }}
               />
@@ -490,7 +465,6 @@ export default class Auth extends Component {
                   this.statusSwitch({
                     list: [row.id],
                     enabled: checked,
-                    callback: this.query,
                   });
                 }}
               />
