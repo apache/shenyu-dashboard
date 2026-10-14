@@ -174,7 +174,7 @@ export default class Resource extends Component {
     } = this.props;
     const { currentMenu } = this.state;
     if (resourceType === 2 && !currentMenu) {
-      message.warn("请先选择左侧菜单");
+      message.warn(getIntlContent("SHENYU.SYSTEM.RESOURCE.SELECT.MENU.WARN"));
       return;
     }
 
