@@ -161,9 +161,11 @@ class AddModal extends Component {
                 initialValue: config,
                 rules: [
                   {
+                    // Only a JSON object may replace the stored config; an
+                    // emptied field would erase it.
                     validator: (rule, value, callback) =>
                       callback(
-                        parseJsonObject(value).error
+                        parseJsonObject(value).value === undefined
                           ? getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID")
                           : undefined,
                       ),

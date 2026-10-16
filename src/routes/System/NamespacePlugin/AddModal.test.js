@@ -132,3 +132,24 @@ it("renders a field whose handle metadata is not a JSON object", () => {
   );
   expect(screen.getByPlaceholderText("Timeout").value).toBe("5");
 });
+
+it("does not save a stored config that was cleared in the raw text field", async () => {
+  const handleOk = jest.fn();
+  render(
+    <AddModal
+      name="divide"
+      sort={0}
+      id="plugin-1"
+      config="{not json"
+      data={[{ field: "timeout", label: "Timeout", dataType: 2 }]}
+      handleOk={handleOk}
+    />,
+  );
+  const raw = screen.getByDisplayValue("{not json");
+  fireEvent.change(raw, { target: { value: "" } });
+  fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.SURE" }));
+  await waitFor(() =>
+    expect(screen.getByText("SHENYU.PLUGIN.RULE.JSON.INVALID")).toBeTruthy(),
+  );
+  expect(handleOk).not.toHaveBeenCalled();
+});

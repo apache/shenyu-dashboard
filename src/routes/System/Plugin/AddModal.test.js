@@ -124,3 +124,15 @@ it("renders a field whose handle metadata is not a JSON object without its rules
     mode: "sync",
   });
 });
+
+it("does not save a stored config that was cleared in the raw text field", async () => {
+  const handleOk = jest.fn();
+  renderModal({ config: "{not json", handleOk });
+  const raw = screen.getByDisplayValue("{not json");
+  fireEvent.change(raw, { target: { value: "" } });
+  save();
+  await waitFor(() =>
+    expect(screen.getByText("SHENYU.PLUGIN.RULE.JSON.INVALID")).toBeTruthy(),
+  );
+  expect(handleOk).not.toHaveBeenCalled();
+});
