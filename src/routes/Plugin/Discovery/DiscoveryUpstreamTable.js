@@ -29,6 +29,8 @@ import {
 } from "antd";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
+import UpstreamLabels, { UpstreamLabelSummary } from "./UpstreamLabels";
+
 const EditableContext = React.createContext();
 const { Option } = Select;
 
@@ -105,10 +107,15 @@ class EditableCell extends Component {
 }
 
 class EditableTable extends Component {
+  tableRef = React.createRef();
+
+  labelsRef = React.createRef();
+
   constructor(props) {
     super(props);
     this.state = {
       editingKey: "",
+      editorWidth: undefined,
       isLocal: this.props.isLocal,
     };
     this.columns = [
@@ -116,21 +123,21 @@ class EditableTable extends Component {
         title: "protocol",
         dataIndex: "protocol",
         editable: true,
-        width: "25%",
+        width: 110,
         align: "center",
       },
       {
         title: "url",
         dataIndex: "url",
         editable: this.state.isLocal,
-        width: "35%",
+        width: 200,
         align: "center",
       },
       {
         title: "status",
         dataIndex: "status",
         editable: true,
-        width: "19%",
+        width: 90,
         align: "center",
         render: (text) => {
           const statusMap = {
@@ -145,43 +152,49 @@ class EditableTable extends Component {
       {
         title: "weight",
         dataIndex: "weight",
+        width: 100,
         editable: true,
         align: "center",
       },
       {
         title: "startupTime",
         dataIndex: "startupTime",
+        width: 130,
         editable: this.state.isLocal,
         align: "center",
       },
       {
         title: "warmupTime",
         dataIndex: "warmupTime",
+        width: 130,
         editable: true,
         align: "center",
       },
       {
         title: "gray",
         dataIndex: "gray",
+        width: 80,
         editable: true,
         align: "center",
         render: (text, record) => {
           return (
             <Switch
-              disabled={record.status === 1}
+              disabled
               checked={record.gray === "true" || record.gray === true}
-              onChange={(v) => {
-                record.gray = v;
-                this.saveGray(record, record.key);
-              }}
             />
           );
         },
       },
       {
+        title: getIntlContent("SHENYU.UPSTREAM.LABELS.TITLE"),
+        key: "labels",
+        width: 280,
+        render: (value, record) => <UpstreamLabelSummary record={record} />,
+      },
+      {
         title: getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.OPERATION"),
         dataIndex: "operation",
-        width: "18%",
+        width: 160,
         align: "center",
         render: (text, record) => {
           const { editingKey } = this.state;
@@ -190,32 +203,17 @@ class EditableTable extends Component {
             <span>
               {editable ? (
                 <span>
-                  <EditableContext.Consumer>
-                    {(form) => (
-                      <a
-                        onClick={() => this.save(form, record.key)}
-                        style={{ marginRight: 8 }}
-                      >
-                        {getIntlContent(
-                          "SHENYU.DISCOVERY.SELECTOR.UPSTREAM.SAVE",
-                        )}
-                      </a>
-                    )}
-                  </EditableContext.Consumer>
-                  <Popconfirm
-                    title={getIntlContent(
-                      "SHENYU.DISCOVERY.SELECTOR.UPSTREAM.CANCEL.CONFIRM",
-                    )}
-                    onConfirm={() => this.cancel(record.key)}
-                    okText={getIntlContent("SHENYU.COMMON.SURE")}
-                    cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                  <Button
+                    type="link"
+                    onClick={() => this.save(this.props.form, record.key)}
                   >
-                    <a>
-                      {getIntlContent(
-                        "SHENYU.DISCOVERY.SELECTOR.UPSTREAM.CANCEL",
-                      )}
-                    </a>
-                  </Popconfirm>
+                    {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.SAVE")}
+                  </Button>
+                  <Button type="link" onClick={this.cancel}>
+                    {getIntlContent(
+                      "SHENYU.DISCOVERY.SELECTOR.UPSTREAM.CANCEL",
+                    )}
+                  </Button>
                 </span>
               ) : (
                 <span>
@@ -235,7 +233,12 @@ class EditableTable extends Component {
                       okText={getIntlContent("SHENYU.COMMON.SURE")}
                       cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
                     >
-                      <a>{getIntlContent("SHENYU.BUTTON.SYSTEM.DELETE")}</a>
+                      <Button
+                        type="link"
+                        disabled={this.state.editingKey !== ""}
+                      >
+                        {getIntlContent("SHENYU.BUTTON.SYSTEM.DELETE")}
+                      </Button>
                     </Popconfirm>
                   ) : null}
                 </span>
@@ -247,10 +250,35 @@ class EditableTable extends Component {
     ];
   }
 
+  componentDidMount() {
+    this.resizeEditor();
+    window.addEventListener("resize", this.resizeEditor);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.resizeEditor);
+  }
+
+  resizeEditor = () => {
+    if (this.tableRef.current)
+      this.setState({ editorWidth: this.tableRef.current.offsetWidth - 34 });
+  };
+
+  renderLabels = (record) =>
+    this.isEditing(record) ? (
+      <UpstreamLabels
+        ref={this.labelsRef}
+        record={record}
+        width={this.state.editorWidth}
+      />
+    ) : null;
+
   isEditing = (record) => record.key === this.state.editingKey;
 
   cancel = () => {
     this.setState({ editingKey: "" });
+    this.props.form.resetFields();
+    if (this.props.onEditingChange) this.props.onEditingChange(false);
   };
 
   handleDelete = (key) => {
@@ -277,52 +305,22 @@ class EditableTable extends Component {
   };
 
   save(form, key) {
+    const labels = this.labelsRef.current && this.labelsRef.current.validate();
     form.validateFields((error, row) => {
-      if (error) {
-        return;
-      }
-      const newData = [...this.props.dataSource];
-      const index = newData.findIndex((item) => key === item.key);
-      if (index > -1) {
-        const item = newData[index];
-        newData.splice(index, 1, {
-          ...item,
-          ...row,
-        });
-        this.props.onTableChange(newData);
-        this.setState({ editingKey: "" });
-      } else {
-        const { recordCount } = this.props;
-        row.key = recordCount + 1;
-        newData.push(row);
-        this.props.onCountChange(recordCount + 1);
-        this.props.onTableChange(newData);
-        this.setState({ editingKey: "" });
-      }
+      if (error || !labels) return;
+      const newData = this.props.dataSource.map((item) =>
+        item.key === key ? { ...item, ...row, ...labels } : item,
+      );
+      this.props.onTableChange(newData);
+      this.cancel();
     });
   }
 
-  saveGray(row, key) {
-    const newData = [...this.props.dataSource];
-    const index = newData.findIndex((item) => key === item.key);
-    if (index > -1) {
-      const item = newData[index];
-      newData.splice(index, 1, {
-        ...item,
-        ...row,
-      });
-      this.props.onTableChange(newData);
-    } else {
-      const { recordCount } = this.props;
-      row.key = recordCount + 1;
-      newData.push(row);
-      this.props.onCountChange(recordCount + 1);
-      this.props.onTableChange(newData);
-    }
-  }
-
   edit(key) {
+    this.props.form.resetFields();
+    this.resizeEditor();
     this.setState({ editingKey: key });
+    if (this.props.onEditingChange) this.props.onEditingChange(true);
   }
 
   render() {
@@ -362,9 +360,10 @@ class EditableTable extends Component {
     });
 
     return (
-      <div>
+      <div ref={this.tableRef}>
         {this.state.isLocal && (
           <Button
+            disabled={this.state.editingKey !== ""}
             onClick={this.handleAdd}
             type="primary"
             style={{ marginBottom: 16 }}
@@ -376,6 +375,14 @@ class EditableTable extends Component {
           <Table
             components={components}
             bordered
+            scroll={{ x: 1280 }}
+            expandedRowKeys={
+              this.state.editingKey === "" ? [] : [this.state.editingKey]
+            }
+            expandIconAsCell={false}
+            expandIconColumnIndex={-1}
+            expandIcon={() => null}
+            expandedRowRender={this.renderLabels}
             dataSource={this.props.dataSource}
             columns={columns}
             rowClassName="editable-row"

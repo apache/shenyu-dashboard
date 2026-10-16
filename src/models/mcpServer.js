@@ -21,6 +21,8 @@ import { mcpSwaggerImport } from "../services/api";
 export default {
   namespace: "mcpServer",
 
+  state: {},
+
   effects: {
     *swaggerImport({ payload, fetchValue, callback }, { call, put }) {
       const json = yield call(mcpSwaggerImport, payload);

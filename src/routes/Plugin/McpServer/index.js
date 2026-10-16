@@ -31,6 +31,7 @@ import {
 } from "antd";
 import { connect } from "dva";
 import ReactJson from "react-json-view";
+import { serializeUpstreamProps } from "../../../utils/upstreamLabels";
 import styles from "../index.less";
 import Selector from "../Common/Selector";
 import Tools from "./ToolsModal";
@@ -490,10 +491,7 @@ export default class McpServer extends Component {
       status: parseInt(item.status, 10),
       weight: item.weight,
       startupTime: item.startupTime,
-      props: JSON.stringify({
-        warmupTime: item.warmupTime,
-        gray: `${item.gray}`,
-      }),
+      props: serializeUpstreamProps(item),
       namespaceId: currentNamespaceId,
     }));
   };
@@ -542,10 +540,7 @@ export default class McpServer extends Component {
       url: item.url,
       status: parseInt(item.status, 10),
       weight: item.weight,
-      props: JSON.stringify({
-        warmupTime: item.warmupTime,
-        gray: `${item.gray}`,
-      }),
+      props: serializeUpstreamProps(item),
       discoveryHandlerId,
       namespaceId: currentNamespaceId,
     }));

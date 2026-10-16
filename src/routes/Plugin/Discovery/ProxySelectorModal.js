@@ -35,6 +35,7 @@ import { getIntlContent } from "../../../utils/IntlUtils";
 import styles from "../index.less";
 import ProxySelectorCopy from "./ProxySelectorCopy.js";
 import { findKeyByValue } from "../../../utils/utils";
+import { getUpstreamLabels } from "../../../utils/upstreamLabels";
 import EditableFormTable from "./DiscoveryUpstreamTable";
 import { getDefaultValueList, getDiscoveryProps } from "./optionalFields";
 
@@ -47,6 +48,7 @@ export class ProxySelectorModalComponent extends Component {
     super(props);
     this.state = {
       recordCount: this.props.recordCount,
+      editingUpstream: false,
       upstreams: this.props.discoveryUpstreams,
       discoveryDicts: this.props.discoveryDicts,
       configPropsJson: {},
@@ -124,6 +126,13 @@ export class ProxySelectorModalComponent extends Component {
     const { configPropsJson, upstreams, pluginHandleList, defaultValueList } =
       this.state;
     e.preventDefault();
+    if (this.state.editingUpstream) return;
+    try {
+      upstreams.forEach((item) => getUpstreamLabels(item.props));
+    } catch (error) {
+      message.error(getIntlContent("SHENYU.UPSTREAM.LABELS.INVALID"));
+      return;
+    }
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         let {
@@ -263,6 +272,7 @@ export class ProxySelectorModalComponent extends Component {
         width="60%"
         onCancel={handleCancel}
         onOk={this.handleSubmit}
+        okButtonProps={{ disabled: this.state.editingUpstream }}
         title={getIntlContent("SHENYU.SELECTOR.NAME")}
         okText={getIntlContent("SHENYU.COMMON.SURE")}
         cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
@@ -754,6 +764,9 @@ export class ProxySelectorModalComponent extends Component {
                         {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}
                       </Divider>
                       <EditableFormTable
+                        onEditingChange={(editingUpstream) =>
+                          this.setState({ editingUpstream })
+                        }
                         isLocal={false}
                         dataSource={upstreams}
                         recordCount={recordCount}
@@ -769,6 +782,9 @@ export class ProxySelectorModalComponent extends Component {
                     {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}
                   </Divider>
                   <EditableFormTable
+                    onEditingChange={(editingUpstream) =>
+                      this.setState({ editingUpstream })
+                    }
                     isLocal={true}
                     dataSource={upstreams}
                     recordCount={recordCount}

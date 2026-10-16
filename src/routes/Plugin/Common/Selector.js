@@ -49,13 +49,13 @@ import {
   formatTimeString,
 } from "../../../utils/utils";
 import DiscoveryImportModal from "../Discovery/DiscoveryImportModal";
+import { getUpstreamLabels } from "../../../utils/upstreamLabels";
 import EditableFormTable from "../Discovery/DiscoveryUpstreamTable.js";
 import { buildHandle } from "./selectorHandle";
 
 const { Item } = Form;
 const { TabPane } = Tabs;
 const { Option } = Select;
-const { confirm } = Modal;
 
 const formItemLayout = {
   labelCol: { sm: { span: 3 } },
@@ -113,6 +113,7 @@ class AddModal extends Component {
       visible: false,
       pluginHandleList: [],
       upstreams: discoveryUpstreams,
+      editingUpstream: false,
       recordCount: discoveryUpstreams ? discoveryUpstreams.length : 0,
       discoveryHandler: null,
       defaultValueList: null,
@@ -128,7 +129,6 @@ class AddModal extends Component {
       this.state.configPropsJson = JSON.parse(discoveryConfig.props);
       this.state.selectedDiscoveryValue = discoveryConfig.discoveryType;
     }
-    this.editableFormTableRef = React.createRef();
   }
 
   componentDidMount() {
@@ -175,19 +175,11 @@ class AddModal extends Component {
   }
 
   handleSubmit = (e) => {
-    if (this.editableFormTableRef.current?.state?.editingKey) {
-      confirm({
-        title: getIntlContent("SHENYU.DISCOVERY.SELECTOR.EDITING.TITLE"),
-        content: getIntlContent("SHENYU.DISCOVERY.SELECTOR.EDITING.CONTENT"),
-        okText: getIntlContent("SHENYU.COMMON.SURE"),
-        cancelText: getIntlContent("SHENYU.COMMON.CALCEL"),
-        onOk: () => {
-          this.submitForm(e);
-        },
-      });
-    } else {
-      this.submitForm(e);
+    if (this.state.editingUpstream) {
+      e.preventDefault();
+      return;
     }
+    this.submitForm(e);
   };
 
   handleAdd = () => {
@@ -265,6 +257,14 @@ class AddModal extends Component {
       upstreams,
       importedDiscoveryId,
     } = this.state;
+    if (isDiscovery) {
+      try {
+        upstreams.forEach((item) => getUpstreamLabels(item.props));
+      } catch (error) {
+        message.error(getIntlContent("SHENYU.UPSTREAM.LABELS.INVALID"));
+        return;
+      }
+    }
 
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -1658,7 +1658,9 @@ class AddModal extends Component {
                   {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}
                 </Divider>
                 <EditableFormTable
-                  wrappedComponentRef={this.editableFormTableRef}
+                  onEditingChange={(editingUpstream) =>
+                    this.setState({ editingUpstream })
+                  }
                   isLocal={false}
                   dataSource={upstreams}
                   recordCount={recordCount}
@@ -1675,7 +1677,9 @@ class AddModal extends Component {
               {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM")}
             </Divider>
             <EditableFormTable
-              wrappedComponentRef={this.editableFormTableRef}
+              onEditingChange={(editingUpstream) =>
+                this.setState({ editingUpstream })
+              }
               isLocal={true}
               dataSource={upstreams}
               recordCount={recordCount}
@@ -1712,6 +1716,7 @@ class AddModal extends Component {
         okText={getIntlContent("SHENYU.COMMON.SURE")}
         cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onOk={this.handleSubmit}
+        okButtonProps={{ disabled: this.state.editingUpstream }}
         onCancel={onCancel}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
