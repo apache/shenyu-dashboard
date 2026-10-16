@@ -21,7 +21,7 @@ import { Col, Row, Card, Empty, message } from "antd";
 import React, { useEffect, useState } from "react";
 import {
   getApi,
-  getDocMenus,
+  fetchShenYuDictByType,
   getApiDetail,
   deleteApi,
   getTagDetail,
@@ -36,31 +36,27 @@ import ApiContext from "./components/ApiContext";
 function ApiDoc() {
   const [tagDetail, setTagDetail] = useState({});
   const [apiDetail, setApiDetail] = useState({});
-  const [apiData, setApiData] = useState({});
+  const [apiData, setApiData] = useState({ envProps: [] });
   const [apiMock, setApiMock] = useState({});
 
   const searchApiRef = React.createRef();
 
   const initData = async () => {
-    const { code, data = {} } = await getDocMenus();
-    if (code === 200) {
-      const { menuProjects = [] } = data;
-      const createKey = (treeData, keys) => {
-        treeData.forEach((item, index) => {
-          const { children, id, name } = item;
-          const key = [...keys, index].join("-");
-          item.key = key;
-          item.id = id;
-          item.name = name;
-          if (children?.length) {
-            createKey(children, [...keys, index]);
-          }
-        });
-      };
-      createKey(menuProjects, []);
-      data.menuProjects = menuProjects;
-      setApiData(data);
-    }
+    const { code, data } = await fetchShenYuDictByType({
+      type: "apidocEnv",
+    });
+    const list = Array.isArray(data) ? data : [];
+    const envProps =
+      code === 200
+        ? list
+            .filter((item) => item && item.enabled)
+            .map(({ dictName, dictValue, desc }) => ({
+              envLabel: dictName,
+              addressUrl: dictValue,
+              envDesc: desc,
+            }))
+        : [];
+    setApiData({ envProps });
   };
 
   const handleSelectNode = async (_, e) => {
