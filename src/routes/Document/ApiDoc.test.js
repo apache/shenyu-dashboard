@@ -57,6 +57,10 @@ jest.mock("./components/ApiInfo", () => {
 });
 jest.mock("./components/TagInfo", () => () => null);
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 const selectApi = async () => {
   getApiDetail.mockResolvedValue({
     code: 200,
@@ -120,6 +124,29 @@ test("loads enabled debug environments from dictionaries while API details still
 
 test("keeps API details available when there are no debug environments", async () => {
   fetchShenYuDictByType.mockResolvedValue({ code: 200, data: [] });
+
+  const context = await selectApi();
+
+  expect(context.apiData.envProps).toEqual([]);
+  expect(context.apiDetail.id).toBe("api-1");
+});
+
+test.each([null, undefined, {}, "unexpected", 42])(
+  "keeps API details available for non-array dictionary data: %p",
+  async (data) => {
+    fetchShenYuDictByType.mockResolvedValue({ code: 200, data });
+
+    const context = await selectApi();
+
+    expect(context.apiData.envProps).toEqual([]);
+    expect(context.apiDetail.id).toBe("api-1");
+    expect(fetchShenYuDictByType).toHaveBeenCalledTimes(1);
+    expect(getApiDetail).toHaveBeenCalledTimes(1);
+  },
+);
+
+test("keeps API details available when dictionary loading is unsuccessful", async () => {
+  fetchShenYuDictByType.mockResolvedValue({ code: 500, data: null });
 
   const context = await selectApi();
 

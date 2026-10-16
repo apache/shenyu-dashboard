@@ -36,25 +36,27 @@ import ApiContext from "./components/ApiContext";
 function ApiDoc() {
   const [tagDetail, setTagDetail] = useState({});
   const [apiDetail, setApiDetail] = useState({});
-  const [apiData, setApiData] = useState({});
+  const [apiData, setApiData] = useState({ envProps: [] });
   const [apiMock, setApiMock] = useState({});
 
   const searchApiRef = React.createRef();
 
   const initData = async () => {
-    const { code, data = [] } = await fetchShenYuDictByType({
+    const { code, data } = await fetchShenYuDictByType({
       type: "apidocEnv",
     });
-    if (code === 200) {
-      const envProps = data
-        .filter(({ enabled }) => enabled)
-        .map(({ dictName, dictValue, desc }) => ({
-          envLabel: dictName,
-          addressUrl: dictValue,
-          envDesc: desc,
-        }));
-      setApiData({ envProps });
-    }
+    const list = Array.isArray(data) ? data : [];
+    const envProps =
+      code === 200
+        ? list
+            .filter((item) => item && item.enabled)
+            .map(({ dictName, dictValue, desc }) => ({
+              envLabel: dictName,
+              addressUrl: dictValue,
+              envDesc: desc,
+            }))
+        : [];
+    setApiData({ envProps });
   };
 
   const handleSelectNode = async (_, e) => {
