@@ -21,6 +21,18 @@ import {
   findInstanceAnalysis,
 } from "../services/api";
 
+// Whether a response for `namespaceId` arrived after the user had already
+// switched to another namespace, so it must not replace the newer data.
+function* isFromPreviousNamespace(namespaceId, select) {
+  if (namespaceId === undefined) {
+    return false;
+  }
+  const currentNamespaceId = yield select(
+    ({ global }) => global.currentNamespaceId,
+  );
+  return namespaceId !== currentNamespaceId;
+}
+
 export default {
   namespace: "instance",
 
@@ -29,12 +41,16 @@ export default {
     total: 0,
     pieData: [],
     lineList: [],
+    analysisNamespaceId: undefined,
   },
 
   effects: {
-    *fetch(params, { call, put }) {
+    *fetch(params, { call, put, select }) {
       const { payload } = params;
       const json = yield call(getInstancesByNamespace, payload);
+      if (yield* isFromPreviousNamespace(payload.namespaceId, select)) {
+        return;
+      }
       if (json.code === 200) {
         let { page, dataList } = json.data;
         dataList = dataList.map((item) => {
@@ -50,15 +66,31 @@ export default {
         });
       }
     },
-    *fetchAnalysis(params, { call, put }) {
+    *fetchAnalysis(params, { call, put, select }) {
       const { payload } = params;
+      const { namespaceId } = payload;
+      const shownNamespaceId = yield select(
+        ({ instance }) => instance.analysisNamespaceId,
+      );
+      if (shownNamespaceId !== namespaceId) {
+        // Don't keep showing the charts of the previous namespace while this
+        // one loads, or if it fails.
+        yield put({
+          type: "saveInstancesAnalysis",
+          payload: { namespaceId, pieData: [], lineData: [] },
+        });
+      }
       const json = yield call(findInstanceAnalysis, payload);
+      if (yield* isFromPreviousNamespace(namespaceId, select)) {
+        return;
+      }
 
       if (json.code === 200) {
         let { pieData, lineData } = json.data;
         yield put({
           type: "saveInstancesAnalysis",
           payload: {
+            namespaceId,
             pieData,
             lineData,
           },
@@ -99,6 +131,7 @@ export default {
     saveInstancesAnalysis(state, { payload }) {
       return {
         ...state,
+        analysisNamespaceId: payload.namespaceId,
         pieData: payload.pieData,
         lineData: payload.lineData,
       };

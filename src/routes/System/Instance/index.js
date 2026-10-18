@@ -92,6 +92,7 @@ export default class Instance extends Component {
     }
     if (prevProps.currentNamespaceId !== currentNamespaceId) {
       this.query();
+      this.queryAnalysis();
     }
     if (prevProps.instance.pieData !== instance.pieData) {
       this.renderPieChart(instance.pieData);
