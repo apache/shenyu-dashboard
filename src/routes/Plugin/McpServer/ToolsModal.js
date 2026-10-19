@@ -484,7 +484,7 @@ class AddModal extends Component {
         description,
         enabled,
         sort,
-        loged,
+        logged,
         matchMode,
         matchRestful,
       } = values;
@@ -505,7 +505,7 @@ class AddModal extends Component {
             handle,
             enabled,
             sort: parseInt(sort, 10),
-            loged,
+            logged,
             matchMode,
             matchRestful,
             ruleConditions: [
@@ -567,7 +567,7 @@ class AddModal extends Component {
         }),
         // Add required rule-level fields default values
         sort: 1,
-        loged: true,
+        logged: true,
         matchMode: "0",
         matchRestful: false,
         ruleConditions: [
@@ -883,7 +883,7 @@ class AddModal extends Component {
       enabled = true,
       handle = "{}",
       sort = 1,
-      loged = true,
+      logged = true,
       matchMode = "0",
       matchRestful = false,
     } = this.props;
@@ -1073,8 +1073,8 @@ class AddModal extends Component {
                   labelCol={{ sm: { span: 8 } }}
                   wrapperCol={{ sm: { span: 16 } }}
                 >
-                  {getFieldDecorator("loged", {
-                    initialValue: loged,
+                  {getFieldDecorator("logged", {
+                    initialValue: logged,
                     valuePropName: "checked",
                     rules: [{ required: true }],
                   })(<Switch />)}

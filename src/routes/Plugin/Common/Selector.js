@@ -915,7 +915,7 @@ class AddModal extends Component {
       type,
       matchMode,
       continued,
-      loged,
+      logged,
       enabled,
       sort,
     } = copyData;
@@ -924,7 +924,7 @@ class AddModal extends Component {
       name,
       type: type.toString(),
       continued,
-      loged,
+      logged,
       enabled,
       sort,
     };
@@ -1134,7 +1134,7 @@ class AddModal extends Component {
       type = "",
       matchMode = "",
       continued = true,
-      loged = true,
+      logged = true,
       enabled = true,
       matchRestful = false,
       sort,
@@ -1379,8 +1379,8 @@ class AddModal extends Component {
               {...formCheckLayout}
               label={getIntlContent("SHENYU.SELECTOR.PRINTLOG")}
             >
-              {getFieldDecorator("loged", {
-                initialValue: loged,
+              {getFieldDecorator("logged", {
+                initialValue: logged,
                 valuePropName: "checked",
                 rules: [{ required: true }],
               })(<Switch />)}
