@@ -61,7 +61,7 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-const selectApi = async () => {
+const selectApi = async (expectedEnvProps = []) => {
   getApiDetail.mockResolvedValue({
     code: 200,
     data: { id: "api-1", apiPath: "/orders" },
@@ -70,9 +70,9 @@ const selectApi = async () => {
   render(<ApiDoc />);
   fireEvent.click(screen.getByText("Select API"));
   await waitFor(() => {
-    expect(
-      JSON.parse(screen.getByTestId("api-context").textContent).apiMock.id,
-    ).toBe("mock-1");
+    const context = JSON.parse(screen.getByTestId("api-context").textContent);
+    expect(context.apiMock.id).toBe("mock-1");
+    expect(context.apiData.envProps).toEqual(expectedEnvProps);
   });
   return JSON.parse(screen.getByTestId("api-context").textContent);
 };
@@ -102,10 +102,7 @@ test("loads enabled debug environments from dictionaries while API details still
     ],
   });
 
-  const context = await selectApi();
-
-  expect(fetchShenYuDictByType).toHaveBeenCalledWith({ type: "apidocEnv" });
-  expect(context.apiData.envProps).toEqual([
+  const expectedEnvProps = [
     {
       envLabel: "Offline",
       addressUrl: "http://localhost:9195",
@@ -116,7 +113,10 @@ test("loads enabled debug environments from dictionaries while API details still
       addressUrl: "https://gateway.example.com",
       envDesc: "Production",
     },
-  ]);
+  ];
+  const context = await selectApi(expectedEnvProps);
+
+  expect(fetchShenYuDictByType).toHaveBeenCalledWith({ type: "apidocEnv" });
   expect(getApiDetail).toHaveBeenCalledWith("api-1");
   expect(getApiMockRequest).toHaveBeenCalledWith("api-1");
   expect(context.apiDetail.apiPath).toBe("/orders");
@@ -147,6 +147,25 @@ test.each([null, undefined, {}, "unexpected", 42])(
 
 test("keeps API details available when dictionary loading is unsuccessful", async () => {
   fetchShenYuDictByType.mockResolvedValue({ code: 500, data: null });
+
+  const context = await selectApi();
+
+  expect(context.apiData.envProps).toEqual([]);
+  expect(context.apiDetail.id).toBe("api-1");
+});
+
+test("keeps API details available when the dictionary request rejects", async () => {
+  fetchShenYuDictByType.mockRejectedValueOnce(new Error("Network unavailable"));
+
+  const context = await selectApi();
+
+  expect(fetchShenYuDictByType).toHaveBeenCalledWith({ type: "apidocEnv" });
+  expect(context.apiData.envProps).toEqual([]);
+  expect(context.apiDetail.id).toBe("api-1");
+});
+
+test("keeps API details available for an empty dictionary response", async () => {
+  fetchShenYuDictByType.mockResolvedValueOnce(null);
 
   const context = await selectApi();
 

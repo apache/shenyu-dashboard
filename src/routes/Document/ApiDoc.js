@@ -42,21 +42,26 @@ function ApiDoc() {
   const searchApiRef = React.createRef();
 
   const initData = async () => {
-    const { code, data } = await fetchShenYuDictByType({
-      type: "apidocEnv",
-    });
-    const list = Array.isArray(data) ? data : [];
-    const envProps =
-      code === 200
-        ? list
-            .filter((item) => item && item.enabled)
-            .map(({ dictName, dictValue, desc }) => ({
-              envLabel: dictName,
-              addressUrl: dictValue,
-              envDesc: desc,
-            }))
-        : [];
-    setApiData({ envProps });
+    try {
+      const { code, data } = await fetchShenYuDictByType({
+        type: "apidocEnv",
+      });
+      const list = Array.isArray(data) ? data : [];
+      const envProps =
+        code === 200
+          ? list
+              .filter((item) => item && item.enabled)
+              .map(({ dictName, dictValue, desc }) => ({
+                envLabel: dictName,
+                addressUrl: dictValue,
+                envDesc: desc,
+              }))
+          : [];
+      setApiData({ envProps });
+    } catch {
+      // The request layer reports failures; API details remain usable without environments.
+      setApiData({ envProps: [] });
+    }
   };
 
   const handleSelectNode = async (_, e) => {
