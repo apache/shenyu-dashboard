@@ -58,3 +58,58 @@ it("refreshes the table and the analysis when the namespace changes", () => {
     },
   ]);
 });
+
+describe("chart rendering after the analysis is cleared", () => {
+  const echarts = jest.requireActual("echarts");
+  // jsdom has no canvas, so let ECharts estimate text widths instead.
+  echarts.setPlatformAPI({ createCanvas: () => null });
+  let component;
+  let pieDiv;
+  let lineDiv;
+
+  beforeEach(() => {
+    const options = { renderer: "svg", width: 800, height: 400 };
+    pieDiv = document.createElement("div");
+    lineDiv = document.createElement("div");
+    component = new Instance({
+      dispatch: jest.fn(),
+      instance: { pieData: [], lineData: [] },
+      language: "en-US",
+    });
+    component.pieChartInstance = echarts.init(pieDiv, null, options);
+    component.lineChartInstance = echarts.init(lineDiv, null, options);
+  });
+
+  afterEach(() => {
+    component.pieChartInstance.dispose();
+    component.lineChartInstance.dispose();
+  });
+
+  it("shows a placeholder for empty chart data", () => {
+    component.renderPieChart([]);
+    component.renderLineChart([]);
+
+    const [pie] = component.pieChartInstance.getOption().series;
+    const [line] = component.lineChartInstance.getOption().series;
+    expect(pie.data).toEqual([
+      expect.objectContaining({ name: "SHENYU.INSTANCE.NO_DATA", value: 0 }),
+    ]);
+    expect(line).toMatchObject({
+      name: "SHENYU.INSTANCE.NO_DATA",
+      data: [0, 0, 0, 0, 0],
+    });
+    expect(pieDiv.textContent).toContain("SHENYU.INSTANCE.NO_DATA");
+    expect(lineDiv.textContent).toContain("SHENYU.INSTANCE.NO_DATA");
+  });
+
+  it("skips rendering while the chart data is undefined", () => {
+    const pieSetOption = jest.spyOn(component.pieChartInstance, "setOption");
+    const lineSetOption = jest.spyOn(component.lineChartInstance, "setOption");
+
+    component.renderPieChart(undefined);
+    component.renderLineChart(undefined);
+
+    expect(pieSetOption).not.toHaveBeenCalled();
+    expect(lineSetOption).not.toHaveBeenCalled();
+  });
+});

@@ -114,6 +114,22 @@ describe("instance model", () => {
     expect(actions).toEqual([]);
   });
 
+  it("skips an analysis request for a namespace that is no longer selected", () => {
+    const onCall = jest.fn();
+    const actions = run(
+      model.effects.fetchAnalysis,
+      { namespaceId: "namespace-a" },
+      {
+        state: store("namespace-a", "namespace-b"),
+        response: analysis,
+        onCall,
+      },
+    );
+
+    expect(actions).toEqual([]);
+    expect(onCall).not.toHaveBeenCalled();
+  });
+
   it("leaves the charts cleared when the analysis request fails", () => {
     const actions = run(
       model.effects.fetchAnalysis,
@@ -150,6 +166,10 @@ describe("instance model", () => {
     );
 
     expect(actions).toEqual([]);
+  });
+
+  it("starts with empty chart data", () => {
+    expect(model.state).toMatchObject({ pieData: [], lineData: [] });
   });
 
   it("stores the namespace of the saved analysis", () => {

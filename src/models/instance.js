@@ -40,7 +40,7 @@ export default {
     instanceList: [],
     total: 0,
     pieData: [],
-    lineList: [],
+    lineData: [],
     analysisNamespaceId: undefined,
   },
 
@@ -69,6 +69,10 @@ export default {
     *fetchAnalysis(params, { call, put, select }) {
       const { payload } = params;
       const { namespaceId } = payload;
+      // The user has already switched away, so neither clear nor load.
+      if (yield* isFromPreviousNamespace(namespaceId, select)) {
+        return;
+      }
       const shownNamespaceId = yield select(
         ({ instance }) => instance.analysisNamespaceId,
       );
