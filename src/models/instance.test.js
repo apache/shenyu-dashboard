@@ -168,6 +168,25 @@ describe("instance model", () => {
     expect(actions).toEqual([]);
   });
 
+  it("skips a table request for a namespace that is no longer selected", () => {
+    const onCall = jest.fn();
+    const actions = run(
+      model.effects.fetch,
+      { namespaceId: "namespace-a", currentPage: 1, pageSize: 12 },
+      {
+        state: store(undefined, "namespace-b"),
+        response: {
+          code: 200,
+          data: { page: { totalCount: 1 }, dataList: [{ id: "1" }] },
+        },
+        onCall,
+      },
+    );
+
+    expect(actions).toEqual([]);
+    expect(onCall).not.toHaveBeenCalled();
+  });
+
   it("starts with empty chart data", () => {
     expect(model.state).toMatchObject({ pieData: [], lineData: [] });
   });

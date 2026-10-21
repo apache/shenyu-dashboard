@@ -21,8 +21,9 @@ import {
   findInstanceAnalysis,
 } from "../services/api";
 
-// Whether a response for `namespaceId` arrived after the user had already
-// switched to another namespace, so it must not replace the newer data.
+// Whether `namespaceId` is no longer the selected namespace because the user
+// has switched to another one. Checked before starting a request and again
+// before applying its response, so stale data never replaces the newer data.
 function* isFromPreviousNamespace(namespaceId, select) {
   if (namespaceId === undefined) {
     return false;
@@ -47,6 +48,10 @@ export default {
   effects: {
     *fetch(params, { call, put, select }) {
       const { payload } = params;
+      // The user has already switched away, so don't load.
+      if (yield* isFromPreviousNamespace(payload.namespaceId, select)) {
+        return;
+      }
       const json = yield call(getInstancesByNamespace, payload);
       if (yield* isFromPreviousNamespace(payload.namespaceId, select)) {
         return;

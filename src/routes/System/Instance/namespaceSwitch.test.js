@@ -60,12 +60,20 @@ it("refreshes the table and the analysis when the namespace changes", () => {
 });
 
 describe("chart rendering after the analysis is cleared", () => {
-  const echarts = jest.requireActual("echarts");
-  // jsdom has no canvas, so let ECharts estimate text widths instead.
-  echarts.setPlatformAPI({ createCanvas: () => null });
+  let echarts;
   let component;
   let pieDiv;
   let lineDiv;
+
+  beforeAll(() => {
+    // ECharts has no getter to restore its platform API, so change it on a
+    // private copy that no other test can see.
+    jest.isolateModules(() => {
+      echarts = jest.requireActual("echarts");
+    });
+    // jsdom has no canvas, so let ECharts estimate text widths instead.
+    echarts.setPlatformAPI({ createCanvas: () => null });
+  });
 
   beforeEach(() => {
     const options = { renderer: "svg", width: 800, height: 400 };
