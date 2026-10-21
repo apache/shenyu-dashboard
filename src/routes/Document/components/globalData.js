@@ -42,7 +42,6 @@ export const API_SOURCE_TYPE = [
   "annotation generation",
   "create manually",
   "import swagger",
-  "import yapi",
 ];
 
 export const STATE_TYPE = ["unpublished", "published", "offline"];
