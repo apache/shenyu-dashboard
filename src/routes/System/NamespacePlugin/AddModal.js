@@ -20,6 +20,7 @@ import { Divider, Form, Input, InputNumber, Modal, Select, Switch } from "antd";
 import { connect } from "dva";
 import ReactJson from "react-json-view";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import { parseJsonObject } from "../../../utils/jsonObject";
 import {
   getConfigFieldValue,
   serializePluginConfig,
@@ -27,6 +28,7 @@ import {
 import { checkRulePattern } from "../../../utils/regExpRule";
 
 const { Option } = Select;
+const { TextArea } = Input;
 const FormItem = Form.Item;
 
 @connect(({ global }) => ({
@@ -41,6 +43,13 @@ class AddModal extends Component {
       jsonEdited: false,
     };
     this.parseJson();
+  }
+
+  componentDidMount() {
+    const { form, config } = this.props;
+    if (parseJsonObject(config).error) {
+      form.validateFields(["config"]);
+    }
   }
 
   parseJson = () => {
@@ -75,12 +84,18 @@ class AddModal extends Component {
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         const { name, enabled, sort } = values;
-        const config = serializePluginConfig({
-          fields: data,
-          values,
-          config: originalConfig,
-          jsonValues: jsonEdited && jsonKey ? { [jsonKey]: jsonValue } : {},
-        });
+        // The raw field is only shown when the stored config is not a JSON
+        // object; its validated text then replaces the stored value.
+        const config =
+          values.config === undefined
+            ? serializePluginConfig({
+                fields: data,
+                values,
+                config: originalConfig,
+                jsonValues:
+                  jsonEdited && jsonKey ? { [jsonKey]: jsonValue } : {},
+              })
+            : values.config;
         handleOk({ name, enabled, config, id, sort });
       }
     });
@@ -108,9 +123,7 @@ class AddModal extends Component {
         sm: { span: 17 },
       },
     };
-    if (config) {
-      config = JSON.parse(config);
-    }
+    const { value: storedConfig, error: configError } = parseJsonObject(config);
     return (
       <Modal
         width={520}
@@ -140,25 +153,47 @@ class AddModal extends Component {
               />,
             )}
           </FormItem>
-          {data && data.length > 0 && (
+          {configError && (
+            <FormItem
+              label={getIntlContent("SHENYU.COMMON.SETTING")}
+              {...formItemLayout}
+            >
+              {getFieldDecorator("config", {
+                initialValue: config,
+                rules: [
+                  {
+                    // Only a JSON object may replace the stored config; an
+                    // emptied field would erase it.
+                    validator: (rule, value, callback) =>
+                      callback(
+                        parseJsonObject(value).value === undefined
+                          ? getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID")
+                          : undefined,
+                      ),
+                  },
+                ],
+              })(<TextArea rows={6} />)}
+            </FormItem>
+          )}
+          {!configError && data && data.length > 0 && (
             <>
               <Divider>
                 {name} {getIntlContent("SHENYU.COMMON.SETTING")}
               </Divider>
               {data.map((eachField, index) => {
-                let fieldInitialValue = config
-                  ? config[eachField.field]
+                let fieldInitialValue = storedConfig
+                  ? storedConfig[eachField.field]
                   : undefined;
                 // Add prefixes to prevent naming conflicts
                 let fieldName = `__${eachField.field}__`;
                 let dataType = eachField.dataType;
                 let required = "";
                 let checkRule;
-                if (eachField.extObj) {
-                  let extObj = JSON.parse(eachField.extObj);
+                const { value: extObj } = parseJsonObject(eachField.extObj);
+                if (extObj) {
                   required = extObj.required === "0" ? "" : extObj.required;
                   fieldInitialValue = getConfigFieldValue(
-                    config,
+                    storedConfig,
                     eachField.field,
                     extObj.defaultValue,
                   );
