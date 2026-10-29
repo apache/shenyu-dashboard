@@ -29,6 +29,7 @@ import {
   Typography,
 } from "antd";
 import { connect } from "dva";
+import { serializeUpstreamProps } from "../../../utils/upstreamLabels";
 import styles from "../index.less";
 import Selector from "./Selector";
 import Rule from "./Rule";
@@ -440,10 +441,7 @@ export default class Common extends Component {
       status: parseInt(item.status, 10),
       weight: item.weight,
       startupTime: item.startupTime,
-      props: JSON.stringify({
-        warmupTime: item.warmupTime,
-        gray: `${item.gray}`,
-      }),
+      props: serializeUpstreamProps(item),
       namespaceId: currentNamespaceId,
     }));
   };
@@ -492,10 +490,7 @@ export default class Common extends Component {
       url: item.url,
       status: parseInt(item.status, 10),
       weight: item.weight,
-      props: JSON.stringify({
-        warmupTime: item.warmupTime,
-        gray: `${item.gray}`,
-      }),
+      props: serializeUpstreamProps(item),
       discoveryHandlerId,
       namespaceId: currentNamespaceId,
     }));
