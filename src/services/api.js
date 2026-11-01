@@ -944,20 +944,6 @@ export function getNewEventRecodLogList() {
   });
 }
 
-/* get all api */
-export function getDocMenus() {
-  return request(`${baseUrl}/apidoc/getDocMenus`, {
-    method: `GET`,
-  });
-}
-
-/* get api item */
-export function getDocItem(params) {
-  return request(`${baseUrl}/apidoc/getDocItem?${stringify(params)}`, {
-    method: `GET`,
-  });
-}
-
 /* sandbox proxyGateway */
 export function sandboxProxyGateway() {
   return `${baseUrl}/sandbox/proxyGateway`;

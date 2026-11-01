@@ -112,19 +112,6 @@ export const menuData = [
       },
     ],
   },
-  {
-    name: getIntlContent("SHENYU.MENU.DOCUMENT"),
-    icon: "file-text",
-    path: "document",
-    locale: "SHENYU.MENU.DOCUMENT",
-    children: [
-      {
-        name: getIntlContent("SHENYU.MENU.DOCUMENT.APIDOC"),
-        path: "apidoc",
-        locale: "SHENYU.MENU.DOCUMENT.APIDOC",
-      },
-    ],
-  },
 ];
 function formatter(data, parentAuthority, parentPath = "/") {
   return data.map((item) => {
