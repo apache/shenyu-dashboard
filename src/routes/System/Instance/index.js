@@ -453,7 +453,7 @@ export default class Instance extends Component {
             } else if (state === 0) {
               return (
                 <Tag color="orange">
-                  {getIntlContent("SHENYU.INSTANCE.SELECT.STATE.UNKNOWN")}
+                  {getIntlContent("SHENYU.INSTANCE.SELECT.STATE.DELETED")}
                 </Tag>
               );
             } else if (state === 2) {
@@ -463,6 +463,11 @@ export default class Instance extends Component {
                 </Tag>
               );
             }
+            return (
+              <Tag>
+                {getIntlContent("SHENYU.INSTANCE.SELECT.STATE.UNKNOWN")}
+              </Tag>
+            );
           },
         },
       ],
