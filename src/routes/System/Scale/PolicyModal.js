@@ -23,19 +23,28 @@ import { PolicyType } from "./globalData";
 
 const FormItem = Form.Item;
 
+export const buildPolicyData = (values, id) => {
+  const policyData = {
+    ...values,
+    id,
+    status: values.status ? 1 : 0,
+  };
+
+  if (id === "2") {
+    policyData.beginTime = values.beginTime.format("YYYY-MM-DDTHH:mm:ss[Z]");
+    policyData.endTime = values.endTime.format("YYYY-MM-DDTHH:mm:ss[Z]");
+  }
+
+  return policyData;
+};
+
 class AddModal extends Component {
   handleSubmit = (e) => {
     const { form, handleOk, id = "" } = this.props;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        handleOk({
-          ...values,
-          id,
-          status: values.status ? 1 : 0,
-          beginTime: values.beginTime.format("YYYY-MM-DDTHH:mm:ss[Z]"),
-          endTime: values.endTime.format("YYYY-MM-DDTHH:mm:ss[Z]"),
-        });
+        handleOk(buildPolicyData(values, id));
       }
     });
   };
