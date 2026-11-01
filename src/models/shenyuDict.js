@@ -146,6 +146,12 @@ export default {
         }
       }
     },
+    *reload(params, { put }) {
+      const { fetchValue } = params;
+      const { type, dictCode, dictName, currentPage, pageSize } = fetchValue;
+      const payload = { type, dictCode, dictName, currentPage, pageSize };
+      yield put({ type: "fetch", payload });
+    },
   },
   reducers: {
     saveShenYuDicts(state, { payload }) {
@@ -161,13 +167,6 @@ export default {
         ...state,
         shenyuDictMap: payload.shenyuDictMap,
       };
-    },
-
-    *reload(params, { put }) {
-      const { fetchValue } = params;
-      const { type, dictCode, dictName, currentPage, pageSize } = fetchValue;
-      const payload = { type, dictCode, dictName, currentPage, pageSize };
-      yield put({ type: "fetch", payload });
     },
   },
 };
