@@ -17,6 +17,7 @@
 
 import pluginHandle from "./pluginHandle";
 import shenyuDict from "./shenyuDict";
+import { updateShenYuDictEnabled } from "../services/api";
 
 jest.mock("../services/api", () => ({
   addPluginHandle: jest.fn(),
@@ -36,10 +37,16 @@ jest.mock("../services/api", () => ({
 }));
 
 const put = (action) => ({ type: "put", action });
+const call = (fn, ...args) => ({ type: "call", fn, args });
 
 describe("reload effects", () => {
   it("reloads plugin handles using the current filters and pagination", () => {
-    const fetchValue = { pluginId: "http", currentPage: 2, pageSize: 10 };
+    const fetchValue = {
+      pluginId: "http",
+      field: "path",
+      currentPage: 2,
+      pageSize: 10,
+    };
     const generator = pluginHandle.effects.reload({ fetchValue }, { put });
 
     expect(generator.next().value).toEqual(
@@ -64,5 +71,28 @@ describe("reload effects", () => {
     );
     expect(generator.next().done).toBe(true);
     expect(shenyuDict.reducers.reload).toBeUndefined();
+  });
+
+  it("reloads filtered dictionary entries after a status change without a callback", () => {
+    const payload = { list: ["dict-id"], enabled: false };
+    const fetchValue = {
+      type: 1,
+      dictCode: "protocol",
+      dictName: "Protocol",
+      currentPage: 2,
+      pageSize: 20,
+    };
+    const generator = shenyuDict.effects.updateEn(
+      { payload, fetchValue },
+      { call, put },
+    );
+
+    expect(generator.next().value).toEqual(
+      call(updateShenYuDictEnabled, payload),
+    );
+    expect(generator.next({ code: 200 }).value).toEqual(
+      put({ type: "reload", fetchValue }),
+    );
+    expect(generator.next().done).toBe(true);
   });
 });

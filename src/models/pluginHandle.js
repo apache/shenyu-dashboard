@@ -203,9 +203,7 @@ export default {
     },
     *reload(params, { put }) {
       const { fetchValue } = params;
-      const { pluginId, currentPage, pageSize } = fetchValue;
-      const payload = { pluginId, currentPage, pageSize };
-      yield put({ type: "fetch", payload });
+      yield put({ type: "fetch", payload: fetchValue });
     },
   },
   reducers: {

@@ -117,12 +117,12 @@ export default class PluginHandle extends Component {
    * close model
    * @param reset after is reset search condition
    */
-  closeModal = (reset = false) => {
+  closeModal = (reset = false, refresh = true) => {
     this.setState(
       reset
         ? { popup: "", currentPage: 1, pluginId: "", field: "" }
         : { popup: "" },
-      this.query,
+      refresh ? this.query : undefined,
     );
   };
 
@@ -140,7 +140,7 @@ export default class PluginHandle extends Component {
 
   editClick = (record, copy) => {
     const { dispatch } = this.props;
-    const { currentPage, pageSize } = this.state;
+    const { pageSize } = this.state;
     this.loadPluginDict();
     const pluginDropDownList = this.state.pluginDict;
     dispatch({
@@ -200,11 +200,13 @@ export default class PluginHandle extends Component {
                   type: `pluginHandle/${copy ? "add" : "update"}`,
                   payload,
                   fetchValue: {
-                    currentPage,
+                    pluginId: "",
+                    field: "",
+                    currentPage: 1,
                     pageSize,
                   },
                   callback: () => {
-                    this.closeModal(true);
+                    this.closeModal(true, false);
                   },
                 });
               }}
@@ -219,7 +221,7 @@ export default class PluginHandle extends Component {
   };
 
   addClick = () => {
-    const { currentPage, pageSize } = this.state;
+    const { pageSize } = this.state;
     this.loadPluginDict();
     const pluginDropDownList = this.state.pluginDict;
     this.setState({
@@ -264,11 +266,13 @@ export default class PluginHandle extends Component {
                 extObj,
               },
               fetchValue: {
-                currentPage,
+                pluginId: "",
+                field: "",
+                currentPage: 1,
                 pageSize,
               },
               callback: () => {
-                this.closeModal(true);
+                this.closeModal(true, false);
               },
             });
           }}
@@ -286,7 +290,7 @@ export default class PluginHandle extends Component {
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { currentPage, pageSize, selectedRowKeys } = this.state;
+    const { pageSize, selectedRowKeys, pluginId, field } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "pluginHandle/delete",
@@ -294,11 +298,13 @@ export default class PluginHandle extends Component {
           list: selectedRowKeys,
         },
         fetchValue: {
-          currentPage,
+          pluginId,
+          field,
+          currentPage: 1,
           pageSize,
         },
         callback: () => {
-          this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
+          this.setState({ selectedRowKeys: [], currentPage: 1 });
         },
       });
     } else {
