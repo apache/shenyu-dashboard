@@ -168,7 +168,6 @@ export default class ShenYuDict extends Component {
                   },
                   callback: () => {
                     this.closeModal();
-                    this.query();
                   },
                 });
               }}
@@ -200,8 +199,7 @@ export default class ShenYuDict extends Component {
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { type, dictCode, dictName, currentPage, pageSize, selectedRowKeys } =
-      this.state;
+    const { type, dictCode, dictName, pageSize, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "shenyuDict/delete",
@@ -212,11 +210,11 @@ export default class ShenYuDict extends Component {
           type,
           dictCode,
           dictName,
-          currentPage,
+          currentPage: 1,
           pageSize,
         },
         callback: () => {
-          this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
+          this.setState({ selectedRowKeys: [], currentPage: 1 });
         },
       });
     } else {
@@ -226,7 +224,12 @@ export default class ShenYuDict extends Component {
   };
 
   addClick = () => {
-    const { currentPage, pageSize } = this.state;
+    const {
+      type: filterType,
+      dictCode: filterDictCode,
+      dictName: filterDictName,
+      pageSize,
+    } = this.state;
     this.setState({
       popup: (
         <AddModal
@@ -247,15 +250,15 @@ export default class ShenYuDict extends Component {
                 enabled,
               },
               fetchValue: {
-                currentPage,
+                type: filterType,
+                dictCode: filterDictCode,
+                dictName: filterDictName,
+                currentPage: 1,
                 pageSize,
               },
               callback: () => {
                 this.closeModal();
-                this.setState(
-                  { selectedRowKeys: [], currentPage: 1 },
-                  this.query,
-                );
+                this.setState({ selectedRowKeys: [], currentPage: 1 });
               },
             });
           }}
@@ -267,16 +270,16 @@ export default class ShenYuDict extends Component {
     });
   };
 
-  statusSwitch = ({ list, enabled, callback }) => {
+  statusSwitch = ({ list, enabled }) => {
     const { dispatch } = this.props;
+    const { type, dictCode, dictName, currentPage, pageSize } = this.state;
     dispatch({
       type: "shenyuDict/updateEn",
       payload: {
         list,
         enabled,
       },
-      fetchValue: {},
-      callback,
+      fetchValue: { type, dictCode, dictName, currentPage, pageSize },
     });
   };
 
@@ -479,7 +482,6 @@ export default class ShenYuDict extends Component {
                   this.statusSwitch({
                     list: [row.id],
                     enabled: checked,
-                    callback: this.query,
                   });
                 }}
               />
