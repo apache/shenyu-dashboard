@@ -34,6 +34,25 @@ function* isFromPreviousNamespace(namespaceId, select) {
   return namespaceId !== currentNamespaceId;
 }
 
+// Number of the latest request started by each effect. A response is applied
+// only if it belongs to the latest request, so an older response that arrives
+// late (e.g. after switching A -> B -> A, or after a newer refresh) is dropped.
+const latestRequest = { fetch: 0, fetchAnalysis: 0 };
+
+function startRequest(type) {
+  latestRequest[type] += 1;
+  return latestRequest[type];
+}
+
+// Whether the response of `request` must not be applied: a newer request of
+// the same type has started, or its namespace is no longer the selected one.
+function* isOutdated(type, request, namespaceId, select) {
+  if (request !== latestRequest[type]) {
+    return true;
+  }
+  return yield* isFromPreviousNamespace(namespaceId, select);
+}
+
 export default {
   namespace: "instance",
 
@@ -52,8 +71,9 @@ export default {
       if (yield* isFromPreviousNamespace(payload.namespaceId, select)) {
         return;
       }
+      const request = startRequest("fetch");
       const json = yield call(getInstancesByNamespace, payload);
-      if (yield* isFromPreviousNamespace(payload.namespaceId, select)) {
+      if (yield* isOutdated("fetch", request, payload.namespaceId, select)) {
         return;
       }
       if (json.code === 200) {
@@ -78,6 +98,7 @@ export default {
       if (yield* isFromPreviousNamespace(namespaceId, select)) {
         return;
       }
+      const request = startRequest("fetchAnalysis");
       const shownNamespaceId = yield select(
         ({ instance }) => instance.analysisNamespaceId,
       );
@@ -90,7 +111,7 @@ export default {
         });
       }
       const json = yield call(findInstanceAnalysis, payload);
-      if (yield* isFromPreviousNamespace(namespaceId, select)) {
+      if (yield* isOutdated("fetchAnalysis", request, namespaceId, select)) {
         return;
       }
 

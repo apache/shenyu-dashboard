@@ -52,6 +52,33 @@ const run = (effect, payload, { state, response, onCall = () => {} }) => {
   return actions;
 };
 
+// Starts an effect and runs it up to its API call. Returns `respond`, which
+// resumes the effect with the response and returns the actions put after it,
+// so that a test can resolve several requests in any order.
+const start = (effect, payload, state) => {
+  const generator = effect({ payload }, effects);
+  const actions = [];
+  const resume = (input) => {
+    let step = generator.next(input);
+    while (!step.done && step.value.type !== "call") {
+      const { type, selector, action } = step.value;
+      if (type === "put") {
+        actions.push(action);
+      }
+      step = generator.next(type === "select" ? selector(state) : undefined);
+    }
+    return step;
+  };
+  expect(resume().done).toBe(false);
+  actions.splice(0);
+  return {
+    respond: (response) => {
+      resume(response);
+      return actions.splice(0);
+    },
+  };
+};
+
 const store = (shownNamespaceId, currentNamespaceId) => ({
   instance: { analysisNamespaceId: shownNamespaceId },
   global: { currentNamespaceId },
@@ -61,6 +88,16 @@ const analysis = {
   code: 200,
   data: { pieData: [{ name: "a", value: 1 }], lineData: [{ name: "a" }] },
 };
+
+// A table response with one instance, and the action that saves it.
+const table = (id) => ({
+  code: 200,
+  data: { page: { totalCount: 1 }, dataList: [{ id }] },
+});
+const saved = (id) => ({
+  type: "saveInstances",
+  payload: { total: 1, dataList: [{ id, key: id }] },
+});
 
 describe("instance model", () => {
   it("clears the charts of the previous namespace while the analysis loads", () => {
@@ -185,6 +222,108 @@ describe("instance model", () => {
 
     expect(actions).toEqual([]);
     expect(onCall).not.toHaveBeenCalled();
+  });
+
+  it("drops a late analysis response after switching A -> B -> A", () => {
+    const state = store("namespace-a", "namespace-a");
+    const first = start(
+      model.effects.fetchAnalysis,
+      { namespaceId: "namespace-a" },
+      state,
+    );
+    state.global.currentNamespaceId = "namespace-b";
+    const second = start(
+      model.effects.fetchAnalysis,
+      { namespaceId: "namespace-b" },
+      state,
+    );
+    state.instance.analysisNamespaceId = "namespace-b";
+    state.global.currentNamespaceId = "namespace-a";
+    const third = start(
+      model.effects.fetchAnalysis,
+      { namespaceId: "namespace-a" },
+      state,
+    );
+    state.instance.analysisNamespaceId = "namespace-a";
+
+    const latest = {
+      code: 200,
+      data: { pieData: [{ name: "new", value: 2 }], lineData: [] },
+    };
+    expect(third.respond(latest)).toEqual([
+      {
+        type: "saveInstancesAnalysis",
+        payload: { namespaceId: "namespace-a", ...latest.data },
+      },
+    ]);
+    expect(second.respond(analysis)).toEqual([]);
+    expect(first.respond(analysis)).toEqual([]);
+  });
+
+  it("applies only the newest of two analysis refreshes resolved out of order", () => {
+    const state = store("namespace-a", "namespace-a");
+    const older = start(
+      model.effects.fetchAnalysis,
+      { namespaceId: "namespace-a" },
+      state,
+    );
+    const newer = start(
+      model.effects.fetchAnalysis,
+      { namespaceId: "namespace-a" },
+      state,
+    );
+
+    const latest = {
+      code: 200,
+      data: { pieData: [{ name: "new", value: 2 }], lineData: [] },
+    };
+    expect(newer.respond(latest)).toEqual([
+      {
+        type: "saveInstancesAnalysis",
+        payload: { namespaceId: "namespace-a", ...latest.data },
+      },
+    ]);
+    expect(older.respond(analysis)).toEqual([]);
+  });
+
+  it("drops a late table response after switching A -> B -> A", () => {
+    const state = store(undefined, "namespace-a");
+    const payload = {
+      namespaceId: "namespace-a",
+      currentPage: 1,
+      pageSize: 12,
+    };
+    const first = start(model.effects.fetch, payload, state);
+    state.global.currentNamespaceId = "namespace-b";
+    const second = start(
+      model.effects.fetch,
+      { ...payload, namespaceId: "namespace-b" },
+      state,
+    );
+    state.global.currentNamespaceId = "namespace-a";
+    const third = start(model.effects.fetch, payload, state);
+
+    expect(third.respond(table("new"))).toEqual([saved("new")]);
+    expect(second.respond(table("b"))).toEqual([]);
+    expect(first.respond(table("old"))).toEqual([]);
+  });
+
+  it("applies only the newest of two table refreshes resolved out of order", () => {
+    const state = store(undefined, "namespace-a");
+    const payload = {
+      namespaceId: "namespace-a",
+      currentPage: 1,
+      pageSize: 12,
+    };
+    const older = start(model.effects.fetch, payload, state);
+    const newer = start(
+      model.effects.fetch,
+      { ...payload, currentPage: 2 },
+      state,
+    );
+
+    expect(newer.respond(table("new"))).toEqual([saved("new")]);
+    expect(older.respond(table("old"))).toEqual([]);
   });
 
   it("starts with empty chart data", () => {
