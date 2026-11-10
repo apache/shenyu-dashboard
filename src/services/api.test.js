@@ -188,3 +188,27 @@ it.each(["addPlugin", "updatePlugin"])(
     expect(options.body.get("enabled")).toBe("false");
   },
 );
+
+it("aggregates every page when querying a tag's APIs", async () => {
+  fetch.mockImplementation(async () => ({
+    status: 200,
+    json: async () => {
+      const isFirstPage = fetch.mock.calls.length === 1;
+      return {
+        code: 200,
+        data: {
+          dataList: [{ id: isFirstPage ? "api-1" : "api-2" }],
+          page: { totalPage: 2 },
+        },
+      };
+    },
+  }));
+
+  const res = await api.getApi("tag-1");
+
+  expect(res.code).toBe(200);
+  expect(res.data.dataList.map((item) => item.id)).toEqual(["api-1", "api-2"]);
+  expect(fetch).toHaveBeenCalledTimes(2);
+  const secondUrl = new URL(fetch.mock.calls[1][0], "http://localhost");
+  expect(secondUrl.searchParams.get("currentPage")).toBe("1");
+});

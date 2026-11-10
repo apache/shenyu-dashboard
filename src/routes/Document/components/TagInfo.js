@@ -45,7 +45,7 @@ function TagInfo(props) {
     },
     {
       title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.TYPE"),
-      dataIndex: "module",
+      dataIndex: "rpcType",
     },
     {
       title: getIntlContent("SHENYU.DOCUMENT.TAG.TABLE.VERSION"),

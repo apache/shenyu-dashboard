@@ -381,7 +381,8 @@ class AddAndUpdateApiDoc extends Component {
               ],
               initialValue: apiSource,
             })(
-              <Select>
+              // the backend discards apiSource changes on update: keep provenance fixed
+              <Select disabled={Boolean(getFieldValue("id"))}>
                 {API_SOURCE_TYPE.map((e, i) => {
                   return (
                     <Select.Option key={`${e} ${i}`} value={i}>

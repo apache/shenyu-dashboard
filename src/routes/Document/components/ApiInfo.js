@@ -15,7 +15,16 @@
  * limitations under the License.
  */
 
-import { Typography, Table, Tabs, Icon, Row, Col, Button } from "antd";
+import {
+  Typography,
+  Table,
+  Tabs,
+  Icon,
+  Row,
+  Col,
+  Button,
+  Popconfirm,
+} from "antd";
 import React, { useContext } from "react";
 import ApiDebug from "./ApiDebug";
 import ApiContext from "./ApiContext";
@@ -37,14 +46,24 @@ function ApiInfo(props) {
   try {
     documentJSON = JSON.parse(document);
     documentJSON.errorCode = [];
-    const responses = documentJSON.responses || {};
-    Object.keys(responses).forEach((key) => {
-      documentJSON.errorCode.push({
-        code: key,
-        description: responses[key].description,
-        content: responses[key].content,
+    const customCodes = apiDetail.bizCustomCodeList || [];
+    if (customCodes.length) {
+      // registered documents expose their error codes on the detail response
+      documentJSON.errorCode = customCodes.map((c) => ({
+        code: c.code,
+        description: c.message,
+        content: c.solution,
+      }));
+    } else {
+      const responses = documentJSON.responses || {};
+      Object.keys(responses).forEach((key) => {
+        documentJSON.errorCode.push({
+          code: key,
+          description: responses[key].description,
+          content: responses[key].content,
+        });
       });
-    });
+    }
     requestParameters = requestParameters ?? documentJSON.parameters;
     responseParameters = responseParameters ?? documentJSON.responseType;
   } catch (e) {
@@ -167,9 +186,23 @@ function ApiInfo(props) {
               {getIntlContent("SHENYU.BUTTON.SYSTEM.EDIT")}
             </Button>
             &nbsp;&nbsp;
-            <Button ghost type="danger" onClick={handleDelete}>
-              {getIntlContent("SHENYU.BUTTON.SYSTEM.DELETE")}
-            </Button>
+            <Popconfirm
+              title={getIntlContent("SHENYU.COMMON.DELETE")}
+              placement="bottom"
+              onCancel={(e) => {
+                e.stopPropagation();
+              }}
+              onConfirm={(e) => {
+                e.stopPropagation();
+                handleDelete(e);
+              }}
+              okText={getIntlContent("SHENYU.COMMON.SURE")}
+              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+            >
+              <Button ghost type="danger">
+                {getIntlContent("SHENYU.BUTTON.SYSTEM.DELETE")}
+              </Button>
+            </Popconfirm>
           </Col>
         </Row>
 
@@ -317,7 +350,8 @@ function ApiInfo(props) {
         }
         key="2"
       >
-        <ApiDebug />
+        {/* remount per API so pending work never crosses selections */}
+        <ApiDebug key={apiDetail.id} />
       </Tabs.TabPane>
     </Tabs>
   );

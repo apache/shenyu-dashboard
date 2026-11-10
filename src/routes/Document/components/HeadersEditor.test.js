@@ -16,11 +16,15 @@
  */
 
 import React from "react";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import HeadersEditor, {
   getNextEditorRowIndex,
   normalizeEditorRows,
 } from "./HeadersEditor";
+
+jest.mock("../../../utils/IntlUtils", () => ({
+  getIntlContent: (key) => key,
+}));
 
 it("assigns unique stable indexes to loaded rows", () => {
   expect(
@@ -63,6 +67,23 @@ it("deletes only the clicked row when header names are duplicated", () => {
   expect(JSON.parse(onChange.mock.calls[0][0])).toEqual([
     { index: 1, key: "", value: "second" },
   ]);
+});
+
+it("removes a row through a keyboard-operable button", () => {
+  const onChange = jest.fn();
+  render(
+    <HeadersEditor
+      value={JSON.stringify([{ index: 0, key: "A", value: "1" }])}
+      onChange={onChange}
+      buttonText="Add"
+    />,
+  );
+
+  const removeButton = screen.getByLabelText("SHENYU.COMMON.DELETE");
+  expect(removeButton.tagName).toBe("BUTTON");
+
+  fireEvent.click(removeButton);
+  expect(JSON.parse(onChange.mock.calls[0][0])).toEqual([]);
 });
 
 it("adds a row without reusing a surviving index", () => {

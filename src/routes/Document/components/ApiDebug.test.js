@@ -18,6 +18,11 @@
 import React from "react";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import fetch from "dva/fetch";
+import {
+  createOrUpdateMockRequest,
+  deleteMockRequest,
+  getApiMockRequest,
+} from "../../../services/api";
 import ApiContext from "./ApiContext";
 import ApiDebug from "./ApiDebug";
 import { buildEnvironmentHost, isValidHttpUrl } from "../../../utils/UrlUtils";
@@ -37,6 +42,9 @@ jest.mock(
       children,
 );
 jest.mock("react-json-view", () => () => <div />);
+jest.mock("../../../utils/IntlUtils", () => ({
+  getIntlContent: (key) => key,
+}));
 
 const contextValue = {
   apiDetail: { id: "api-1", apiPath: "/orders", httpMethod: 0 },
@@ -161,4 +169,122 @@ it("renders a non-JSON response body as literal text instead of HTML", async () 
   expect(pre.children).toHaveLength(0);
   expect(container.querySelector("#injected")).toBeNull();
   expect(container.querySelector("#fake")).toBeNull();
+});
+
+it("renders primitive JSON responses as plain text", async () => {
+  fetch.mockResolvedValue({
+    text: async () => "true",
+    headers: { get: () => null },
+  });
+  jest.spyOn(console, "error").mockImplementation(() => {});
+
+  const { container } = render(
+    <ApiContext.Provider value={contextValue}>
+      <ApiDebug />
+    </ApiContext.Provider>,
+  );
+
+  fireEvent.submit(container.querySelector("form"));
+
+  await waitFor(() => expect(container.querySelector("pre")).not.toBeNull());
+  expect(container.querySelector("pre").textContent).toBe("true");
+});
+
+it("submits the saved mock url without re-picking an environment", async () => {
+  const { container } = render(
+    <ApiContext.Provider
+      value={{
+        ...contextValue,
+        apiDetail: { ...contextValue.apiDetail, apiPath: "/orders" },
+        apiMock: {
+          ...contextValue.apiMock,
+          host: "api.example.test",
+          url: "https://api.example.test/orders",
+        },
+      }}
+    >
+      <ApiDebug />
+    </ApiContext.Provider>,
+  );
+
+  fireEvent.submit(container.querySelector("form"));
+
+  await waitFor(() => expect(fetch).toHaveBeenCalled());
+  expect(fetch.mock.calls[0][1].body).toContain(
+    "https://api.example.test/orders",
+  );
+});
+
+it("saves the mock target as an origin and a path", async () => {
+  createOrUpdateMockRequest.mockResolvedValue({ code: 200, message: "ok" });
+  getApiMockRequest.mockResolvedValue({
+    code: 200,
+    message: "ok",
+    data: { id: "mock-1" },
+  });
+
+  const { getByText } = render(
+    <ApiContext.Provider value={contextValue}>
+      <ApiDebug />
+    </ApiContext.Provider>,
+  );
+
+  fireEvent.click(getByText("SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.SAVE"));
+
+  await waitFor(() =>
+    expect(createOrUpdateMockRequest).toHaveBeenCalledTimes(1),
+  );
+  expect(createOrUpdateMockRequest.mock.calls[0][0]).toMatchObject({
+    host: "https://api.example.test",
+    url: "/orders",
+  });
+});
+
+it("submits query-tab rows as bizParam", async () => {
+  const { container, getByText } = render(
+    <ApiContext.Provider
+      value={{
+        ...contextValue,
+        apiMock: {
+          ...contextValue.apiMock,
+          query: '[{"index":0,"key":"q","value":"1"}]',
+        },
+      }}
+    >
+      <ApiDebug />
+    </ApiContext.Provider>,
+  );
+
+  fireEvent.click(getByText("SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.QUERY"));
+  fireEvent.submit(container.querySelector("form"));
+
+  await waitFor(() => expect(fetch).toHaveBeenCalled());
+  expect(JSON.parse(fetch.mock.calls[0][1].body).bizParam).toEqual({
+    q: "1",
+  });
+});
+
+it("keeps the saved configuration when mock deletion fails", async () => {
+  deleteMockRequest.mockResolvedValue({ code: 500, message: "failed" });
+
+  const { container, getByText } = render(
+    <ApiContext.Provider
+      value={{
+        ...contextValue,
+        apiMock: { ...contextValue.apiMock, id: "mock-1" },
+      }}
+    >
+      <ApiDebug />
+    </ApiContext.Provider>,
+  );
+
+  const pathInput = Array.from(container.querySelectorAll("input")).find(
+    (i) => i.value === "/orders",
+  );
+  expect(pathInput).toBeDefined();
+
+  fireEvent.click(getByText("SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.RESET"));
+
+  await waitFor(() => expect(deleteMockRequest).toHaveBeenCalledWith("mock-1"));
+  expect(pathInput.value).toBe("/orders");
 });

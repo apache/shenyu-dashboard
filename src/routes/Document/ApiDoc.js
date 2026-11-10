@@ -40,6 +40,8 @@ function ApiDoc({ dispatch }) {
   const [apiMock, setApiMock] = useState({});
 
   const searchApiRef = useRef();
+  // bumped on every selection so late responses from a previous node are dropped
+  const selectionRef = useRef(0);
 
   const initData = () => {
     dispatch({
@@ -66,10 +68,16 @@ function ApiDoc({ dispatch }) {
         props: { id, isLeaf },
       },
     } = e;
+    selectionRef.current += 1;
+    const selection = selectionRef.current;
+    const isStale = () => selection !== selectionRef.current;
     if (isLeaf) {
       // drop the previous API's mock first so stale values do not linger
       setApiMock({});
       const { code, message: msg, data } = await getApiDetail(id);
+      if (isStale()) {
+        return;
+      }
       if (code !== 200) {
         message.error(msg);
         return;
@@ -82,6 +90,9 @@ function ApiDoc({ dispatch }) {
         message: mockMsg,
         data: mockData,
       } = await getApiMockRequest(id);
+      if (isStale()) {
+        return;
+      }
       if (mockCode !== 200) {
         message.error(mockMsg);
         return;
@@ -89,6 +100,9 @@ function ApiDoc({ dispatch }) {
       setApiMock(mockData);
     } else {
       const { code, message: msg, data } = await getTagDetail(id);
+      if (isStale()) {
+        return;
+      }
       if (code !== 200) {
         message.error(msg);
         return;
@@ -98,6 +112,9 @@ function ApiDoc({ dispatch }) {
         message: apiMsg,
         data: apiDataRecords,
       } = await getApi(id);
+      if (isStale()) {
+        return;
+      }
       if (apiCode !== 200) {
         message.error(apiMsg);
         return;
@@ -139,11 +156,21 @@ function ApiDoc({ dispatch }) {
     }
   };
 
-  const handleAfterUpdate = (data, refType) => {
+  const handleAfterUpdate = async (data, refType) => {
     if (refType === "tag") {
       setTagDetail({ ...tagDetail, ...data });
     } else if (refType === "api") {
-      setApiDetail({ ...apiDetail, ...data });
+      // derived fields (headers/parameters) are parsed server-side: reload the detail
+      const selection = selectionRef.current;
+      const { code, message: msg, data: detail } = await getApiDetail(data.id);
+      if (code !== 200) {
+        message.error(msg);
+        return;
+      }
+      if (selection !== selectionRef.current) {
+        return;
+      }
+      setApiDetail(detail);
     }
   };
 

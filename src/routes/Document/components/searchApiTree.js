@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-export const updateTreeNodes = (nodes, id, title) => {
+export const updateTreeNodes = (nodes, id, title, name) => {
   let updated = false;
   const updatedNodes = nodes.map((node) => {
     if (node.id === id) {
       updated = true;
-      return { ...node, title };
+      return name ? { ...node, title, name } : { ...node, title };
     }
     if (node.children) {
       const result = updateTreeNodes(node.children, id, title);

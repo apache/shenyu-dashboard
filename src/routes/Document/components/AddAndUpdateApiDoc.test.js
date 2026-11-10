@@ -95,3 +95,14 @@ it("renders without crashing when document or ext is not valid JSON", () => {
   // the modal renders through a portal into document.body
   expect(document.querySelector("form")).not.toBeNull();
 });
+
+it("locks the api source selector once an API id exists", async () => {
+  const { form } = renderModal();
+  expect(document.querySelectorAll(".ant-select-disabled")).toHaveLength(0);
+
+  form.setFieldsValue({ id: "api-1" });
+
+  await waitFor(() =>
+    expect(document.querySelectorAll(".ant-select-disabled")).toHaveLength(1),
+  );
+});

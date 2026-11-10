@@ -54,8 +54,14 @@ const SearchApi = React.forwardRef((props, ref) => {
   const queryRootTag = async () => {
     setExpandedKeys([]);
     setLoading(true);
-    const { code, data = [], message: msg } = await getRootTag();
-    setLoading(false);
+    let code;
+    let data = [];
+    let msg;
+    try {
+      ({ code, data = [], message: msg } = await getRootTag());
+    } finally {
+      setLoading(false);
+    }
     if (code !== 200) {
       message.error(msg);
       return;
@@ -67,23 +73,11 @@ const SearchApi = React.forwardRef((props, ref) => {
         key: index.toString(),
         isLeaf: false,
       })) || [];
+    setTreeData(arr);
     if (data?.length) {
-      const {
-        code: apiCode,
-        message: apiMsg,
-        data: apiDataRecords,
-      } = await getApi(data[0].id);
-      if (apiCode !== 200) {
-        message.error(apiMsg);
-        return;
-      }
-      const { dataList: apiDataList } = apiDataRecords;
-      data[0].apiDataList = apiDataList;
-      setTreeData(arr);
       // Select the first one by default
       selectNode(["0"], arr[0]);
     } else {
-      setTreeData(arr);
       setSelectedKeys([]);
     }
   };
@@ -97,31 +91,35 @@ const SearchApi = React.forwardRef((props, ref) => {
     const { id, hasChildren, eventKey } = node.props;
     const newTreeData = [...treeData];
     let showAddTag = true;
-    let resData = [];
+    let tagChildren = [];
+    let apiChildren = [];
     const eventKeys = eventKey
       .split("-")
       .map((v, i, arr) => arr.slice(0, i + 1).join("-"));
 
-    if (hasChildren) {
-      const { code, message: msg, data } = await getParentTagId(id);
+    try {
+      // non-leaf tags can carry direct APIs alongside child modules
+      const requests = hasChildren
+        ? [getParentTagId(id), getApi(id)]
+        : [getApi(id)];
+      const [tagRes, apiRes] = await Promise.all(requests);
+      if (tagRes.code !== 200) {
+        message.error(tagRes.message);
+        return;
+      }
+      const apiListRes = hasChildren ? apiRes : tagRes;
+      if (apiListRes.code !== 200) {
+        message.error(apiListRes.message);
+        return;
+      }
+      tagChildren = hasChildren ? tagRes.data || [] : [];
+      apiChildren = apiListRes.data?.dataList || [];
+    } finally {
       setLoading(false);
-      if (code !== 200) {
-        message.error(msg);
-        return Promise.reject();
-      }
-      resData = data;
-    } else {
-      const { code, message: msg, data } = await getApi(id);
-      setLoading(false);
-      if (code !== 200) {
-        message.error(msg);
-        return Promise.reject();
-      }
-      const { dataList } = data;
-      if (dataList.length) {
-        showAddTag = false;
-      }
-      resData = dataList;
+    }
+
+    if (!hasChildren && apiChildren.length) {
+      showAddTag = false;
     }
     const curNode = eventKeys.reduce((pre, cur, curIndex, curArray) => {
       const el = pre.find((item) => item.key === cur);
@@ -132,11 +130,15 @@ const SearchApi = React.forwardRef((props, ref) => {
       }
     }, newTreeData);
 
-    curNode.children = resData?.map((item, index) => ({
+    const childTags = tagChildren.map((item, index) => ({
       ...item,
-      title: hasChildren ? (
-        item.name
-      ) : (
+      title: item.name,
+      key: `${eventKey}-tag-${index}`,
+      isLeaf: false,
+    }));
+    const childApis = apiChildren.map((item, index) => ({
+      ...item,
+      title: (
         <>
           <Text code>{Method[item.httpMethod]}</Text>
           <Tooltip placement="topLeft" arrowPointAtCenter title={item.apiPath}>
@@ -144,9 +146,10 @@ const SearchApi = React.forwardRef((props, ref) => {
           </Tooltip>
         </>
       ),
-      key: `${eventKey}-${index}`,
-      isLeaf: !hasChildren,
+      key: `${eventKey}-api-${index}`,
+      isLeaf: true,
     }));
+    curNode.children = [...childTags, ...childApis];
     curNode.children.push({
       selectable: false,
       title: (

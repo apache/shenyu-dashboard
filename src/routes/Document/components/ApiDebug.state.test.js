@@ -246,11 +246,57 @@ it("clears unsaved headers when switching between APIs without saved mocks", () 
     </ApiContext.Provider>,
   );
 
-  expect(
-    container.querySelector(
-      '[data-headers-editor][data-button="SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.ADD.HEADER"][data-value="[]"]',
-    ),
-  ).not.toBeNull();
+  const headerEditor = Array.from(
+    container.querySelectorAll("[data-headers-editor]"),
+  ).find(
+    (el) =>
+      el.getAttribute("data-button") ===
+      "SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.ADD.HEADER",
+  );
+  // residue cleared and the default Content-Type restored
+  expect(JSON.parse(headerEditor.getAttribute("data-value"))).toEqual([
+    { index: 0, key: "Content-Type", value: "application/json" },
+  ]);
+});
+
+it("applies the default Content-Type when no header was saved", () => {
+  const { container } = renderWithApi(
+    { apiPath: "/a", httpMethod: 0, id: "api-1" },
+    emptyMockVo(),
+  );
+  const headerEditor = Array.from(
+    container.querySelectorAll("[data-headers-editor]"),
+  ).find(
+    (el) =>
+      el.getAttribute("data-button") ===
+      "SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.ADD.HEADER",
+  );
+  expect(JSON.parse(headerEditor.getAttribute("data-value"))).toEqual([
+    { index: 0, key: "Content-Type", value: "application/json" },
+  ]);
+});
+
+it("clears query rows on every reset", () => {
+  const { container } = renderWithApi(
+    { apiPath: "/a", httpMethod: 0, id: "api-1" },
+    emptyMockVo(),
+  );
+  // the query pane renders lazily: activate it before querying its editor
+  fireEvent.click(screen.getByText("SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.QUERY"));
+  const queryEditor = () =>
+    Array.from(container.querySelectorAll("[data-headers-editor]")).find(
+      (el) =>
+        el.getAttribute("data-button") ===
+        "SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.ADD.QUERY",
+    );
+  const emit = queryEditor().querySelector("[data-emit]");
+  const reset = screen.getByText("SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.RESET");
+
+  fireEvent.click(reset);
+  fireEvent.click(emit);
+  fireEvent.click(reset);
+
+  expect(JSON.parse(queryEditor().getAttribute("data-value"))).toEqual([]);
 });
 
 it("keeps the request path when switching to an API without a saved mock", () => {
@@ -335,8 +381,16 @@ it("resets the debug form when switching to an API without a saved mock", async 
   );
 
   await waitFor(() => {
-    expect(
-      container.querySelector('[data-headers-editor][data-value="[]"]'),
-    ).not.toBeNull();
+    const headerEditor = Array.from(
+      container.querySelectorAll("[data-headers-editor]"),
+    ).find(
+      (el) =>
+        el.getAttribute("data-button") ===
+        "SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.ADD.HEADER",
+    );
+    // the previous mock's X-Test header is gone and the default restored
+    expect(JSON.parse(headerEditor.getAttribute("data-value"))).toEqual([
+      { index: 0, key: "Content-Type", value: "application/json" },
+    ]);
   });
 });

@@ -118,7 +118,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
     url: apiMock.url,
     pathVariable: apiMock.pathVariable,
     query: apiMock.query,
-    header: apiMock.header || "[]",
+    header: apiMock.header || null,
     body: apiMock.body,
     envId: undefined,
   });
@@ -132,24 +132,35 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   };
 
   useEffect(() => {
+    // a saved mock may store the whole url: split it into the origin/path pair the form edits
+    const savedUrl = isValidHttpUrl(apiMock.url) ? new URL(apiMock.url) : null;
+    const host = savedUrl ? buildEnvironmentHost(apiMock.url) : apiMock.host;
+    const path = savedUrl
+      ? `${savedUrl.pathname}${savedUrl.search}`
+      : apiMock.url;
     setInitialValue({
       id: apiMock.id,
       apiId: apiDetail.id,
-      host: apiMock.host,
+      host,
       port: apiMock.port,
-      url: apiMock.url || apiDetail.apiPath,
+      url: path || apiDetail.apiPath,
       pathVariable: apiMock.pathVariable,
       query: apiMock.query,
-      header: apiMock.header || "[]",
+      header: apiMock.header || null,
       body: apiMock.body,
       envId: undefined,
     });
     // reset by apiMock identity: equal-looking values must still clear the form
     form.setFieldsValue({
-      headers: apiMock.header || "[]",
+      headers:
+        apiMock.header || JSON.stringify(getDefaultHeaderByKey(activeKey)),
       querys: apiMock.query || "[]",
     });
     form.resetFields("requestUrl");
+    const restoredPath = path || apiDetail.apiPath;
+    if (host && restoredPath) {
+      form.setFieldsValue({ requestUrl: `${host}${restoredPath}` });
+    }
     setRequestJson(safeParse(apiMock.body, {}));
   }, [apiMock]);
 
@@ -161,29 +172,22 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
     setInitialValue((prev) => ({
       ...prev,
       id: prev.apiId === apiDetail.id ? prev.id : null,
+      // keep the url restored from a saved mock when the API has not changed
+      url: prev.apiId === apiDetail.id ? prev.url : apiDetail.apiPath,
       apiId: apiDetail.id,
-      url: apiDetail.apiPath,
     }));
   }, [apiDetail.id, apiDetail.apiPath]);
-
-  useEffect(() => {
-    form.setFieldsValue({
-      headers:
-        initialValue.header || JSON.stringify(getDefaultHeaderByKey(activeKey)),
-    });
-  }, [initialValue.header]);
-
-  useEffect(() => {
-    form.setFieldsValue({ querys: initialValue.query || "[]" });
-  }, [initialValue.query]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     form.validateFieldsAndScroll((errors, values) => {
       if (!errors) {
+        // the sandbox only consumes bizParam: merge query rows when that tab is active
+        const queryParams = arrayToObject(safeParse(values.querys, []));
         onSubmit({
           ...values,
-          bizParam: questJson,
+          bizParam:
+            activeKey === "2" ? { ...questJson, ...queryParams } : questJson,
         });
       }
     });
@@ -202,9 +206,10 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
         const params = {
           ...initialValue,
           apiId: apiDetail.id,
-          host: url.hostname,
+          // store origin + path so the form can reload them in its own format
+          host: `${url.protocol}//${url.host}`,
           port: url.port,
-          url: requestUrl,
+          url: `${url.pathname}${url.search}`,
           header: fields.headers,
           query: fields.querys,
           body: JSON.stringify(questJson),
@@ -234,10 +239,11 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
     if (initialValue.id) {
       let rs = await deleteMockRequest(initialValue.id);
       if (rs.code !== 200) {
+        // keep the form and mock id so the deletion can be retried
         message.error(rs.message);
-      } else {
-        message.success(rs.message);
+        return;
       }
+      message.success(rs.message);
     }
     resetContext();
   };
@@ -257,6 +263,11 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
     });
     setRequestJson({});
     form.resetFields("requestUrl");
+    // set the fields explicitly: state-dependent effects do not re-run on null -> null
+    form.setFieldsValue({
+      headers: JSON.stringify(getDefaultHeaderByKey(activeKey)),
+      querys: "[]",
+    });
   };
 
   const changeParamTab = (key) => {
@@ -266,7 +277,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
       safeParse(header, []),
       getDefaultHeaderByKey(key),
     );
-    setInitialValue({ ...initialValue, header: JSON.stringify(headerJson) });
+    form.setFieldsValue({ headers: JSON.stringify(headerJson) });
   };
 
   return (
@@ -305,7 +316,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
                 const requestUrl = `${host}${initialValue.url ?? ""}`;
                 form.setFieldsValue({ requestUrl });
               }}
-              defaultValue={initialValue.envId}
+              value={initialValue.envId}
             >
               {Object.values(envProps).map((e, i) => {
                 return (
@@ -524,12 +535,13 @@ function ApiDebug() {
           key="2"
         >
           {responseInfo.bodyType === "json" &&
-          Object.keys(responseInfo).length ? (
+          responseInfo.body !== null &&
+          typeof responseInfo.body === "object" ? (
             <ReactJson src={responseInfo.body} name={false} />
-          ) : responseInfo.body ? (
-            // Non-JSON upstream bodies are untrusted: show them as text only.
+          ) : responseInfo.body !== undefined && responseInfo.body !== null ? (
+            // JSON primitives and non-JSON upstream bodies render as text only
             <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
-              {responseInfo.body}
+              {String(responseInfo.body)}
             </pre>
           ) : (
             <Empty description={false} />

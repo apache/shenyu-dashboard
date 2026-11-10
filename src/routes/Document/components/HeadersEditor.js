@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import { Col, Input, Row, Button, Icon, Typography } from "antd";
+import { Col, Input, Row, Button, Icon } from "antd";
 import React, { Fragment, useEffect, useRef, useState } from "react";
-
-const { Text } = Typography;
+import { getIntlContent } from "../../../utils/IntlUtils";
 
 export const parseRows = (str) => {
   try {
@@ -120,13 +119,14 @@ function HeadersEditor(props) {
             />
           </Col>
           <Col span={2} style={{ textAlign: "center" }}>
-            <Text type="danger">
-              <Icon
-                style={{ fontSize: "16px" }}
-                type="minus-circle-o"
-                onClick={() => onDeleteItem(item.index)}
-              />
-            </Text>
+            <Button
+              type="link"
+              aria-label={getIntlContent("SHENYU.COMMON.DELETE")}
+              onClick={() => onDeleteItem(item.index)}
+              style={{ padding: 0, height: "auto", color: "#f5222d" }}
+            >
+              <Icon style={{ fontSize: "16px" }} type="minus-circle-o" />
+            </Button>
           </Col>
         </Fragment>
       ))}
