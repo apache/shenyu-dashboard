@@ -36,6 +36,11 @@ import CommonRuleHandle from "./CommonRuleHandle";
 import ComposeRuleHandle from "./ComposeRuleHandle";
 import PluginRuleHandle from "../PluginRuleHandle";
 import RuleCopy from "./RuleCopy";
+import ImportConditionsModal from "./ImportConditionsModal";
+import {
+  FIXED_PARAM_TYPES,
+  mergeConditions,
+} from "../../../utils/conditionDraft";
 import {
   formatDate,
   formatDateString,
@@ -58,6 +63,8 @@ class AddModal extends Component {
     const customPluginNames = Object.keys(PluginRuleHandle);
     this.state = {
       customRulePage: customPluginNames.includes(props.pluginName),
+
+      importVisible: false,
 
       visible: false,
     };
@@ -253,6 +260,17 @@ class AddModal extends Component {
       let key = `paramTypeValueEn${len - 1}`;
       this.setState({ [key]: true });
     });
+  };
+
+  handleImportApply = (conditions) => {
+    const { ruleConditions } = this.state;
+    const next = mergeConditions(ruleConditions, conditions);
+    const nextState = { ruleConditions: next, importVisible: false };
+    next.forEach((item, index) => {
+      nextState[`paramTypeValueEn${index}`] =
+        FIXED_PARAM_TYPES.indexOf(item.paramType) !== -1;
+    });
+    this.setState(nextState);
   };
 
   handleDelete = (index) => {
@@ -692,8 +710,19 @@ class AddModal extends Component {
                 {getIntlContent("SHENYU.COMMON.ADD")}{" "}
                 {getIntlContent("SHENYU.COMMON.CONDITION")}
               </Button>
+              <Button
+                style={{ marginLeft: 8 }}
+                onClick={() => this.setState({ importVisible: true })}
+              >
+                Import from request
+              </Button>
             </FormItem>
           </div>
+          <ImportConditionsModal
+            visible={this.state.importVisible}
+            onCancel={() => this.setState({ importVisible: false })}
+            onApply={this.handleImportApply}
+          />
           {RuleHandleComponent && (
             <RuleHandleComponent
               onRef={(handleComponentRef) => {
