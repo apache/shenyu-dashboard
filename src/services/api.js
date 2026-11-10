@@ -997,11 +997,20 @@ export function updateTag(params) {
   });
 }
 
-/* queryApi */
-export function getApi(tagId) {
-  return request(`${baseUrl}/api?tagId=${tagId}&currentPage=0&pageSize=100`, {
-    method: `GET`,
-  });
+/* queryApi: fetch every page so trees and tag views stay complete */
+export async function getApi(tagId, currentPage = 0, accumulated = []) {
+  const { code, message, data } = await request(
+    `${baseUrl}/api?tagId=${tagId}&currentPage=${currentPage}&pageSize=100`,
+    { method: `GET` },
+  );
+  if (code !== 200) {
+    return { code, message, data: { dataList: accumulated } };
+  }
+  const dataList = accumulated.concat(data.dataList || []);
+  if (currentPage + 1 >= (data.page?.totalPage ?? 1)) {
+    return { code, message, data: { ...data, dataList } };
+  }
+  return getApi(tagId, currentPage + 1, dataList);
 }
 
 /* queryApi */

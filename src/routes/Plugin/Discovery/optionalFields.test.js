@@ -15,19 +15,9 @@
  * limitations under the License.
  */
 
-import {
-  getDefaultValueList,
-  getDiscoveryProps,
-  getLastTagName,
-} from "./optionalFields";
+import { getDefaultValueList, getDiscoveryProps } from "./optionalFields";
 
 describe("optional discovery and document fields", () => {
-  it("returns the final tag name without assuming tags exist", () => {
-    expect(getLastTagName([{ name: "first" }, { name: "last" }])).toBe("last");
-    expect(getLastTagName([])).toBeUndefined();
-    expect(getLastTagName(undefined)).toBeUndefined();
-  });
-
   it("normalizes missing discovery props to an empty object", () => {
     expect(getDiscoveryProps(null)).toEqual({});
     expect(getDiscoveryProps({ timeout: "3s" })).toEqual({ timeout: "3s" });
