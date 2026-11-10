@@ -15,7 +15,12 @@
  * limitations under the License.
  */
 
-import { buildConditionDrafts, toConditions } from "./conditionDraft";
+import {
+  buildConditionDrafts,
+  FIXED_PARAM_TYPES,
+  mergeConditions,
+  toConditions,
+} from "./conditionDraft";
 
 const request = {
   method: "GET",
@@ -154,4 +159,57 @@ it("converts only the selected keys", () => {
     draft("query:0").condition,
   ]);
   expect(toConditions(drafts, [])).toEqual([]);
+});
+
+it("replaces a single untouched default condition", () => {
+  const untouched = {
+    paramType: "uri",
+    operator: "pathPattern",
+    paramName: "/",
+    paramValue: "",
+  };
+  const additions = toConditions(buildConditionDrafts(request), ["path"]);
+  expect(mergeConditions([untouched], additions)).toEqual(additions);
+});
+
+it("appends to existing conditions without changing them", () => {
+  const existing = [
+    { paramType: "header", operator: "=", paramName: "X-A", paramValue: "1" },
+  ];
+  const additions = toConditions(buildConditionDrafts(request), ["method"]);
+  const merged = mergeConditions(existing, additions);
+  expect(merged).toHaveLength(2);
+  expect(merged[0]).toBe(existing[0]);
+  expect(merged[1]).toEqual(additions[0]);
+});
+
+it("keeps a real uri condition instead of treating it as default", () => {
+  const existing = [
+    { paramType: "uri", operator: "match", paramName: "/", paramValue: "/a" },
+  ];
+  expect(mergeConditions(existing, [])).toEqual(existing);
+});
+
+it("returns a new array for the untouched default", () => {
+  const untouched = [
+    {
+      paramType: "uri",
+      operator: "pathPattern",
+      paramName: "/",
+      paramValue: "",
+    },
+  ];
+  expect(mergeConditions(untouched, [])).not.toBe(untouched);
+});
+
+it("hides the name control for fixed condition types", () => {
+  expect(FIXED_PARAM_TYPES).toEqual([
+    "uri",
+    "host",
+    "ip",
+    "req_method",
+    "domain",
+  ]);
+  expect(FIXED_PARAM_TYPES).not.toContain("header");
+  expect(FIXED_PARAM_TYPES).not.toContain("query");
 });

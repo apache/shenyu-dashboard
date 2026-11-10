@@ -162,3 +162,18 @@ export function toConditions(drafts, keys) {
     .filter((item) => keys.indexOf(item.key) !== -1)
     .map((item) => item.condition);
 }
+
+export const FIXED_PARAM_TYPES = ["uri", "host", "ip", "req_method", "domain"];
+
+// A single untouched default condition carries no routing decision, so an
+// import replaces it instead of adding an incomplete row next to it.
+export function mergeConditions(existing, additions) {
+  const current = existing || [];
+  const untouched =
+    current.length === 1 &&
+    current[0].paramType === "uri" &&
+    current[0].operator === "pathPattern" &&
+    current[0].paramName === "/" &&
+    !current[0].paramValue;
+  return (untouched ? [] : current).concat(additions || []);
+}
