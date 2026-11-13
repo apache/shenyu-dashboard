@@ -114,7 +114,7 @@ export default {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
         );
-        callback();
+        callback?.();
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
@@ -146,6 +146,14 @@ export default {
         }
       }
     },
+    *reload(params, { put }) {
+      const { fetchValue } = params;
+      const { type, dictCode, dictName, currentPage, pageSize } = fetchValue;
+      yield put({
+        type: "fetch",
+        payload: { type, dictCode, dictName, currentPage, pageSize },
+      });
+    },
   },
   reducers: {
     saveShenYuDicts(state, { payload }) {
@@ -161,13 +169,6 @@ export default {
         ...state,
         shenyuDictMap: payload.shenyuDictMap,
       };
-    },
-
-    *reload(params, { put }) {
-      const { fetchValue } = params;
-      const { type, dictCode, dictName, currentPage, pageSize } = fetchValue;
-      const payload = { type, dictCode, dictName, currentPage, pageSize };
-      yield put({ type: "fetch", payload });
     },
   },
 };
