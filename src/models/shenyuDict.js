@@ -148,7 +148,11 @@ export default {
     },
     *reload(params, { put }) {
       const { fetchValue } = params;
-      yield put({ type: "fetch", payload: fetchValue });
+      const { type, dictCode, dictName, currentPage, pageSize } = fetchValue;
+      yield put({
+        type: "fetch",
+        payload: { type, dictCode, dictName, currentPage, pageSize },
+      });
     },
   },
   reducers: {

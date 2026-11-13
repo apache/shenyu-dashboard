@@ -114,8 +114,9 @@ export default class PluginHandle extends Component {
   };
 
   /**
-   * close model
-   * @param reset after is reset search condition
+   * close modal
+   * @param reset whether to reset search conditions and pagination
+   * @param refresh whether to query after closing; false when an effect reloads
    */
   closeModal = (reset = false, refresh = true) => {
     this.setState(

@@ -36,6 +36,14 @@ jest.mock("../services/api", () => ({
   updateShenYuDictEnabled: jest.fn(),
 }));
 
+jest.mock("antd", () => ({
+  message: { success: jest.fn(), warn: jest.fn() },
+}));
+
+jest.mock("../utils/IntlUtils", () => ({
+  getIntlContent: jest.fn((key) => key),
+}));
+
 const put = (action) => ({ type: "put", action });
 const call = (fn, ...args) => ({ type: "call", fn, args });
 
@@ -47,7 +55,10 @@ describe("reload effects", () => {
       currentPage: 2,
       pageSize: 10,
     };
-    const generator = pluginHandle.effects.reload({ fetchValue }, { put });
+    const generator = pluginHandle.effects.reload(
+      { fetchValue: { ...fetchValue, unexpected: "ignored" } },
+      { put },
+    );
 
     expect(generator.next().value).toEqual(
       put({ type: "fetch", payload: fetchValue }),
@@ -64,7 +75,10 @@ describe("reload effects", () => {
       currentPage: 3,
       pageSize: 20,
     };
-    const generator = shenyuDict.effects.reload({ fetchValue }, { put });
+    const generator = shenyuDict.effects.reload(
+      { fetchValue: { ...fetchValue, unexpected: "ignored" } },
+      { put },
+    );
 
     expect(generator.next().value).toEqual(
       put({ type: "fetch", payload: fetchValue }),
