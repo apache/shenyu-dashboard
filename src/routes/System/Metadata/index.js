@@ -16,19 +16,10 @@
  */
 
 import React, { Component } from "react";
-import {
-  Table,
-  Input,
-  Button,
-  message,
-  Popconfirm,
-  Tag,
-  Popover,
-  Switch,
-} from "antd";
+import { Input, Button, message, Popconfirm, Tag, Popover, Switch } from "antd";
 import { connect } from "dva";
-import { resizableComponents } from "../../../utils/resizable";
-import AddModal from "./AddModal";
+import MetadataTable from "./MetadataTableLoader";
+import AddModal from "./AddModalLoader";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 
@@ -39,8 +30,6 @@ import AuthButton from "../../../utils/AuthButton";
   loading: loading.effects["metadata/fetch"],
 }))
 export default class Metadata extends Component {
-  components = resizableComponents;
-
   constructor(props) {
     super(props);
     this.state = {
@@ -69,25 +58,15 @@ export default class Metadata extends Component {
       this.changeLocale(language);
     }
     if (prevProps.currentNamespaceId !== currentNamespaceId) {
-      this.query();
+      this.setState(
+        { currentPage: 1, selectedRowKeys: [], popup: "" },
+        this.query,
+      );
     }
   }
 
-  handleResize =
-    (index) =>
-    (e, { size }) => {
-      this.setState(({ columns }) => {
-        const nextColumns = [...columns];
-        nextColumns[index] = {
-          ...nextColumns[index],
-          width: size.width,
-        };
-        return { columns: nextColumns };
-      });
-    };
-
   onSelectChange = (selectedRowKeys) => {
-    this.setState({ selectedRowKeys }, this.query);
+    this.setState({ selectedRowKeys });
   };
 
   query = () => {
@@ -126,6 +105,9 @@ export default class Metadata extends Component {
         namespaceId: currentNamespaceId,
       },
       callback: (user) => {
+        if (this.props.currentNamespaceId !== currentNamespaceId) {
+          return;
+        }
         this.setState({
           popup: (
             <AddModal
@@ -185,7 +167,10 @@ export default class Metadata extends Component {
   };
 
   searchOnchange = (e) => {
-    this.setState({ path: e.target.value, currentPage: 1 }, this.query);
+    this.setState(
+      { path: e.target.value, currentPage: 1, selectedRowKeys: [] },
+      this.query,
+    );
   };
 
   searchClick = () => {
@@ -305,6 +290,9 @@ export default class Metadata extends Component {
           namespaceId: currentNamespaceId,
         },
         callback: (user) => {
+          if (this.props.currentNamespaceId !== currentNamespaceId) {
+            return;
+          }
           this.statusSwitch({
             list: selectedRowKeys,
             enabled: !user.enabled,
@@ -357,6 +345,7 @@ export default class Metadata extends Component {
           dataIndex: "path",
           key: "path",
           ellipsis: true,
+          width: 350,
           render: (text, record) => {
             let content = (
               <div>
@@ -492,7 +481,7 @@ export default class Metadata extends Component {
           ellipsis: true,
           dataIndex: "operate",
           key: "operate",
-          width: 80,
+          width: 150,
           fixed: "right",
           render: (text, record) => {
             return (
@@ -526,17 +515,11 @@ export default class Metadata extends Component {
   }
 
   render() {
-    const { metadata, loading } = this.props;
+    const { metadata, loading, language } = this.props;
     const { userList, total } = metadata;
 
     const { currentPage, pageSize, selectedRowKeys, path, popup } = this.state;
-    const columns = this.state.columns.map((col, index) => ({
-      ...col,
-      onHeaderCell: (column) => ({
-        width: column.width,
-        onResize: this.handleResize(index),
-      }),
-    }));
+    const { columns } = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
@@ -605,27 +588,18 @@ export default class Metadata extends Component {
           </AuthButton>
         </div>
 
-        <Table
-          size="small"
-          components={this.components}
+        <MetadataTable
           style={{ marginTop: 30 }}
-          bordered
-          rowKey={(record) => record.id}
           loading={loading}
+          language={language}
           columns={columns}
-          // scroll={{ x: 1350 }}
           dataSource={userList}
           rowSelection={rowSelection}
-          pagination={{
-            total,
-            showTotal: (showTotal) => `${showTotal}`,
-            showSizeChanger: true,
-            pageSizeOptions: ["12", "20", "50", "100"],
-            current: currentPage,
-            pageSize,
-            onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange,
-          }}
+          total={total}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={this.pageOnchange}
+          onPageSizeChange={this.onShowSizeChange}
         />
         {popup}
       </div>
