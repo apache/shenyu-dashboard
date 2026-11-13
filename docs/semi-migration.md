@@ -54,7 +54,8 @@ before proposing wider migration.
 ## Stage 2: table and complex business flows
 
 The metadata-table implementation and validation are described in
-[stage 2a](semi-metadata-table.md). Keep subsequent complex-form work in separate PRs.
+[stage 2a](semi-metadata-table.md). The MCP tool editor is described in
+[stage 2b](semi-mcp-tools.md); keep subsequent transfer/runtime work in separate PRs.
 
 Migrate the metadata table with controlled server pagination, cross-page selection,
 resizable headers and permission buttons. Exercise the MCP Tools nested form and
