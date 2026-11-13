@@ -1,0 +1,74 @@
+/* stylelint-disable selector-pseudo-class-no-unknown */
+.editor {
+  position: sticky;
+  left: 0;
+  max-width: 100%;
+  padding: 16px 20px;
+  background: #f5faff;
+  border-left: 3px solid #1890ff;
+}
+
+.heading {
+  margin-bottom: 16px;
+}
+
+.header,
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 32px;
+  gap: 12px;
+}
+
+.header {
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.rows {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.row :global(.ant-form-item) {
+  margin-bottom: 16px;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+
+  div button + button {
+    margin-left: 8px;
+  }
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  text-align: left;
+
+  :global(.ant-tag) {
+    max-width: 240px;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.allLabels {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 360px;
+  max-height: 260px;
+  overflow: auto;
+
+  :global(.ant-tag) {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

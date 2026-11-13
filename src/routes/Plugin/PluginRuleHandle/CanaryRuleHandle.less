@@ -1,0 +1,149 @@
+/* stylelint-disable selector-pseudo-class-no-unknown */
+.editor {
+  line-height: 1.5;
+
+  :global(.ant-select) {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 40px;
+  border-bottom: 1px solid #e8e8e8;
+
+  > button {
+    padding-left: 0;
+  }
+}
+
+.actions,
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.actions {
+  margin-left: auto;
+}
+
+.content {
+  padding: 16px 0 4px;
+}
+
+.labelGroups {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+}
+
+.fieldLabel {
+  margin-bottom: 8px;
+}
+
+.labelHeader,
+.labelRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 32px;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.labelHeader {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+}
+
+.error,
+.required {
+  color: #f5222d;
+}
+
+.error {
+  margin: 4px 0 8px;
+}
+
+.labelRow,
+.conditionRow {
+  > button {
+    padding: 0;
+    color: #ff4d4f;
+  }
+
+  > .error {
+    grid-column: ~"1 / -1";
+  }
+}
+
+.block {
+  margin-top: 24px;
+}
+
+.blockHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  :global(.ant-select) {
+    width: 160px;
+  }
+}
+
+.conditionRow {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) 115px minmax(0, 1fr) 32px;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.routing {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.source {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.fallback {
+  max-width: 300px;
+  margin-top: 20px;
+}
+
+.empty {
+  margin-bottom: 12px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+@media (max-width: 640px) {
+  .labelGroups,
+  .routing {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .conditionRow {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 32px;
+
+    > button {
+      grid-column: 3;
+      grid-row: ~"1 / 3";
+    }
+  }
+
+  .actions {
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+  }
+}
