@@ -28,7 +28,7 @@ import {
 } from "antd";
 import { connect } from "dva";
 import { resizableComponents } from "../../../utils/resizable";
-import AddModal from "./AddModal";
+import AddModal from "./AddModalLoader";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 
