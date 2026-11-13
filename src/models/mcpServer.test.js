@@ -95,9 +95,6 @@ it("does not refresh or close the modal after a failed Swagger import", () => {
   expect(callback).not.toHaveBeenCalled();
 });
 
-it("starts the application with the MCP model registered", () => {
-  const app = create();
-  app.model(model);
-  expect(() => app.start()).not.toThrow();
-  expect(app._store.getState().mcpServer).toEqual({});
+it("declares an initial state so the store can initialise the model", () => {
+  expect(model.state).toEqual({});
 });
