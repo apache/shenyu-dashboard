@@ -335,6 +335,8 @@
   "SHENYU.META.PATH": "Path",
   "SHENYU.META.SELECTRPCTYPE": "SelectRpcType",
   "SHENYU.META.INPUTSERVICEINTERFACE": "InputInterface",
+  "SHENYU.META.TABLE.LOAD.FAILED": "Unable to load the metadata table.",
+  "SHENYU.META.TABLE.LOADING": "Loading metadata table",
   "SHENYU.META.EDITOR.LOAD.FAILED": "Unable to load the metadata editor.",
   "SHENYU.META.EDITOR.RETRY": "Retry",
   "SHENYU.META.EDITOR.LOADING": "Loading metadata editor",
