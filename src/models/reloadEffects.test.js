@@ -95,4 +95,29 @@ describe("reload effects", () => {
     );
     expect(generator.next().done).toBe(true);
   });
+
+  it("clears batch selection and reloads the first page after a status change", () => {
+    const payload = { list: ["dict-id"], enabled: true };
+    const fetchValue = {
+      type: 1,
+      dictCode: "protocol",
+      dictName: "Protocol",
+      currentPage: 1,
+      pageSize: 20,
+    };
+    const callback = jest.fn();
+    const generator = shenyuDict.effects.updateEn(
+      { payload, fetchValue, callback },
+      { call, put },
+    );
+
+    expect(generator.next().value).toEqual(
+      call(updateShenYuDictEnabled, payload),
+    );
+    expect(generator.next({ code: 200 }).value).toEqual(
+      put({ type: "reload", fetchValue }),
+    );
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(generator.next().done).toBe(true);
+  });
 });

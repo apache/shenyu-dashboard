@@ -270,7 +270,7 @@ export default class ShenYuDict extends Component {
     });
   };
 
-  statusSwitch = ({ list, enabled }) => {
+  statusSwitch = ({ list, enabled, callback }) => {
     const { dispatch } = this.props;
     const { type, dictCode, dictName, currentPage, pageSize } = this.state;
     dispatch({
@@ -279,7 +279,14 @@ export default class ShenYuDict extends Component {
         list,
         enabled,
       },
-      fetchValue: { type, dictCode, dictName, currentPage, pageSize },
+      fetchValue: {
+        type,
+        dictCode,
+        dictName,
+        currentPage: callback ? 1 : currentPage,
+        pageSize,
+      },
+      callback,
     });
   };
 
@@ -297,10 +304,7 @@ export default class ShenYuDict extends Component {
             list: selectedRowKeys,
             enabled: !user.enabled,
             callback: () => {
-              this.setState(
-                { selectedRowKeys: [], currentPage: 1 },
-                this.query,
-              );
+              this.setState({ selectedRowKeys: [], currentPage: 1 });
             },
           });
         },
