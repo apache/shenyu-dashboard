@@ -88,7 +88,7 @@ the relevant workloads.
 
 The original Ant Design modal passed the same 14 contract tests before the
 migration. The pilot adds clearing, recovery and locale cases plus asynchronous
-loader coverage, bringing the full suite from 315 to 337 tests. Run:
+loader coverage, bringing the full suite from 315 to 338 tests. Run:
 
 ```sh
 npm ci
@@ -111,7 +111,7 @@ Approximate gzip sizes from the same local production-build command:
 | Asset | Before | Pilot |
 | --- | ---: | ---: |
 | Initial JavaScript | 1.44 MB | 1.44 MB |
-| Metadata editor JavaScript, downloaded on opening | none | 772.22 KB |
+| Metadata editor JavaScript, downloaded on opening | none | 772.23 KB |
 | Initial CSS | 112.11 KB | 153.14 KB |
 
 The legacy CSS extractor still puts Semi styles in the initial stylesheet. This

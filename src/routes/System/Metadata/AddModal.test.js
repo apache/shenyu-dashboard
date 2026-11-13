@@ -214,22 +214,25 @@ it("allows correcting a required field after a failed submit", async () => {
   expect(props.handleOk.mock.calls[0][0].path).toBe("/corrected");
 });
 
-it("updates Semi's locale without resetting edited values", async () => {
-  const { props, rerender } = setup({
-    language: "en-US",
-    platform: { rpcTypeEnums: [] },
-  });
-  fireEvent.change(screen.getByPlaceholderText("SHENYU.META.PATH"), {
-    target: { value: "/unsaved" },
-  });
-  fireEvent.click(screen.getByRole("combobox"));
-  await screen.findByText("No Result");
-  rerender(<AddModal {...props} language="zh-CN" />);
-  await screen.findByText("暂无数据");
-  expect(screen.getByPlaceholderText("SHENYU.META.PATH").value).toBe(
-    "/unsaved",
-  );
-});
+it.each(["en-US", "en-Us"])(
+  "updates Semi's %s locale without resetting edited values",
+  async (language) => {
+    const { props, rerender } = setup({
+      language,
+      platform: { rpcTypeEnums: [] },
+    });
+    fireEvent.change(screen.getByPlaceholderText("SHENYU.META.PATH"), {
+      target: { value: "/unsaved" },
+    });
+    fireEvent.click(screen.getByRole("combobox"));
+    await screen.findByText("No Result");
+    rerender(<AddModal {...props} language="zh-CN" />);
+    await screen.findByText("暂无数据");
+    expect(screen.getByPlaceholderText("SHENYU.META.PATH").value).toBe(
+      "/unsaved",
+    );
+  },
+);
 
 it("uses the saved locale before a global language has been selected", async () => {
   window.sessionStorage.setItem("locale", "zh-CN");

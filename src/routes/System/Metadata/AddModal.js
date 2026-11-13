@@ -77,7 +77,7 @@ class AddModal extends Component {
     };
 
     return (
-      <LocaleProvider locale={locale === "en-US" ? enUS : zhCN}>
+      <LocaleProvider locale={locale.toLowerCase() === "en-us" ? enUS : zhCN}>
         <Modal
           width={450}
           centered
