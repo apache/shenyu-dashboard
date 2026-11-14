@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import { routerRedux } from "dva/router";
+import { message } from "../components/ui/feedback";
+import { routerRedux } from "../runtime/router";
 // import { stringify } from "qs";
-import { message } from "antd";
 import { queryLogin } from "../services/api";
 import { defaultNamespaceId } from "../components/_utils/utils";
 

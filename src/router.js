@@ -16,16 +16,14 @@
  */
 
 import React from "react";
-import { routerRedux, Route, Switch } from "dva/router";
 import { ConfigProvider, BackTop } from "antd";
 import enUS from "antd/lib/locale-provider/en_US";
-import { getRouterData } from "./common/router";
+import { routerRedux, Route, Switch } from "./runtime/router";
 import AuthRoute from "./utils/AuthRoute";
 
 const { ConnectedRouter } = routerRedux;
 
-function RouterConfig({ history, app }) {
-  const routerData = getRouterData(app);
+function RouterConfig({ history, routerData }) {
   const UserLayout = routerData["/user"].component;
   const BasicLayout = routerData["/"].component;
 

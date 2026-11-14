@@ -15,13 +15,16 @@
  * limitations under the License.
  */
 
-import { runSaga, effects } from "dva/saga";
+import { runSaga } from "redux-saga";
+import * as effects from "redux-saga/effects";
 import createLoading from "./loading";
 import globalModel from "../models/global";
 import { queryPlatform } from "../services/api";
 
 jest.mock("../services/api", () => ({ queryPlatform: jest.fn() }));
-jest.mock("antd", () => ({ message: { warn: jest.fn(), success: jest.fn() } }));
+jest.mock("../components/ui/feedback", () => ({
+  message: { warn: jest.fn(), success: jest.fn() },
+}));
 jest.mock("../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
 jest.mock("../components/_utils/utils", () => ({
   defaultNamespaceId: "default-namespace",
@@ -119,4 +122,38 @@ describe("createLoading", () => {
       loading.onEffect(untracked, effects, { namespace: "demo" }, "demo/other"),
     ).toBe(untracked);
   });
+});
+
+it("keeps other model effects loading when one effect finishes", () => {
+  const plugin = createLoading({ namespace: "busy" });
+  const reduce = plugin.extraReducers.busy;
+  let state = reduce(undefined, { type: "@@INIT" });
+  state = reduce(state, {
+    type: "@@DVA_LOADING/SHOW",
+    payload: { namespace: "a", actionType: "a/load" },
+  });
+  state = reduce(state, {
+    type: "@@DVA_LOADING/SHOW",
+    payload: { namespace: "b", actionType: "b/load" },
+  });
+  state = reduce(state, {
+    type: "@@DVA_LOADING/HIDE",
+    payload: { namespace: "a", actionType: "a/load" },
+  });
+  expect(state.global).toBe(true);
+  expect(state.models).toEqual({ a: false, b: true });
+  expect(state.effects).toEqual({ "a/load": false, "b/load": true });
+});
+
+it("retains except filtering and rejects ambiguous filters", () => {
+  function* ignored() {
+    yield effects.call(() => Promise.resolve());
+  }
+  const plugin = createLoading({ except: ["demo/ignored"] });
+  expect(
+    plugin.onEffect(ignored, effects, { namespace: "demo" }, "demo/ignored"),
+  ).toBe(ignored);
+  expect(() =>
+    createLoading({ only: ["demo/a"], except: ["demo/b"] }),
+  ).toThrow();
 });
