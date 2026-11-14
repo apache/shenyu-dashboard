@@ -18,7 +18,6 @@
 import React, { Component } from "react";
 import {
   Button,
-  DatePicker,
   Input,
   Popconfirm,
   Row,
@@ -31,6 +30,7 @@ import { connect } from "react-redux";
 import moment from "moment";
 import { message } from "../../../components/ui/feedback";
 import PolicyModal from "./PolicyModal";
+import PolicyTimePicker from "./PolicyTimePicker";
 import RuleModal from "./RuleModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
@@ -350,7 +350,7 @@ export default class Scale extends Component {
         key: "beginTime",
         render: (value) =>
           value ? (
-            <DatePicker showTime disabled value={moment(value)} />
+            <PolicyTimePicker disabled value={moment(value)} />
           ) : (
             getIntlContent("SHENYU.SYSTEM.SCALE.NONE")
           ),
@@ -362,7 +362,7 @@ export default class Scale extends Component {
         key: "endTime",
         render: (value) =>
           value ? (
-            <DatePicker showTime disabled value={moment(value)} />
+            <PolicyTimePicker disabled value={moment(value)} />
           ) : (
             getIntlContent("SHENYU.SYSTEM.SCALE.NONE")
           ),
