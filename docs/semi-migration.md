@@ -72,6 +72,8 @@ route load recovery in the current runtime before replacing its framework/build
 integration. Its asset tradeoff is recorded separately.
 [Stage 3b](async-shared-chunks.md) extracts shared asynchronous dependencies
 with measured route boundaries, recovering the total JS growth from stage 3a.
+[Stage 3c](production-model-loading.md) replaces model-directory discovery
+with explicit loaders and excludes test modules from the production graph.
 
 Replace the legacy Dva renderer/router integration and incompatible React peers,
 then move through React 18.3 to React 19. Preserve reusable model/reducer/effect logic

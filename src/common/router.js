@@ -24,6 +24,33 @@ import { getIntlContent } from "../utils/IntlUtils";
 
 let routerDataCache;
 
+// Literal, lazy requires preserve registration timing without a directory context.
+/* eslint-disable global-require */
+const modelLoaders = {
+  user: () => require("../models/user").default,
+  login: () => require("../models/login").default,
+  mcpServer: () => require("../models/mcpServer").default,
+  discovery: () => require("../models/discovery").default,
+  common: () => require("../models/common").default,
+  role: () => require("../models/role").default,
+  manage: () => require("../models/manage").default,
+  dataPermission: () => require("../models/dataPermission").default,
+  resource: () => require("../models/resource").default,
+  alert: () => require("../models/alert").default,
+  scale: () => require("../models/scale").default,
+  namespace: () => require("../models/namespace").default,
+  metadata: () => require("../models/metadata").default,
+  plugin: () => require("../models/plugin").default,
+  instance: () => require("../models/instance").default,
+  registry: () => require("../models/registry").default,
+  namespacePlugin: () => require("../models/namespacePlugin").default,
+  pluginHandle: () => require("../models/pluginHandle").default,
+  auth: () => require("../models/auth").default,
+  shenyuDict: () => require("../models/shenyuDict").default,
+  error: () => require("../models/error").default,
+};
+/* eslint-enable global-require */
+
 const modelNotExisted = (app, model) =>
   // eslint-disable-next-line
   !app._models.some(({ namespace }) => {
@@ -56,8 +83,10 @@ export const dynamicWrapper = (app, models, component) => {
   // register models
   models.forEach((model) => {
     if (modelNotExisted(app, model)) {
-      // eslint-disable-next-line
-      app.model(require(`../models/${model}`).default);
+      if (!Object.prototype.hasOwnProperty.call(modelLoaders, model)) {
+        throw new Error(`Unknown route model: ${model}`);
+      }
+      app.model(modelLoaders[model]());
     }
   });
 

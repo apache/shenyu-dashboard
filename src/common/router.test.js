@@ -25,6 +25,10 @@ jest.mock("./menu", () => ({
   ],
 }));
 jest.mock("../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
+jest.mock("../index", () => ({ dispatch: jest.fn() }));
+jest.mock("../components/_utils/utils", () => ({
+  defaultNamespaceId: "test-namespace",
+}));
 jest.mock("../models/metadata", () => ({
   __esModule: true,
   default: { namespace: "metadata", state: {} },
@@ -53,6 +57,16 @@ const namespaces = [
   "shenyuDict",
   "error",
 ];
+
+beforeAll(() => {
+  const apiBase = document.createElement("div");
+  apiBase.id = "httpPath";
+  document.body.appendChild(apiBase);
+});
+
+afterAll(() => {
+  document.getElementById("httpPath").remove();
+});
 
 function createApp(exclude) {
   const models = namespaces
@@ -90,6 +104,36 @@ it("registers a missing route model once without replacing existing namespaces",
   expect(app.model).toHaveBeenCalledTimes(1);
   expect(app.model).toHaveBeenCalledWith({ namespace: "metadata", state: {} });
 });
+
+it.each(namespaces)(
+  "registers the original %s model synchronously and only once",
+  (namespace) => {
+    const app = createApp(namespace);
+    const pageLoader = jest.fn(() => Promise.resolve({ default: () => null }));
+    dynamicWrapper(app, [namespace], pageLoader);
+    expect(app.model).toHaveBeenCalledTimes(1);
+    const model = app.model.mock.calls[0][0];
+    expect(model.namespace).toBe(namespace);
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    expect(model).toBe(require(`../models/${namespace}`).default);
+    expect(pageLoader).not.toHaveBeenCalled();
+
+    dynamicWrapper(app, [namespace], pageLoader);
+    expect(app.model).toHaveBeenCalledTimes(1);
+    expect(pageLoader).not.toHaveBeenCalled();
+  },
+);
+
+it.each(["notRegistered", "constructor", "__proto__"])(
+  "rejects unsupported model %s before registration or page loading",
+  (namespace) => {
+    const app = createApp();
+    const pageLoader = jest.fn();
+    expect(() => dynamicWrapper(app, [namespace], pageLoader)).toThrow();
+    expect(app.model).not.toHaveBeenCalled();
+    expect(pageLoader).not.toHaveBeenCalled();
+  },
+);
 
 it("waits for a promise loader regardless of its source text, then forwards route props", async () => {
   const onSave = jest.fn();
