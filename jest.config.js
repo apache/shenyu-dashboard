@@ -17,6 +17,7 @@
 
 module.exports = {
   testEnvironment: "jsdom",
+  setupFilesAfterEnv: ["<rootDir>/tests/setupBrowser.js"],
   testEnvironmentOptions: {
     url: "http://localhost/",
   },

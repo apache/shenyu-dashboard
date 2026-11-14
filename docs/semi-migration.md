@@ -93,6 +93,9 @@ Semi's internal `createRoot` and does not upgrade Dva.
 
 ## Stage 4: complete the UI and distribution transition
 
+[System forms](semi-system-forms.md) begin the remaining-page migration with
+Namespace, Registry and User dialogs and real H2 Admin checks.
+
 Migrate remaining complete forms/routes, component locale and design tokens;
 remove Ant Design 3 and its old Icon/Less overrides only after their last consumer
 is gone. Validate hash deep links, accessibility, language switches, real backend
