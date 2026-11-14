@@ -24,3 +24,41 @@
     margin-right: 10px;
   }
 }
+
+.menuTree {
+  width: 100%;
+  min-width: 0;
+}
+
+.menuLabel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.menuActions {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.menuTitle {
+  padding: 0;
+  overflow: hidden;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+
+  &:focus-visible {
+    outline: 2px solid var(--semi-color-primary);
+    outline-offset: 2px;
+  }
+}

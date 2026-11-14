@@ -187,15 +187,18 @@ class AddModal extends Component {
                   )}
                   style={{ width: "100%" }}
                 >
-                  {menuTree.map((menu) => (
-                    <Option
-                      value={menu.id}
-                      disabled={menu.url === "/plug"}
-                      key={menu.id}
-                    >
-                      {(menu.title && getIntlContent(menu.title)) || menu.title}
-                    </Option>
-                  ))}
+                  {menuTree.map((menu) => {
+                    const menuTitle = menu.title || menu.meta?.title;
+                    return (
+                      <Option
+                        value={menu.id}
+                        disabled={menu.url === "/plug"}
+                        key={menu.id}
+                      >
+                        {(menuTitle && getIntlContent(menuTitle)) || menuTitle}
+                      </Option>
+                    );
+                  })}
                 </Select>,
               )}
             </FormItem>
