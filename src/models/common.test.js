@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import { message } from "antd";
+import { message } from "../components/ui/feedback";
 import fetch from "../utils/fetch";
 
-jest.mock("antd", () => ({
+jest.mock("../components/ui/feedback", () => ({
   message: {
     error: jest.fn(),
     success: jest.fn(),

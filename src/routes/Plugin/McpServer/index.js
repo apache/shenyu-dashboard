@@ -20,7 +20,6 @@ import {
   Button,
   Col,
   Input,
-  message,
   Popconfirm,
   Popover,
   Row,
@@ -31,6 +30,7 @@ import {
 } from "antd";
 import { connect } from "react-redux";
 import ReactJson from "@microlink/react-json-view";
+import { message } from "../../../components/ui/feedback";
 import styles from "../index.less";
 import Selector from "../Common/Selector";
 import Tools from "./ToolsModalLoader";

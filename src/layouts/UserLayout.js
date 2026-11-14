@@ -17,7 +17,8 @@
 
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
-import { Icon, message } from "antd";
+import { Icon } from "antd";
+import { message } from "../components/ui/feedback";
 import { Link, Redirect, Switch, Route } from "../runtime/router";
 import DocumentTitle from "../components/DocumentTitle";
 import GlobalFooter from "../components/GlobalFooter";

@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-import { notification } from "antd";
+import { notification } from "../components/ui/feedback";
 import fetch from "./fetch";
 import request, { setRequestDispatch } from "./request";
 
 jest.mock("./fetch", () => jest.fn());
-jest.mock("antd", () => ({ notification: { error: jest.fn() } }));
+jest.mock("../components/ui/feedback", () => ({
+  notification: { error: jest.fn() },
+}));
 jest.mock("../index", () => {
   throw new Error("The request utility must not initialize the application");
 });

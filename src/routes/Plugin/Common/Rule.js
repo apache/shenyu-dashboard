@@ -22,7 +22,6 @@ import {
   DatePicker,
   Form,
   Input,
-  message,
   Modal,
   Row,
   Select,
@@ -30,6 +29,7 @@ import {
   TimePicker,
 } from "antd";
 import { connect } from "react-redux";
+import { message } from "../../../components/ui/feedback";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import CommonRuleHandle from "./CommonRuleHandle";

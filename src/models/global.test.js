@@ -17,7 +17,7 @@
 
 import { runSaga } from "redux-saga";
 import * as effects from "redux-saga/effects";
-import { message } from "antd";
+import { message } from "../components/ui/feedback";
 import model from "./global";
 import {
   getPluginsByNamespace,
@@ -28,7 +28,9 @@ jest.mock("../services/api", () => ({
   getPluginsByNamespace: jest.fn(),
   getUserPermissionByNamespace: jest.fn(),
 }));
-jest.mock("antd", () => ({ message: { warn: jest.fn(), success: jest.fn() } }));
+jest.mock("../components/ui/feedback", () => ({
+  message: { warn: jest.fn(), success: jest.fn() },
+}));
 jest.mock("../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
 // The unrelated TypeScript utility module also exports random color helpers.
 jest.mock("../components/_utils/utils", () => ({

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { message } from "antd";
+import { message } from "../components/ui/feedback";
 import { routerRedux } from "../runtime/router";
 // import { stringify } from "qs";
 import { queryLogin } from "../services/api";

@@ -22,7 +22,9 @@ import globalModel from "../models/global";
 import { queryPlatform } from "../services/api";
 
 jest.mock("../services/api", () => ({ queryPlatform: jest.fn() }));
-jest.mock("antd", () => ({ message: { warn: jest.fn(), success: jest.fn() } }));
+jest.mock("../components/ui/feedback", () => ({
+  message: { warn: jest.fn(), success: jest.fn() },
+}));
 jest.mock("../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
 jest.mock("../components/_utils/utils", () => ({
   defaultNamespaceId: "default-namespace",

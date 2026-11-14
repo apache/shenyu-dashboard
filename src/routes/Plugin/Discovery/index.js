@@ -17,16 +17,8 @@
 
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import {
-  Button,
-  Input,
-  message,
-  Pagination,
-  Row,
-  Switch,
-  Tag,
-  Typography,
-} from "antd";
+import { Button, Input, Pagination, Row, Switch, Tag, Typography } from "antd";
+import { message } from "../../../components/ui/feedback";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import discoveryStyles from "./discovery.less";
 import DiscoveryConfigModal from "./DiscoveryConfigModal";

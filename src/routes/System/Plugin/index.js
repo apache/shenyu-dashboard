@@ -20,7 +20,6 @@ import {
   Table,
   Input,
   Button,
-  message,
   Popconfirm,
   Select,
   Popover,
@@ -31,6 +30,7 @@ import {
   Menu,
 } from "antd";
 import { connect } from "react-redux";
+import { message } from "../../../components/ui/feedback";
 import { Link } from "../../../runtime/router";
 import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";

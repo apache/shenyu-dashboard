@@ -16,8 +16,9 @@
  */
 
 import React, { Component } from "react";
-import { Table, Input, Button, message, Popconfirm } from "antd";
+import { Table, Input, Button, Popconfirm } from "antd";
 import { connect } from "react-redux";
+import { message } from "../../../components/ui/feedback";
 import AddModal from "./AddModal";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";

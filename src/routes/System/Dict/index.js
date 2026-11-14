@@ -16,17 +16,9 @@
  */
 
 import React, { Component } from "react";
-import {
-  Table,
-  Input,
-  Button,
-  message,
-  Popconfirm,
-  Popover,
-  Tag,
-  Switch,
-} from "antd";
+import { Table, Input, Button, Popconfirm, Popover, Tag, Switch } from "antd";
 import { connect } from "react-redux";
+import { message } from "../../../components/ui/feedback";
 import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";

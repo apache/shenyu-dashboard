@@ -18,11 +18,12 @@
 /* eslint-disable react/static-property-placement */
 import React from "react";
 import PropTypes from "prop-types";
-import { Layout, message } from "antd";
+import { Layout } from "antd";
 import { connect } from "react-redux";
 import { ContainerQuery } from "react-container-query";
 import classNames from "classnames";
 import pathToRegexp from "path-to-regexp";
+import { message } from "../components/ui/feedback";
 import { Redirect, Route, Switch } from "../runtime/router";
 import DocumentTitle from "../components/DocumentTitle";
 import GlobalHeader from "../components/GlobalHeader";

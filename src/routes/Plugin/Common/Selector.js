@@ -23,7 +23,6 @@ import {
   Input,
   Switch,
   Button,
-  message,
   Tooltip,
   Popconfirm,
   Row,
@@ -38,6 +37,7 @@ import {
 } from "antd";
 import { connect } from "react-redux";
 import classnames from "classnames";
+import { message } from "../../../components/ui/feedback";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import SelectorCopy from "./SelectorCopy";

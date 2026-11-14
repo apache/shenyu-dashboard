@@ -16,9 +16,10 @@
  */
 
 import React, { Component } from "react";
-import { Table, Button, message, Popconfirm, Switch } from "antd";
+import { Table, Button, Popconfirm, Switch } from "antd";
 import dayjs from "dayjs";
 import { connect } from "react-redux";
+import { message } from "../../../components/ui/feedback";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";

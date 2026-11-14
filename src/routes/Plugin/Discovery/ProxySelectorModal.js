@@ -23,7 +23,6 @@ import {
   Divider,
   Form,
   Input,
-  message,
   Modal,
   Row,
   Select,
@@ -31,6 +30,7 @@ import {
   Tooltip,
 } from "antd";
 import classnames from "classnames";
+import { message } from "../../../components/ui/feedback";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import styles from "../index.less";
 import ProxySelectorCopy from "./ProxySelectorCopy.js";

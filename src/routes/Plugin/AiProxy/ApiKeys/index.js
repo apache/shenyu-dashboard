@@ -28,9 +28,9 @@ import {
   Form,
   Typography,
   Popconfirm,
-  message,
   Alert,
 } from "antd";
+import { message } from "../../../../components/ui/feedback";
 import styles from "../../index.less";
 import { getIntlContent } from "../../../../utils/IntlUtils";
 import AuthButton from "../../../../utils/AuthButton";

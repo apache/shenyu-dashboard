@@ -23,7 +23,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
-import { message } from "antd";
+import { message } from "../../../components/ui/feedback";
 import ToolsModal from "./ToolsModal";
 import { clipboardCopy } from "../../../utils/utils";
 

@@ -23,7 +23,7 @@ import model from "./common";
 jest.mock("../services/api", () => ({
   getAllSelectors: jest.fn(),
 }));
-jest.mock("antd", () => ({
+jest.mock("../components/ui/feedback", () => ({
   message: {
     error: jest.fn(),
     success: jest.fn(),

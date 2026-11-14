@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { notification } from "antd";
+import { notification } from "../components/ui/feedback";
 import fetch from "./fetch";
 import { getIntlContent } from "./IntlUtils";
 
