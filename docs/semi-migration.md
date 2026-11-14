@@ -76,6 +76,8 @@ with measured route boundaries, recovering the total JS growth from stage 3a.
 with explicit loaders and excludes test modules from the production graph.
 [Stage 3d](request-store-boundary.md) removes the request/bootstrap store cycle
 and makes session-expiry dispatch an explicit startup dependency.
+[Admin asset compatibility](admin-async-assets.md) places async bundles under
+Admin's existing anonymous static-resource path, verified with real H2 Admin.
 
 Replace the legacy Dva renderer/router integration and incompatible React peers,
 then move through React 18.3 to React 19. Preserve reusable model/reducer/effect logic
