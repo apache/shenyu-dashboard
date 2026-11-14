@@ -26,7 +26,7 @@ import {
   Tag,
   Switch,
 } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";

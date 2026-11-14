@@ -16,7 +16,12 @@
  */
 
 import React, { Component } from "react";
-import { Form, Input, InputNumber, Modal, Select, Switch } from "antd";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import InputNumber from "../../../components/ui/InputNumber";
+import Modal from "../../../components/ui/Modal";
+import Select from "../../../components/ui/Select";
+import Switch from "../../../components/ui/Switch";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { ConfigType } from "./globalData";
 

@@ -28,7 +28,7 @@ import {
   Tag,
   Typography,
 } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import styles from "../index.less";
 import Selector from "./Selector";
 import Rule from "./Rule";

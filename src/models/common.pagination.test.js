@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-import { runSaga, effects } from "dva/saga";
+import { runSaga } from "redux-saga";
+import * as effects from "redux-saga/effects";
 import { getAllSelectors } from "../services/api";
 import model from "./common";
 

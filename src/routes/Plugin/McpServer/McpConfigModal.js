@@ -17,7 +17,7 @@
 
 import React, { Component } from "react";
 import { Modal, Button, message, Typography, Divider, Input } from "antd";
-import ReactJson from "react-json-view";
+import ReactJson from "@microlink/react-json-view";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { clipboardCopy } from "../../../utils/utils";
 
