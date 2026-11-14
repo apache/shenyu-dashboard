@@ -16,7 +16,7 @@
  */
 
 import { message } from "antd";
-import fetch from "dva/fetch";
+import fetch from "../utils/fetch";
 
 jest.mock("antd", () => ({
   message: {
@@ -29,7 +29,7 @@ jest.mock("antd", () => ({
   },
 }));
 
-jest.mock("dva/fetch", () => jest.fn());
+jest.mock("../utils/fetch", () => jest.fn());
 jest.mock("../utils/request", () => ({
   __esModule: true,
   default: jest.fn(),

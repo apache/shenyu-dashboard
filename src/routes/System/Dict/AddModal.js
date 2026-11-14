@@ -18,7 +18,7 @@
 import React, { Component } from "react";
 import { Modal, Form, Input, InputNumber, Switch } from "antd";
 
-import { connect } from "dva";
+import { connect } from "react-redux";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;

@@ -19,12 +19,12 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Layout, message } from "antd";
-import DocumentTitle from "react-document-title";
-import { connect } from "dva";
-import { Redirect, Route, Switch } from "dva/router";
+import { connect } from "react-redux";
 import { ContainerQuery } from "react-container-query";
 import classNames from "classnames";
 import pathToRegexp from "path-to-regexp";
+import { Redirect, Route, Switch } from "../runtime/router";
+import DocumentTitle from "../components/DocumentTitle";
 import GlobalHeader from "../components/GlobalHeader";
 import SiderMenu from "../components/SiderMenu";
 import NotFound from "../routes/Exception/404";

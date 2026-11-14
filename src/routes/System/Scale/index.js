@@ -28,7 +28,7 @@ import {
   Table,
   Typography,
 } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import moment from "moment";
 import PolicyModal from "./PolicyModal";
 import RuleModal from "./RuleModal";

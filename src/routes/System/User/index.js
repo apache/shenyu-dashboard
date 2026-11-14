@@ -17,7 +17,7 @@
 
 import React, { Component } from "react";
 import { Button, Input, message, Popconfirm, Switch, Table } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import AddModal from "./AddModal";
 import DataPermModal from "./DataPermModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";

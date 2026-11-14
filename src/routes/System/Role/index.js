@@ -17,7 +17,7 @@
 
 import React, { Component } from "react";
 import { Table, Input, Button, message, Popconfirm } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import AddModal from "./AddModal";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";

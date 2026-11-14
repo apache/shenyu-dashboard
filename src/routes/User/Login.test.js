@@ -1,6 +1,6 @@
 import LoginPage from "./Login";
 
-jest.mock("dva", () => ({
+jest.mock("react-redux", () => ({
   connect: () => (Component) => Component,
 }));
 jest.mock("components/Login", () => {

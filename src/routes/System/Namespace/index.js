@@ -17,7 +17,7 @@
 
 import React, { Component } from "react";
 import { Button, Input, message, Popconfirm, Table } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
