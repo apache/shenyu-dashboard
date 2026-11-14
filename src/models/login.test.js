@@ -1,4 +1,5 @@
-import { runSaga, effects } from "dva/saga";
+import { runSaga } from "redux-saga";
+import * as effects from "redux-saga/effects";
 import { message } from "antd";
 import model from "./login";
 import { queryLogin } from "../services/api";

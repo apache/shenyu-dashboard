@@ -29,7 +29,7 @@ import {
   Switch,
   TimePicker,
 } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import CommonRuleHandle from "./CommonRuleHandle";

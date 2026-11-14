@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-import fetch from "dva/fetch";
 import { notification } from "antd";
-import store from "../index";
-import request from "./request";
+import fetch from "./fetch";
+import request, { setRequestDispatch } from "./request";
 
-jest.mock("dva/fetch", () => jest.fn());
+jest.mock("./fetch", () => jest.fn());
 jest.mock("antd", () => ({ notification: { error: jest.fn() } }));
-jest.mock("../index", () => ({ dispatch: jest.fn() }));
+jest.mock("../index", () => {
+  throw new Error("The request utility must not initialize the application");
+});
 jest.mock("./IntlUtils", () => ({ getIntlContent: (key) => key }));
 
 const payload = { code: 200, data: { id: "rule-1" } };
+const dispatch = jest.fn();
 function response(status = 200, body = payload) {
   return {
     status,
@@ -36,6 +38,7 @@ function response(status = 200, body = payload) {
 }
 
 beforeEach(() => {
+  setRequestDispatch(dispatch);
   window.sessionStorage.clear();
   fetch.mockReset();
   fetch.mockResolvedValue(response());
@@ -132,7 +135,7 @@ it.each(["http", "application"])(
         : response(200, { code: 401, message: "Session expired" });
     fetch.mockResolvedValue(unauthorized);
     await expect(request("/rule")).rejects.toMatchObject({ name: 401 });
-    expect(store.dispatch.mock.calls).toEqual([
+    expect(dispatch.mock.calls).toEqual([
       [{ type: "login/logout" }],
       [{ type: "global/resetPermission" }],
     ]);
@@ -151,7 +154,7 @@ it.each([403, 404, 500, 503])(
     });
     expect(failed.json).not.toHaveBeenCalled();
     expect(notification.error).toHaveBeenCalledTimes(1);
-    expect(store.dispatch).not.toHaveBeenCalled();
+    expect(dispatch).not.toHaveBeenCalled();
   },
 );
 
@@ -159,7 +162,7 @@ it("propagates network failures unchanged to callers", async () => {
   const error = new TypeError("Failed to fetch");
   fetch.mockRejectedValue(error);
   await expect(request("/rule")).rejects.toBe(error);
-  expect(store.dispatch).not.toHaveBeenCalled();
+  expect(dispatch).not.toHaveBeenCalled();
 });
 
 it("propagates malformed JSON instead of resolving with undefined", async () => {
@@ -177,5 +180,24 @@ it("leaves non-authentication business errors available to model callers", async
   };
   fetch.mockResolvedValue(response(200, rejected));
   await expect(request("/rule")).resolves.toEqual(rejected);
-  expect(store.dispatch).not.toHaveBeenCalled();
+  expect(dispatch).not.toHaveBeenCalled();
+});
+
+it("uses the current dispatcher when an in-flight request becomes unauthorized", async () => {
+  let complete;
+  fetch.mockReturnValue(
+    new Promise((resolve) => {
+      complete = resolve;
+    }),
+  );
+  const pending = request("/rule");
+  const nextDispatch = jest.fn();
+  setRequestDispatch(nextDispatch);
+  complete(response(401));
+  await expect(pending).rejects.toMatchObject({ name: 401 });
+  expect(dispatch).not.toHaveBeenCalled();
+  expect(nextDispatch.mock.calls).toEqual([
+    [{ type: "login/logout" }],
+    [{ type: "global/resetPermission" }],
+  ]);
 });

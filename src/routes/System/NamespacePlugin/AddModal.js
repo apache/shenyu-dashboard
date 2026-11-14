@@ -17,8 +17,8 @@
 
 import React, { Component, Fragment } from "react";
 import { Divider, Form, Input, InputNumber, Modal, Select, Switch } from "antd";
-import { connect } from "dva";
-import ReactJson from "react-json-view";
+import { connect } from "react-redux";
+import ReactJson from "@microlink/react-json-view";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import {
   getConfigFieldValue,
