@@ -16,10 +16,15 @@
  */
 
 import React, { Component } from "react";
-import { Button, Col, Input, Popconfirm, Row, Table } from "antd";
 import Tree from "@douyinfe/semi-ui/lib/es/tree";
-import TreeButton from "@douyinfe/semi-ui/lib/es/button";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import { connect } from "react-redux";
+import Input from "../../../components/ui/Input";
 import { message } from "../../../components/ui/feedback";
 import AddModal from "./AddModal";
 import ResourceIcon from "./ResourceIcon";
@@ -27,8 +32,6 @@ import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { resetAuthMenuCache } from "../../../utils/AuthRoute";
 import styles from "./index.less";
-
-const { Search } = Input;
 
 function resourceTitle(item) {
   const title = item.meta?.title || item.title || "";
@@ -52,6 +55,7 @@ export default class Resource extends Component {
       buttons: [],
       currentMenu: null,
       menuName: "",
+      menuQuery: "",
     };
   }
 
@@ -310,7 +314,7 @@ export default class Resource extends Component {
         {selected && (
           <span className={styles.menuActions}>
             <AuthButton perms="system:resource:editMenu">
-              <TreeButton
+              <Button
                 theme="borderless"
                 type="tertiary"
                 htmlType="button"
@@ -328,7 +332,9 @@ export default class Resource extends Component {
               <AuthButton perms="system:resource:editMenu">
                 <Popconfirm
                   title={getIntlContent("SHENYU.COMMON.DELETE")}
-                  placement="bottom"
+                  position="bottom"
+                  motion={false}
+                  okType="danger"
                   onConfirm={(event) => {
                     event.stopPropagation();
                     this.deleteClick(item.resourceType, item.id);
@@ -337,7 +343,7 @@ export default class Resource extends Component {
                   okText={getIntlContent("SHENYU.COMMON.SURE")}
                   cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
                 >
-                  <TreeButton
+                  <Button
                     theme="borderless"
                     type="tertiary"
                     htmlType="button"
@@ -362,7 +368,10 @@ export default class Resource extends Component {
     const {
       resource: { menuTree },
       loading,
+      global = {},
     } = this.props;
+    const language =
+      global.language || sessionStorage.getItem("locale") || "en-US";
     const { selectedRowKeys, buttons, popup } = this.state;
     const buttonColumns = [
       {
@@ -418,18 +427,20 @@ export default class Resource extends Component {
         dataIndex: "operate",
         key: "operate",
         ellipsis: true,
-        width: 60,
+        width: 110,
         render: (text, record) => {
           return (
             <AuthButton perms="system:resource:editButton">
-              <div
-                className="edit"
-                onClick={() => {
-                  this.editClick(record);
-                }}
-              >
-                {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-              </div>
+              {({ icon }) => (
+                <Button
+                  theme="borderless"
+                  htmlType="button"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  onClick={() => this.editClick(record)}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                </Button>
+              )}
             </AuthButton>
           );
         },
@@ -442,87 +453,137 @@ export default class Resource extends Component {
     };
 
     return (
-      <div className="plug-content-wrap">
-        <Row gutter={20}>
-          <Col span={7}>
-            <h3>{getIntlContent("SHENYU.SYSTEM.RESOURCE.MENULIST.TITLE")}</h3>
-            <div className="table-header">
+      <LocaleProvider locale={language === "zh-CN" ? zhCN : enUS}>
+        <div className="plug-content-wrap">
+          <div className={styles.resourceLayout}>
+            <section className={styles.resourcePane}>
+              <h3>{getIntlContent("SHENYU.SYSTEM.RESOURCE.MENULIST.TITLE")}</h3>
               <div className={styles.headerSearch}>
                 <AuthButton perms="system:resource:list">
-                  <Search
-                    className={styles.search}
-                    style={{ minWidth: "130px" }}
-                    placeholder={getIntlContent(
-                      "SHENYU.SYSTEM.RESOURCE.MENU.INPUT.NAME",
-                    )}
-                    enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
-                    size="default"
-                    onSearch={this.searchMenu}
-                  />
+                  {({ icon }) => (
+                    <form
+                      className={styles.search}
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        this.searchMenu(this.state.menuQuery);
+                      }}
+                    >
+                      <Input
+                        className={styles.searchInput}
+                        allowClear
+                        value={this.state.menuQuery}
+                        onChange={(event) =>
+                          this.setState({ menuQuery: event.target.value })
+                        }
+                        aria-label={getIntlContent(
+                          "SHENYU.SYSTEM.RESOURCE.MENU.INPUT.NAME",
+                        )}
+                        placeholder={getIntlContent(
+                          "SHENYU.SYSTEM.RESOURCE.MENU.INPUT.NAME",
+                        )}
+                      />
+                      <Button
+                        type="primary"
+                        theme="solid"
+                        htmlType="submit"
+                        icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      >
+                        {getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                      </Button>
+                    </form>
+                  )}
                 </AuthButton>
                 <AuthButton perms="system:resource:addMenu">
-                  <Button type="primary" onClick={() => this.addClick(1)}>
-                    {getIntlContent("SHENYU.BUTTON.RESOURCE.MENU.ADD")}
-                  </Button>
-                </AuthButton>
-              </div>
-            </div>
-            {menuTree && menuTree.length > 0 ? (
-              <Tree
-                className={styles.menuTree}
-                style={{ background: "white", marginTop: 30 }}
-                expandAll
-                blockNode
-                motion={false}
-                emptyContent={getIntlContent("SHENYU.SYSTEM.RESOURCE.NO_MATCH")}
-                value={this.state.currentMenu?.id}
-                onSelect={this.onSelectMenu}
-                treeData={this.treeData(menuTree)}
-                renderLabel={this.renderTreeLabel}
-              />
-            ) : null}
-          </Col>
-          <Col span={17}>
-            <h3>{getIntlContent("SHENYU.SYSTEM.RESOURCE.BUTTONLIST.TITLE")}</h3>
-            <div className="table-header">
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <AuthButton perms="system:resource:deleteButton">
-                  <Popconfirm
-                    title={getIntlContent("SHENYU.COMMON.DELETE")}
-                    placement="bottom"
-                    onConfirm={() => {
-                      this.deleteClick(2);
-                    }}
-                    okText={getIntlContent("SHENYU.COMMON.SURE")}
-                    cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-                  >
-                    <Button type="danger">
-                      {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
+                  {({ icon }) => (
+                    <Button
+                      type="primary"
+                      theme="solid"
+                      htmlType="button"
+                      icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      onClick={() => this.addClick(1)}
+                    >
+                      {getIntlContent("SHENYU.BUTTON.RESOURCE.MENU.ADD")}
                     </Button>
-                  </Popconfirm>
+                  )}
                 </AuthButton>
               </div>
-              <AuthButton perms="system:resource:addButton">
-                <Button onClick={() => this.addClick(2)} type="primary">
-                  {getIntlContent("SHENYU.BUTTON.RESOURCE.BUTTON.ADD")}
-                </Button>
-              </AuthButton>
-            </div>
-            <Table
-              style={{ marginTop: 30 }}
-              size="small"
-              bordered
-              rowKey="id"
-              loading={loading}
-              columns={buttonColumns}
-              dataSource={buttons}
-              rowSelection={rowSelection}
-              pagination={false}
-            />
-          </Col>
-        </Row>
-        {popup}
-      </div>
+              {menuTree && menuTree.length > 0 ? (
+                <Tree
+                  className={styles.menuTree}
+                  style={{
+                    background: "var(--semi-color-bg-2)",
+                    marginTop: 24,
+                  }}
+                  expandAll
+                  blockNode
+                  motion={false}
+                  emptyContent={getIntlContent(
+                    "SHENYU.SYSTEM.RESOURCE.NO_MATCH",
+                  )}
+                  value={this.state.currentMenu?.id}
+                  onSelect={this.onSelectMenu}
+                  treeData={this.treeData(menuTree)}
+                  renderLabel={this.renderTreeLabel}
+                />
+              ) : null}
+            </section>
+            <section className={styles.resourcePane}>
+              <h3>
+                {getIntlContent("SHENYU.SYSTEM.RESOURCE.BUTTONLIST.TITLE")}
+              </h3>
+              <div className={styles.buttonToolbar}>
+                <AuthButton perms="system:resource:deleteButton">
+                  {({ icon }) => (
+                    <Popconfirm
+                      title={getIntlContent("SHENYU.COMMON.DELETE")}
+                      position="bottom"
+                      motion={false}
+                      okType="danger"
+                      onConfirm={() => this.deleteClick(2)}
+                      okText={getIntlContent("SHENYU.COMMON.SURE")}
+                      cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                    >
+                      <Button
+                        type="danger"
+                        theme="solid"
+                        htmlType="button"
+                        icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      >
+                        {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
+                      </Button>
+                    </Popconfirm>
+                  )}
+                </AuthButton>
+                <AuthButton perms="system:resource:addButton">
+                  {({ icon }) => (
+                    <Button
+                      type="primary"
+                      theme="solid"
+                      htmlType="button"
+                      icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      onClick={() => this.addClick(2)}
+                    >
+                      {getIntlContent("SHENYU.BUTTON.RESOURCE.BUTTON.ADD")}
+                    </Button>
+                  )}
+                </AuthButton>
+              </div>
+              <Table
+                size="small"
+                scroll={{ x: 780 }}
+                bordered
+                rowKey="id"
+                loading={loading}
+                columns={buttonColumns}
+                dataSource={buttons}
+                rowSelection={rowSelection}
+                pagination={false}
+              />
+            </section>
+          </div>
+          {popup}
+        </div>
+      </LocaleProvider>
     );
   }
 }

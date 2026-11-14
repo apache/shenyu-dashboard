@@ -15,13 +15,44 @@
  * limitations under the License.
  */
 
-.headerSearch {
-  display: flex;
-  justify-content: space-between;
-  margin-left: 1px;
+.resourceLayout {
+  display: grid;
+  grid-template-columns: minmax(260px, 7fr) minmax(0, 17fr);
+  gap: 20px;
+}
 
-  .search {
-    margin-right: 10px;
+.resourcePane {
+  min-width: 0;
+}
+
+.headerSearch,
+.buttonToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.buttonToolbar {
+  margin-bottom: 24px;
+}
+
+.search {
+  display: flex;
+  flex: 1 1 220px;
+  gap: 8px;
+  min-width: 0;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .resourceLayout {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

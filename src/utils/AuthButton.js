@@ -58,6 +58,7 @@ export default class AuthButton extends Component {
     } = this.props;
     const authButton = checkButtonAuth(perms, permissions);
     if (authButton) {
+      if (typeof children === "function") return children(authButton);
       if (authButton.icon) {
         const type = children.type;
         if (type === Button) {
@@ -86,7 +87,7 @@ export default class AuthButton extends Component {
 AuthButton.propTypes = {
   perms: PropTypes.string.isRequired,
   noAuth: PropTypes.element,
-  children: PropTypes.element.isRequired,
+  children: PropTypes.oneOfType([PropTypes.element, PropTypes.func]).isRequired,
 };
 
 AuthButton.defaultProps = {
