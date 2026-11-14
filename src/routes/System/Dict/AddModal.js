@@ -16,9 +16,13 @@
  */
 
 import React, { Component } from "react";
-import { Modal, Form, Input, InputNumber, Switch } from "antd";
-
 import { connect } from "react-redux";
+import Modal from "../../../components/ui/Modal";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import InputNumber from "../../../components/ui/InputNumber";
+import Switch from "../../../components/ui/Switch";
+
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;

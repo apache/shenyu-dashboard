@@ -23,6 +23,7 @@ import React, {
   useReducer,
 } from "react";
 import get from "lodash/get";
+import has from "lodash/has";
 import set from "lodash/set";
 import isPlainObject from "lodash/isPlainObject";
 import { Form as SemiForm } from "@douyinfe/semi-ui/lib/es/form";
@@ -103,7 +104,7 @@ function mergeValues(current, patch) {
 
 function createOwner(notify) {
   const fields = new Map();
-  const owner = { api: null, active: true, notify, pending: {} };
+  const owner = { api: null, active: true, notify, pending: {}, fields };
   const values = () => (owner.api ? owner.api.getValues() : owner.pending);
   const validate = (scroll, ...args) => {
     const names = Array.isArray(args[0]) ? args[0] : undefined;
@@ -133,33 +134,68 @@ function createOwner(notify) {
   };
   owner.form = {
     getFieldDecorator: (field, options = {}) => {
-      fields.set(field, options);
-      return (control) => (
-        <Field
-          field={field}
-          initValue={options.initialValue}
-          rules={options.rules}
-          keepState={options.preserve}
-          valuePropName={options.valuePropName || "value"}
-          changeTrigger={options.trigger || "onChange"}
-          control={control}
-          noLabel
-        />
-      );
+      const entry = { ...options, bound: fields.get(field)?.bound || false };
+      fields.set(field, entry);
+      return (control) => {
+        entry.bound = true;
+        return (
+          <Field
+            field={field}
+            initValue={options.initialValue}
+            rules={options.rules}
+            keepState={options.preserve}
+            valuePropName={options.valuePropName || "value"}
+            changeTrigger={options.trigger || "onChange"}
+            control={control}
+            noLabel
+          />
+        );
+      };
     },
     validateFields: (...args) => validate(false, ...args),
     validateFieldsAndScroll: (...args) => validate(true, ...args),
     getFieldValue: (name) =>
-      owner.api ? owner.api.getValue(name) : fields.get(name)?.initialValue,
+      owner.api && has(owner.api.getValues(), name)
+        ? owner.api.getValue(name)
+        : !owner.api || !fields.get(name)?.bound
+          ? fields.get(name)?.initialValue
+          : undefined,
     getFieldsValue: (names) => subset(values(), names),
     setFieldsValue: (next) => {
       if (owner.api)
         owner.api.setValues(mergeValues(owner.api.getValues(), next));
       else owner.pending = mergeValues(owner.pending, next);
     },
-    resetFields: (names) => owner.api && owner.api.reset(names),
+    resetFields: (names) => {
+      if (owner.api) {
+        owner.api.reset(names);
+        if (owner.active) owner.notify();
+      }
+    },
   };
   return owner;
+}
+
+function VirtualControl() {
+  return null;
+}
+
+function VirtualFields({ owner }) {
+  return owner
+    ? [...owner.fields.entries()]
+        .filter(([, options]) => !options.bound)
+        .map(([field, options]) => (
+          <Field
+            key={field}
+            field={field}
+            initValue={options.initialValue}
+            rules={options.rules}
+            control={<VirtualControl />}
+            noLabel
+            fieldStyle={{ display: "none" }}
+          />
+        ))
+    : null;
 }
 
 function Form({
@@ -167,6 +203,7 @@ function Form({
   onSubmit,
   layout = "horizontal",
   onValueChange,
+  onSubmitCapture,
   ...props
 }) {
   const owner = useContext(FormOwner);
@@ -175,6 +212,10 @@ function Form({
       {...props}
       layout={layout === "inline" ? "horizontal" : "vertical"}
       labelPosition={layout === "vertical" ? "top" : "left"}
+      onSubmitCapture={(event) => {
+        event.persist();
+        if (onSubmitCapture) onSubmitCapture(event);
+      }}
       allowEmpty
       autoScrollToError
       getFormApi={(api) => {
@@ -193,6 +234,7 @@ function Form({
       }
     >
       {children}
+      <VirtualFields owner={owner} />
     </SemiForm>
   );
 }
