@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-import fetch from "dva/fetch";
+import fetch from "../utils/fetch";
 
-jest.mock("dva/fetch", () => jest.fn());
-jest.mock("../index", () => ({ dispatch: jest.fn() }));
-jest.mock("antd", () => ({ notification: { error: jest.fn() } }));
+jest.mock("../utils/fetch", () => jest.fn());
+jest.mock("../components/ui/feedback", () => ({
+  notification: { error: jest.fn() },
+}));
 jest.mock("../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
 
 let api;

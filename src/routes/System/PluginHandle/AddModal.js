@@ -16,17 +16,9 @@
  */
 
 import React, { Component } from "react";
-import {
-  Modal,
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  Tooltip,
-  Icon,
-  message,
-} from "antd";
-import { connect } from "dva";
+import { Modal, Form, Input, InputNumber, Select, Tooltip, Icon } from "antd";
+import { connect } from "react-redux";
+import { message } from "../../../components/ui/feedback";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Option } = Select;
