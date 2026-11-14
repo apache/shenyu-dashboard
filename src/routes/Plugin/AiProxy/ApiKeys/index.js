@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import {
   Button,
   Input,
@@ -28,9 +28,9 @@ import {
   Form,
   Typography,
   Popconfirm,
-  message,
   Alert,
 } from "antd";
+import { message } from "../../../../components/ui/feedback";
 import styles from "../../index.less";
 import { getIntlContent } from "../../../../utils/IntlUtils";
 import AuthButton from "../../../../utils/AuthButton";

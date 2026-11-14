@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { message } from "antd";
+import { message } from "../components/ui/feedback";
 import {
   getAllSelectors,
   getAllRules,
