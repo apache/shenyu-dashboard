@@ -16,7 +16,14 @@
  */
 
 import React, { Component } from "react";
-import { Modal, Form, Select, InputNumber, Input, Icon, Tooltip } from "antd";
+import Tooltip from "@douyinfe/semi-ui/lib/es/tooltip";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Modal from "../../../components/ui/Modal";
+import Form from "../../../components/ui/Form";
+import Select from "../../../components/ui/Select";
+import InputNumber from "../../../components/ui/InputNumber";
+import Input from "../../../components/ui/Input";
+import ResourceIcon from "./ResourceIcon";
 import IconModal from "./IconModal";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
@@ -26,9 +33,9 @@ const { Option } = Select;
 class AddModal extends Component {
   constructor(props) {
     super(props);
+    this.iconActions = React.createRef();
     this.state = {
       popup: "",
-      icon: undefined,
     };
   }
 
@@ -42,11 +49,18 @@ class AddModal extends Component {
     });
   };
 
-  closeModal = () => {
-    this.setState({ popup: "" });
+  focusIconChooser = () => {
+    this.iconActions.current
+      ?.querySelector('[data-icon-action="choose"]')
+      ?.focus();
   };
 
-  handleChooseIcon = () => {
+  closeModal = () => {
+    this.setState({ popup: "" }, this.focusIconChooser);
+  };
+
+  handleChooseIcon = (event) => {
+    event.stopPropagation();
     this.setState({
       popup: (
         <IconModal
@@ -55,10 +69,7 @@ class AddModal extends Component {
               form: { setFieldsValue },
             } = this.props;
             setFieldsValue({ icon });
-            this.setState({
-              icon,
-              popup: "",
-            });
+            this.closeModal();
           }}
           handleCancel={() => {
             this.closeModal();
@@ -101,7 +112,10 @@ class AddModal extends Component {
         okText={getIntlContent("SHENYU.COMMON.SURE")}
         cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onOk={this.handleSubmit}
-        onCancel={handleCancel}
+        onCancel={(event) => {
+          // Both modals receive Escape; retain the draft while the picker is open.
+          if (!popup && handleCancel) handleCancel(event);
+        }}
       >
         <Form onSubmit={this.handleSubmit} className="login-form">
           <FormItem
@@ -173,15 +187,18 @@ class AddModal extends Component {
                   )}
                   style={{ width: "100%" }}
                 >
-                  {menuTree.map((menu) => (
-                    <Option
-                      value={menu.id}
-                      disabled={menu.url === "/plug"}
-                      key={menu.id}
-                    >
-                      {(menu.title && getIntlContent(menu.title)) || menu.title}
-                    </Option>
-                  ))}
+                  {menuTree.map((menu) => {
+                    const menuTitle = menu.title || menu.meta?.title;
+                    return (
+                      <Option
+                        value={menu.id}
+                        disabled={menu.url === "/plug"}
+                        key={menu.id}
+                      >
+                        {(menuTitle && getIntlContent(menuTitle)) || menuTitle}
+                      </Option>
+                    );
+                  })}
                 </Select>,
               )}
             </FormItem>
@@ -272,18 +289,43 @@ class AddModal extends Component {
               initialValue: icon,
             })(
               <Input
-                allowClear
                 readOnly
                 placeholder={getIntlContent("SHENYU.SYSTEM.ICON.INPUT")}
-                prefix={
-                  (this.state.icon || icon) && (
-                    <Icon type={this.state.icon || icon} />
-                  )
-                }
+                prefix={<ResourceIcon type={form.getFieldValue("icon")} />}
                 suffix={
-                  <Tooltip title={getIntlContent("SHENYU.SYSTEM.ICON.INPUT")}>
-                    <Icon type="plus" onClick={this.handleChooseIcon} />
-                  </Tooltip>
+                  <span ref={this.iconActions}>
+                    {form.getFieldValue("icon") && (
+                      <Button
+                        htmlType="button"
+                        theme="borderless"
+                        type="tertiary"
+                        size="small"
+                        aria-label={getIntlContent("SHENYU.SYSTEM.ICON.CLEAR")}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          form.setFieldsValue({ icon: "" });
+                          this.focusIconChooser();
+                        }}
+                      >
+                        ×
+                      </Button>
+                    )}
+                    <Tooltip
+                      content={getIntlContent("SHENYU.SYSTEM.ICON.INPUT")}
+                    >
+                      <Button
+                        htmlType="button"
+                        theme="borderless"
+                        type="tertiary"
+                        size="small"
+                        aria-label={getIntlContent("SHENYU.SYSTEM.ICON.INPUT")}
+                        data-icon-action="choose"
+                        onClick={this.handleChooseIcon}
+                      >
+                        +
+                      </Button>
+                    </Tooltip>
+                  </span>
                 }
               />,
             )}

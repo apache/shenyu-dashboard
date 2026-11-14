@@ -17,7 +17,7 @@
 
 import React, { PureComponent } from "react";
 import { Button, Spin, Card } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import styles from "./style.less";
 

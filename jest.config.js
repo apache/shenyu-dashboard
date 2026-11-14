@@ -17,6 +17,7 @@
 
 module.exports = {
   testEnvironment: "jsdom",
+  setupFilesAfterEnv: ["<rootDir>/tests/setupBrowser.js"],
   testEnvironmentOptions: {
     url: "http://localhost/",
   },
@@ -41,6 +42,8 @@ module.exports = {
     "^components/(.*)$": "<rootDir>/src/components/$1",
     "\\.(css|less|sass|scss)$": "identity-obj-proxy",
     "\\.(gif|png|jpe?g|svg|woff2?|ttf|eot)$": "<rootDir>/tests/fileMock.js",
+    "^@douyinfe/semi-ui/lib/es/(.*)$":
+      "<rootDir>/node_modules/@douyinfe/semi-ui/lib/cjs/$1",
   },
   collectCoverageFrom: [
     "src/**/*.{js,jsx}",

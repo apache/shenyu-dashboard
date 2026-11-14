@@ -16,48 +16,51 @@
  */
 
 import React, { Component } from "react";
-import { Modal, Form, Input, Tree, Divider } from "antd";
+import Tree from "@douyinfe/semi-ui/lib/es/tree";
+import Divider from "@douyinfe/semi-ui/lib/es/divider";
+import Modal from "../../../components/ui/Modal";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { filterTree } from "../../../utils/utils";
 
 const FormItem = Form.Item;
-const { TreeNode } = Tree;
+function permissionTree(nodes, parentIds = []) {
+  return [...nodes]
+    .sort((left, right) => (left.sort || 0) - (right.sort || 0))
+    .map((node) => {
+      const ids = [...parentIds, node.id];
+      return {
+        ...node,
+        key: node.id,
+        ids,
+        label: node.title.startsWith("SHENYU.")
+          ? getIntlContent(node.title)
+          : node.title,
+        children: node.children
+          ? permissionTree(node.children, ids)
+          : undefined,
+      };
+    });
+}
+
+function initialGrants(props) {
+  const granted = new Set(
+    Array.isArray(props.rolePermissionList) ? props.rolePermissionList : [],
+  );
+  const keys = [];
+  (props.allPermissionInfo.treeList || []).forEach((root) =>
+    filterTree(root, (node) => {
+      if (node.isLeaf && granted.has(node.id)) keys.push(node.id);
+    }),
+  );
+  return keys;
+}
 
 class AddModal extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      expandedKeys: [],
-      autoExpandParent: true,
-      checkedKeys: [],
-      selectedKeys: [],
-      searchValue: "",
-    };
-  }
-
-  componentDidMount() {
-    let {
-      allPermissionInfo: { treeList = [] },
-      rolePermissionList = [],
-    } = this.props;
-    if (treeList && treeList.length > 0) {
-      let checkedKeys = [];
-      if (rolePermissionList && rolePermissionList.length > 0) {
-        treeList.forEach((treeNode) =>
-          filterTree(treeNode, (node) => {
-            rolePermissionList.forEach((key) => {
-              if (node.id === key && node.isLeaf) {
-                checkedKeys.push(key);
-              }
-            });
-          }),
-        );
-      }
-      this.setState({
-        expandedKeys: treeList.map((e) => e.id),
-        checkedKeys,
-      });
-    }
+    this.state = { checkedKeys: initialGrants(props) };
   }
 
   handleSubmit = (e) => {
@@ -73,7 +76,7 @@ class AddModal extends Component {
       if (!err) {
         let currentPermissionIds = [...checkedKeys];
         if (checkedKeys && checkedKeys.length > 0) {
-          treeList.forEach((treeNode) =>
+          permissionTree(treeList).forEach((treeNode) =>
             filterTree(treeNode, (node) => {
               checkedKeys.forEach((key) => {
                 if (node.ids[node.ids.length - 1] === key) {
@@ -90,96 +93,43 @@ class AddModal extends Component {
     });
   };
 
-  onCheck = (checkedKeys) => {
-    this.setState({ checkedKeys });
-  };
-
-  onSearch = (e) => {
-    const { value } = e.target;
-    this.setState({
-      searchValue: value,
+  renderResourceTree = (treeList) =>
+    permissionTree(treeList).map((root) => {
+      const rootKeys = new Set();
+      filterTree(root, (node) => rootKeys.add(node.key));
+      return (
+        <Tree
+          key={root.key}
+          aria-label={root.label}
+          treeData={[root]}
+          multiple
+          checkRelation="related"
+          autoMergeValue
+          leafOnly
+          value={this.state.checkedKeys.filter((key) => rootKeys.has(key))}
+          onChange={(keys) =>
+            this.setState(({ checkedKeys }) => ({
+              checkedKeys: [
+                ...checkedKeys.filter((key) => !rootKeys.has(key)),
+                ...keys,
+              ],
+            }))
+          }
+          defaultExpandedKeys={[root.key]}
+          autoExpandParent
+          motion={false}
+          filterTreeNode={
+            root.name === "plug"
+              ? (input, label, node) =>
+                  node.ids.length === 2 && node.name.includes(input)
+              : false
+          }
+          searchPlaceholder="Filter by plugin name"
+          showFilteredOnly
+          style={{ width: "100%" }}
+        />
+      );
     });
-  };
-
-  renderTreeNodes = (parentItem, data) => {
-    const { searchValue } = this.state;
-    data = data.sort((a, b) => (a.sort || 0) - (b.sort || 0));
-    return data.map((item) => {
-      if (!item.ids) {
-        if (parentItem) {
-          item.ids = parentItem.ids.concat(item.id);
-        } else {
-          item.ids = [item.id];
-        }
-      }
-      item.displayName = item.title;
-      if (item.title.startsWith("SHENYU.")) {
-        item.displayName = getIntlContent(item.title);
-      }
-      if (parentItem && parentItem.name === "plug" && searchValue) {
-        const nodeStyle = {};
-        if (item.name.indexOf(searchValue) === -1) {
-          nodeStyle.display = "none";
-        }
-        return (
-          <TreeNode
-            style={nodeStyle}
-            title={item.displayName}
-            key={item.id}
-            dataRef={item}
-          >
-            {this.renderTreeNodes(item, item.children)}
-          </TreeNode>
-        );
-      }
-      if (item.children) {
-        return (
-          <TreeNode
-            title={
-              item.name === "plug" ? (
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <div>{item.displayName}</div>
-                  <Input
-                    style={{ marginLeft: 8 }}
-                    placeholder="Filter by plugin name"
-                    allowClear
-                    onChange={this.onSearch}
-                  />
-                </div>
-              ) : (
-                item.displayName
-              )
-            }
-            key={item.id}
-            dataRef={item}
-          >
-            {this.renderTreeNodes(item, item.children)}
-          </TreeNode>
-        );
-      }
-      return <TreeNode title={item.displayName} key={item.id} dataRef={item} />;
-    });
-  };
-
-  renderResourceTree = (treeList) => {
-    return (
-      <Tree
-        checkable
-        defaultExpandedKeys={this.state.expandedKeys}
-        autoExpandParent={this.state.autoExpandParent}
-        onCheck={this.onCheck}
-        checkedKeys={this.state.checkedKeys}
-        selectedKeys={this.state.selectedKeys}
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          width: "100%",
-        }}
-      >
-        {this.renderTreeNodes(null, treeList)}
-      </Tree>
-    );
-  };
 
   render() {
     let {
@@ -255,7 +205,14 @@ class AddModal extends Component {
         {treeList && treeList.length > 0 && (
           <>
             <Divider>{getIntlContent("SHENYU.SYSTEM.ROLE.CONFIG")}</Divider>
-            <div style={{ display: "flex", justifyContent: "space-around" }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                gap: 16,
+                width: "100%",
+              }}
+            >
               {this.renderResourceTree(treeList)}
             </div>
           </>

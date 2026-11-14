@@ -16,26 +16,24 @@
  */
 
 import React, { Component } from "react";
-import {
-  Button,
-  Col,
-  Icon,
-  Input,
-  message,
-  Popconfirm,
-  Row,
-  Table,
-  Tree,
-} from "antd";
-import { connect } from "dva";
+import { Button, Col, Input, Popconfirm, Row, Table } from "antd";
+import Tree from "@douyinfe/semi-ui/lib/es/tree";
+import TreeButton from "@douyinfe/semi-ui/lib/es/button";
+import { connect } from "react-redux";
+import { message } from "../../../components/ui/feedback";
 import AddModal from "./AddModal";
+import ResourceIcon from "./ResourceIcon";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { resetAuthMenuCache } from "../../../utils/AuthRoute";
 import styles from "./index.less";
 
-const { TreeNode } = Tree;
 const { Search } = Input;
+
+function resourceTitle(item) {
+  const title = item.meta?.title || item.title || "";
+  return title.startsWith("SHENYU.") ? getIntlContent(title) || title : title;
+}
 
 @connect(({ resource, role, global, loading }) => ({
   resource,
@@ -46,6 +44,8 @@ const { Search } = Input;
 export default class Resource extends Component {
   constructor(props) {
     super(props);
+    this.buttonRequest = 0;
+    this.unmounted = false;
     this.state = {
       selectedRowKeys: [],
       popup: "",
@@ -57,6 +57,10 @@ export default class Resource extends Component {
 
   componentDidMount() {
     this.getMenuTree();
+  }
+
+  componentWillUnmount() {
+    this.unmounted = true;
   }
 
   onSelectChange = (selectedRowKeys) => {
@@ -71,11 +75,20 @@ export default class Resource extends Component {
   };
 
   getButtons = (menuId) => {
+    if (this.unmounted || this.state.currentMenu?.id !== menuId) return;
+    this.buttonRequest += 1;
+    const request = this.buttonRequest;
     const { dispatch } = this.props;
     dispatch({
       type: "resource/fetchButtons",
       payload: { id: menuId },
       callback: (buttons) => {
+        if (
+          this.unmounted ||
+          request !== this.buttonRequest ||
+          this.state.currentMenu?.id !== menuId
+        )
+          return;
         this.setState({
           buttons,
         });
@@ -152,13 +165,31 @@ export default class Resource extends Component {
       },
       callback: () => {
         if (resourceType === 2) {
-          this.getButtons(currentMenu.id);
-          this.setState({ selectedRowKeys: [] });
+          const removed = new Set(selectedRowKeys);
+          this.setState(
+            (state) => {
+              if (state.currentMenu?.id !== currentMenu.id) return null;
+              return {
+                buttons: state.buttons.filter(
+                  (button) => !removed.has(button.id),
+                ),
+                selectedRowKeys: state.selectedRowKeys.filter(
+                  (key) => !removed.has(key),
+                ),
+              };
+            },
+            () => this.getButtons(currentMenu.id),
+          );
         } else {
           this.getMenuTree();
-          this.setState({
-            buttons: [],
-          });
+          if (this.state.currentMenu?.id === resourceId) {
+            this.buttonRequest += 1;
+            this.setState({
+              buttons: [],
+              selectedRowKeys: [],
+              currentMenu: null,
+            });
+          }
         }
       },
     });
@@ -232,174 +263,99 @@ export default class Resource extends Component {
     });
   };
 
-  onSelectMenu = (selectedKeys, e) => {
-    const currentMenu = e.node.props.dataRef;
-    if (currentMenu.children && currentMenu.children.length > 0) {
-      this.setState({
-        currentMenu,
-        buttons: [],
-      });
-    } else {
-      this.getButtons(currentMenu.id);
-      this.setState({
-        currentMenu,
-      });
-    }
+  onSelectMenu = (key, selected, node) => {
+    const currentMenu = node.dataRef;
+    this.buttonRequest += 1;
+    this.setState({ currentMenu, buttons: [], selectedRowKeys: [] }, () => {
+      if (!currentMenu.children?.length) this.getButtons(currentMenu.id);
+    });
   };
 
   filterTreeNode = (item) => {
     const { menuName } = this.state;
-    let title = item.title || item.meta.title;
-    if (title.startsWith("SHENYU.")) {
-      title = getIntlContent(item.meta.title);
-    }
-    if (title?.toUpperCase().includes(menuName?.toUpperCase())) {
-      return true;
-    }
-    return item.children?.some(this.filterTreeNode);
+    return (
+      resourceTitle(item).toUpperCase().includes(menuName.toUpperCase()) ||
+      item.children?.some(this.filterTreeNode)
+    );
   };
 
-  renderTreeNodes = (data) => {
-    data = data.sort((a, b) => (a.sort || 0) - (b.sort || 0));
-    return data.filter(this.filterTreeNode).map((item) => {
-      const { currentMenu } = this.state;
-      item.title = item.meta.title;
-      if (item.title.startsWith("SHENYU.")) {
-        item.title = getIntlContent(item.title);
-      }
-      if (item.children && item.children.length > 0) {
-        if (currentMenu && item.id === currentMenu.id) {
-          return (
-            <TreeNode
-              title={
-                <div
-                  style={{
-                    width: "200px",
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span>
-                    {item.meta.icon && (
-                      <span
-                        style={{
-                          width: "24px",
-                          height: "24px",
-                          lineHeight: "24px",
-                          margin: "0 5px",
-                        }}
-                      >
-                        <Icon type={item.meta.icon} />
-                      </span>
-                    )}
-                    {item.title}
-                  </span>
-                  <span>
-                    <Icon
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        this.editClick(item);
-                      }}
-                      type="edit"
-                    />
-                  </span>
-                </div>
-              }
-              key={item.id}
-              dataRef={item}
-            >
-              {this.renderTreeNodes(item.children)}
-            </TreeNode>
-          );
-        } else {
-          return (
-            <TreeNode
-              title={item.title}
-              icon={item.meta.icon && <Icon type={item.meta.icon} />}
-              key={item.id}
-              dataRef={item}
-            >
-              {this.renderTreeNodes(item.children)}
-            </TreeNode>
-          );
-        }
-      }
-      if (!currentMenu || item.id !== currentMenu.id) {
-        return (
-          <TreeNode
-            icon={item.meta.icon && <Icon type={item.meta.icon} />}
-            title={item.title}
-            key={item.id}
-            dataRef={item}
-          />
-        );
-      } else {
-        return (
-          <TreeNode
-            title={
-              <div
-                style={{
-                  width: "200px",
-                  display: "flex",
-                  justifyContent: "space-between",
+  treeData = (data) =>
+    [...data]
+      .sort((left, right) => (left.sort || 0) - (right.sort || 0))
+      .filter(this.filterTreeNode)
+      .map((item) => ({
+        key: item.id,
+        label: resourceTitle(item),
+        icon: item.meta?.icon && <ResourceIcon type={item.meta.icon} />,
+        dataRef: item,
+        children: item.children?.length
+          ? this.treeData(item.children)
+          : undefined,
+      }));
+
+  renderTreeLabel = (label, node) => {
+    const item = node.dataRef;
+    const selected = this.state.currentMenu?.id === item.id;
+    return (
+      <span className={styles.menuLabel}>
+        <button
+          type="button"
+          className={styles.menuTitle}
+          title={label}
+          onKeyDown={(event) => event.stopPropagation()}
+          onKeyPress={(event) => event.stopPropagation()}
+        >
+          {label}
+        </button>
+        {selected && (
+          <span className={styles.menuActions}>
+            <AuthButton perms="system:resource:editMenu">
+              <TreeButton
+                theme="borderless"
+                type="tertiary"
+                htmlType="button"
+                aria-label={getIntlContent("SHENYU.BUTTON.RESOURCE.MENU.EDIT")}
+                icon={<ResourceIcon type="edit" />}
+                onKeyDown={(event) => event.stopPropagation()}
+                onKeyPress={(event) => event.stopPropagation()}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  this.editClick(item);
                 }}
-              >
-                <span>
-                  {item.meta.icon && (
-                    <span
-                      style={{
-                        width: "24px",
-                        height: "24px",
-                        lineHeight: "24px",
-                        margin: "0 5px",
-                      }}
-                    >
-                      <Icon type={item.meta.icon} />
-                    </span>
-                  )}
-                  {item.title}
-                </span>
-                <span>
-                  <AuthButton perms="system:resource:editMenu">
-                    <Icon
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        this.editClick(item);
-                      }}
-                      type="edit"
-                    />
-                  </AuthButton>
-                  {!item.url.startsWith("/plug/") && (
-                    <AuthButton perms="system:resource:editMenu">
-                      <Popconfirm
-                        title={getIntlContent("SHENYU.COMMON.DELETE")}
-                        placement="bottom"
-                        onConfirm={(e) => {
-                          e.stopPropagation();
-                          this.deleteClick(item.resourceType, item.id);
-                        }}
-                        okText={getIntlContent("SHENYU.COMMON.SURE")}
-                        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-                      >
-                        <Icon
-                          style={{ marginLeft: 10 }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                          }}
-                          type="delete"
-                        />
-                      </Popconfirm>
-                    </AuthButton>
-                  )}
-                </span>
-              </div>
-            }
-            key={item.id}
-            dataRef={item}
-          />
-        );
-      }
-    });
+              />
+            </AuthButton>
+            {!item.children?.length && !item.url.startsWith("/plug/") && (
+              <AuthButton perms="system:resource:editMenu">
+                <Popconfirm
+                  title={getIntlContent("SHENYU.COMMON.DELETE")}
+                  placement="bottom"
+                  onConfirm={(event) => {
+                    event.stopPropagation();
+                    this.deleteClick(item.resourceType, item.id);
+                  }}
+                  onCancel={(event) => event.stopPropagation()}
+                  okText={getIntlContent("SHENYU.COMMON.SURE")}
+                  cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                >
+                  <TreeButton
+                    theme="borderless"
+                    type="tertiary"
+                    htmlType="button"
+                    aria-label={getIntlContent(
+                      "SHENYU.BUTTON.RESOURCE.MENU.DELETE",
+                    )}
+                    icon={<ResourceIcon type="delete" />}
+                    onKeyDown={(event) => event.stopPropagation()}
+                    onKeyPress={(event) => event.stopPropagation()}
+                    onClick={(event) => event.stopPropagation()}
+                  />
+                </Popconfirm>
+              </AuthButton>
+            )}
+          </span>
+        )}
+      </span>
+    );
   };
 
   render() {
@@ -427,7 +383,7 @@ export default class Resource extends Component {
         key: "icon",
         width: 60,
         render: (text) => {
-          return <Icon type={text} /> || text;
+          return <ResourceIcon type={text} />;
         },
       },
       {
@@ -513,13 +469,17 @@ export default class Resource extends Component {
             </div>
             {menuTree && menuTree.length > 0 ? (
               <Tree
+                className={styles.menuTree}
                 style={{ background: "white", marginTop: 30 }}
-                defaultExpandAll
+                expandAll
+                blockNode
+                motion={false}
+                emptyContent={getIntlContent("SHENYU.SYSTEM.RESOURCE.NO_MATCH")}
+                value={this.state.currentMenu?.id}
                 onSelect={this.onSelectMenu}
-                showIcon
-              >
-                {this.renderTreeNodes(menuTree)}
-              </Tree>
+                treeData={this.treeData(menuTree)}
+                renderLabel={this.renderTreeLabel}
+              />
             ) : null}
           </Col>
           <Col span={17}>
