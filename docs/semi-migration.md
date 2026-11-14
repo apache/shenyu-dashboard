@@ -55,7 +55,8 @@ before proposing wider migration.
 
 The metadata-table implementation and validation are described in
 [stage 2a](semi-metadata-table.md). The MCP tool editor is described in
-[stage 2b](semi-mcp-tools.md); keep subsequent transfer/runtime work in separate PRs.
+[stage 2b](semi-mcp-tools.md), and AppAuth resource transfer in
+[stage 2c](semi-appauth-transfer.md). Keep runtime modernization in separate PRs.
 
 Migrate the metadata table with controlled server pagination, cross-page selection,
 resizable headers and permission buttons. Exercise the MCP Tools nested form and
