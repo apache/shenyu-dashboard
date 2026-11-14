@@ -37,9 +37,10 @@ Tiptap 3 dependencies whose React peers require 17+, while this application's
 Dva 2.4.1 supports React 15/16. Do not use `--force` or `--legacy-peer-deps` to hide that
 constraint. Re-evaluate the exact Semi version with the modern React stage.
 
-Load the editor as a separate `metadata-modal` JavaScript chunk. The existing
-Webpack 3 build disables native dynamic imports globally, so this one loader uses
-`require.ensure`; replace it with native `import()` during the build migration.
+Load the editor as a separate `metadata-modal` JavaScript chunk. The initial pilot
+used `require.ensure` because the existing Webpack 3 build disabled native dynamic
+imports globally. [Stage 3a](native-import-migration.md) removes that restriction
+and uses standard `import()` for routes and editors.
 Loading stays cancellable and failed chunk downloads offer a localized retry.
 Keep Semi Form's `allowEmpty` enabled to preserve empty strings in API payloads.
 Disable RPC Select motion so a quick confirmation commits the newly selected
@@ -65,6 +66,10 @@ against a disposable Admin environment; unit mocks alone do not establish API
 integration or permission equivalence.
 
 ## Stage 3: runtime and build modernization
+
+[Stage 3a](native-import-migration.md) enables standard asynchronous imports and
+route load recovery in the current runtime before replacing its framework/build
+integration. Its asset tradeoff is recorded separately.
 
 Replace the legacy Dva renderer/router integration and incompatible React peers,
 then move through React 18.3 to React 19. Preserve reusable model/reducer/effect logic

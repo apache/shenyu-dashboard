@@ -16,10 +16,11 @@
  */
 
 import React, { createElement } from "react";
-import { Spin } from "antd";
+import { Button, Spin } from "antd";
 import pathToRegexp from "path-to-regexp";
 import Loadable from "react-loadable";
 import { getMenuData } from "./menu";
+import { getIntlContent } from "../utils/IntlUtils";
 
 let routerDataCache;
 
@@ -29,8 +30,29 @@ const modelNotExisted = (app, model) =>
     return namespace === model.substring(model.lastIndexOf("/") + 1);
   });
 
-// wrapper of dynamic
-const dynamicWrapper = (app, models, component) => {
+function RouteLoading({ error, retry }) {
+  if (error) {
+    return (
+      <div role="alert">
+        <p>{getIntlContent("SHENYU.COMMON.PAGE.LOAD.FAILED")}</p>
+        <Button onClick={retry}>
+          {getIntlContent("SHENYU.COMMON.PAGE.RETRY")}
+        </Button>
+      </div>
+    );
+  }
+  return (
+    <div
+      role="status"
+      aria-label={getIntlContent("SHENYU.COMMON.PAGE.LOADING")}
+    >
+      <Spin size="large" className="global-spin" />
+    </div>
+  );
+}
+
+// Register models before asynchronously loading a route.
+export const dynamicWrapper = (app, models, component) => {
   // register models
   models.forEach((model) => {
     if (modelNotExisted(app, model)) {
@@ -39,20 +61,6 @@ const dynamicWrapper = (app, models, component) => {
     }
   });
 
-  // () => require('module')
-  // transformed by babel-plugin-dynamic-import-node-sync
-  if (component.toString().indexOf(".then(") < 0) {
-    return (props) => {
-      if (!routerDataCache) {
-        routerDataCache = getRouterData(app);
-      }
-      return createElement(component().default, {
-        ...props,
-        routerData: routerDataCache,
-      });
-    };
-  }
-  // () => import('module')
   return Loadable({
     loader: () => {
       if (!routerDataCache) {
@@ -67,9 +75,7 @@ const dynamicWrapper = (app, models, component) => {
           });
       });
     },
-    loading: () => {
-      return <Spin size="large" className="global-spin" />;
-    },
+    loading: RouteLoading,
   });
 };
 

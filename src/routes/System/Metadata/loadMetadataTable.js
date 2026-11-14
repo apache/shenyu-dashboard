@@ -15,14 +15,6 @@
  * limitations under the License.
  */
 
-// shortcut: use Webpack 3 chunk loading until the native dynamic-import build migration.
 export default function loadMetadataTable() {
-  return new Promise((resolve, reject) => {
-    require.ensure(
-      [],
-      (require) => resolve(require("./MetadataTable")),
-      reject,
-      "metadata-table",
-    );
-  });
+  return import(/* webpackChunkName: "metadata-table" */ "./MetadataTable");
 }

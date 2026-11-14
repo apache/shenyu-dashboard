@@ -15,14 +15,6 @@
  * limitations under the License.
  */
 
-// shortcut: use Webpack 3 chunk loading until the native dynamic-import build migration.
 export default function loadRelateMetadata() {
-  return new Promise((resolve, reject) => {
-    require.ensure(
-      [],
-      (require) => resolve(require("./RelateMetadata")),
-      reject,
-      "appauth-resources",
-    );
-  });
+  return import(/* webpackChunkName: "appauth-resources" */ "./RelateMetadata");
 }
