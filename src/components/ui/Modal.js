@@ -20,6 +20,7 @@ import SemiModal from "@douyinfe/semi-ui/lib/es/modal";
 
 export default function Modal({
   style,
+  bodyStyle,
   onOk,
   onCancel,
   okText,
@@ -32,6 +33,11 @@ export default function Modal({
     <SemiModal
       {...props}
       style={{ maxWidth: "calc(100vw - 32px)", minWidth: 0, ...style }}
+      bodyStyle={{
+        maxHeight: "calc(100vh - 200px)",
+        overflowY: "auto",
+        ...bodyStyle,
+      }}
       okText={okText}
       cancelText={cancelText}
       okButtonProps={{ "aria-label": okText, ...okButtonProps }}

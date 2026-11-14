@@ -18,10 +18,11 @@
 import React from "react";
 import SemiSelect from "@douyinfe/semi-ui/lib/es/select";
 
-function Select({ mode, allowClear, showSearch, ...props }) {
+function Select({ mode, allowClear, showSearch, style, ...props }) {
   return (
     <SemiSelect
       {...props}
+      style={{ width: "100%", ...style }}
       multiple={mode === "multiple" || mode === "tags"}
       allowCreate={mode === "tags"}
       showClear={allowClear}

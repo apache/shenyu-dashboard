@@ -29,6 +29,7 @@ import isPlainObject from "lodash/isPlainObject";
 import { Form as SemiForm } from "@douyinfe/semi-ui/lib/es/form";
 import withField from "@douyinfe/semi-ui/lib/es/form/hoc/withField";
 import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import styles from "./Form.module.less";
 
 const FormOwner = createContext(null);
 
@@ -246,6 +247,9 @@ function Item({ children, label, style, help, validateStatus, ...props }) {
       label,
       noLabel: !label,
       fieldStyle: style,
+      fieldClassName: [styles.responsiveField, props.fieldClassName]
+        .filter(Boolean)
+        .join(" "),
       helpText: help,
       validateStatus,
     });
