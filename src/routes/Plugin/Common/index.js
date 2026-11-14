@@ -20,7 +20,6 @@ import {
   Button,
   Col,
   Input,
-  message,
   Popconfirm,
   Row,
   Switch,
@@ -28,7 +27,8 @@ import {
   Tag,
   Typography,
 } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
+import { message } from "../../../components/ui/feedback";
 import styles from "../index.less";
 import Selector from "./Selector";
 import Rule from "./Rule";

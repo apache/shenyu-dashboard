@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-import React, { Component, forwardRef, Fragment } from "react";
-import {
-  Modal,
-  Form,
-  Switch,
-  Input,
-  Select,
-  Divider,
-  InputNumber,
-  Button,
-} from "antd";
-import { connect } from "dva";
+import React, {
+  Component,
+  forwardRef,
+  Fragment,
+  useRef,
+  useImperativeHandle,
+} from "react";
+import Divider from "@douyinfe/semi-ui/lib/es/divider";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import { connect } from "react-redux";
+import Modal from "../../../components/ui/Modal";
+import Form from "../../../components/ui/Form";
+import Switch from "../../../components/ui/Switch";
+import Input from "../../../components/ui/Input";
+import Select from "../../../components/ui/Select";
+import InputNumber from "../../../components/ui/InputNumber";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import {
   getConfigFieldValue,
@@ -36,7 +40,9 @@ import { checkRulePattern } from "../../../utils/regExpRule";
 
 const { Option } = Select;
 const FormItem = Form.Item;
-const ChooseFile = forwardRef(({ onChange, file }, ref) => {
+const ChooseFile = forwardRef(({ onChange, file, id }, ref) => {
+  const inputRef = useRef(null);
+  useImperativeHandle(ref, () => inputRef.current);
   const handleFileInput = (e) => {
     onChange(e.target.files[0]);
   };
@@ -45,18 +51,19 @@ const ChooseFile = forwardRef(({ onChange, file }, ref) => {
     <>
       <Button
         onClick={() => {
-          document.getElementById("file").click();
+          inputRef.current.click();
         }}
       >
         Upload
       </Button>{" "}
       {file?.name}
       <input
-        ref={ref}
+        ref={inputRef}
         type="file"
         onChange={handleFileInput}
         style={{ display: "none" }}
-        id="file"
+        id={id}
+        aria-label={getIntlContent("SHENYU.MENU.PLUGIN.JAR")}
       />
     </>
   );

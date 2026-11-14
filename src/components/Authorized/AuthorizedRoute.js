@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Route, Redirect } from "react-router-dom";
+import { Route, Redirect } from "../../runtime/router";
 import Authorized from "./Authorized";
 
 class AuthorizedRoute extends React.Component {

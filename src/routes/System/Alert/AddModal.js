@@ -16,7 +16,14 @@
  */
 
 import React, { Component } from "react";
-import { Modal, Form, Select, Input, Switch, Row, Col, Button } from "antd";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Modal from "../../../components/ui/Modal";
+import Form from "../../../components/ui/Form";
+import Select from "../../../components/ui/Select";
+import Input from "../../../components/ui/Input";
+import Switch from "../../../components/ui/Switch";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { Type } from "./globalData";
 
@@ -259,8 +266,7 @@ class AddModal extends Component {
                 {labelList.map((label) => (
                   <Row
                     key={label.key}
-                    type="flex"
-                    style={{ flexFlow: "initial" }}
+                    style={{ display: "flex", flexFlow: "initial" }}
                   >
                     <Col>
                       <Input
@@ -308,8 +314,10 @@ class AddModal extends Component {
                         whiteSpace: "nowrap",
                       }}
                     >
-                      <div
-                        className="edit"
+                      <Button
+                        type="tertiary"
+                        theme="borderless"
+                        htmlType="button"
                         onClick={() => {
                           const index = labelList.findIndex(
                             (l) => l.key === label.key,
@@ -328,10 +336,12 @@ class AddModal extends Component {
                         }}
                       >
                         {getIntlContent("SHENYU.SYSTEM.ALERT.LABELS.ADD")}
-                      </div>
+                      </Button>
                       {labelList.length !== 1 && (
-                        <span
-                          className="edit"
+                        <Button
+                          type="tertiary"
+                          theme="borderless"
+                          htmlType="button"
                           style={{ marginLeft: 10 }}
                           onClick={() => {
                             const index = labelList.findIndex(
@@ -347,7 +357,7 @@ class AddModal extends Component {
                           }}
                         >
                           {getIntlContent("SHENYU.SYSTEM.ALERT.LABELS.DELETE")}
-                        </span>
+                        </Button>
                       )}
                     </Col>
                   </Row>

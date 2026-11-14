@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { message } from "antd";
+import { message } from "../components/ui/feedback";
 import {
   getAllMetadata,
   findMetadata,
@@ -36,9 +36,15 @@ export default {
   },
 
   effects: {
-    *fetch(params, { call, put }) {
+    *fetch(params, { call, put, select }) {
       const { payload } = params;
       const json = yield call(getAllMetadata, payload);
+      const namespaceId = yield select(
+        ({ global }) => global.currentNamespaceId,
+      );
+      if (namespaceId !== payload.namespaceId) {
+        return;
+      }
       if (json.code === 200) {
         let { page, dataList } = json.data;
 
