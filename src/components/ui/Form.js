@@ -272,7 +272,11 @@ Form.create = () => (Component) => {
   function WithForm(props) {
     const [, notify] = useReducer((value) => value + 1, 0);
     const identity =
-      props.id || props.detail?.id || props.namespaceId || "create";
+      props.id ||
+      props.detail?.id ||
+      props.sysRole?.id ||
+      props.namespaceId ||
+      "create";
     const owner = useMemo(() => createOwner(notify), [identity]);
     useLayoutEffect(() => {
       owner.active = true;
