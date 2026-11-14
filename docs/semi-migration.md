@@ -78,6 +78,8 @@ with explicit loaders and excludes test modules from the production graph.
 and makes session-expiry dispatch an explicit startup dependency.
 [Admin asset compatibility](admin-async-assets.md) places async bundles under
 Admin's existing anonymous static-resource path, verified with real H2 Admin.
+The [runtime core bridge](runtime-core-bridge.md) replaces the old Dva renderer
+and router bindings while retaining React16 until AntD peer constraints are removed.
 
 Replace the legacy Dva renderer/router integration and incompatible React peers,
 then move through React 18.3 to React 19. Preserve reusable model/reducer/effect logic

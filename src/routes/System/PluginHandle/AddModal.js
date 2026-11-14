@@ -26,7 +26,7 @@ import {
   Icon,
   message,
 } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Option } = Select;

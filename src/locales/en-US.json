@@ -1,4 +1,5 @@
 {
+  "SHENYU.LOGIN.REFRESH.CAPTCHA": "Refresh verification code",
   "SHENYU.GLOBALHEADER.LOGOUT": "Logout",
   "SHENYU.GLOBALHEADER.NOTNULL": "not null",
   "SHENYU.GLOBALHEADER.CHANGE.PASSWORD": "Change Password",

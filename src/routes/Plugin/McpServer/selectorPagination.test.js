@@ -17,7 +17,7 @@
 
 import ConnectedMcpServer from "./index";
 
-jest.mock("react-json-view", () => () => null);
+jest.mock("@microlink/react-json-view", () => () => null);
 jest.mock("../Common/Selector", () => () => null);
 jest.mock("./ToolsModalLoader", () => () => null);
 jest.mock("./JsonEditModal", () => () => null);

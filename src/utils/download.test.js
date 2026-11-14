@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import fetch from "dva/fetch";
 import { notification } from "antd";
+import fetch from "./fetch";
 import { handleUnauthorized } from "./request";
 import download from "./download";
 
-jest.mock("dva/fetch", () => jest.fn());
+jest.mock("./fetch", () => jest.fn());
 jest.mock("antd", () => ({ notification: { error: jest.fn() } }));
 jest.mock("./request", () => ({ handleUnauthorized: jest.fn() }));
 jest.mock("./IntlUtils", () => ({ getIntlContent: (key) => key }));

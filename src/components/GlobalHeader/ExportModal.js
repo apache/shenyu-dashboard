@@ -17,7 +17,7 @@
 
 import React, { Component, forwardRef } from "react";
 import { Modal, Form, Button, Dropdown, Menu, Icon } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import { getIntlContent } from "../../utils/IntlUtils";
 import { defaultNamespaceId } from "../_utils/utils";
 

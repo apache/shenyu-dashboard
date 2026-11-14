@@ -17,7 +17,7 @@
 
 import React, { Component } from "react";
 import { Input, Button, message, Popconfirm, Tag, Popover, Switch } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import MetadataTable from "./MetadataTableLoader";
 import AddModal from "./AddModalLoader";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";

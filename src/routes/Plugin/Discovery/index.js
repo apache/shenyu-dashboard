@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import {
   Button,
   Input,

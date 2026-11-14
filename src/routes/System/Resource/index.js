@@ -27,7 +27,7 @@ import {
   Table,
   Tree,
 } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import AddModal from "./AddModal";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";

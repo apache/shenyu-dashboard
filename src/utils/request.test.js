@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import fetch from "dva/fetch";
 import { notification } from "antd";
+import fetch from "./fetch";
 import request, { setRequestDispatch } from "./request";
 
-jest.mock("dva/fetch", () => jest.fn());
+jest.mock("./fetch", () => jest.fn());
 jest.mock("antd", () => ({ notification: { error: jest.fn() } }));
 jest.mock("../index", () => {
   throw new Error("The request utility must not initialize the application");

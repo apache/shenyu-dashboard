@@ -19,7 +19,7 @@ import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import AddModal from "./AddModal";
 
-jest.mock("dva", () => ({ connect: () => (Component) => Component }));
+jest.mock("react-redux", () => ({ connect: () => (Component) => Component }));
 jest.mock("../../../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
 
 const requiredFields = [

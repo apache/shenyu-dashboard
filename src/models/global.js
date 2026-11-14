@@ -16,7 +16,7 @@
  */
 
 import { message } from "antd";
-import { routerRedux } from "dva/router";
+import { routerRedux } from "../runtime/router";
 import {
   queryPlatform,
   getPluginsByNamespace,
@@ -252,7 +252,7 @@ export default {
   subscriptions: {
     setup({ history }) {
       // Subscribe history(url) change, trigger `load` action if pathname is `/`
-      return history.listen(({ pathname, search }) => {
+      return history.listen(({ location: { pathname, search } }) => {
         if (typeof window.ga !== "undefined") {
           window.ga("send", "pageview", pathname + search);
         }

@@ -26,7 +26,7 @@ import {
   InputNumber,
   Button,
 } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import {
   getConfigFieldValue,

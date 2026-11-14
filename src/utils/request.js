@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import fetch from "dva/fetch";
 import { notification } from "antd";
+import fetch from "./fetch";
 import { getIntlContent } from "./IntlUtils";
 
 let requestDispatch = () => {};

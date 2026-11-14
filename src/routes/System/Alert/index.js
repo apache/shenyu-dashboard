@@ -18,7 +18,7 @@
 import React, { Component } from "react";
 import { Table, Button, message, Popconfirm, Switch } from "antd";
 import dayjs from "dayjs";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
