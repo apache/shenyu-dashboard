@@ -28,6 +28,7 @@ import { initIntl } from "./utils/IntlUtils";
 // import './rollbar';
 import "./index.less";
 import { emit } from "./utils/emit";
+import { setRequestDispatch } from "./utils/request";
 
 const middlewares = [];
 // if (process.env.NODE_ENV === `development`) {
@@ -65,6 +66,7 @@ app.model(require("./models/global").default);
 app.router(require("./router").default);
 
 // 5. Start
+setRequestDispatch((action) => app._store.dispatch(action)); // eslint-disable-line no-underscore-dangle
 app.start("#root");
 
 export default app._store; // eslint-disable-line

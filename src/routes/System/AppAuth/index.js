@@ -21,7 +21,7 @@ import { connect } from "dva";
 import dayjs from "dayjs";
 import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
-import RelateMetadata from "./RelateMetadata";
+import RelateMetadata from "./RelateMetadataLoader";
 import AddTable from "./AddTable";
 import SearchContent from "./SearchContent";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
@@ -34,6 +34,8 @@ import AuthButton from "../../../utils/AuthButton";
   loading: loading.effects["auth/fetch"],
 }))
 export default class Auth extends Component {
+  resourceRequest = 0;
+
   components = resizableComponents;
 
   constructor(props) {
@@ -57,13 +59,20 @@ export default class Auth extends Component {
     this.initPluginColumns();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     const { language } = this.props;
     const { localeName } = this.state;
     if (language !== localeName) {
       this.initPluginColumns();
       this.changeLocale(language);
     }
+    if (prevProps.currentNamespaceId !== this.props.currentNamespaceId) {
+      this.closeModal();
+    }
+  }
+
+  componentWillUnmount() {
+    this.resourceRequest += 1;
   }
 
   handleResize =
@@ -121,10 +130,12 @@ export default class Auth extends Component {
   };
 
   closeModal = () => {
+    this.resourceRequest += 1;
     this.setState({ popup: "" });
   };
 
   editClick = (record) => {
+    this.resourceRequest += 1;
     const { dispatch, currentNamespaceId } = this.props;
     const { currentPage } = this.state;
     dispatch({
@@ -162,6 +173,12 @@ export default class Auth extends Component {
   };
 
   editClickMeta = (record) => {
+    this.resourceRequest += 1;
+    const requestId = this.resourceRequest;
+    const namespaceId = this.props.currentNamespaceId;
+    const isCurrent = () =>
+      requestId === this.resourceRequest &&
+      namespaceId === this.props.currentNamespaceId;
     const { currentPage } = this.state;
     const { dispatch } = this.props;
     dispatch({
@@ -170,6 +187,7 @@ export default class Auth extends Component {
         id: record.id,
       },
       callback: (auth) => {
+        if (!isCurrent()) return;
         dispatch({
           type: "auth/fetchMeta",
           payload: {
@@ -177,11 +195,7 @@ export default class Auth extends Component {
             // pageSize: 10
           },
           callback: (datas) => {
-            // remove duplicate elements and add
-            const pathArr = auth.auth.map((e) => e.path);
-            datas.dataList = datas.dataList
-              .filter((item) => !pathArr.includes(item.path))
-              .concat(auth.auth);
+            if (!isCurrent()) return;
             this.setState({
               popup: (
                 <RelateMetadata
@@ -189,16 +203,18 @@ export default class Auth extends Component {
                   {...datas}
                   authName={`appKey:  ${record.appKey}`}
                   id={record.id}
+                  language={this.props.language}
                   handleCancel={() => {
                     this.closeModal();
                   }}
                   handleOk={(values) => {
+                    if (!isCurrent()) return;
                     dispatch({
                       type: "auth/updateDel",
-                      payload: values,
+                      payload: { ...values, id: record.id },
                       fetchValue: this.currentQueryPayload(currentPage),
                       callback: () => {
-                        this.closeModal();
+                        if (isCurrent()) this.closeModal();
                       },
                     });
                   }}
@@ -241,6 +257,7 @@ export default class Auth extends Component {
   // 添加表格数据事件
 
   addClick = () => {
+    this.resourceRequest += 1;
     const { dispatch, currentNamespaceId } = this.props;
     dispatch({
       type: "auth/fetchMetaGroup",

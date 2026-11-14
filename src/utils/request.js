@@ -17,8 +17,13 @@
 
 import fetch from "dva/fetch";
 import { notification } from "antd";
-import store from "../index";
 import { getIntlContent } from "./IntlUtils";
+
+let requestDispatch = () => {};
+
+export const setRequestDispatch = (dispatch) => {
+  requestDispatch = dispatch;
+};
 
 const getCodeMessage = (status) => {
   const codeMessage = {
@@ -76,11 +81,10 @@ const checkResponseCode = (response) => {
 };
 
 export const handleUnauthorized = () => {
-  const { dispatch } = store;
-  dispatch({
+  requestDispatch({
     type: "login/logout",
   });
-  dispatch({
+  requestDispatch({
     type: "global/resetPermission",
   });
 };

@@ -16,32 +16,33 @@
  */
 
 import React, { Component } from "react";
-import {
-  Button,
-  Col,
-  Form,
-  Input,
-  message,
-  Modal,
-  Row,
-  Select,
-  Switch,
-  Radio,
-  Tabs,
-} from "antd";
+import { message } from "antd";
+import { Form } from "@douyinfe/semi-ui/lib/es/form";
+import Modal from "@douyinfe/semi-ui/lib/es/modal";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Input from "@douyinfe/semi-ui/lib/es/input";
+import TextArea from "@douyinfe/semi-ui/lib/es/input/textarea";
+import Select from "@douyinfe/semi-ui/lib/es/select";
+import Radio from "@douyinfe/semi-ui/lib/es/radio";
+import Tabs from "@douyinfe/semi-ui/lib/es/tabs";
+import { Row, Col } from "@douyinfe/semi-ui/lib/es/grid";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
+import "@douyinfe/semi-ui/lib/es/_base/base.css";
 import { connect } from "dva";
-import TextArea from "antd/lib/input/TextArea";
 import ReactJson from "react-json-view";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { clipboardCopy } from "../../../utils/utils";
 
-const FormItem = Form.Item;
+const FormItem = Form.Slot;
 const { Option } = Select;
 const { TabPane } = Tabs;
 
 @connect(({ global }) => ({
   currentNamespaceId: global.currentNamespaceId,
+  language: global.language,
 }))
 class AddModal extends Component {
   constructor(props) {
@@ -66,6 +67,14 @@ class AddModal extends Component {
     };
   }
 
+  getFormApi = (formApi) => {
+    this.formApi = formApi;
+  };
+
+  setFormValues = (fields) => {
+    this.formApi.setValues({ ...this.formApi.getValues(), ...fields });
+  };
+
   initParameters = (props) => {
     const { handle } = props;
     let questJson = {};
@@ -79,9 +88,10 @@ class AddModal extends Component {
         // Handle array type parameters, force set the first sub-parameter's name to "items"
         parameters = this.fixArrayParameterNames(parameters);
 
-        questJson = handleObj.requestConfig
-          ? JSON.parse(handleObj.requestConfig)
-          : {};
+        questJson =
+          typeof handleObj.requestConfig === "string"
+            ? JSON.parse(handleObj.requestConfig)
+            : handleObj.requestConfig || {};
       } catch (e) {
         // Failed to parse handle JSON
         parameters = [
@@ -192,18 +202,16 @@ class AddModal extends Component {
     // When switching to JSON mode, sync form data to JSON
     if (editMode === "json") {
       this.syncFormToJson();
-    } else {
-      // When switching to form mode, sync JSON data to form
-      this.syncJsonToForm();
+    } else if (!this.syncJsonToForm()) {
+      return;
     }
     this.setState({ editMode });
   };
 
   // Sync form data to JSON
   syncFormToJson = () => {
-    const { form } = this.props;
     const { parameters, questJson } = this.state;
-    const values = form.getFieldsValue();
+    const values = this.formApi.getValues();
     // Get form data
     const toolJson = {
       name: values.name || "",
@@ -221,47 +229,46 @@ class AddModal extends Component {
   // Sync JSON data to form
   syncJsonToForm = () => {
     const { jsonText } = this.state;
-    const { form } = this.props;
-    setTimeout(() => {
+    try {
+      const parsedJson = this.parseToolJson(jsonText);
+
+      // Update form fields
+      this.setFormValues({
+        name: parsedJson.name || "",
+        description: parsedJson.description || "",
+        enabled: parsedJson.enabled !== undefined ? parsedJson.enabled : true,
+      });
+
+      // 更新参数和请求配置
+      let questJson = {};
       try {
-        const parsedJson = JSON.parse(jsonText);
-
-        // Update form fields
-        form.setFieldsValue({
-          name: parsedJson.name || "",
-          description: parsedJson.description || "",
-          enabled: parsedJson.enabled !== undefined ? parsedJson.enabled : true,
-        });
-
-        // 更新参数和请求配置
-        let questJson = {};
-        try {
-          questJson =
-            typeof parsedJson.requestConfig === "string"
-              ? JSON.parse(parsedJson.requestConfig)
-              : parsedJson.requestConfig || {};
-        } catch (e) {
-          questJson = {};
-        }
-
-        this.setState({
-          parameters: this.fixArrayParameterNames(parsedJson.parameters || []),
-          questJson,
-        });
-      } catch (error) {
-        // Do not sync when JSON format is invalid
-        console.warn("JSON格式错误，无法同步到表单:", error.message);
+        questJson =
+          typeof parsedJson.requestConfig === "string"
+            ? JSON.parse(parsedJson.requestConfig)
+            : parsedJson.requestConfig || {};
+      } catch (e) {
+        questJson = {};
       }
-    }, 0);
+
+      this.setState({
+        parameters: parsedJson.parameters,
+        questJson,
+      });
+      return true;
+    } catch (error) {
+      message.error(
+        `${getIntlContent("SHENYU.MCP.JSON.EDIT.FORMAT.ERROR")}${error.message}`,
+      );
+      return false;
+    }
   };
 
-  handleJsonTextChange = (e) => {
-    const jsonText = e.target.value;
+  handleJsonTextChange = (jsonText) => {
     this.setState({ jsonText });
 
     // Validate JSON format in real time
     try {
-      JSON.parse(jsonText);
+      this.parseToolJson(jsonText);
       this.setState({ jsonError: null });
 
       // If JSON format is valid and currently in JSON mode, sync to form in real time
@@ -275,10 +282,8 @@ class AddModal extends Component {
 
   // Sync JSON data to form in real time (silent update, no validation errors)
   syncJsonToFormRealtime = (jsonText) => {
-    const { form } = this.props;
-
     try {
-      const parsedJson = JSON.parse(jsonText);
+      const parsedJson = this.parseToolJson(jsonText);
 
       // Update form fields (silent update, no validation triggered)
       const fieldsToUpdate = {};
@@ -288,7 +293,7 @@ class AddModal extends Component {
       if (parsedJson.enabled !== undefined)
         fieldsToUpdate.enabled = parsedJson.enabled;
 
-      form.setFieldsValue(fieldsToUpdate);
+      this.setFormValues(fieldsToUpdate);
 
       // Update parameters and request configuration
       let questJson = {};
@@ -350,13 +355,8 @@ class AddModal extends Component {
 
   // Listen for form field changes
   handleFormValuesChange = () => {
-    // If currently in form mode, sync form data to JSON in real time
     if (this.state.editMode === "form") {
-      // Use setTimeout to ensure form values are updated before syncing
-      setTimeout(() => {
-        // Slightly delay to ensure form values are updated before syncing
-        this.syncFormToJson();
-      }, 100);
+      this.syncFormToJson();
     }
   };
 
@@ -371,10 +371,8 @@ class AddModal extends Component {
   };
 
   updateJson = (obj) => {
-    const { form } = this.props;
-
     // Get current form values
-    const values = form.getFieldsValue();
+    const values = this.formApi.getValues();
 
     // Build complete tool configuration object
     const toolJson = {
@@ -462,7 +460,7 @@ class AddModal extends Component {
   };
 
   handleSubmit = (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     const { editMode } = this.state;
 
     if (editMode === "form") {
@@ -475,51 +473,45 @@ class AddModal extends Component {
   };
 
   handleFormSubmit = () => {
-    const { form, handleOk } = this.props;
-    const { parameters } = this.state;
+    this.formApi.submitForm();
+  };
 
-    form.validateFieldsAndScroll((err, values) => {
-      const {
+  handleValidFormSubmit = (values) => {
+    const { handleOk } = this.props;
+    const { parameters, questJson } = this.state;
+    const {
+      name,
+      description,
+      enabled,
+      sort,
+      logged,
+      matchMode,
+      matchRestful,
+    } = values;
+    if (this.checkParams()) {
+      handleOk({
         name,
         description,
+        handle: JSON.stringify({
+          parameters,
+          requestConfig: JSON.stringify(questJson),
+          description,
+        }),
         enabled,
-        sort,
+        sort: parseInt(sort, 10),
         logged,
         matchMode,
         matchRestful,
-      } = values;
-      if (!err) {
-        const submit = this.checkParams();
-        if (submit) {
-          let handle = {
-            parameters,
-            requestConfig: JSON.stringify(this.state.questJson),
-            description,
-          };
-          handle = JSON.stringify({
-            ...handle,
-          });
-          handleOk({
-            name,
-            description,
-            handle,
-            enabled,
-            sort: parseInt(sort, 10),
-            logged,
-            matchMode,
-            matchRestful,
-            ruleConditions: [
-              {
-                paramType: "uri",
-                operator: "pathPattern",
-                paramName: "/",
-                paramValue: "/**",
-              },
-            ],
-          });
-        }
-      }
-    });
+        ruleConditions: [
+          {
+            paramType: "uri",
+            operator: "pathPattern",
+            paramName: "/",
+            paramValue: "/**",
+          },
+        ],
+      });
+    }
   };
 
   handleJsonSubmit = () => {
@@ -532,7 +524,7 @@ class AddModal extends Component {
     }
 
     try {
-      const parsedJson = JSON.parse(jsonText);
+      const parsedJson = this.parseToolJson(jsonText);
 
       // Validate required fields
       if (!parsedJson.name || !parsedJson.name.trim()) {
@@ -729,24 +721,21 @@ class AddModal extends Component {
           >
             <Col span={4}>
               <Input
-                allowClear
+                showClear
                 value={subParam.name}
                 placeholder={getIntlContent(
                   "SHENYU.COMMON.PARAMETER.SUBTYPE.NAME",
                 )}
-                onChange={(e) => {
-                  this.updateSubParameter(
-                    path,
-                    subIndex,
-                    "name",
-                    e.target.value,
-                  );
+                onChange={(value) => {
+                  this.updateSubParameter(path, subIndex, "name", value);
                 }}
                 disabled={parentType === "array"}
               />
             </Col>
             <Col span={5}>
               <Select
+                motion={false}
+                style={{ width: "100%" }}
                 value={subParam.type}
                 placeholder={getIntlContent("SHENYU.COMMON.PARAMETER.SUBTYPE")}
                 onChange={(value) => {
@@ -765,18 +754,13 @@ class AddModal extends Component {
             </Col>
             <Col span={11}>
               <Input
-                allowClear
+                showClear
                 value={subParam.description}
                 placeholder={getIntlContent(
                   "SHENYU.COMMON.PARAMETER.SUBTYPE.DESCRIPTION",
                 )}
-                onChange={(e) => {
-                  this.updateSubParameter(
-                    path,
-                    subIndex,
-                    "description",
-                    e.target.value,
-                  );
+                onChange={(value) => {
+                  this.updateSubParameter(path, subIndex, "description", value);
                 }}
                 // Add hidden logic: hide description input when parent form type is array
                 style={{ display: parentType === "array" ? "none" : "block" }}
@@ -835,49 +819,48 @@ class AddModal extends Component {
     });
   };
 
-  // Fix array type parameter names, force set the first sub-parameter name to "items"
-  fixArrayParameterNames = (parameters) => {
-    if (!parameters || !Array.isArray(parameters)) {
-      return parameters;
+  parseToolJson = (text) => {
+    const parsed = JSON.parse(text);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      throw new Error(
+        getIntlContent("SHENYU.MCP.TOOLS.PARAM.INVALID.STRUCTURE"),
+      );
     }
+    return {
+      ...parsed,
+      parameters: this.fixArrayParameterNames(parsed.parameters || []),
+    };
+  };
 
+  fixArrayParameterNames = (parameters) => {
+    if (!Array.isArray(parameters)) {
+      throw new Error(
+        getIntlContent("SHENYU.MCP.TOOLS.PARAM.INVALID.STRUCTURE"),
+      );
+    }
     return parameters.map((param) => {
-      // If current parameter is array type and has sub-parameters, force set first sub-parameter's name to "items"
-      if (
-        param.type === "array" &&
-        param.parameters &&
-        param.parameters.length > 0
-      ) {
-        return {
-          ...param,
-          parameters: param.parameters.map((subParam, index) => {
-            if (index === 0) {
-              return {
-                ...subParam,
-                name: "items",
-              };
-            }
-            return subParam;
-          }),
-        };
+      if (!param || typeof param !== "object" || Array.isArray(param)) {
+        throw new Error(
+          getIntlContent("SHENYU.MCP.TOOLS.PARAM.INVALID.STRUCTURE"),
+        );
       }
-
-      // Recursively handle sub-parameters
-      if (param.parameters && Array.isArray(param.parameters)) {
-        return {
-          ...param,
-          parameters: this.fixArrayParameterNames(param.parameters),
-        };
-      }
-
-      return param;
+      if (param.parameters == null) return param;
+      const children = this.fixArrayParameterNames(param.parameters);
+      return {
+        ...param,
+        parameters: children.map((child, index) =>
+          param.type === "array" && index === 0
+            ? { ...child, name: "items" }
+            : child,
+        ),
+      };
     });
   };
 
   render() {
     let {
       onCancel,
-      form,
+      language,
       name = "",
       description = "",
       enabled = true,
@@ -902,14 +885,16 @@ class AddModal extends Component {
     // Use description from handle if available, otherwise use from props
     const finalDescription = handleDescription || description;
 
-    const { getFieldDecorator } = form;
-    const formItemLayout = {
-      labelCol: {
-        sm: { span: 4 },
-      },
-      wrapperCol: {
-        sm: { span: 20 },
-      },
+    const locale =
+      language || window.sessionStorage.getItem("locale") || "en-US";
+    const initValues = {
+      name,
+      description: finalDescription,
+      enabled,
+      sort,
+      logged,
+      matchMode,
+      matchRestful,
     };
 
     // JSON object for preview
@@ -927,26 +912,35 @@ class AddModal extends Component {
         ? getIntlContent("SHENYU.TOOL.NAME")
         : getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.TITLE");
 
-    return (
+    const modal = (
       <Modal
         width={1000}
+        bodyStyle={{ maxHeight: "calc(100vh - 240px)", overflowY: "auto" }}
         centered
         title={modalTitle}
         visible
         okText={getIntlContent("SHENYU.COMMON.SURE")}
         cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+        okButtonProps={{ "aria-label": getIntlContent("SHENYU.COMMON.SURE") }}
+        cancelButtonProps={{
+          "aria-label": getIntlContent("SHENYU.COMMON.CALCEL"),
+        }}
         onOk={this.handleSubmit}
         onCancel={onCancel}
       >
         <div style={{ marginBottom: "16px" }}>
           <div style={{ marginBottom: "12px" }}>
-            <Radio.Group value={editMode} onChange={this.handleEditModeChange}>
-              <Radio.Button value="form">
+            <Radio.Group
+              type="button"
+              value={editMode}
+              onChange={this.handleEditModeChange}
+            >
+              <Radio value="form">
                 {getIntlContent("SHENYU.MCP.TOOLS.ADD.MODE.FORM")}
-              </Radio.Button>
-              <Radio.Button value="json">
+              </Radio>
+              <Radio value="json">
                 {getIntlContent("SHENYU.MCP.TOOLS.ADD.MODE.JSON")}
-              </Radio.Button>
+              </Radio>
             </Radio.Group>
           </div>
 
@@ -959,28 +953,28 @@ class AddModal extends Component {
           {editMode === "json" && (
             <div style={{ display: "flex", gap: "10px" }}>
               <Button
-                type="dashed"
+                theme="outline"
                 size="small"
                 onClick={this.generateTemplate}
               >
                 {getIntlContent("SHENYU.MCP.TOOLS.ADD.JSON.TEMPLATE")}
               </Button>
               <Button
-                type="dashed"
+                theme="outline"
                 size="small"
                 onClick={this.handleFormatJson}
               >
                 {getIntlContent("SHENYU.MCP.JSON.EDIT.FORMAT")}
               </Button>
               <Button
-                type="dashed"
+                theme="outline"
                 size="small"
                 onClick={this.handleCompressJson}
               >
                 {getIntlContent("SHENYU.MCP.JSON.EDIT.COMPRESS")}
               </Button>
               <Button
-                type="dashed"
+                theme="outline"
                 size="small"
                 onClick={this.handleCopyToClipboard}
               >
@@ -990,312 +984,267 @@ class AddModal extends Component {
           )}
         </div>
 
-        {editMode === "form" ? (
-          // Form mode
-          <Form
-            onSubmit={this.handleSubmit}
-            className="login-form"
-            onValuesChange={this.handleFormValuesChange}
+        <Form
+          initValues={initValues}
+          getFormApi={this.getFormApi}
+          onSubmit={this.handleValidFormSubmit}
+          onValueChange={this.handleFormValuesChange}
+          allowEmpty
+          autoScrollToError
+          labelPosition="left"
+          labelAlign="right"
+          labelWidth={160}
+          style={{ display: editMode === "form" ? undefined : "none" }}
+        >
+          <Form.Input
+            field="name"
+            label={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")}
+            rules={[
+              {
+                required: true,
+                message: getIntlContent("SHENYU.COMMON.INPUTNAME"),
+              },
+            ]}
+            placeholder={getIntlContent(
+              "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME",
+            )}
+            showClear
+          />
+          <Form.TextArea
+            field="description"
+            label={getIntlContent(
+              "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.DESCRIPTION",
+            )}
+            rules={[
+              {
+                required: true,
+                message: getIntlContent("SHENYU.COMMON.INPUTDESCRIPTION"),
+              },
+            ]}
+            placeholder={getIntlContent(
+              "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.DESCRIPTION",
+            )}
+            showClear
+          />
+          <Form.Input
+            field="sort"
+            label={getIntlContent("SHENYU.SELECTOR.EXEORDER")}
+            rules={[
+              {
+                required: true,
+                message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER"),
+              },
+            ]}
+            placeholder={getIntlContent("SHENYU.SELECTOR.INPUTORDER")}
+            type="number"
+            min={1}
+            max={1000}
+            showClear
+          />
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Switch
+                field="logged"
+                label={getIntlContent("SHENYU.SELECTOR.PRINTLOG")}
+                rules={[{ required: true }]}
+              />
+            </Col>
+            <Col span={12}>
+              <Form.Switch
+                field="matchRestful"
+                label={getIntlContent("SHENYU.SELECTOR.MATCHRESTFUL")}
+                rules={[{ required: true }]}
+              />
+            </Col>
+          </Row>
+          <Form.Select
+            field="matchMode"
+            label={getIntlContent("SHENYU.COMMON.MATCHTYPE")}
+            rules={[
+              {
+                required: true,
+                message: getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE"),
+              },
+            ]}
+            placeholder={getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE")}
+            motion={false}
+            style={{ width: "100%" }}
           >
-            <FormItem
-              label={getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")}
-              {...formItemLayout}
-            >
-              {getFieldDecorator("name", {
-                rules: [
-                  {
-                    required: true,
-                    message: getIntlContent("SHENYU.COMMON.INPUTNAME"),
-                  },
-                ],
-                initialValue: name,
-              })(
-                <Input
-                  allowClear
-                  placeholder={getIntlContent(
-                    "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME",
-                  )}
-                />,
-              )}
-            </FormItem>
-            <FormItem
-              label={getIntlContent(
-                "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.DESCRIPTION",
-              )}
-              {...formItemLayout}
-            >
-              {getFieldDecorator("description", {
-                rules: [
-                  {
-                    required: true,
-                    message: getIntlContent("SHENYU.COMMON.INPUTDESCRIPTION"),
-                  },
-                ],
-                initialValue: finalDescription,
-              })(
-                <TextArea
-                  allowClear
-                  placeholder={getIntlContent(
-                    "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.DESCRIPTION",
-                  )}
-                />,
-              )}
-            </FormItem>
+            <Option value="0">and</Option>
+            <Option value="1">or</Option>
+          </Form.Select>
+          <div className={styles.condition}>
+            <FormItem label={getIntlContent("SHENYU.COMMON.PARAMETER")}>
+              {parameters.map((item, index) => {
+                return (
+                  <div key={index} style={{ marginBottom: "16px" }}>
+                    <Row gutter={8}>
+                      <Col span={4}>
+                        <Input
+                          showClear
+                          value={item.name}
+                          placeholder={getIntlContent(
+                            "SHENYU.COMMON.PARAMETER.NAME",
+                          )}
+                          onChange={(value) => {
+                            const newValue = value;
+                            const newParameters = [...parameters];
+                            newParameters[index].name = newValue;
+                            this.handleParametersChange(newParameters);
+                          }}
+                        />
+                      </Col>
+                      <Col span={5}>
+                        <Select
+                          motion={false}
+                          style={{ width: "100%" }}
+                          value={item.type}
+                          placeholder={getIntlContent(
+                            "SHENYU.COMMON.PARAMETER.TYPE",
+                          )}
+                          onChange={(value) => {
+                            const newParameters = [...parameters];
+                            newParameters[index].type = value;
 
-            <FormItem
-              label={getIntlContent("SHENYU.SELECTOR.EXEORDER")}
-              {...formItemLayout}
-            >
-              {getFieldDecorator("sort", {
-                rules: [
-                  {
-                    required: true,
-                    message: getIntlContent("SHENYU.SELECTOR.INPUTNUMBER"),
-                  },
-                ],
-                initialValue: sort,
-              })(
-                <Input
-                  allowClear
-                  type="number"
-                  min={1}
-                  max={1000}
-                  placeholder={getIntlContent("SHENYU.SELECTOR.INPUTORDER")}
-                />,
-              )}
-            </FormItem>
+                            // Handle type change logic
+                            if (value === "object") {
+                              // Object type: clear sub-parameters, wait for user to manually add
+                              newParameters[index].parameters = [];
+                            } else if (value === "array") {
+                              // Array type: force set first sub-parameter name to "items"
+                              newParameters[index].parameters = [
+                                {
+                                  name: "items",
+                                  type: "string",
+                                  description: "",
+                                  required: true,
+                                },
+                              ];
+                            } else {
+                              // Other basic types: delete sub-parameters
+                              delete newParameters[index].parameters;
+                            }
 
-            <Row gutter={16}>
-              <Col span={12}>
-                <FormItem
-                  label={getIntlContent("SHENYU.SELECTOR.PRINTLOG")}
-                  {...formItemLayout}
-                  labelCol={{ sm: { span: 8 } }}
-                  wrapperCol={{ sm: { span: 16 } }}
-                >
-                  {getFieldDecorator("logged", {
-                    initialValue: logged,
-                    valuePropName: "checked",
-                    rules: [{ required: true }],
-                  })(<Switch />)}
-                </FormItem>
-              </Col>
-              <Col span={12}>
-                <FormItem
-                  label={getIntlContent("SHENYU.SELECTOR.MATCHRESTFUL")}
-                  {...formItemLayout}
-                  labelCol={{ sm: { span: 8 } }}
-                  wrapperCol={{ sm: { span: 16 } }}
-                >
-                  {getFieldDecorator("matchRestful", {
-                    initialValue: matchRestful,
-                    valuePropName: "checked",
-                    rules: [{ required: true }],
-                  })(<Switch />)}
-                </FormItem>
-              </Col>
-            </Row>
-
-            <FormItem
-              label={getIntlContent("SHENYU.COMMON.MATCHTYPE")}
-              {...formItemLayout}
-            >
-              {getFieldDecorator("matchMode", {
-                rules: [
-                  {
-                    required: true,
-                    message: getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE"),
-                  },
-                ],
-                initialValue: matchMode,
-              })(
-                <Select
-                  placeholder={getIntlContent("SHENYU.COMMON.INPUTMATCHTYPE")}
-                >
-                  <Option value="0">and</Option>
-                  <Option value="1">or</Option>
-                </Select>,
-              )}
-            </FormItem>
-
-            <div className={styles.condition}>
-              <FormItem
-                label={getIntlContent("SHENYU.COMMON.PARAMETER")}
-                {...formItemLayout}
-              >
-                {parameters.map((item, index) => {
-                  return (
-                    <div key={index} style={{ marginBottom: "16px" }}>
-                      <Row gutter={8}>
-                        <Col span={4}>
-                          <Input
-                            allowClear
-                            value={item.name}
-                            placeholder={getIntlContent(
-                              "SHENYU.COMMON.PARAMETER.NAME",
-                            )}
-                            onChange={(e) => {
-                              const newValue = e.target.value;
-                              const newParameters = [...parameters];
-                              newParameters[index].name = newValue;
-                              this.handleParametersChange(newParameters);
-                            }}
-                          />
-                        </Col>
-                        <Col span={5}>
-                          <Select
-                            value={item.type}
-                            placeholder={getIntlContent(
-                              "SHENYU.COMMON.PARAMETER.TYPE",
-                            )}
-                            onChange={(value) => {
-                              const newParameters = [...parameters];
-                              newParameters[index].type = value;
-
-                              // Handle type change logic
-                              if (value === "object") {
-                                // Object type: clear sub-parameters, wait for user to manually add
-                                newParameters[index].parameters = [];
-                              } else if (value === "array") {
-                                // Array type: force set first sub-parameter name to "items"
-                                newParameters[index].parameters = [
-                                  {
-                                    name: "items",
-                                    type: "string",
-                                    description: "",
-                                    required: true,
-                                  },
-                                ];
-                              } else {
-                                // Other basic types: delete sub-parameters
-                                delete newParameters[index].parameters;
-                              }
-
-                              this.handleParametersChange(newParameters);
-                            }}
-                          >
-                            <Option value="string">String</Option>
-                            <Option value="integer">Integer</Option>
-                            <Option value="long">Long</Option>
-                            <Option value="double">Double</Option>
-                            <Option value="float">Float</Option>
-                            <Option value="boolean">Boolean</Option>
-                            <Option value="object">Object</Option>
-                            <Option value="array">Array</Option>
-                          </Select>
-                        </Col>
-                        <Col span={11}>
-                          <Input
-                            allowClear
-                            value={item.description}
-                            placeholder={getIntlContent(
-                              "SHENYU.COMMON.PARAMETER.DESCRIPTION",
-                            )}
-                            onChange={(e) => {
-                              const newValue = e.target.value;
-                              const newParameters = [...parameters];
-                              newParameters[index].description = newValue;
-                              this.handleParametersChange(newParameters);
-                            }}
-                          />
-                        </Col>
-                        <Col span={4}>
-                          <div style={{ display: "flex", gap: "4px" }}>
-                            {/* Object type: display add button */}
-                            {item.type === "object" && (
-                              <Button
-                                type="primary"
-                                onClick={() => {
-                                  this.handleAddSubParameter([index]);
-                                }}
-                              >
-                                {getIntlContent(
-                                  "SHENYU.COMMON.PARAMETER.SUBTYPE.ADD",
-                                )}
-                              </Button>
-                            )}
+                            this.handleParametersChange(newParameters);
+                          }}
+                        >
+                          <Option value="string">String</Option>
+                          <Option value="integer">Integer</Option>
+                          <Option value="long">Long</Option>
+                          <Option value="double">Double</Option>
+                          <Option value="float">Float</Option>
+                          <Option value="boolean">Boolean</Option>
+                          <Option value="object">Object</Option>
+                          <Option value="array">Array</Option>
+                        </Select>
+                      </Col>
+                      <Col span={11}>
+                        <Input
+                          showClear
+                          value={item.description}
+                          placeholder={getIntlContent(
+                            "SHENYU.COMMON.PARAMETER.DESCRIPTION",
+                          )}
+                          onChange={(value) => {
+                            const newValue = value;
+                            const newParameters = [...parameters];
+                            newParameters[index].description = newValue;
+                            this.handleParametersChange(newParameters);
+                          }}
+                        />
+                      </Col>
+                      <Col span={4}>
+                        <div style={{ display: "flex", gap: "4px" }}>
+                          {/* Object type: display add button */}
+                          {item.type === "object" && (
                             <Button
-                              type="danger"
+                              type="primary"
                               onClick={() => {
-                                this.handleDelete(index);
+                                this.handleAddSubParameter([index]);
                               }}
                             >
-                              {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                              {getIntlContent(
+                                "SHENYU.COMMON.PARAMETER.SUBTYPE.ADD",
+                              )}
                             </Button>
-                          </div>
-                        </Col>
-                      </Row>
-                      {/* Render sub-parameters */}
-                      {(item.type === "object" || item.type === "array") &&
-                        item.parameters && (
-                          <div
-                            style={{
-                              marginTop: "8px",
-                              border: "1px solid #f0f0f0",
-                              borderRadius: "4px",
-                              padding: "8px",
-                              backgroundColor: "#fafafa",
+                          )}
+                          <Button
+                            type="danger"
+                            onClick={() => {
+                              this.handleDelete(index);
                             }}
                           >
-                            {this.renderSubParameters(
-                              item.parameters,
-                              item.type,
-                              [index],
-                              1,
-                            )}
-                          </div>
-                        )}
-                    </div>
-                  );
-                })}
-              </FormItem>
-              <FormItem label={" "} colon={false} {...formItemLayout}>
-                <Button
-                  className={styles.addButton}
-                  onClick={this.handleAdd}
-                  type="primary"
-                >
-                  {getIntlContent("SHENYU.COMMON.ADD")}{" "}
-                  {getIntlContent("SHENYU.COMMON.PARAMETER")}
-                </Button>
-              </FormItem>
-            </div>
-            <FormItem
-              label={getIntlContent("SHENYU.COMMON.TOOL.REQUESTCONFIG")}
-              {...formItemLayout}
-              required={true}
-            >
-              <ReactJson
-                src={questJson}
-                theme="monokai"
-                displayDataTypes={false}
-                name={false}
-                onAdd={this.updateJson}
-                onEdit={this.updateJson}
-                onDelete={this.updateJson}
-                style={{ borderRadius: 4, padding: 16 }}
-              />
+                            {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                          </Button>
+                        </div>
+                      </Col>
+                    </Row>
+                    {/* Render sub-parameters */}
+                    {(item.type === "object" || item.type === "array") &&
+                      item.parameters && (
+                        <div
+                          style={{
+                            marginTop: "8px",
+                            border: "1px solid #f0f0f0",
+                            borderRadius: "4px",
+                            padding: "8px",
+                            backgroundColor: "#fafafa",
+                          }}
+                        >
+                          {this.renderSubParameters(
+                            item.parameters,
+                            item.type,
+                            [index],
+                            1,
+                          )}
+                        </div>
+                      )}
+                  </div>
+                );
+              })}
             </FormItem>
-            <FormItem
-              {...formItemLayout}
-              label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}
-            >
-              {getFieldDecorator("enabled", {
-                initialValue: enabled,
-                valuePropName: "checked",
-                rules: [{ required: true }],
-              })(<Switch />)}
+            <FormItem label={" "} colon={false}>
+              <Button
+                className={styles.addButton}
+                onClick={this.handleAdd}
+                type="primary"
+              >
+                {getIntlContent("SHENYU.COMMON.ADD")}{" "}
+                {getIntlContent("SHENYU.COMMON.PARAMETER")}
+              </Button>
             </FormItem>
-          </Form>
-        ) : (
-          // JSON mode
+          </div>
+          <FormItem
+            label={{
+              text: getIntlContent("SHENYU.COMMON.TOOL.REQUESTCONFIG"),
+              required: true,
+            }}
+          >
+            <ReactJson
+              src={questJson}
+              theme="monokai"
+              displayDataTypes={false}
+              name={false}
+              onAdd={this.updateJson}
+              onEdit={this.updateJson}
+              onDelete={this.updateJson}
+              style={{ borderRadius: 4, padding: 16 }}
+            />
+          </FormItem>
+          <Form.Switch
+            field="enabled"
+            label={getIntlContent("SHENYU.SELECTOR.WHETHEROPEN")}
+            rules={[{ required: true }]}
+          />
+        </Form>
+        {editMode === "json" && (
           <Tabs
             activeKey={activeTab}
             onChange={(key) => this.setState({ activeTab: key })}
           >
             <TabPane
               tab={getIntlContent("SHENYU.MCP.JSON.EDIT.TAB.TEXT")}
-              key="1"
+              itemKey="1"
             >
               <div style={{ position: "relative" }}>
                 <TextArea
@@ -1304,7 +1253,7 @@ class AddModal extends Component {
                   placeholder={getIntlContent(
                     "SHENYU.MCP.TOOLS.ADD.JSON.PLACEHOLDER",
                   )}
-                  autoSize={{ minRows: 15, maxRows: 25 }}
+                  autosize={{ minRows: 15, maxRows: 25 }}
                   style={{
                     fontFamily: "Monaco, Menlo, 'Ubuntu Mono', monospace",
                     fontSize: "13px",
@@ -1334,7 +1283,7 @@ class AddModal extends Component {
             </TabPane>
             <TabPane
               tab={getIntlContent("SHENYU.MCP.JSON.EDIT.TAB.PREVIEW")}
-              key="2"
+              itemKey="2"
             >
               <div
                 style={{
@@ -1413,7 +1362,13 @@ class AddModal extends Component {
         )}
       </Modal>
     );
+
+    return (
+      <LocaleProvider locale={locale.toLowerCase() === "en-us" ? enUS : zhCN}>
+        {modal}
+      </LocaleProvider>
+    );
   }
 }
 
-export default Form.create()(AddModal);
+export default AddModal;
