@@ -16,8 +16,9 @@
  */
 
 import React, { Component } from "react";
-import { message, Modal, Select } from "antd";
-import { connect } from "dva";
+import { Modal, Select } from "antd";
+import { connect } from "react-redux";
+import { message } from "../../../components/ui/feedback";
 import { fetchProxySelector } from "../../../services/api";
 import { getIntlContent } from "../../../utils/IntlUtils";
 

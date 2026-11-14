@@ -30,7 +30,7 @@ import {
   Dropdown,
   Menu,
 } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { titleCase } from "../../../utils/utils";
 import { defaultNamespaceId } from "../../../components/_utils/utils";

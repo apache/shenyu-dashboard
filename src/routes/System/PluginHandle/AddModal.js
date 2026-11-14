@@ -16,17 +16,15 @@
  */
 
 import React, { Component } from "react";
-import {
-  Modal,
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  Tooltip,
-  Icon,
-  message,
-} from "antd";
-import { connect } from "dva";
+import Tooltip from "@douyinfe/semi-ui/lib/es/tooltip";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import { connect } from "react-redux";
+import Modal from "../../../components/ui/Modal";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import InputNumber from "../../../components/ui/InputNumber";
+import Select from "../../../components/ui/Select";
+import { message } from "../../../components/ui/feedback";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Option } = Select;
@@ -132,11 +130,6 @@ class AddPluginHandle extends Component {
               <Select
                 placeholder={getIntlContent("SHENYU.PLUGIN.PLUGIN.NAME")}
                 showSearch
-                filterOption={(input, option) =>
-                  option.props.children
-                    .toLowerCase()
-                    .indexOf(input.toLowerCase()) >= 0
-                }
               >
                 {pluginDropDownList.map((item, i) => {
                   return (
@@ -307,8 +300,15 @@ class AddPluginHandle extends Component {
             label={
               <span>
                 {getIntlContent("SHENYU.PLUGIN.RULE")}&nbsp;
-                <Tooltip title={getIntlContent("SHENYU.PLUGIN.RULE.TIP")}>
-                  <Icon type="question-circle-o" />
+                <Tooltip content={getIntlContent("SHENYU.PLUGIN.RULE.TIP")}>
+                  <Button
+                    theme="borderless"
+                    size="small"
+                    htmlType="button"
+                    aria-label={getIntlContent("SHENYU.PLUGIN.RULE.TIP")}
+                  >
+                    ?
+                  </Button>
                 </Tooltip>
               </span>
             }

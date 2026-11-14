@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import { Link } from "dva/router";
 import Exception from "components/Exception";
+import { Link } from "../../runtime/router";
 
 export default () => (
   <Exception

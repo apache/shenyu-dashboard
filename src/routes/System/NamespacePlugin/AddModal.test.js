@@ -19,9 +19,9 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import AddModal from "./AddModal";
 
-jest.mock("dva", () => ({ connect: () => (Component) => Component }));
+jest.mock("react-redux", () => ({ connect: () => (Component) => Component }));
 jest.mock("../../../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
-jest.mock("react-json-view", () => (props) => (
+jest.mock("@microlink/react-json-view", () => (props) => (
   <button
     type="button"
     onClick={() => props.onEdit({ updated_src: { edited: true } })}

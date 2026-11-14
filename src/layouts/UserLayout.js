@@ -16,10 +16,11 @@
  */
 
 import React, { Fragment } from "react";
-import { Link, Redirect, Switch, Route } from "dva/router";
-import DocumentTitle from "react-document-title";
-import { connect } from "dva";
-import { Icon, message } from "antd";
+import { connect } from "react-redux";
+import { Icon } from "antd";
+import { message } from "../components/ui/feedback";
+import { Link, Redirect, Switch, Route } from "../runtime/router";
+import DocumentTitle from "../components/DocumentTitle";
 import GlobalFooter from "../components/GlobalFooter";
 import styles from "./UserLayout.less";
 import TitleLogo from "../assets/TitleLogo.svg";

@@ -16,9 +16,9 @@
  */
 
 import React, { Component } from "react";
-import { connect } from "dva";
-import { Redirect, Route } from "dva/router";
+import { connect } from "react-redux";
 import { Spin } from "antd";
+import { Redirect, Route } from "../runtime/router";
 import { filterTree } from "./utils";
 import { getIntlContent } from "./IntlUtils";
 import { getMenuData } from "../common/menu";
@@ -305,7 +305,8 @@ export default class AuthRoute extends Component {
     if (
       (!permissions || !permissions.menu || permissions.menu.length === 0) &&
       !loading &&
-      path === "/"
+      path === "/" &&
+      window.sessionStorage.getItem("token")
     ) {
       this.fetchPermissions();
     }
@@ -332,6 +333,9 @@ export default class AuthRoute extends Component {
       redirectPath,
       location: { pathname },
     } = this.props;
+    if (path === "/" && !window.sessionStorage.getItem("token")) {
+      return <Redirect to={redirectPath} />;
+    }
     if (loading) {
       return (
         <Spin
