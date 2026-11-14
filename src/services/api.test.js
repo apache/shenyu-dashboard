@@ -18,7 +18,6 @@
 import fetch from "dva/fetch";
 
 jest.mock("dva/fetch", () => jest.fn());
-jest.mock("../index", () => ({ dispatch: jest.fn() }));
 jest.mock("antd", () => ({ notification: { error: jest.fn() } }));
 jest.mock("../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
 

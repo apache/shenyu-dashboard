@@ -25,7 +25,6 @@ jest.mock("./menu", () => ({
   ],
 }));
 jest.mock("../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
-jest.mock("../index", () => ({ dispatch: jest.fn() }));
 jest.mock("../components/_utils/utils", () => ({
   defaultNamespaceId: "test-namespace",
 }));
