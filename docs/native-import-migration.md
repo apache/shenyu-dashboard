@@ -95,3 +95,6 @@ increases by about 65%. Do not describe this as a total bundle reduction. Shared
 chunk extraction, CSS splitting and deployment cache behavior need separate
 measurement during the modern-build stage. React/Dva/router replacement, Vite
 adoption, remaining forms and the static-distribution update remain later slices.
+
+[Stage 3b](async-shared-chunks.md) measures and addresses the async dependency
+duplication above; it retains the standard import and retry contracts.

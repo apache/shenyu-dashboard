@@ -70,6 +70,8 @@ integration or permission equivalence.
 [Stage 3a](native-import-migration.md) enables standard asynchronous imports and
 route load recovery in the current runtime before replacing its framework/build
 integration. Its asset tradeoff is recorded separately.
+[Stage 3b](async-shared-chunks.md) extracts shared asynchronous dependencies
+with measured route boundaries, recovering the total JS growth from stage 3a.
 
 Replace the legacy Dva renderer/router integration and incompatible React peers,
 then move through React 18.3 to React 19. Preserve reusable model/reducer/effect logic
