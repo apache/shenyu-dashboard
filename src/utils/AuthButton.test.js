@@ -17,7 +17,9 @@
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { Button, Popconfirm } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import { PlusOutline, DeleteOutline } from "@ant-design/icons/lib/dist";
 import AuthButton, { checkButtonAuth } from "./AuthButton";
 
 const Gate = AuthButton.WrappedComponent;
@@ -53,7 +55,7 @@ it.each(["toString", "constructor", "perms"])(
   },
 );
 
-it("keeps permission icons on legacy buttons", () => {
+it("keeps permission icons on native buttons", () => {
   render(
     <Gate
       perms="add"
@@ -65,11 +67,12 @@ it("keeps permission icons on legacy buttons", () => {
   expect(
     screen
       .getByRole("button", { name: /Add$/ })
-      .querySelector('svg[data-icon="plus"]'),
-  ).not.toBeNull();
+      .querySelector("svg path")
+      .getAttribute("d"),
+  ).toBe(PlusOutline.icon.children[0].attrs.d);
 });
 
-it("keeps permission icons on legacy confirmation buttons", () => {
+it("keeps permission icons on native confirmation buttons", () => {
   render(
     <Gate
       perms="delete"
@@ -85,8 +88,9 @@ it("keeps permission icons on legacy confirmation buttons", () => {
   expect(
     screen
       .getByRole("button", { name: /Remove$/ })
-      .querySelector('svg[data-icon="delete"]'),
-  ).not.toBeNull();
+      .querySelector("svg path")
+      .getAttribute("d"),
+  ).toBe(DeleteOutline.icon.children[0].attrs.d);
 });
 
 it("renders the supplied fallback when access is denied", () => {

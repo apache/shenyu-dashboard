@@ -16,7 +16,8 @@
  */
 
 import React, { createElement } from "react";
-import { Button, Spin } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Spin from "@douyinfe/semi-ui/lib/es/spin";
 import pathToRegexp from "path-to-regexp";
 import Loadable from "react-loadable";
 import { getMenuData } from "./menu";

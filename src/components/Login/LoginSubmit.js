@@ -17,7 +17,8 @@
 
 import React from "react";
 import classNames from "classnames";
-import { Button, Form } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Form from "../ui/Form";
 import styles from "./index.less";
 
 const FormItem = Form.Item;
@@ -30,6 +31,7 @@ const LoginSubmit = ({ className, ...rest }) => {
         size="large"
         className={clsString}
         type="primary"
+        theme="solid"
         htmlType="submit"
         {...rest}
       />

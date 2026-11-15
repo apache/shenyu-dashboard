@@ -16,7 +16,8 @@
  */
 
 import React from "react";
-import { Input, Icon } from "antd";
+import Input from "../ui/Input";
+import ResourceIcon from "../ui/ResourceIcon";
 import styles from "./index.less";
 import { getIntlContent } from "../../utils/IntlUtils";
 
@@ -26,7 +27,7 @@ const map = {
     props: {
       size: "large",
       allowClear: true,
-      prefix: <Icon type="home" className={styles.prefixIcon} />,
+      prefix: <ResourceIcon type="home" className={styles.prefixIcon} />,
     },
     rules: [
       {
@@ -40,7 +41,7 @@ const map = {
     props: {
       size: "large",
       allowClear: true,
-      prefix: <Icon type="user" className={styles.prefixIcon} />,
+      prefix: <ResourceIcon type="user" className={styles.prefixIcon} />,
       placeholder: "admin",
     },
     rules: [
@@ -55,7 +56,7 @@ const map = {
     props: {
       size: "large",
       allowClear: true,
-      prefix: <Icon type="lock" className={styles.prefixIcon} />,
+      prefix: <ResourceIcon type="lock" className={styles.prefixIcon} />,
       placeholder: "888888",
     },
     rules: [
@@ -70,7 +71,7 @@ const map = {
     props: {
       size: "large",
       allowClear: true,
-      prefix: <Icon type="mobile" className={styles.prefixIcon} />,
+      prefix: <ResourceIcon type="mobile" className={styles.prefixIcon} />,
       placeholder: "mobile number",
     },
     rules: [
@@ -89,7 +90,7 @@ const map = {
     props: {
       size: "large",
       allowClear: true,
-      prefix: <Icon type="mail" className={styles.prefixIcon} />,
+      prefix: <ResourceIcon type="mail" className={styles.prefixIcon} />,
       placeholder: "captcha",
     },
     rules: [

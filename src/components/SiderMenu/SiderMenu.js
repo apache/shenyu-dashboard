@@ -16,9 +16,12 @@
  */
 
 import React, { PureComponent } from "react";
-import { Layout, Menu, Icon, Switch } from "antd";
+import Layout from "@douyinfe/semi-ui/lib/es/layout";
+import Nav from "@douyinfe/semi-ui/lib/es/navigation";
 import pathToRegexp from "path-to-regexp";
 import { Resizable } from "react-resizable";
+import Switch from "../ui/Switch";
+import ResourceIcon from "../ui/ResourceIcon";
 import { Link } from "../../runtime/router";
 import styles from "./index.less";
 import { urlToList } from "../_utils/pathTools";
@@ -26,12 +29,11 @@ import { getCurrentLocale, getIntlContent } from "../../utils/IntlUtils";
 // import { emit } from '../../utils/emit'
 
 const { Sider } = Layout;
-const { SubMenu } = Menu;
 
 // Allow menu.js config icon as string or ReactNode
 //   icon: 'setting',
 //   icon: 'http://demo.com/icon.png',
-//   icon: <Icon type="setting" />,
+//   icon: <ResourceIcon type="setting" />,
 const getIcon = (icon) => {
   if (typeof icon === "string") {
     if (icon.indexOf("http") === 0) {
@@ -43,7 +45,7 @@ const getIcon = (icon) => {
         />
       );
     }
-    return <Icon type={icon} />;
+    return <ResourceIcon type={icon} />;
   }
 
   return icon;
@@ -87,16 +89,18 @@ export default class SiderMenu extends PureComponent {
         getFlatMenuKeys(props.menuData),
       ),
       localeName: "",
-      mode: "inline",
-      theme: "dark",
       width: 250,
     };
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.location.pathname !== prevState.prevPathname) {
+    if (
+      nextProps.location.pathname !== prevState.prevPathname ||
+      nextProps.menuData !== prevState.menuData
+    ) {
       return {
         prevPathname: nextProps.location.pathname,
+        menuData: nextProps.menuData,
         openKeys: SiderMenu.getDefaultCollapsedSubMenus(
           nextProps,
           getFlatMenuKeys(nextProps.menuData),
@@ -135,7 +139,7 @@ export default class SiderMenu extends PureComponent {
    *
    * member of SiderMenu
    */
-  getMenuItemPath = (item) => {
+  getMenuItemPath = (item, content) => {
     const itemPath = this.conversionPath(item.path);
     const icon = getIcon(item.icon);
     let { target, name } = item;
@@ -145,9 +149,18 @@ export default class SiderMenu extends PureComponent {
         target = "_blank";
       }
       return (
-        <a href={itemPath} target={target}>
-          {icon}
-          <span>{name}</span>
+        <a
+          href={itemPath}
+          target={target}
+          rel="noreferrer"
+          onClick={() => this.saveCurrentRoute(item)}
+        >
+          {content || (
+            <>
+              {icon}
+              <span>{name}</span>
+            </>
+          )}
         </a>
       );
     }
@@ -157,16 +170,17 @@ export default class SiderMenu extends PureComponent {
         to={itemPath}
         target={target}
         replace={itemPath === location.pathname}
-        onClick={
-          isMobile
-            ? () => {
-                onCollapse(true);
-              }
-            : undefined
-        }
+        onClick={() => {
+          this.saveCurrentRoute(item);
+          if (isMobile) onCollapse(true);
+        }}
       >
-        {icon}
-        <span>{name}</span>
+        {content || (
+          <>
+            {icon}
+            <span>{name}</span>
+          </>
+        )}
       </Link>
     );
   };
@@ -180,34 +194,26 @@ export default class SiderMenu extends PureComponent {
       // The menu is not displayed when there are no submenus
       if (childrenItems && childrenItems.length > 0) {
         return (
-          <SubMenu
-            title={
-              item.icon ? (
-                <span>
-                  {getIcon(item.icon)}
-                  <span>{item.name}</span>
-                </span>
-              ) : (
-                item.name
-              )
-            }
+          <Nav.Sub
+            itemKey={item.path}
             key={item.path}
+            text={item.name}
+            icon={getIcon(item.icon)}
           >
             {childrenItems}
-          </SubMenu>
+          </Nav.Sub>
         );
       }
       return null;
     } else {
       return (
-        <Menu.Item
-          onClick={() => {
-            this.saveCurrentRoute(item);
-          }}
+        <Nav.Item
+          itemKey={item.path}
           key={item.path}
-        >
-          {this.getMenuItemPath(item)}
-        </Menu.Item>
+          text={item.name}
+          icon={getIcon(item.icon)}
+          linkOptions={{ target: item.target }}
+        />
       );
     }
   };
@@ -221,7 +227,13 @@ export default class SiderMenu extends PureComponent {
     }
     return menusData
       .filter((item) => item.name && !item.hideInMenu)
-      .map((item) => {
+      .map((original) => {
+        const item = {
+          ...original,
+          name: original.locale
+            ? getIntlContent(original.locale, original.name)
+            : original.name,
+        };
         // make dom
         const ItemDom = this.getSubMenuOrItem(item);
         return this.checkPermissionItem(item.authority, ItemDom);
@@ -268,7 +280,7 @@ export default class SiderMenu extends PureComponent {
     );
   };
 
-  handleOpenChange = (openKeys) => {
+  handleOpenChange = ({ openKeys }) => {
     const lastOpenKey = openKeys[openKeys.length - 1];
     const moreThanOne =
       openKeys.filter((openKey) => this.isMainMenu(openKey)).length > 1;
@@ -277,46 +289,13 @@ export default class SiderMenu extends PureComponent {
     });
   };
 
-  changeMode = (value) => {
-    this.setState({
-      mode: value ? "vertical" : "inline",
-    });
-  };
+  changeMode = (value) => this.props.onCollapse?.(value);
 
   onResize = (event, { size }) => {
     this.setState({
       width: size.width,
     });
   };
-
-  /** Modify the menu based on the current language */
-  updateMenuData() {
-    if (this.props.menuData.length === 0) {
-      return;
-    }
-
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < this.props.menuData.length; i++) {
-      if (this.props.menuData[i].locale) {
-        this.props.menuData[i].name = getIntlContent(
-          this.props.menuData[i].locale,
-          this.props.menuData[i].name,
-        );
-      }
-
-      if (this.props.menuData[i].children.length > 0) {
-        // eslint-disable-next-line no-plusplus
-        for (let j = 0; j < this.props.menuData[i].children.length; j++) {
-          if (this.props.menuData[i].children[j].locale) {
-            this.props.menuData[i].children[j].name = getIntlContent(
-              this.props.menuData[i].children[j].locale,
-              this.props.menuData[i].children[j].name,
-            );
-          }
-        }
-      }
-    }
-  }
 
   // eslint-disable-next-line react/no-unused-class-component-methods
   changeLocale(locale) {
@@ -327,9 +306,16 @@ export default class SiderMenu extends PureComponent {
   }
 
   render() {
-    this.updateMenuData();
-    const { menuData, collapsed, onCollapse, TitleLogo } = this.props;
+    const { menuData, collapsed, TitleLogo, logo } = this.props;
+    const width = collapsed ? 80 : this.state.width;
     const { openKeys } = this.state;
+    const itemsByPath = new Map();
+    const indexItems = (items) =>
+      items.forEach((item) => {
+        itemsByPath.set(item.path, item);
+        if (item.children) indexItems(item.children);
+      });
+    indexItems(menuData);
     // Don't show popup menu when it is been collapsed
     const menuProps = collapsed
       ? {}
@@ -344,8 +330,9 @@ export default class SiderMenu extends PureComponent {
 
     return (
       <Resizable
-        width={this.state.width}
+        width={width}
         height={0}
+        resizeHandles={collapsed ? [] : ["e"]}
         onResize={this.onResize}
         draggableOpts={{ enableUserSelectHack: false }}
         handle={
@@ -360,36 +347,48 @@ export default class SiderMenu extends PureComponent {
         maxConstraints={[500, 0]}
       >
         <Sider
-          trigger={null}
-          collapsible
-          collapsed={collapsed}
-          breakpoint="lg"
-          onCollapse={onCollapse}
-          width={this.state.width}
+          style={{ width, flex: `0 0 ${width}px`, minWidth: width }}
           className={styles.sider}
         >
           <Link to="/">
             <div className={styles.logo} key="logo">
-              <img className={styles.TitleLogo} src={TitleLogo} alt="logo" />
+              <img
+                className={collapsed ? styles.logoMark : styles.TitleLogo}
+                src={collapsed ? logo : TitleLogo}
+                alt="Apache ShenYu"
+              />
             </div>
           </Link>
-          <Switch
-            onChange={this.changeMode}
-            checkedChildren="Change Mode"
-            unCheckedChildren="Change Mode"
-            className={styles.changeMode}
-          />
-          <Menu
-            key="Menu"
-            theme={this.state.theme}
-            mode={this.state.mode}
+          <div className={styles.changeMode}>
+            <Switch
+              aria-label="Compact menu"
+              checked={Boolean(collapsed)}
+              onChange={this.changeMode}
+            />
+            {!collapsed && <span>Compact menu</span>}
+          </div>
+          <Nav
+            isCollapsed={Boolean(collapsed)}
             {...menuProps}
             onOpenChange={this.handleOpenChange}
             selectedKeys={selectedKeys}
-            style={{ padding: "16px 0", width: "100%" }}
+            style={{ width: "100%", border: 0 }}
+            renderWrapper={({ itemElement, isSubNav, props }) =>
+              isSubNav
+                ? itemElement
+                : this.getMenuItemPath(
+                    {
+                      ...itemsByPath.get(props.itemKey),
+                      name: props.text,
+                      path: props.itemKey,
+                      target: props.linkOptions?.target,
+                    },
+                    itemElement,
+                  )
+            }
           >
             {this.getNavMenuItems(menuData)}
-          </Menu>
+          </Nav>
         </Sider>
       </Resizable>
     );

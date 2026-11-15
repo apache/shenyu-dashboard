@@ -18,7 +18,7 @@
 import React, { Component } from "react";
 import CryptoJS from "crypto-js";
 import { connect } from "react-redux";
-import { Alert } from "antd";
+import Banner from "@douyinfe/semi-ui/lib/es/banner";
 import UUID from "uuid";
 import Login from "components/Login";
 import styles from "./Login.less";
@@ -92,11 +92,11 @@ export default class LoginPage extends Component {
   // eslint-disable-next-line react/no-unused-class-component-methods
   renderMessage = (content) => {
     return (
-      <Alert
+      <Banner
         style={{ marginBottom: 24 }}
-        message={content}
+        description={content}
         type="error"
-        showIcon
+        closeIcon={null}
       />
     );
   };
@@ -127,7 +127,7 @@ export default class LoginPage extends Component {
             <UserName name="userName" placeholder="Account" />
             <Password name="password" placeholder="Password" />
             {needCode && (
-              <>
+              <div className={styles.verificationRow}>
                 <div className={styles.verify}>
                   <VerifyCode
                     name="verifyCode"
@@ -139,7 +139,7 @@ export default class LoginPage extends Component {
                   onRef={this.ChildRef}
                   ChildGetCode={(code) => this.getCode(code)}
                 />
-              </>
+              </div>
             )}
           </div>
           <Submit loading={submitting}>Login</Submit>

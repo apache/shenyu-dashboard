@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-/* eslint-disable react/static-property-placement */
 import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Form, Tabs } from "antd";
+import Tabs from "@douyinfe/semi-ui/lib/es/tabs";
 import classNames from "classnames";
+import Form from "../ui/Form";
+import { LoginProvider } from "./LoginContext";
 import LoginItem from "./LoginItem";
 import LoginTab from "./LoginTab";
 import LoginSubmit from "./LoginSubmit";
@@ -27,129 +27,91 @@ import LoginCode from "./LoginCode";
 import styles from "./index.less";
 
 class Login extends Component {
-  static propTypes = {
-    className: PropTypes.string,
-    defaultActiveKey: PropTypes.string,
-    onTabChange: PropTypes.func,
-    onSubmit: PropTypes.func,
-  };
-
-  static childContextTypes = {
-    tabUtil: PropTypes.object,
-    form: PropTypes.object,
-    updateActive: PropTypes.func,
-  };
-
-  static defaultProps = {
-    className: "",
-    defaultActiveKey: "",
-    onTabChange: () => {},
-    onSubmit: () => {},
-  };
-
   constructor(props) {
     super(props);
-    this.state = {
-      type: props.defaultActiveKey,
-      tabs: [],
-      active: {},
-    };
+    this.state = { type: props.defaultActiveKey };
+    this.fields = new Map();
   }
 
-  getChildContext() {
-    const { tabs } = this.state;
-    const { form } = this.props;
-    return {
-      tabUtil: {
-        addTab: (id) => {
-          this.setState({
-            tabs: [...tabs, id],
-          });
-        },
-        removeTab: (id) => {
-          this.setState({
-            tabs: tabs.filter((currentId) => currentId !== id),
-          });
-        },
-      },
-      form,
-      updateActive: (activeItem) => {
-        const { type, active } = this.state;
-        if (active[type]) {
-          active[type].push(activeItem);
-        } else {
-          active[type] = [activeItem];
-        }
-        this.setState({
-          active,
-        });
-      },
-    };
-  }
-
-  onSwitch = (type) => {
-    const { onTabChange } = this.props;
-    this.setState({
-      type,
-    });
-    onTabChange(type);
+  registerField = (name, tab) => {
+    if (!this.fields.has(tab)) this.fields.set(tab, new Set());
+    const fields = this.fields.get(tab);
+    fields.add(name);
+    return () => fields.delete(name);
   };
 
-  handleSubmit = (e) => {
-    e.preventDefault();
-    const { active, type } = this.state;
-    const { form, onSubmit } = this.props;
-    const activeFileds = active[type];
-    form.validateFields(activeFileds, { force: true }, (err, values) => {
-      onSubmit(err, values);
+  getTabs = () => {
+    const tabs = [];
+    React.Children.forEach(this.props.children, (child) => {
+      if (child?.type?.isLoginTab) tabs.push(child);
     });
+    return tabs;
+  };
+
+  handleSubmit = (event) => {
+    event.preventDefault();
+    const { form, onSubmit = () => {} } = this.props;
+    const type = this.state.type ?? this.getTabs()[0]?.key;
+    const names = [
+      ...new Set([
+        ...(this.fields.get("") || []),
+        ...(this.fields.get(type) || []),
+      ]),
+    ];
+    form.validateFields(names, (errors, values) => onSubmit(errors, values));
   };
 
   render() {
-    const { className, children } = this.props;
-    const { type, tabs } = this.state;
-    const TabChildren = [];
-    const otherChildren = [];
-    React.Children.forEach(children, (item) => {
-      if (!item) {
-        return;
-      }
-      // eslint-disable-next-line
-      if (item.type.__ANT_PRO_LOGIN_TAB) {
-        TabChildren.push(item);
-      } else {
-        otherChildren.push(item);
-      }
-    });
+    const { className, children, form, onTabChange = () => {} } = this.props;
+    const tabs = this.getTabs();
+    const type = this.state.type ?? tabs[0]?.key;
     return (
       <div className={classNames(className, styles.login)}>
-        <Form onSubmit={this.handleSubmit}>
-          {tabs.length ? (
-            <div>
-              <Tabs
-                animated={false}
-                className={styles.tabs}
-                activeKey={type}
-                onChange={this.onSwitch}
-              >
-                {TabChildren}
-              </Tabs>
-              {otherChildren}
-            </div>
-          ) : (
-            [...children]
-          )}
-        </Form>
+        <LoginProvider form={form} registerField={this.registerField}>
+          <Form onSubmit={this.handleSubmit}>
+            {tabs.length ? (
+              <>
+                <Tabs
+                  activeKey={type}
+                  keepDOM
+                  onChange={(next) => {
+                    this.setState({ type: next });
+                    onTabChange(next);
+                  }}
+                >
+                  {tabs.map((tab) => (
+                    <Tabs.TabPane
+                      key={tab.key}
+                      itemKey={tab.key}
+                      tab={tab.props.tab}
+                    >
+                      <LoginProvider
+                        form={form}
+                        registerField={this.registerField}
+                        tab={tab.key}
+                      >
+                        {tab.props.children}
+                      </LoginProvider>
+                    </Tabs.TabPane>
+                  ))}
+                </Tabs>
+                {React.Children.toArray(children).filter(
+                  (child) => !child.type?.isLoginTab,
+                )}
+              </>
+            ) : (
+              children
+            )}
+          </Form>
+        </LoginProvider>
       </div>
     );
   }
 }
 
-Login.Tab = LoginTab;
-Login.Submit = LoginSubmit;
-Login.LoginCode = LoginCode;
-Object.keys(LoginItem).forEach((item) => {
-  Login[item] = LoginItem[item];
-});
-
-export default Form.create()(Login);
+const LoginForm = Form.create()(Login);
+LoginForm.Tab = LoginTab;
+LoginForm.Submit = LoginSubmit;
+LoginForm.LoginCode = LoginCode;
+Object.assign(LoginForm, LoginItem);
+export default LoginForm;

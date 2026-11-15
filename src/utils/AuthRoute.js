@@ -17,7 +17,7 @@
 
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Spin } from "antd";
+import Spin from "@douyinfe/semi-ui/lib/es/spin";
 import { Redirect, Route } from "../runtime/router";
 import { filterTree } from "./utils";
 import { getIntlContent } from "./IntlUtils";

@@ -17,7 +17,7 @@
 
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
-import { Icon } from "antd";
+import ResourceIcon from "../components/ui/ResourceIcon";
 import { message } from "../components/ui/feedback";
 import { Link, Redirect, Switch, Route } from "../runtime/router";
 import DocumentTitle from "../components/DocumentTitle";
@@ -35,9 +35,9 @@ const links = [];
 
 const copyright = (
   <>
-    Copyright <Icon type="copyright" /> {new Date().getFullYear()} The Apache
-    Software Foundation, Licensed under the Apache License, Version 2.0. Apache
-    ShenYu, Apache, the Apache feather logo, the Apache ShenYu logo are
+    Copyright <ResourceIcon type="copyright" /> {new Date().getFullYear()} The
+    Apache Software Foundation, Licensed under the Apache License, Version 2.0.
+    Apache ShenYu, Apache, the Apache feather logo, the Apache ShenYu logo are
     trademarks of The Apache Software Foundation.
   </>
 );

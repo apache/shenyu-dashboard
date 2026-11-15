@@ -16,9 +16,11 @@
  */
 
 import React, { Component } from "react";
-import { Button, Popconfirm } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import ResourceIcon from "../components/ui/ResourceIcon";
 
 /**
  * check button's authority
@@ -62,14 +64,16 @@ export default class AuthButton extends Component {
       if (authButton.icon) {
         const type = children.type;
         if (type === Button) {
-          return React.cloneElement(children, { icon: authButton.icon });
+          return React.cloneElement(children, {
+            icon: <ResourceIcon type={authButton.icon} />,
+          });
         } else if (
           type === Popconfirm &&
           children.props.children &&
           children.props.children.type === Button
         ) {
           let newChildren = React.cloneElement(children.props.children, {
-            icon: authButton.icon,
+            icon: <ResourceIcon type={authButton.icon} />,
           });
           return React.cloneElement(children, { children: newChildren });
         } else {

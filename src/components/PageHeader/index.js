@@ -17,10 +17,11 @@
 
 /* eslint-disable react/static-property-placement */
 import React, { PureComponent, createElement } from "react";
-import PropTypes from "prop-types";
 import pathToRegexp from "path-to-regexp";
-import { Breadcrumb, Tabs } from "antd";
+import Breadcrumb from "@douyinfe/semi-ui/lib/es/breadcrumb";
+import Tabs from "@douyinfe/semi-ui/lib/es/tabs";
 import classNames from "classnames";
+import BreadcrumbContext from "./BreadcrumbContext";
 import styles from "./index.less";
 import { urlToList } from "../_utils/pathTools";
 
@@ -38,30 +39,7 @@ export function getBreadcrumb(breadcrumbNameMap, url) {
 }
 
 export default class PageHeader extends PureComponent {
-  static contextTypes = {
-    routes: PropTypes.array,
-    params: PropTypes.object,
-    location: PropTypes.object,
-    breadcrumbNameMap: PropTypes.object,
-  };
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      breadcrumb: null,
-    };
-  }
-
-  componentDidMount() {
-    this.getBreadcrumbDom();
-  }
-
-  componentDidUpdate(preProps) {
-    const { tabActiveKey } = this.props;
-    if (preProps.tabActiveKey !== tabActiveKey) {
-      this.getBreadcrumbDom();
-    }
-  }
+  static contextType = BreadcrumbContext;
 
   onChange = (key) => {
     const { onTabChange } = this.props;
@@ -82,15 +60,8 @@ export default class PageHeader extends PureComponent {
       routes: routes || croutes,
       params: params || cparams,
       routerLocation: location || clocation,
-      breadcrumbNameMap: breadcrumbNameMap || cbreadcrumbNameMap,
+      breadcrumbNameMap: breadcrumbNameMap || cbreadcrumbNameMap || {},
     };
-  };
-
-  getBreadcrumbDom = () => {
-    const breadcrumb = this.conversionBreadcrumbList();
-    this.setState({
-      breadcrumb,
-    });
   };
 
   // Generated according to props
@@ -171,14 +142,27 @@ export default class PageHeader extends PureComponent {
     // 如果传入 routes 和 params 属性
     // If pass routes and params attributes
     if (routes && params) {
+      const visibleRoutes = routes.filter((route) => route.breadcrumbName);
+      const paths = [];
       return (
         <Breadcrumb
           className={styles.breadcrumb}
-          routes={routes.filter((route) => route.breadcrumbName)}
-          params={params}
-          itemRender={this.itemRender}
           separator={breadcrumbSeparator}
-        />
+        >
+          {visibleRoutes.map((route, index) => {
+            paths.push(
+              (route.path || "").replace(
+                /:([^/]+)/g,
+                (_, name) => params[name] ?? `:${name}`,
+              ),
+            );
+            return (
+              <Breadcrumb.Item key={route.path || index}>
+                {this.itemRender(route, params, visibleRoutes, [...paths])}
+              </Breadcrumb.Item>
+            );
+          })}
+        </Breadcrumb>
       );
     }
     // 根据 location 生成 面包屑
@@ -221,7 +205,7 @@ export default class PageHeader extends PureComponent {
       tabDefaultActiveKey,
       tabBarExtraContent,
     } = this.props;
-    const { breadcrumb } = this.state;
+    const breadcrumb = this.conversionBreadcrumbList();
 
     const clsString = classNames(styles.pageHeader, className);
     const activeKeyProps = {};
@@ -258,7 +242,7 @@ export default class PageHeader extends PureComponent {
             tabBarExtraContent={tabBarExtraContent}
           >
             {tabList.map((item) => (
-              <TabPane tab={item.tab} key={item.key} />
+              <TabPane tab={item.tab} itemKey={item.key} key={item.key} />
             ))}
           </Tabs>
         )}

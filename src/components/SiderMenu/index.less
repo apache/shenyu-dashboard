@@ -15,94 +15,56 @@
  * limitations under the License.
  */
 
-@import "~antd/lib/style/themes/default.less";
-@ease-in-out-circ: cubic-bezier(0.78, 0.14, 0.15, 0.86);
-
 .logo {
   height: 64px;
-  position: relative;
-  padding-left: (@menu-collapsed-width - 32px) / 2;
-  transition: all 0.3s;
-  background: #002140;
+  padding: 0 24px;
   overflow: hidden;
   display: flex;
-  flex-direction: row;
   align-items: center;
+  background: #002140;
+}
 
-  .icon {
-    width: 32px;
-    height: 32px;
-  }
+.TitleLogo {
+  width: 184px;
+  max-width: none;
+}
 
-  .TitleLogo {
-    width: 184px;
-    height: 184px;
-  }
-
-  .systemTitle {
-    color: #ffffff;
-    font-family: "Myriad Pro", "Helvetica Neue", Arial, Helvetica, sans-serif;
-    font-weight: 600;
-
-    .title {
-      font-size: 18px;
-      line-height: 18px;
-    }
-
-    .subTitle {
-      font-size: 14px;
-      line-height: 17px;
-    }
-  }
+.logoMark {
+  width: 32px;
+  height: 32px;
 }
 
 .sider {
   min-height: 100vh;
+  background: #001529;
   box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
   position: relative;
   z-index: 10;
 
-  &.ligth {
-    background-color: white;
+  --semi-color-nav-bg: #001529;
+  --semi-color-text-0: rgba(255, 255, 255, 0.9);
+  --semi-color-text-1: rgba(255, 255, 255, 0.8);
+  --semi-color-text-2: rgba(255, 255, 255, 0.65);
+  --semi-color-fill-0: rgba(255, 255, 255, 0.08);
+  --semi-color-fill-1: rgba(255, 255, 255, 0.12);
+  --semi-color-primary: #69b1ff;
+  --semi-color-primary-light-default: #003b70;
 
-    .logo {
-      background: white;
-
-      h1 {
-        color: #002140;
-      }
-    }
+  a {
+    color: inherit;
+    text-decoration: none;
   }
 }
 
 .changeMode {
-  margin: 10px 0px 0px 20px !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  color: white;
 }
 
 .icon {
   width: 14px;
-  margin-right: 10px;
-}
-
-:global {
-  .drawer .drawer-content {
-    background: #001529;
-  }
-
-  .ant-menu-inline-collapsed {
-
-    &>.ant-menu-item .sider-menu-item-img+span,
-    &>.ant-menu-item-group>.ant-menu-item-group-list>.ant-menu-item .sider-menu-item-img+span,
-    &>.ant-menu-submenu>.ant-menu-submenu-title .sider-menu-item-img+span {
-      max-width: 0;
-      display: inline-block;
-      opacity: 0;
-    }
-  }
-
-  .ant-menu-item .sider-menu-item-img+span,
-  .ant-menu-submenu-title .sider-menu-item-img+span {
-    transition: opacity 0.3s @ease-in-out, width 0.3s @ease-in-out;
-    opacity: 1;
-  }
+  height: 14px;
 }

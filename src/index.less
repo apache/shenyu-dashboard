@@ -15,6 +15,10 @@
  * limitations under the License.
  */
 
+:global(*) {
+  box-sizing: border-box;
+}
+
 html,
 body,
 :global(#root) {
@@ -41,7 +45,7 @@ body,
   }
 }
 
-:global(.ant-layout) {
+:global(.semi-layout) {
   min-height: 100%;
 }
 
@@ -110,6 +114,12 @@ canvas {
 }
 
 body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--semi-color-text-0);
+  background: #f0f2f5;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -152,7 +162,7 @@ body {
   }
 }
 
-:global(.ant-table-thead){
+:global(.ant-table-thead) {
   background: #eff1f4;
 }
 

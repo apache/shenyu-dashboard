@@ -18,12 +18,17 @@
 @import '~antd/lib/style/themes/default.less';
 
 .login {
+  padding: 24px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 24px rgba(0, 21, 41, 0.18);
+
   .tabs {
     padding: 0 2px;
     margin: 0 -2px;
 
     :global {
-      .ant-tabs-tab {
+      .semi-tabs-tab {
         font-size: 16px;
         line-height: 24px;
       }
@@ -31,24 +36,25 @@
       .ant-input-affix-wrapper .ant-input:not(:first-child) {
         padding-left: 34px;
       }
-
-
     }
   }
 
   :global {
-    .ant-tabs .ant-tabs-bar {
+    .semi-tabs .semi-tabs-bar {
       border-bottom: 0;
       margin-bottom: 24px;
       text-align: center;
     }
 
-    .ant-form-item {
-      margin-bottom: 24px;
+    .semi-form-field {
+      margin-bottom: 16px;
+      padding: 0;
     }
   }
 
   .prefixIcon {
+    margin: 0 8px 0 12px;
+    flex-shrink: 0;
     font-size: @font-size-base;
     color: @disabled-color;
   }
@@ -60,13 +66,13 @@
 
   .submit {
     width: 100%;
-    margin-top: 24px;
+    margin-top: 8px;
     background-color: rgba(91, 66, 54, 0.7);
-    border: 1px solid rgba(0, 0, 0, 0)
+    border: 1px solid rgba(0, 0, 0, 0);
   }
 
   .submit:hover {
     background-color: rgba(91, 66, 54, 1);
-    border: 1px solid black
+    border: 1px solid black;
   }
 }
