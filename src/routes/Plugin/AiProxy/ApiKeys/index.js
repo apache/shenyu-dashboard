@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { connect } from "react-redux";
-import {
-  Button,
-  Input,
-  Row,
-  Col,
-  Table,
-  Switch,
-  Modal,
-  Form,
-  Typography,
-  Popconfirm,
-  Alert,
-} from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import Banner from "@douyinfe/semi-ui/lib/es/banner";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
+import Input from "../../../../components/ui/Input";
+import Switch from "../../../../components/ui/Switch";
+import Modal from "../../../../components/ui/Modal";
+import Form from "../../../../components/ui/Form";
+import ResourceIcon from "../../../../components/ui/ResourceIcon";
 import { message } from "../../../../components/ui/feedback";
-import styles from "../../index.less";
+import styles from "../../../../components/ui/ManagementList.module.less";
 import { getIntlContent } from "../../../../utils/IntlUtils";
 import AuthButton from "../../../../utils/AuthButton";
 import {
@@ -42,9 +47,6 @@ import {
   batchEnableAiProxyApiKeys,
 } from "../../../../services/api";
 import { clipboardCopy } from "../../../../utils/utils";
-
-const { Search } = Input;
-const { Title } = Typography;
 
 // proxyApiKey needs to be fully visible on the management page, so we do not mask it
 class CreateModalInner extends React.Component {
@@ -173,12 +175,18 @@ function ApiKeysPage({
   initialNamespaceId,
   onBack,
   currentSelector,
+  language,
 }) {
-  const [selectorId, setSelectorId] = useState(initialSelectorId);
-  const [namespaceId, setNamespaceId] = useState(
-    initialNamespaceId || currentNamespaceId || "default",
-  );
+  const selectorId = initialSelectorId;
+  const namespaceId = initialNamespaceId || currentNamespaceId || "default";
+  const scope = JSON.stringify([selectorId, namespaceId]);
+  const scopeRef = useRef(scope);
+  scopeRef.current = scope;
+  const mounted = useRef(false);
+  const requestId = useRef(0);
+  const refresh = useRef(null);
   const [queryKey, setQueryKey] = useState();
+  const [searchText, setSearchText] = useState("");
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -187,152 +195,397 @@ function ApiKeysPage({
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [current, setCurrent] = useState();
+  const [createdKey, setCreatedKey] = useState();
+  const [pendingDelete, setPendingDelete] = useState(null);
   const realKeyFromSelector = useMemo(() => {
     try {
       const handle = currentSelector && currentSelector.handle;
-      if (handle) {
-        const obj = typeof handle === "string" ? JSON.parse(handle) : handle;
-        return obj && (obj.realApiKey || obj.realKey || obj.apiKey);
-      }
-    } catch (e) {
-      // ignore
+      const config = typeof handle === "string" ? JSON.parse(handle) : handle;
+      return config && (config.realApiKey || config.realKey || config.apiKey);
+    } catch {
+      return undefined;
     }
-    return undefined;
   }, [currentSelector]);
 
   useEffect(() => {
-    if (initialSelectorId) setSelectorId(initialSelectorId);
-    if (initialNamespaceId) setNamespaceId(initialNamespaceId);
-    // eslint-disable-next-line
-  }, [initialSelectorId, initialNamespaceId]);
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      requestId.current += 1;
+    };
+  }, []);
+
+  const fetchList = useCallback(
+    async (p = page, ps = pageSize, key = queryKey) => {
+      if (!selectorId) return;
+      requestId.current += 1;
+      const request = requestId.current;
+      try {
+        const res = await getAiProxyApiKeys({
+          selectorId,
+          namespaceId,
+          currentPage: p,
+          pageSize: ps,
+          proxyApiKey: key && key.trim() !== "" ? key.trim() : undefined,
+        });
+        if (
+          !mounted.current ||
+          scopeRef.current !== scope ||
+          request !== requestId.current
+        )
+          return;
+        if (res?.code !== 200) {
+          if (res) message.warn(res.message || "Request failed");
+          return;
+        }
+        setData(res.data?.dataList || []);
+        setTotal(res.data?.totalCount || 0);
+      } catch (error) {
+        if (
+          mounted.current &&
+          scopeRef.current === scope &&
+          request === requestId.current
+        )
+          message.warn(error.message || "Request failed");
+      }
+    },
+    [selectorId, namespaceId, scope, page, pageSize, queryKey],
+  );
+  refresh.current = fetchList;
 
   useEffect(() => {
-    if (selectorId) {
-      fetchList(1, pageSize);
-    }
+    setPage(1);
+    setSelectedRowKeys([]);
+    setCreateOpen(false);
+    setEditOpen(false);
+    setCurrent(undefined);
+    setCreatedKey(undefined);
+    setPendingDelete(null);
+    setData([]);
+    setTotal(0);
+    fetchList(1, pageSize);
+    return () => {
+      requestId.current += 1;
+    };
+    // Fetch only for a context change; search and pagination issue their own request.
     // eslint-disable-next-line
   }, [selectorId, namespaceId]);
 
-  // Declared before `columns` so the memoized renderers always capture the
-  // latest page/filter/selector state instead of stale first-render values.
-  const fetchList = useCallback(
-    async (p = page, ps = pageSize) => {
-      if (!selectorId) return;
-      const res = await getAiProxyApiKeys({
-        selectorId,
-        namespaceId,
-        currentPage: p,
-        pageSize: ps,
-        proxyApiKey:
-          queryKey && queryKey.trim() !== "" ? queryKey.trim() : undefined,
-      });
-      const list = res?.data?.dataList || [];
-      setData(list);
-      setTotal(res?.data?.totalCount || 0);
+  const isCurrent = () => mounted.current && scopeRef.current === scope;
+  const success = (res) => {
+    if (!isCurrent()) return false;
+    if (res?.code === 200) return true;
+    if (res) message.warn(res.message || "Request failed");
+    return false;
+  };
+  const onToggle = async (ids, enabled) => {
+    if (!selectorId) return;
+    const res = await batchEnableAiProxyApiKeys({ selectorId, ids, enabled });
+    if (success(res)) refresh.current();
+  };
+  const onBatchDelete = async (ids) => {
+    if (!selectorId) return false;
+    const res = await batchDeleteAiProxyApiKeys({ selectorId, ids });
+    if (!success(res)) return false;
+    setSelectedRowKeys((keys) => keys.filter((id) => !ids.includes(id)));
+    refresh.current();
+    return true;
+  };
+  const onCreate = async (values) => {
+    if (!selectorId) return;
+    const res = await addAiProxyApiKey({ selectorId, ...values });
+    if (!success(res)) return;
+    setCreateOpen(false);
+    const key = res.data?.proxyApiKey;
+    if (key) setCreatedKey(key);
+    else message.success(getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS"));
+    setPage(1);
+    refresh.current(1);
+  };
+  const onEdit = async (values) => {
+    if (!selectorId || !current) return;
+    const res = await updateAiProxyApiKey({
+      selectorId,
+      id: current.id,
+      ...values,
+    });
+    if (!success(res)) return;
+    setEditOpen(false);
+    refresh.current();
+  };
+  const hasSelection = () => {
+    if (selectedRowKeys.length) return true;
+    message.destroy();
+    message.warn(
+      getIntlContent("SHENYU.COMMON.WARN.INPUT_SELECTOR") ||
+        "Please select data",
+    );
+    return false;
+  };
+  const copyKey = () =>
+    clipboardCopy(createdKey)
+      .then((copied) =>
+        copied
+          ? message.success(getIntlContent("SHENYU.COMMON.COPY"))
+          : message.warn("Copy failed"),
+      )
+      .catch(() => message.warn("Copy failed"));
+  const search = (value) => {
+    const trimmed = value.trim();
+    setQueryKey(trimmed || undefined);
+    setPage(1);
+    fetchList(1, pageSize, trimmed);
+  };
+  const columns = [
+    {
+      title: "proxyApiKey",
+      dataIndex: "proxyApiKey",
+      key: "proxyApiKey",
+      width: 320,
+      render: (value) => (
+        <span style={{ wordBreak: "break-all" }}>{value}</span>
+      ),
     },
-    [selectorId, namespaceId, page, pageSize, queryKey],
-  );
-
-  const onToggle = useCallback(
-    async (ids, enabled) => {
-      if (!selectorId) return;
-      await batchEnableAiProxyApiKeys({ selectorId, ids, enabled });
-      fetchList();
+    {
+      title: getIntlContent("SHENYU.SYSTEM.DESCRIBE") || "Description",
+      dataIndex: "description",
+      key: "description",
     },
-    [selectorId, fetchList],
-  );
-
-  const onBatchDelete = useCallback(
-    async (ids) => {
-      if (!selectorId) return;
-      await batchDeleteAiProxyApiKeys({ selectorId, ids });
-      fetchList();
+    {
+      title: getIntlContent("SHENYU.COMMON.OPEN") || "Enabled",
+      dataIndex: "enabled",
+      key: "enabled",
+      width: 120,
+      render: (value, record) => (
+        <Switch
+          aria-label={`${record.id}: ${getIntlContent("SHENYU.COMMON.OPEN")}`}
+          checked={value}
+          onChange={(checked) => onToggle([record.id], checked)}
+        />
+      ),
     },
-    [selectorId, fetchList],
-  );
-
-  const columns = useMemo(
-    () => [
-      { title: "proxyApiKey", dataIndex: "proxyApiKey", key: "proxyApiKey" },
-      {
-        title: getIntlContent("SHENYU.SYSTEM.DESCRIBE") || "Description",
-        dataIndex: "description",
-        key: "description",
-      },
-      {
-        title: getIntlContent("SHENYU.COMMON.OPEN") || "Enabled",
-        dataIndex: "enabled",
-        key: "enabled",
-        render: (v, r) => (
-          <Switch
-            checked={v}
-            onChange={(checked) => onToggle([r.id], checked)}
-          />
-        ),
-      },
-      {
-        title: getIntlContent("SHENYU.SYSTEM.UPDATETIME") || "Update Time",
-        dataIndex: "dateUpdated",
-        key: "dateUpdated",
-      },
-      {
-        title: getIntlContent("SHENYU.COMMON.OPERAT") || "Operation",
-        key: "op",
-        render: (_, r) => (
-          <div>
-            <AuthButton perms="system:aiProxyApiKey:edit">
-              <span
-                className="edit"
-                style={{ marginRight: 8 }}
+    {
+      title: getIntlContent("SHENYU.SYSTEM.UPDATETIME") || "Update Time",
+      dataIndex: "dateUpdated",
+      key: "dateUpdated",
+      width: 180,
+    },
+    {
+      title: getIntlContent("SHENYU.COMMON.OPERAT") || "Operation",
+      key: "op",
+      width: 180,
+      render: (_, record) => (
+        <div className={styles.actions}>
+          <AuthButton perms="system:aiProxyApiKey:edit">
+            {({ icon }) => (
+              <Button
+                htmlType="button"
+                theme="borderless"
+                icon={icon ? <ResourceIcon type={icon} /> : undefined}
                 onClick={() => {
-                  setCurrent(r);
+                  setCurrent(record);
                   setEditOpen(true);
                 }}
               >
                 {getIntlContent("SHENYU.COMMON.CHANGE")}
-              </span>
-            </AuthButton>
-            <AuthButton perms="system:aiProxyApiKey:delete">
+              </Button>
+            )}
+          </AuthButton>
+          <AuthButton perms="system:aiProxyApiKey:delete">
+            {({ icon }) => (
               <Popconfirm
-                title={
-                  getIntlContent("SHENYU.COMMON.DELETE") || "Confirm delete?"
-                }
-                onConfirm={() => onBatchDelete([r.id])}
+                title={getIntlContent("SHENYU.COMMON.DELETE")}
+                motion={false}
+                onConfirm={() => onBatchDelete([record.id])}
                 okText={getIntlContent("SHENYU.COMMON.SURE")}
                 cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
               >
-                <span className="edit">
+                <Button
+                  htmlType="button"
+                  theme="borderless"
+                  type="danger"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                >
                   {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
-                </span>
+                </Button>
               </Popconfirm>
-            </AuthButton>
-          </div>
-        ),
-      },
-    ],
-    [namespaceId, onToggle, onBatchDelete],
-  );
+            )}
+          </AuthButton>
+        </div>
+      ),
+    },
+  ];
 
-  const onCreate = async (values) => {
-    if (!selectorId) return;
-    const res = await addAiProxyApiKey({ selectorId, ...values });
-    setCreateOpen(false);
-    const newKey = res && res.data && res.data.proxyApiKey;
-    if (newKey) {
-      const copy = async (text) => {
-        clipboardCopy(text)
-          .then(() => {
-            message.success(getIntlContent("SHENYU.COMMON.COPY") || "Copy");
-          })
-          .catch(() => {
-            message.warn("Copy failed");
-          });
-      };
-      Modal.success({
-        title: getIntlContent("APIPROXY.APIKEY.CREATE") || "Create API Key",
-        content: (
-          <div>
-            <div style={{ marginBottom: 6 }}>Proxy API Key:</div>
+  return (
+    <LocaleProvider locale={language === "zh-CN" ? zhCN : enUS}>
+      <div className="plug-content-wrap">
+        <div className={styles.toolbar} style={{ marginBottom: 12 }}>
+          {onBack && (
+            <Button htmlType="button" onClick={() => onBack()}>
+              {getIntlContent("SHENYU.COMMON.BACK") || "Back"}
+            </Button>
+          )}
+          <h2 style={{ margin: 0 }}>API Key</h2>
+          <span className={styles.secondary}>Ai</span>
+        </div>
+        {selectorId && (
+          <Banner
+            type="info"
+            fullMode={false}
+            closeIcon={null}
+            title={getIntlContent("APIPROXY.APIKEY.USAGE.TITLE")}
+            description={
+              <div>
+                <div>{getIntlContent("APIPROXY.APIKEY.USAGE.LINE1")}</div>
+                <div>{getIntlContent("APIPROXY.APIKEY.USAGE.LINE2")}</div>
+              </div>
+            }
+            style={{ marginBottom: 12 }}
+          />
+        )}
+        <form
+          className={styles.toolbar}
+          onSubmit={(event) => {
+            event.preventDefault();
+            search(searchText);
+          }}
+        >
+          <Input
+            className={styles.filter}
+            value={searchText}
+            placeholder="proxyApiKey"
+            onChange={(event) => setSearchText(event.target.value)}
+          />
+          <Button htmlType="submit" theme="solid" type="primary">
+            {getIntlContent("SHENYU.SYSTEM.SEARCH")}
+          </Button>
+          <Button
+            htmlType="button"
+            onClick={() => {
+              setSearchText("");
+              search("");
+            }}
+          >
+            {getIntlContent("SHENYU.COMMON.REFRESH") || "Refresh"}
+          </Button>
+          <AuthButton perms="system:aiProxyApiKey:add">
+            {({ icon }) => (
+              <Button
+                htmlType="button"
+                type="primary"
+                theme="solid"
+                icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                onClick={() => setCreateOpen(true)}
+              >
+                {getIntlContent("SHENYU.COMMON.ADD")}
+              </Button>
+            )}
+          </AuthButton>
+          <AuthButton perms="system:aiProxyApiKey:disable">
+            {({ icon }) => (
+              <Button
+                htmlType="button"
+                type="primary"
+                theme="solid"
+                icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                onClick={() => {
+                  if (hasSelection()) onToggle(selectedRowKeys, true);
+                }}
+              >
+                {getIntlContent("SHENYU.PLUGIN.SELECTOR.BATCH.OPENED")}
+              </Button>
+            )}
+          </AuthButton>
+          <AuthButton perms="system:aiProxyApiKey:disable">
+            {({ icon }) => (
+              <Button
+                htmlType="button"
+                type="primary"
+                theme="solid"
+                icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                onClick={() => {
+                  if (hasSelection()) onToggle(selectedRowKeys, false);
+                }}
+              >
+                {getIntlContent("SHENYU.PLUGIN.SELECTOR.BATCH.CLOSED")}
+              </Button>
+            )}
+          </AuthButton>
+          <AuthButton perms="system:aiProxyApiKey:delete">
+            {({ icon }) => (
+              <Button
+                htmlType="button"
+                type="danger"
+                theme="solid"
+                icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                onClick={() => {
+                  if (hasSelection()) setPendingDelete([...selectedRowKeys]);
+                }}
+              >
+                {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
+              </Button>
+            )}
+          </AuthButton>
+        </form>
+        <Table
+          size="small"
+          rowKey="id"
+          bordered
+          style={{ marginTop: 20 }}
+          columns={columns}
+          dataSource={data}
+          rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
+          pagination={{
+            total,
+            showTotal: true,
+            showSizeChanger: true,
+            pageSizeOpts: [10, 20, 50, 100],
+            currentPage: page,
+            pageSize,
+            onChange: (next, size) => {
+              const target = size === pageSize ? next : 1;
+              setPage(target);
+              setPageSize(size);
+              fetchList(target, size);
+            },
+          }}
+        />
+        {createOpen && (
+          <CreateModal
+            visible
+            onCancel={() => setCreateOpen(false)}
+            onOk={onCreate}
+            defaultNamespace={namespaceId}
+            realApiKeyPreset={realKeyFromSelector}
+          />
+        )}
+        {editOpen && (
+          <EditModal
+            id={current?.id}
+            visible
+            onCancel={() => setEditOpen(false)}
+            onOk={onEdit}
+            record={current}
+            defaultNamespace={namespaceId}
+          />
+        )}
+        {createdKey && (
+          <Modal
+            visible
+            title={getIntlContent("APIPROXY.APIKEY.CREATE")}
+            onCancel={() => setCreatedKey(undefined)}
+            footer={
+              <Button
+                htmlType="button"
+                type="primary"
+                theme="solid"
+                onClick={() => setCreatedKey(undefined)}
+              >
+                {getIntlContent("SHENYU.COMMON.SURE")}
+              </Button>
+            }
+          >
+            <div>Proxy API Key:</div>
             <div
               style={{
                 wordBreak: "break-all",
@@ -340,231 +593,32 @@ function ApiKeysPage({
                 marginBottom: 8,
               }}
             >
-              {newKey}
+              {createdKey}
             </div>
-            <Button onClick={() => copy(newKey)}>
-              {getIntlContent("SHENYU.COMMON.COPY") || "Copy"}
+            <Button htmlType="button" onClick={copyKey}>
+              {getIntlContent("SHENYU.COMMON.COPY")}
             </Button>
-            <div style={{ marginTop: 16, color: "rgba(0, 0, 0, 0.45)" }}>
-              {getIntlContent("APIPROXY.APIKEY.USAGE.HINT")}
-            </div>
-          </div>
-        ),
-      });
-    } else {
-      message.success(
-        getIntlContent("SHENYU.COMMON.RESPONSE.ADD.SUCCESS") ||
-          "Create success",
-      );
-    }
-    fetchList(1, pageSize);
-  };
-
-  const onEdit = async (values) => {
-    if (!selectorId || !current) return;
-    await updateAiProxyApiKey({ selectorId, id: current.id, ...values });
-    setEditOpen(false);
-    fetchList(page, pageSize);
-  };
-
-  const onBatchDeleteConfirm = () => {
-    if (!selectedRowKeys || selectedRowKeys.length === 0) {
-      message.destroy();
-      message.warn(
-        getIntlContent("SHENYU.COMMON.WARN.INPUT_SELECTOR") ||
-          "Please select data",
-      );
-      return;
-    }
-    Modal.confirm({
-      title: getIntlContent("SHENYU.COMMON.DELETE") || "Confirm delete?",
-      okText: getIntlContent("SHENYU.COMMON.SURE"),
-      cancelText: getIntlContent("SHENYU.COMMON.CALCEL"),
-      onOk: () => onBatchDelete(selectedRowKeys),
-    });
-  };
-
-  const onBatchEnable = () => {
-    if (!selectedRowKeys || selectedRowKeys.length === 0) {
-      message.destroy();
-      message.warn(
-        getIntlContent("SHENYU.COMMON.WARN.INPUT_SELECTOR") ||
-          "Please select data",
-      );
-      return;
-    }
-    onToggle(selectedRowKeys, true);
-  };
-
-  const onBatchDisable = () => {
-    if (!selectedRowKeys || selectedRowKeys.length === 0) {
-      message.destroy();
-      message.warn(
-        getIntlContent("SHENYU.COMMON.WARN.INPUT_SELECTOR") ||
-          "Please select data",
-      );
-      return;
-    }
-    onToggle(selectedRowKeys, false);
-  };
-
-  return (
-    <div className="plug-content-wrap">
-      <Row
-        style={{
-          marginBottom: 5,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "end", flex: 1, margin: 0 }}>
-          {onBack ? (
-            <Button style={{ marginRight: 12 }} onClick={() => onBack()}>
-              {getIntlContent("SHENYU.COMMON.BACK") || "Back"}
-            </Button>
-          ) : null}
-          <Title
-            level={2}
-            style={{ textTransform: "capitalize", margin: "0 20px 0 0" }}
-          >
-            API Key
-          </Title>
-          <Title level={3} type="secondary" style={{ margin: "0 20px 0 0" }}>
-            Ai
-          </Title>
-        </div>
-      </Row>
-
-      {selectorId ? (
-        <Alert
-          type="info"
-          showIcon
-          message={getIntlContent("APIPROXY.APIKEY.USAGE.TITLE")}
-          description={
-            <div>
-              <div>{getIntlContent("APIPROXY.APIKEY.USAGE.LINE1")}</div>
-              <div style={{ marginTop: 4 }}>
-                {getIntlContent("APIPROXY.APIKEY.USAGE.LINE2")}
-              </div>
-            </div>
-          }
-          style={{ marginBottom: 12 }}
-        />
-      ) : null}
-
-      <Row gutter={20}>
-        <Col span={24}>
-          <div className="table-header">
-            <div className={styles.headerSearch}>
-              <Search
-                className={styles.search}
-                style={{ minWidth: 160 }}
-                placeholder="proxyApiKey"
-                onSearch={(v) => {
-                  const value = (v || "").trim();
-                  setQueryKey(value === "" ? undefined : value);
-                  setPage(1);
-                  fetchList(1, pageSize);
-                }}
-              />
-              <Button
-                style={{ marginLeft: 10 }}
-                onClick={() => {
-                  setQueryKey(undefined);
-                  setPage(1);
-                  fetchList(1, pageSize);
-                }}
-              >
-                {getIntlContent("SHENYU.COMMON.REFRESH") || "Refresh"}
-              </Button>
-              <AuthButton perms="system:aiProxyApiKey:add">
-                <Button
-                  type="primary"
-                  onClick={() => setCreateOpen(true)}
-                  style={{ marginLeft: 10 }}
-                >
-                  {getIntlContent("SHENYU.COMMON.ADD")}
-                </Button>
-              </AuthButton>
-              <AuthButton perms="system:aiProxyApiKey:disable">
-                <Button
-                  type="primary"
-                  onClick={onBatchEnable}
-                  style={{ marginLeft: 10 }}
-                >
-                  {getIntlContent("SHENYU.PLUGIN.SELECTOR.BATCH.OPENED")}
-                </Button>
-              </AuthButton>
-              <AuthButton perms="system:aiProxyApiKey:disable">
-                <Button
-                  type="primary"
-                  onClick={onBatchDisable}
-                  style={{ marginLeft: 10 }}
-                >
-                  {getIntlContent("SHENYU.PLUGIN.SELECTOR.BATCH.CLOSED")}
-                </Button>
-              </AuthButton>
-              <AuthButton perms="system:aiProxyApiKey:delete">
-                <Button
-                  type="primary"
-                  onClick={onBatchDeleteConfirm}
-                  style={{ marginLeft: 10 }}
-                >
-                  {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
-                </Button>
-              </AuthButton>
-            </div>
-          </div>
-
-          <Table
-            size="small"
-            style={{ marginTop: 20 }}
-            rowKey={(r) => r.id}
-            bordered
-            columns={columns}
-            dataSource={data}
-            rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
-            pagination={{
-              total,
-              showTotal: (t) => `${t}`,
-              showSizeChanger: true,
-              pageSizeOptions: ["10", "20", "50", "100"],
-              current: page,
-              pageSize,
-              onChange: (p, ps) => {
-                setPage(p);
-                setPageSize(ps);
-                fetchList(p, ps);
-              },
-              onShowSizeChange: (cp, ps) => {
-                setPage(1);
-                setPageSize(ps);
-                fetchList(1, ps);
-              },
+            <p>{getIntlContent("APIPROXY.APIKEY.USAGE.HINT")}</p>
+          </Modal>
+        )}
+        {pendingDelete && (
+          <Modal
+            visible
+            title={getIntlContent("SHENYU.COMMON.DELETE")}
+            okText={getIntlContent("SHENYU.COMMON.SURE")}
+            cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+            onCancel={() => setPendingDelete(null)}
+            onOk={async () => {
+              if (await onBatchDelete(pendingDelete)) setPendingDelete(null);
             }}
           />
-        </Col>
-      </Row>
-
-      <CreateModal
-        visible={createOpen}
-        onCancel={() => setCreateOpen(false)}
-        onOk={onCreate}
-        defaultNamespace={namespaceId}
-        realApiKeyPreset={realKeyFromSelector}
-      />
-      <EditModal
-        visible={editOpen}
-        onCancel={() => setEditOpen(false)}
-        onOk={onEdit}
-        record={current}
-        defaultNamespace={namespaceId}
-      />
-    </div>
+        )}
+      </div>
+    </LocaleProvider>
   );
 }
 
 export default connect(({ global }) => ({
   currentNamespaceId: global.currentNamespaceId,
+  language: global.language,
 }))(ApiKeysPage);

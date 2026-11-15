@@ -16,7 +16,13 @@
  */
 
 import React, { Component } from "react";
-import { Modal, Button, Form, Input, Switch, Table, Popconfirm } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import Modal from "../../../components/ui/Modal";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import Switch from "../../../components/ui/Switch";
 import { message } from "../../../components/ui/feedback";
 import styles from "./index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
@@ -26,49 +32,61 @@ const { TextArea } = Input;
 class AddModal extends Component {
   constructor(props) {
     super(props);
-    const selectorConditions = props.authParamList || [
-      {
-        appName: "",
-        appParam: "",
-      },
-    ];
-    const pathDatas = props.authPathList || [
-      {
-        path: "",
-        enabled: true,
-      },
-    ];
+    const selectorConditions = (
+      props.authParamList || [
+        {
+          appName: "",
+          appParam: "",
+        },
+      ]
+    ).map((item) => ({ ...item }));
+    const pathDatas = (
+      props.authPathList || [
+        {
+          path: "",
+          enabled: true,
+        },
+      ]
+    ).map((item, index) => ({ ...item, clientKey: index }));
+    this.nextPathKey = pathDatas.length;
     this.columns = [
       {
         title: getIntlContent("SHENYU.AUTH.RESOUCE.PATH"),
         dataIndex: "path",
         editable: "true",
-        render: (text, record, index) => (
+        render: (text, record) => (
           <Input
             allowClear
             placeholder="/"
             value={text}
-            onChange={(e) => this.handleTableInput(e.target.value, index)}
+            onChange={(e) =>
+              this.handleTableInput(e.target.value, record.clientKey)
+            }
           />
         ),
       },
       {
         title: getIntlContent("SHENYU.COMMON.OPERAT"),
         dataIndex: "operation",
-        render: (text, record, index) =>
+        render: (text, record) =>
           this.state.pathDatas.length > 1 ? (
             <Popconfirm
               title={getIntlContent("SHENYU.COMMON.DELETE")}
-              onConfirm={() => this.handleDeletePath(index)}
+              motion={false}
+              okText={getIntlContent("SHENYU.COMMON.SURE")}
+              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+              onConfirm={() => this.handleDeletePath(record.clientKey)}
             >
-              <a>{getIntlContent("SHENYU.COMMON.DELETE.NAME")}</a>
+              <Button htmlType="button" theme="borderless" type="danger">
+                {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+              </Button>
             </Popconfirm>
           ) : null,
       },
     ];
     this.state = {
       selectorConditions,
-      pathTableVisible: true,
+      pathTableVisible: props.open !== false,
       pagination: 1,
       pathDatas,
     };
@@ -83,7 +101,7 @@ class AddModal extends Component {
       if (!err) {
         handleOk({
           authParamList: selectorConditions,
-          authPathList: pathDatas,
+          authPathList: pathDatas.map(({ clientKey, ...path }) => path),
           id,
           ...values,
         });
@@ -92,29 +110,33 @@ class AddModal extends Component {
   };
 
   conditionChange = (index, name, value) => {
-    let { selectorConditions } = this.state;
-    selectorConditions[index][name] = value;
-    this.setState({ selectorConditions });
+    this.setState(({ selectorConditions }) => ({
+      selectorConditions: selectorConditions.map((item, position) =>
+        position === index ? { ...item, [name]: value } : item,
+      ),
+    }));
   };
 
   handleDelete = (index) => {
-    let { selectorConditions } = this.state;
-    if (selectorConditions && selectorConditions.length > 1) {
-      selectorConditions.splice(index, 1);
-    } else {
+    if (this.state.selectorConditions.length <= 1) {
       message.destroy();
       message.error("At least one app parameter");
+      return;
     }
-    this.setState({ selectorConditions });
+    this.setState(({ selectorConditions }) => ({
+      selectorConditions: selectorConditions.filter(
+        (item, position) => position !== index,
+      ),
+    }));
   };
 
   handleAdd = () => {
-    let { selectorConditions } = this.state;
-    selectorConditions.push({
-      appName: "",
-      appParam: "",
-    });
-    this.setState({ selectorConditions });
+    this.setState(({ selectorConditions }) => ({
+      selectorConditions: [
+        ...selectorConditions,
+        { appName: "", appParam: "" },
+      ],
+    }));
   };
 
   handleOpenChange = (checked) => {
@@ -122,31 +144,35 @@ class AddModal extends Component {
   };
 
   handleAddPath = () => {
-    const pathDatas = this.state.pathDatas;
-    const newData = {
-      path: "",
-      enabled: true,
-    };
-    this.setState({
-      pathDatas: [...pathDatas, newData],
+    const newData = { path: "", enabled: true, clientKey: this.nextPathKey };
+    this.nextPathKey += 1;
+    this.setState(({ pathDatas }) => ({ pathDatas: [...pathDatas, newData] }));
+  };
+
+  handleDeletePath = (key) => {
+    if (this.state.pathDatas.length <= 1) {
+      message.destroy();
+      message.error("At least one app path");
+      return;
+    }
+    this.setState(({ pathDatas, pagination }) => {
+      const remaining = pathDatas.filter((item) => item.clientKey !== key);
+      return {
+        pathDatas: remaining,
+        pagination: Math.min(
+          pagination,
+          Math.max(1, Math.ceil(remaining.length / 10)),
+        ),
+      };
     });
   };
 
-  handleDeletePath = (index) => {
-    let { pathDatas, pagination } = this.state;
-    if (pathDatas && pathDatas.length > 1) {
-      pathDatas.splice(index + (pagination - 1) * 10, 1);
-    } else {
-      message.destroy();
-      message.error("At least one app path");
-    }
-    this.setState({ pathDatas });
-  };
-
-  handleTableInput = (value, index) => {
-    let { pathDatas, pagination } = this.state;
-    pathDatas[index + (pagination - 1) * 10].path = value;
-    this.setState({ pathDatas });
+  handleTableInput = (value, key) => {
+    this.setState(({ pathDatas }) => ({
+      pathDatas: pathDatas.map((item) =>
+        item.clientKey === key ? { ...item, path: value } : item,
+      ),
+    }));
   };
 
   handleTableChange = (paginationObj) => {
@@ -342,6 +368,7 @@ class AddModal extends Component {
                     </li>
                     <li>
                       <Button
+                        htmlType="button"
                         className={styles.btn}
                         type="danger"
                         onClick={() => {
@@ -356,9 +383,11 @@ class AddModal extends Component {
               })}
             </div>
             <Button
+              htmlType="button"
               onClick={this.handleAdd}
               className={styles.btn}
               type="primary"
+              theme="solid"
             >
               {getIntlContent("SHENYU.COMMON.ADD")}
             </Button>
@@ -377,8 +406,10 @@ class AddModal extends Component {
           {pathTableVisible && (
             <div>
               <Button
+                htmlType="button"
                 onClick={this.handleAddPath}
                 type="primary"
+                theme="solid"
                 style={{
                   marginBottom: 16,
                 }}
@@ -389,9 +420,12 @@ class AddModal extends Component {
                 bordered
                 columns={columns}
                 dataSource={this.state.pathDatas}
-                onChange={this.handleTableChange}
-                rowKey={(record, index) => index}
-                pagination={{ current: this.state.pagination, pageSize: 10 }}
+                rowKey="clientKey"
+                pagination={{
+                  currentPage: this.state.pagination,
+                  pageSize: 10,
+                  onChange: (page) => this.handleTableChange({ current: page }),
+                }}
               />
             </div>
           )}

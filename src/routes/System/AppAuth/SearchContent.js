@@ -16,7 +16,10 @@
  */
 
 import React from "react";
-import { Form, Input, Button } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import styles from "./index.less";
@@ -52,21 +55,28 @@ class InlineSearch extends React.Component {
           })(
             <Input
               allowClear
-              type="phone"
+              type="tel"
               placeholder={getIntlContent("SHENYU.AUTH.TELPHONE")}
             />,
           )}
         </Form.Item>
         <Form.Item className={styles.formBtn}>
           <AuthButton perms="system:authen:list">
-            <Button type="primary" htmlType="submit">
-              {getIntlContent("SHENYU.SYSTEM.SEARCH")}
-            </Button>
+            {({ icon }) => (
+              <Button
+                type="primary"
+                theme="solid"
+                htmlType="submit"
+                icon={icon ? <ResourceIcon type={icon} /> : undefined}
+              >
+                {getIntlContent("SHENYU.SYSTEM.SEARCH")}
+              </Button>
+            )}
           </AuthButton>
         </Form.Item>
       </Form>
     );
   }
 }
-const SearchContent = Form.create({})(InlineSearch);
+const SearchContent = Form.create()(InlineSearch);
 export default SearchContent;

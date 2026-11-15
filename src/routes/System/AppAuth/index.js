@@ -16,11 +16,18 @@
  */
 
 import React, { Component } from "react";
-import { Table, Button, Popconfirm, Switch } from "antd";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import { connect } from "react-redux";
 import dayjs from "dayjs";
+import Switch from "../../../components/ui/Switch";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
+import styles from "../../../components/ui/ManagementList.module.less";
 import { message } from "../../../components/ui/feedback";
-import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import RelateMetadata from "./RelateMetadataLoader";
 import AddTable from "./AddTable";
@@ -36,8 +43,6 @@ import AuthButton from "../../../utils/AuthButton";
 }))
 export default class Auth extends Component {
   resourceRequest = 0;
-
-  components = resizableComponents;
 
   constructor(props) {
     super(props);
@@ -69,6 +74,7 @@ export default class Auth extends Component {
     }
     if (prevProps.currentNamespaceId !== this.props.currentNamespaceId) {
       this.closeModal();
+      this.setState({ currentPage: 1, selectedRowKeys: [] }, this.query);
     }
   }
 
@@ -76,21 +82,8 @@ export default class Auth extends Component {
     this.resourceRequest += 1;
   }
 
-  handleResize =
-    (index) =>
-    (e, { size }) => {
-      this.setState(({ columns }) => {
-        const nextColumns = [...columns];
-        nextColumns[index] = {
-          ...nextColumns[index],
-          width: size.width,
-        };
-        return { columns: nextColumns };
-      });
-    };
-
   onSelectChange = (selectedRowKeys) => {
-    this.setState({ selectedRowKeys }, this.query);
+    this.setState({ selectedRowKeys });
   };
 
   currentQueryPayload = (currentPage = this.state.currentPage) => {
@@ -122,12 +115,14 @@ export default class Auth extends Component {
     });
   };
 
-  pageOnchange = (page) => {
-    this.setState({ currentPage: page }, this.query);
-  };
-
-  onShowSizeChange = (currentPage, pageSize) => {
-    this.setState({ currentPage: 1, pageSize }, this.query);
+  onPaginationChange = (page, pageSize) => {
+    this.setState(
+      (state) => ({
+        currentPage: pageSize === state.pageSize ? page : 1,
+        pageSize,
+      }),
+      this.query,
+    );
   };
 
   closeModal = () => {
@@ -137,6 +132,7 @@ export default class Auth extends Component {
 
   editClick = (record) => {
     this.resourceRequest += 1;
+    const requestId = this.resourceRequest;
     const { dispatch, currentNamespaceId } = this.props;
     const { currentPage } = this.state;
     dispatch({
@@ -145,11 +141,21 @@ export default class Auth extends Component {
         id: record.id,
       },
       callback: (auth) => {
+        if (
+          requestId !== this.resourceRequest ||
+          currentNamespaceId !== this.props.currentNamespaceId
+        )
+          return;
         this.setState({
           popup: (
             <AddModal
               {...auth}
               handleOk={(values) => {
+                if (
+                  requestId !== this.resourceRequest ||
+                  currentNamespaceId !== this.props.currentNamespaceId
+                )
+                  return;
                 dispatch({
                   type: "auth/update",
                   payload: {
@@ -259,16 +265,27 @@ export default class Auth extends Component {
 
   addClick = () => {
     this.resourceRequest += 1;
+    const requestId = this.resourceRequest;
     const { dispatch, currentNamespaceId } = this.props;
     dispatch({
       type: "auth/fetchMetaGroup",
       payload: {},
       callback: (metaGroup) => {
+        if (
+          requestId !== this.resourceRequest ||
+          currentNamespaceId !== this.props.currentNamespaceId
+        )
+          return;
         this.setState({
           popup: (
             <AddTable
               metaGroup={metaGroup}
               handleOk={(values) => {
+                if (
+                  requestId !== this.resourceRequest ||
+                  currentNamespaceId !== this.props.currentNamespaceId
+                )
+                  return;
                 dispatch({
                   type: "auth/add",
                   payload: { ...values, namespaceId: currentNamespaceId },
@@ -423,7 +440,7 @@ export default class Auth extends Component {
           dataIndex: "open",
           key: "open",
           ellipsis: true,
-          width: 100,
+          width: 140,
           render: (text, row) => (
             <AuthButton
               perms="system:authen:open"
@@ -439,17 +456,23 @@ export default class Auth extends Component {
                 )
               }
             >
-              <Switch
-                checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-                unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-                checked={text}
-                onChange={(checked) => {
-                  this.openSwitch({
-                    list: [row.id],
-                    enabled: checked,
-                  });
-                }}
-              />
+              <span className={styles.status}>
+                <Switch
+                  aria-label={`${row.userId}: ${getIntlContent("SHENYU.AUTH.OPENPATH")}`}
+                  checked={text}
+                  onChange={(checked) => {
+                    this.openSwitch({
+                      list: [row.id],
+                      enabled: checked,
+                    });
+                  }}
+                />
+                <span>
+                  {getIntlContent(
+                    text ? "SHENYU.COMMON.OPEN" : "SHENYU.COMMON.CLOSE",
+                  )}
+                </span>
+              </span>
             </AuthButton>
           ),
         },
@@ -459,7 +482,7 @@ export default class Auth extends Component {
           dataIndex: "enabled",
           key: "enabled",
           ellipsis: true,
-          width: 100,
+          width: 140,
           render: (text, row) => (
             <AuthButton
               perms="system:authen:disable"
@@ -475,17 +498,23 @@ export default class Auth extends Component {
                 )
               }
             >
-              <Switch
-                checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-                unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-                checked={text}
-                onChange={(checked) => {
-                  this.statusSwitch({
-                    list: [row.id],
-                    enabled: checked,
-                  });
-                }}
-              />
+              <span className={styles.status}>
+                <Switch
+                  aria-label={`${row.userId}: ${getIntlContent("SHENYU.SYSTEM.STATUS")}`}
+                  checked={text}
+                  onChange={(checked) => {
+                    this.statusSwitch({
+                      list: [row.id],
+                      enabled: checked,
+                    });
+                  }}
+                />
+                <span>
+                  {getIntlContent(
+                    text ? "SHENYU.COMMON.OPEN" : "SHENYU.COMMON.CLOSE",
+                  )}
+                </span>
+              </span>
             </AuthButton>
           ),
         },
@@ -496,6 +525,7 @@ export default class Auth extends Component {
           render: (dateUpdated) =>
             dayjs(dateUpdated).format("YYYY-MM-DD HH:mm:ss"),
           key: "dateUpdated",
+          width: 200,
           ellipsis: true,
           sorter: (a, b) => (a.dateUpdated > b.dateUpdated ? 1 : -1),
         },
@@ -505,19 +535,21 @@ export default class Auth extends Component {
           dataIndex: "operate",
           key: "operate",
           ellipsis: true,
-          width: 80,
+          width: 110,
           fixed: "right",
           render: (text, record) => {
             return (
               <AuthButton perms="system:authen:edit">
-                <div
-                  className="edit"
-                  onClick={() => {
-                    this.editClick(record);
-                  }}
-                >
-                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                </div>
+                {({ icon }) => (
+                  <Button
+                    theme="borderless"
+                    htmlType="button"
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                    onClick={() => this.editClick(record)}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                  </Button>
+                )}
               </AuthButton>
             );
           },
@@ -528,21 +560,23 @@ export default class Auth extends Component {
           dataIndex: "operates",
           key: "operates",
           ellipsis: true,
-          width: 140,
+          width: 220,
           fixed: "right",
           render: (text, record) => {
             if (record.open) {
               return (
                 // 弹窗中的编辑事件
                 <AuthButton perms="system:authen:editResourceDetails">
-                  <div
-                    className="edit"
-                    onClick={() => {
-                      this.editClickMeta(record);
-                    }}
-                  >
-                    {getIntlContent("SHENYU.AUTH.EDITOR.RESOURCE")}
-                  </div>
+                  {({ icon }) => (
+                    <Button
+                      theme="borderless"
+                      htmlType="button"
+                      icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      onClick={() => this.editClickMeta(record)}
+                    >
+                      {getIntlContent("SHENYU.AUTH.EDITOR.RESOURCE")}
+                    </Button>
+                  )}
                 </AuthButton>
               );
             } else {
@@ -555,102 +589,120 @@ export default class Auth extends Component {
   }
 
   render() {
-    const { auth, loading } = this.props;
+    const { auth, loading, language } = this.props;
     const { authList, total } = auth;
     const { currentPage, pageSize, selectedRowKeys, popup } = this.state;
-    const columns = this.state.columns.map((col, index) => ({
-      ...col,
-      onHeaderCell: (column) => ({
-        width: column.width,
-        onResize: this.handleResize(index),
-      }),
-    }));
+    const { columns } = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
 
     return (
-      <div className="plug-content-wrap">
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <SearchContent onClick={this.searchClick} />
-          <AuthButton perms="system:authen:delete">
-            <Popconfirm
-              title={getIntlContent("SHENYU.COMMON.DELETE")}
-              placement="bottom"
-              onConfirm={() => {
-                this.deleteClick();
-              }}
-              okText={getIntlContent("SHENYU.COMMON.SURE")}
-              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-            >
-              <Button style={{ marginLeft: 20 }} type="danger">
-                {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
-              </Button>
-            </Popconfirm>
-          </AuthButton>
-          <AuthButton perms="system:authen:add">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.addClick}
-            >
-              {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
-            </Button>
-          </AuthButton>
-          <AuthButton perms="system:authen:open">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.openClick}
-            >
-              {getIntlContent("SHENYU.PLUGIN.BATCH.OPENED")}
-            </Button>
-          </AuthButton>
-          <AuthButton perms="system:authen:disable">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.enableClick}
-            >
-              {getIntlContent("SHENYU.PLUGIN.BATCH")}
-            </Button>
-          </AuthButton>
-          <AuthButton perms="system:authen:modify">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.syncData}
-            >
-              {getIntlContent("SHENYU.AUTH.SYNCDATA")}
-            </Button>
-          </AuthButton>
+      <LocaleProvider locale={language === "zh-CN" ? zhCN : enUS}>
+        <div className="plug-content-wrap">
+          <div className={styles.toolbar}>
+            <SearchContent onClick={this.searchClick} />
+            <AuthButton perms="system:authen:delete">
+              {({ icon }) => (
+                <Popconfirm
+                  title={getIntlContent("SHENYU.COMMON.DELETE")}
+                  position="bottom"
+                  motion={false}
+                  okType="danger"
+                  onConfirm={this.deleteClick}
+                  okText={getIntlContent("SHENYU.COMMON.SURE")}
+                  cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                >
+                  <Button
+                    htmlType="button"
+                    type="danger"
+                    theme="solid"
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
+                  </Button>
+                </Popconfirm>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:authen:add">
+              {({ icon }) => (
+                <Button
+                  htmlType="button"
+                  type="primary"
+                  theme="solid"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  onClick={this.addClick}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
+                </Button>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:authen:open">
+              {({ icon }) => (
+                <Button
+                  htmlType="button"
+                  type="primary"
+                  theme="solid"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  onClick={this.openClick}
+                >
+                  {getIntlContent("SHENYU.PLUGIN.BATCH.OPENED")}
+                </Button>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:authen:disable">
+              {({ icon }) => (
+                <Button
+                  htmlType="button"
+                  type="primary"
+                  theme="solid"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  onClick={this.enableClick}
+                >
+                  {getIntlContent("SHENYU.PLUGIN.BATCH")}
+                </Button>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:authen:modify">
+              {({ icon }) => (
+                <Button
+                  htmlType="button"
+                  type="primary"
+                  theme="solid"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  onClick={this.syncData}
+                >
+                  {getIntlContent("SHENYU.AUTH.SYNCDATA")}
+                </Button>
+              )}
+            </AuthButton>
+          </div>
+          {/* 表格 */}
+          <Table
+            size="small"
+            resizable
+            style={{ marginTop: 30 }}
+            bordered
+            rowKey="id"
+            loading={loading}
+            columns={columns}
+            scroll={{ x: 1800 }}
+            dataSource={authList}
+            rowSelection={rowSelection}
+            pagination={{
+              total,
+              showTotal: true,
+              showSizeChanger: true,
+              pageSizeOpts: [12, 20, 50, 100],
+              currentPage,
+              pageSize,
+              onChange: this.onPaginationChange,
+            }}
+          />
+          {popup}
         </div>
-        {/* 表格 */}
-        <Table
-          size="small"
-          components={this.components}
-          style={{ marginTop: 30 }}
-          bordered
-          rowKey={(record) => record.id}
-          loading={loading}
-          columns={columns}
-          scroll={{ x: 1450 }}
-          dataSource={authList}
-          rowSelection={rowSelection}
-          pagination={{
-            total,
-            showTotal: (showTotal) => `${showTotal}`,
-            showSizeChanger: true,
-            pageSizeOptions: ["12", "20", "50", "100"],
-            current: currentPage,
-            pageSize,
-            onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange,
-          }}
-        />
-        {popup}
-      </div>
+      </LocaleProvider>
     );
   }
 }
