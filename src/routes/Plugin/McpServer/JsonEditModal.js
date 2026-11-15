@@ -16,8 +16,12 @@
  */
 
 import React, { Component } from "react";
-import { Button, Modal, Input, Tabs, Radio } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Tabs from "@douyinfe/semi-ui/lib/es/tabs";
+import Radio from "@douyinfe/semi-ui/lib/es/radio";
 import ReactJson from "@microlink/react-json-view";
+import Input from "../../../components/ui/Input";
+import Modal from "../../../components/ui/Modal";
 import { message } from "../../../components/ui/feedback";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { clipboardCopy } from "../../../utils/utils";
@@ -289,8 +293,10 @@ class JsonEditModal extends Component {
         : this.state.unifiedText;
 
     clipboardCopy(textToCopy)
-      .then(() => {
-        message.success(getIntlContent("SHENYU.MCP.JSON.EDIT.COPY.SUCCESS"));
+      .then((copied) => {
+        if (copied)
+          message.success(getIntlContent("SHENYU.MCP.JSON.EDIT.COPY.SUCCESS"));
+        else message.error(getIntlContent("SHENYU.MCP.JSON.EDIT.COPY.FAILED"));
       })
       .catch(() => {
         message.error(getIntlContent("SHENYU.MCP.JSON.EDIT.COPY.FAILED"));
@@ -434,13 +440,17 @@ class JsonEditModal extends Component {
       >
         <div style={{ marginBottom: "16px" }}>
           <div style={{ marginBottom: "12px" }}>
-            <Radio.Group value={editMode} onChange={this.handleEditModeChange}>
-              <Radio.Button value="separate">
+            <Radio.Group
+              type="button"
+              value={editMode}
+              onChange={this.handleEditModeChange}
+            >
+              <Radio value="separate">
                 {getIntlContent("SHENYU.MCP.JSON.EDIT.MODE.SEPARATE")}
-              </Radio.Button>
-              <Radio.Button value="unified">
+              </Radio>
+              <Radio value="unified">
                 {getIntlContent("SHENYU.MCP.JSON.EDIT.MODE.UNIFIED")}
-              </Radio.Button>
+              </Radio>
             </Radio.Group>
           </div>
 
@@ -451,12 +461,20 @@ class JsonEditModal extends Component {
           </p>
 
           <div style={{ display: "flex", gap: "10px" }}>
-            <Button type="dashed" size="small" onClick={this.handleFormatJson}>
+            <Button
+              htmlType="button"
+              type="tertiary"
+              theme="outline"
+              size="small"
+              onClick={this.handleFormatJson}
+            >
               {getIntlContent("SHENYU.MCP.JSON.EDIT.FORMAT")}
             </Button>
 
             <Button
-              type="dashed"
+              htmlType="button"
+              type="tertiary"
+              theme="outline"
               size="small"
               onClick={this.handleCompressJson}
             >
@@ -464,7 +482,9 @@ class JsonEditModal extends Component {
             </Button>
 
             <Button
-              type="dashed"
+              htmlType="button"
+              type="tertiary"
+              theme="outline"
               size="small"
               onClick={this.handleCopyToClipboard}
             >
@@ -480,7 +500,7 @@ class JsonEditModal extends Component {
           >
             <TabPane
               tab={getIntlContent("SHENYU.MCP.JSON.EDIT.TAB.TEXT")}
-              key="1"
+              itemKey="1"
             >
               <div style={{ marginBottom: "16px" }}>
                 <div style={{ marginBottom: "8px", fontWeight: "bold" }}>
@@ -547,7 +567,7 @@ class JsonEditModal extends Component {
             </TabPane>
             <TabPane
               tab={getIntlContent("SHENYU.MCP.JSON.EDIT.TAB.PREVIEW")}
-              key="2"
+              itemKey="2"
             >
               <div style={{ marginBottom: "16px" }}>
                 <div style={{ marginBottom: "8px", fontWeight: "bold" }}>
@@ -602,7 +622,7 @@ class JsonEditModal extends Component {
           >
             <TabPane
               tab={getIntlContent("SHENYU.MCP.JSON.EDIT.TAB.TEXT")}
-              key="1"
+              itemKey="1"
             >
               <div style={{ position: "relative" }}>
                 <TextArea
@@ -641,7 +661,7 @@ class JsonEditModal extends Component {
             </TabPane>
             <TabPane
               tab={getIntlContent("SHENYU.MCP.JSON.EDIT.TAB.PREVIEW")}
-              key="2"
+              itemKey="2"
             >
               <div
                 style={{

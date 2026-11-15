@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Table } from "antd";
+import Table from "@douyinfe/semi-ui/lib/es/table";
 import ConnectedMcpServer from "./index";
 
 jest.mock("@microlink/react-json-view", () => () => null);

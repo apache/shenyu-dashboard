@@ -193,13 +193,14 @@ export default {
       }
     },
     *deleteRule(params, { call, put }) {
-      const { payload, fetchValue } = params;
+      const { payload, fetchValue, callback } = params;
       const { list, namespaceId } = payload;
       const json = yield call(deleteRule, { list, namespaceId });
       if (json.code === 200) {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
         );
+        if (callback) callback();
         yield put({ type: "reloadRule", fetchValue });
       } else {
         message.warn(json.message);
@@ -244,15 +245,36 @@ export default {
 
     *reload(params, { put }) {
       const { fetchValue } = params;
-      const { pluginId, currentPage, pageSize, namespaceId } = fetchValue;
-      const payload = { pluginId, currentPage, pageSize, namespaceId };
+      const {
+        pluginId,
+        currentPage,
+        pageSize,
+        namespaceId,
+        name,
+        rulePageSize,
+      } = fetchValue;
+      const payload = {
+        pluginId,
+        currentPage,
+        pageSize,
+        namespaceId,
+        ...(name === undefined ? {} : { name }),
+        ...(rulePageSize === undefined ? {} : { rulePageSize }),
+      };
       yield put({ type: "fetchSelector", payload });
     },
 
     *reloadRule(params, { put }) {
       const { fetchValue } = params;
-      const { selectorId, currentPage, pageSize, namespaceId } = fetchValue;
-      const payload = { selectorId, currentPage, pageSize, namespaceId };
+      const { selectorId, currentPage, pageSize, namespaceId, name } =
+        fetchValue;
+      const payload = {
+        selectorId,
+        currentPage,
+        pageSize,
+        namespaceId,
+        ...(name === undefined ? {} : { name }),
+      };
       yield put({ type: "fetchRule", payload });
     },
 

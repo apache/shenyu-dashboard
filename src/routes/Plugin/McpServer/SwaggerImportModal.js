@@ -16,7 +16,9 @@
  */
 
 import React, { Component } from "react";
-import { Form, Input, Modal } from "antd";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import Modal from "../../../components/ui/Modal";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;
