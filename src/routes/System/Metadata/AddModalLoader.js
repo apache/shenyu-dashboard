@@ -16,7 +16,9 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Button, Modal, Spin } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Spin from "@douyinfe/semi-ui/lib/es/spin";
+import Modal from "../../../components/ui/Modal";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import loadAddModal from "./loadAddModal";
 
@@ -61,6 +63,7 @@ export default function AddModalLoader(props) {
         <div role="alert">
           <p>{getIntlContent("SHENYU.META.EDITOR.LOAD.FAILED")}</p>
           <Button
+            htmlType="button"
             onClick={() => {
               setFailed(false);
               setAttempt(attempt + 1);

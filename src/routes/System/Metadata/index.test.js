@@ -391,3 +391,29 @@ it.each(["en-US", "en-Us"])("localizes an empty table for %s", (language) => {
   setup({ metadata: { userList: [], total: 0 }, language });
   expect(screen.getByText("No Result")).not.toBeNull();
 });
+
+it("lets the model own the delete refresh while moving to page one", () => {
+  const { props, ref } = setup();
+  selectRow("alpha-app");
+  act(() => ref.current.pageOnchange(2));
+  act(() => ref.current.deleteClick());
+  const action = props.dispatch.mock.calls
+    .map(([a]) => a)
+    .find((a) => a.type === "metadata/delete");
+  props.dispatch.mockClear();
+  act(() => action.callback());
+  expect(fetches(props.dispatch)).toHaveLength(0);
+  expect(action.fetchValue.currentPage).toBe(1);
+});
+it("lets the model own single status refresh", () => {
+  const { props } = setup();
+  fireEvent.click(
+    within(screen.getByText("alpha-app").closest("tr")).getByRole("switch"),
+  );
+  const action = props.dispatch.mock.calls
+    .map(([a]) => a)
+    .find((a) => a.type === "metadata/updateEn");
+  props.dispatch.mockClear();
+  act(() => action.callback());
+  expect(fetches(props.dispatch)).toHaveLength(0);
+});

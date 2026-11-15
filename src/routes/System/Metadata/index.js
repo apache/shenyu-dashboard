@@ -16,8 +16,15 @@
  */
 
 import React, { Component } from "react";
-import { Input, Button, Popconfirm, Tag, Popover, Switch } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import Popover from "@douyinfe/semi-ui/lib/es/popover";
+import Tag from "@douyinfe/semi-ui/lib/es/tag";
 import { connect } from "react-redux";
+import Input from "../../../components/ui/Input";
+import Switch from "../../../components/ui/Switch";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
+import styles from "../../../components/ui/ManagementList.module.less";
 import { message } from "../../../components/ui/feedback";
 import MetadataTable from "./MetadataTableLoader";
 import AddModal from "./AddModalLoader";
@@ -180,7 +187,7 @@ export default class Metadata extends Component {
 
   deleteClick = () => {
     const { dispatch, currentNamespaceId } = this.props;
-    const { path, currentPage, pageSize, selectedRowKeys } = this.state;
+    const { path, pageSize, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "metadata/delete",
@@ -190,12 +197,12 @@ export default class Metadata extends Component {
         },
         fetchValue: {
           path,
-          currentPage,
+          currentPage: 1,
           pageSize,
           namespaceId: currentNamespaceId,
         },
         callback: () => {
-          this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
+          this.setState({ selectedRowKeys: [], currentPage: 1 });
         },
       });
     } else {
@@ -205,7 +212,7 @@ export default class Metadata extends Component {
   };
 
   addClick = () => {
-    const { currentPage, pageSize, path: filterPath } = this.state;
+    const { pageSize, path: filterPath } = this.state;
     this.setState({
       popup: (
         <AddModal
@@ -239,15 +246,12 @@ export default class Metadata extends Component {
               },
               fetchValue: {
                 path: filterPath,
-                currentPage,
+                currentPage: 1,
                 pageSize,
                 namespaceId: currentNamespaceId,
               },
               callback: () => {
-                this.setState(
-                  { selectedRowKeys: [], currentPage: 1 },
-                  this.query,
-                );
+                this.setState({ selectedRowKeys: [], currentPage: 1 });
                 this.closeModal();
               },
             });
@@ -260,7 +264,7 @@ export default class Metadata extends Component {
     });
   };
 
-  statusSwitch = ({ list, enabled, callback }) => {
+  statusSwitch = ({ list, enabled, callback = () => {} }) => {
     const { dispatch, currentNamespaceId } = this.props;
     const { path, currentPage, pageSize } = this.state;
     dispatch({
@@ -298,7 +302,7 @@ export default class Metadata extends Component {
             list: selectedRowKeys,
             enabled: !user.enabled,
             callback: () => {
-              this.setState({ selectedRowKeys: [] }, this.query);
+              this.setState({ selectedRowKeys: [] });
             },
           });
         },
@@ -410,9 +414,15 @@ export default class Metadata extends Component {
             );
             return (
               <Popover
-                placement="topLeft"
-                content={content}
-                title={getIntlContent("SHENYU.AUTH.PATH.DESCRIBE")}
+                position="topLeft"
+                content={
+                  <div className={styles.detail}>
+                    <strong>
+                      {getIntlContent("SHENYU.AUTH.PATH.DESCRIBE")}
+                    </strong>
+                    {content}
+                  </div>
+                }
               >
                 <div style={{ color: "#1f640a" }}>{text || "----"}</div>
               </Popover>
@@ -445,7 +455,7 @@ export default class Metadata extends Component {
           dataIndex: "enabled",
           key: "enabled",
           ellipsis: true,
-          width: 100,
+          width: 140,
           render: (text, row) => (
             <AuthButton
               perms="system:meta:disable"
@@ -461,18 +471,23 @@ export default class Metadata extends Component {
                 )
               }
             >
-              <Switch
-                checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-                unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-                checked={text}
-                onChange={(checked) => {
-                  this.statusSwitch({
-                    list: [row.id],
-                    enabled: checked,
-                    callback: this.query,
-                  });
-                }}
-              />
+              <span className={styles.status}>
+                <Switch
+                  aria-label={`${row.name || row.path}: ${getIntlContent("SHENYU.SYSTEM.STATUS")}`}
+                  checked={text}
+                  onChange={(checked) => {
+                    this.statusSwitch({
+                      list: [row.id],
+                      enabled: checked,
+                    });
+                  }}
+                />
+                <span>
+                  {getIntlContent(
+                    text ? "SHENYU.COMMON.OPEN" : "SHENYU.COMMON.CLOSE",
+                  )}
+                </span>
+              </span>
             </AuthButton>
           ),
         },
@@ -486,26 +501,30 @@ export default class Metadata extends Component {
           fixed: "right",
           render: (text, record) => {
             return (
-              <div className="optionParts">
+              <div className={styles.actions}>
                 <AuthButton perms="system:meta:edit">
-                  <div
-                    className="edit"
-                    onClick={() => {
-                      this.editClick(record);
-                    }}
-                  >
-                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                  </div>
+                  {({ icon }) => (
+                    <Button
+                      theme="borderless"
+                      htmlType="button"
+                      icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      onClick={() => this.editClick(record)}
+                    >
+                      {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                    </Button>
+                  )}
                 </AuthButton>
                 <AuthButton perms="system:meta:add">
-                  <div
-                    className="edit"
-                    onClick={() => {
-                      this.editClick(record, true);
-                    }}
-                  >
-                    {getIntlContent("SHENYU.COMMON.COPY")}
-                  </div>
+                  {({ icon }) => (
+                    <Button
+                      theme="borderless"
+                      htmlType="button"
+                      icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      onClick={() => this.editClick(record, true)}
+                    >
+                      {getIntlContent("SHENYU.COMMON.COPY")}
+                    </Button>
+                  )}
                 </AuthButton>
               </div>
             );
@@ -528,67 +547,94 @@ export default class Metadata extends Component {
 
     return (
       <div className="plug-content-wrap">
-        <div style={{ display: "flex" }}>
+        <form
+          className={styles.toolbar}
+          onSubmit={(event) => {
+            event.preventDefault();
+            this.searchClick();
+          }}
+        >
           <Input
             allowClear
             value={path}
             onChange={this.searchOnchange}
             placeholder={getIntlContent("SHENYU.META.INPUTPATH")}
-            style={{ width: 240 }}
+            className={styles.filter}
           />
           <AuthButton perms="system:meta:list">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.searchClick}
-            >
-              {getIntlContent("SHENYU.SYSTEM.SEARCH")}
-            </Button>
+            {({ icon }) => (
+              <Button
+                type="primary"
+                theme="solid"
+                htmlType="submit"
+                icon={icon ? <ResourceIcon type={icon} /> : undefined}
+              >
+                {getIntlContent("SHENYU.SYSTEM.SEARCH")}
+              </Button>
+            )}
           </AuthButton>
           <AuthButton perms="system:meta:delete">
-            <Popconfirm
-              title={getIntlContent("SHENYU.COMMON.DELETE")}
-              placement="bottom"
-              onConfirm={() => {
-                this.deleteClick();
-              }}
-              okText={getIntlContent("SHENYU.COMMON.SURE")}
-              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-            >
-              <Button style={{ marginLeft: 20 }} type="danger">
-                {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
-              </Button>
-            </Popconfirm>
+            {({ icon }) => (
+              <Popconfirm
+                title={getIntlContent("SHENYU.COMMON.DELETE")}
+                position="bottom"
+                motion={false}
+                okType="danger"
+                onConfirm={this.deleteClick}
+                okText={getIntlContent("SHENYU.COMMON.SURE")}
+                cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+              >
+                <Button
+                  type="danger"
+                  theme="solid"
+                  htmlType="button"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
+                </Button>
+              </Popconfirm>
+            )}
           </AuthButton>
           <AuthButton perms="system:meta:add">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.addClick}
-            >
-              {getIntlContent("SHENYU.COMMON.ADD")}
-            </Button>
+            {({ icon }) => (
+              <Button
+                type="primary"
+                theme="solid"
+                htmlType="button"
+                icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                onClick={this.addClick}
+              >
+                {getIntlContent("SHENYU.COMMON.ADD")}
+              </Button>
+            )}
           </AuthButton>
           <AuthButton perms="system:meta:disable">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.enableClick}
-            >
-              {getIntlContent("SHENYU.PLUGIN.BATCH")}
-            </Button>
+            {({ icon }) => (
+              <Button
+                type="primary"
+                theme="solid"
+                htmlType="button"
+                icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                onClick={this.enableClick}
+              >
+                {getIntlContent("SHENYU.PLUGIN.BATCH")}
+              </Button>
+            )}
           </AuthButton>
           <AuthButton perms="system:meta:modify">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.syncData}
-            >
-              {getIntlContent("SHENYU.AUTH.SYNCDATA")}
-            </Button>
+            {({ icon }) => (
+              <Button
+                type="primary"
+                theme="solid"
+                htmlType="button"
+                icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                onClick={this.syncData}
+              >
+                {getIntlContent("SHENYU.AUTH.SYNCDATA")}
+              </Button>
+            )}
           </AuthButton>
-        </div>
-
+        </form>
         <MetadataTable
           style={{ marginTop: 30 }}
           loading={loading}
