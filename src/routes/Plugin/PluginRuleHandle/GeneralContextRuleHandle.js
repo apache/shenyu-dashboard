@@ -16,7 +16,13 @@
  */
 
 import React, { Component } from "react";
-import { Tabs, Form, Select, Row, Col, Input, Button } from "antd";
+import Tabs from "@douyinfe/semi-ui/lib/es/tabs";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Form from "../../../components/ui/Form";
+import Select from "../../../components/ui/Select";
+import Input from "../../../components/ui/Input";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { titleCase, guid } from "../../../utils/utils";
@@ -117,9 +123,14 @@ export default class GeneralContextRuleHandle extends Component {
         wrapperCol={{ span: 20 }}
         className={styles.rootFormItem}
       >
-        <Tabs defaultActiveKey={currentType} onChange={this.handleTabChange}>
+        <Tabs
+          lazyRender={false}
+          keepDOM
+          defaultActiveKey={currentType}
+          onChange={this.handleTabChange}
+        >
           {handlers.map((handler) => (
-            <TabPane tab={titleCase(handler)} key={handler}>
+            <TabPane tab={titleCase(handler)} itemKey={handler} key={handler}>
               {keys[handler].map((key, keyIndex) => (
                 <Row gutter={16} key={key} style={rowStyle}>
                   <Col span={7}>
@@ -183,6 +194,7 @@ export default class GeneralContextRuleHandle extends Component {
                     <FormItem>
                       <Button
                         type="danger"
+                        htmlType="button"
                         style={{ marginRight: 16 }}
                         onClick={() => this.handleDeleteRow(handler, key)}
                       >

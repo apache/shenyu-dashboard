@@ -17,7 +17,14 @@
 
 /* eslint-disable max-classes-per-file */
 import React, { Component } from "react";
-import { Button, Col, Form, Input, Row, Select, Table, Tabs } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Tabs from "@douyinfe/semi-ui/lib/es/tabs";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import Select from "../../../components/ui/Select";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Option } = Select;
@@ -256,13 +263,14 @@ class ParamPluginRuleConfig extends Component {
       {
         title: "Operater",
         dataIndex: "id",
-        with: 80,
+        width: 100,
         fixed: "right",
         render: (value, row, index) => {
           return (
             this.state[activeKey].length - 1 !== index && (
               <Button
                 type="danger"
+                htmlType="button"
                 onClick={() => {
                   this.setState({
                     // eslint-disable-next-line react/no-access-state-in-setstate
@@ -290,12 +298,12 @@ class ParamPluginRuleConfig extends Component {
             })
           }
         >
-          <TabPane tab="Body" key="body" />
+          <TabPane tab="Body" itemKey="body" key="body" />
         </Tabs>
         <Table
           rowKey="id"
           size="small"
-          columns={activeKey === "body" ? columns : columns}
+          columns={columns}
           dataSource={this.state[activeKey]}
           pagination={false}
         />

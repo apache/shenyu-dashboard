@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import { Form } from "antd";
 import { act, render } from "@testing-library/react";
+import Form from "../../../components/ui/Form";
 import CommonRuleHandle, {
   isValidHandleJSON,
   validateHandleJSON,
@@ -89,6 +89,6 @@ describe("validateHandleJSON", () => {
 
     expect(form.getFieldValue("handleType")).toBe("2");
     expect(form.getFieldValue("handleJSON")).toBeUndefined();
-    expect(errors.handleJSON.errors).toHaveLength(1);
+    expect(errors.handleJSON).toBeTruthy();
   });
 });

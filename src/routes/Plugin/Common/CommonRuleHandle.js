@@ -16,8 +16,13 @@
  */
 
 import React, { Component } from "react";
-import { Button, Form, Input, Popconfirm, Select, Tooltip } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import Tooltip from "@douyinfe/semi-ui/lib/es/tooltip";
 import classnames from "classnames";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import Select from "../../../components/ui/Select";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { checkRulePattern } from "../../../utils/regExpRule";
@@ -138,88 +143,94 @@ export default class CommonRuleHandle extends Component {
                       if (item.dataType === 1) {
                         return (
                           <li key={fieldName}>
-                            <Tooltip title={placeholder}>
-                              <FormItem>
-                                {getFieldDecorator(fieldName, {
-                                  rules,
-                                  initialValue: defaultValue,
-                                })(
-                                  <Input
-                                    allowClear
-                                    addonBefore={
-                                      <div style={{ width: labelWidth }}>
-                                        {item.label}
-                                      </div>
-                                    }
-                                    placeholder={placeholder}
-                                    key={fieldName}
-                                  />,
-                                )}
-                              </FormItem>
+                            <Tooltip content={placeholder}>
+                              <div>
+                                <FormItem>
+                                  {getFieldDecorator(fieldName, {
+                                    rules,
+                                    initialValue: defaultValue,
+                                  })(
+                                    <Input
+                                      allowClear
+                                      addonBefore={
+                                        <div style={{ width: labelWidth }}>
+                                          {item.label}
+                                        </div>
+                                      }
+                                      placeholder={placeholder}
+                                      key={fieldName}
+                                    />,
+                                  )}
+                                </FormItem>
+                              </div>
                             </Tooltip>
                           </li>
                         );
                       } else if (item.dataType === 3 && item.dictOptions) {
                         return (
                           <li key={fieldName}>
-                            <Tooltip title={placeholder}>
-                              <FormItem>
-                                {getFieldDecorator(fieldName, {
-                                  rules,
-                                  initialValue:
-                                    defaultValue === true
-                                      ? "true"
-                                      : defaultValue === false
-                                        ? "false"
-                                        : defaultValue,
-                                })(
-                                  <Select
-                                    placeholder={placeholder}
-                                    style={{ width: 260 }}
-                                  >
-                                    {item.dictOptions.map((option) => {
-                                      const optionValue =
-                                        option.dictValue === true
-                                          ? "true"
-                                          : option.dictValue === false
-                                            ? "false"
-                                            : option.dictValue;
-                                      return (
-                                        <Option
-                                          key={optionValue}
-                                          value={optionValue}
-                                        >
-                                          {option.dictName} ({item.label})
-                                        </Option>
-                                      );
-                                    })}
-                                  </Select>,
-                                )}
-                              </FormItem>
+                            <Tooltip content={placeholder}>
+                              <div>
+                                <FormItem>
+                                  {getFieldDecorator(fieldName, {
+                                    rules,
+                                    initialValue:
+                                      defaultValue === true
+                                        ? "true"
+                                        : defaultValue === false
+                                          ? "false"
+                                          : defaultValue,
+                                  })(
+                                    <Select
+                                      placeholder={placeholder}
+                                      style={{ width: 260 }}
+                                    >
+                                      {item.dictOptions.map((option) => {
+                                        const optionValue =
+                                          option.dictValue === true
+                                            ? "true"
+                                            : option.dictValue === false
+                                              ? "false"
+                                              : option.dictValue;
+                                        return (
+                                          <Option
+                                            key={optionValue}
+                                            value={optionValue}
+                                          >
+                                            {option.dictName} ({item.label})
+                                          </Option>
+                                        );
+                                      })}
+                                    </Select>,
+                                  )}
+                                </FormItem>
+                              </div>
                             </Tooltip>
                           </li>
                         );
                       } else {
                         return (
                           <li key={fieldName}>
-                            <Tooltip title={placeholder}>
-                              <FormItem>
-                                {getFieldDecorator(fieldName, {
-                                  rules,
-                                  initialValue: defaultValue,
-                                })(
-                                  <Input
-                                    allowClear
-                                    addonBefore={
-                                      <div style={{ width: labelWidth }}>
-                                        {item.label}
-                                      </div>
-                                    }
-                                    placeholder={placeholder}
-                                    key={fieldName}
-                                  />,
-                                )}
-                              </FormItem>
+                            <Tooltip content={placeholder}>
+                              <div>
+                                <FormItem>
+                                  {getFieldDecorator(fieldName, {
+                                    rules,
+                                    initialValue: defaultValue,
+                                  })(
+                                    <Input
+                                      allowClear
+                                      addonBefore={
+                                        <div style={{ width: labelWidth }}>
+                                          {item.label}
+                                        </div>
+                                      }
+                                      placeholder={placeholder}
+                                      key={fieldName}
+                                    />,
+                                  )}
+                                </FormItem>
+                              </div>
                             </Tooltip>
                           </li>
                         );
@@ -230,18 +241,18 @@ export default class CommonRuleHandle extends Component {
                     <div style={{ width: 80 }}>
                       <Popconfirm
                         title={getIntlContent("SHENYU.COMMON.DELETE")}
-                        placement="bottom"
+                        position="bottom"
                         onCancel={(e) => {
-                          e.stopPropagation();
+                          e?.stopPropagation();
                         }}
                         onConfirm={(e) => {
-                          e.stopPropagation();
+                          e?.stopPropagation();
                           onDeletePluginHandle(index);
                         }}
                         okText={getIntlContent("SHENYU.COMMON.SURE")}
                         cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
                       >
-                        <Button type="danger">
+                        <Button type="danger" htmlType="button">
                           {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
                         </Button>
                       </Popconfirm>

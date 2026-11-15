@@ -17,6 +17,7 @@
 
 import { message } from "../../../components/ui/feedback";
 import {
+  findRule,
   getAllRules,
   getAllSelectors,
   getPluginDropDownListByNamespace,
@@ -211,4 +212,51 @@ it("ignores an older response after the namespace changes", async () => {
   expect(component.state.ruleTree[0].title).toBe("Plugin 2");
   expect(getAllSelectors).toHaveBeenCalledTimes(1);
   expect(getAllRules).toHaveBeenCalledTimes(1);
+});
+
+it("ignores rule details after switching namespace", async () => {
+  let resolve;
+  findRule.mockImplementation(
+    () =>
+      new Promise((r) => {
+        resolve = r;
+      }),
+  );
+  const c = makeComponent();
+  c.props.onOk = jest.fn();
+  c.state.value = "rule-1";
+  c.getAllRule = jest.fn();
+  const pending = c.handleOk();
+  c.handleNamespacesValueChange({ key: "next" });
+  resolve({ code: 200, data: { id: "rule-1" } });
+  await pending;
+  expect(c.props.onOk).not.toHaveBeenCalled();
+  expect(c.state.loading).toBe(false);
+});
+it("keeps the copy dialog usable after a failed detail request", async () => {
+  findRule.mockRejectedValue(new Error("offline"));
+  const c = makeComponent();
+  c.props.onOk = jest.fn();
+  c.state.value = "rule-1";
+  await c.handleOk();
+  expect(c.props.onOk).not.toHaveBeenCalled();
+  expect(c.state.loading).toBe(false);
+  expect(c.state.value).toBe("rule-1");
+});
+it("invalidates pending rule details on unmount", async () => {
+  let resolve;
+  findRule.mockImplementation(
+    () =>
+      new Promise((r) => {
+        resolve = r;
+      }),
+  );
+  const c = makeComponent();
+  c.props.onOk = jest.fn();
+  c.state.value = "rule-1";
+  const pending = c.handleOk();
+  c.componentWillUnmount();
+  resolve({ code: 200, data: { id: "rule-1" } });
+  await pending;
+  expect(c.props.onOk).not.toHaveBeenCalled();
 });

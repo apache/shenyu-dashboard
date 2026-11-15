@@ -18,17 +18,15 @@
 /* eslint-disable react/no-access-state-in-setstate */
 /* eslint-disable max-classes-per-file */
 import React, { Component } from "react";
-import {
-  Tabs,
-  Form,
-  Select,
-  Row,
-  Col,
-  Input,
-  Button,
-  Table,
-  InputNumber,
-} from "antd";
+import Tabs from "@douyinfe/semi-ui/lib/es/tabs";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Input from "../../../components/ui/Input";
+import Select from "../../../components/ui/Select";
+import Form from "../../../components/ui/Form";
+import InputNumber from "../../../components/ui/InputNumber";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Option } = Select;
@@ -333,13 +331,14 @@ class ResponseConfig extends Component {
       {
         title: "Operater",
         dataIndex: "id",
-        with: 80,
+        width: 100,
         fixed: "right",
         render: (value, row, index) => {
           return (
             this.state[activeKey].length - 1 !== index && (
               <Button
                 type="danger"
+                htmlType="button"
                 onClick={() => {
                   this.setState({
                     [activeKey]: this.state[activeKey].filter(
@@ -384,9 +383,9 @@ class ResponseConfig extends Component {
             })
           }
         >
-          <TabPane tab="StatusCode" key="statusCode" />
-          <TabPane tab="Headers" key="headers" />
-          <TabPane tab="Body" key="body" />
+          <TabPane tab="StatusCode" itemKey="statusCode" key="statusCode" />
+          <TabPane tab="Headers" itemKey="headers" key="headers" />
+          <TabPane tab="Body" itemKey="body" key="body" />
         </Tabs>
         <Table
           rowKey="id"
