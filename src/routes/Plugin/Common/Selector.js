@@ -16,27 +16,26 @@
  */
 
 import React, { Component, Fragment } from "react";
-import {
-  Modal,
-  Form,
-  Select,
-  Input,
-  Switch,
-  Button,
-  Tooltip,
-  Popconfirm,
-  Row,
-  Col,
-  Card,
-  Icon,
-  InputNumber,
-  DatePicker,
-  TimePicker,
-  Tabs,
-  Divider,
-} from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Tooltip from "@douyinfe/semi-ui/lib/es/tooltip";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import Card from "@douyinfe/semi-ui/lib/es/card";
+import SemiModal from "@douyinfe/semi-ui/lib/es/modal";
+import DatePicker from "@douyinfe/semi-ui/lib/es/datePicker";
+import TimePicker from "@douyinfe/semi-ui/lib/es/timePicker";
+import Tabs from "@douyinfe/semi-ui/lib/es/tabs";
+import Divider from "@douyinfe/semi-ui/lib/es/divider";
 import { connect } from "react-redux";
 import classnames from "classnames";
+import InputNumber from "../../../components/ui/InputNumber";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
+import Switch from "../../../components/ui/Switch";
+import Input from "../../../components/ui/Input";
+import Select from "../../../components/ui/Select";
+import Form from "../../../components/ui/Form";
+import Modal from "../../../components/ui/Modal";
 import { message } from "../../../components/ui/feedback";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
@@ -56,7 +55,6 @@ import { buildHandle } from "./selectorHandle";
 const { Item } = Form;
 const { TabPane } = Tabs;
 const { Option } = Select;
-const { confirm } = Modal;
 
 const formItemLayout = {
   labelCol: { sm: { span: 3 } },
@@ -177,7 +175,7 @@ class AddModal extends Component {
 
   handleSubmit = (e) => {
     if (this.editableFormTableRef.current?.state?.editingKey) {
-      confirm({
+      SemiModal.confirm({
         title: getIntlContent("SHENYU.DISCOVERY.SELECTOR.EDITING.TITLE"),
         content: getIntlContent("SHENYU.DISCOVERY.SELECTOR.EDITING.CONTENT"),
         okText: getIntlContent("SHENYU.COMMON.SURE"),
@@ -627,7 +625,7 @@ class AddModal extends Component {
                 </Row>
               </div>
               <div style={{ width: 64, textAlign: "right" }}>
-                <Icon
+                <ResourceIcon
                   onClick={() => {
                     setFieldsValue({
                       keys: keys.filter((k) => k !== key),
@@ -766,94 +764,100 @@ class AddModal extends Component {
                           if (item.dataType === 1) {
                             return (
                               <li key={fieldName}>
-                                <Tooltip title={placeholder}>
-                                  <Item>
-                                    {getFieldDecorator(fieldName, {
-                                      rules,
-                                      initialValue: defaultValue,
-                                    })(
-                                      <Input
-                                        allowClear
-                                        addonBefore={
-                                          <div style={{ width: labelWidth }}>
-                                            {item.label}
-                                          </div>
-                                        }
-                                        placeholder={placeholder}
-                                        key={fieldName}
-                                      />,
-                                    )}
-                                  </Item>
+                                <Tooltip content={placeholder}>
+                                  <div>
+                                    <Item>
+                                      {getFieldDecorator(fieldName, {
+                                        rules,
+                                        initialValue: defaultValue,
+                                      })(
+                                        <Input
+                                          allowClear
+                                          addonBefore={
+                                            <div style={{ width: labelWidth }}>
+                                              {item.label}
+                                            </div>
+                                          }
+                                          placeholder={placeholder}
+                                          key={fieldName}
+                                        />,
+                                      )}
+                                    </Item>
+                                  </div>
                                 </Tooltip>
                               </li>
                             );
                           } else if (item.dataType === 3 && item.dictOptions) {
                             return (
                               <li key={fieldName}>
-                                <Tooltip title={placeholder}>
-                                  <Item>
-                                    {getFieldDecorator(fieldName, {
-                                      rules,
-                                      initialValue:
-                                        defaultValue === true
-                                          ? "true"
-                                          : defaultValue === false
-                                            ? "false"
-                                            : defaultValue,
-                                    })(
-                                      <Select
-                                        placeholder={placeholder}
-                                        style={{ width: "100%" }}
-                                      >
-                                        {item.dictOptions.map((option) => {
-                                          const optionValue =
-                                            option.dictValue === true
-                                              ? "true"
-                                              : option.dictValue === false
-                                                ? "false"
-                                                : option.dictValue;
-                                          return (
-                                            <Option
-                                              key={optionValue}
-                                              value={optionValue}
-                                            >
-                                              {option.dictName} ({item.label})
-                                            </Option>
-                                          );
-                                        })}
-                                      </Select>,
-                                    )}
-                                  </Item>
+                                <Tooltip content={placeholder}>
+                                  <div>
+                                    <Item>
+                                      {getFieldDecorator(fieldName, {
+                                        rules,
+                                        initialValue:
+                                          defaultValue === true
+                                            ? "true"
+                                            : defaultValue === false
+                                              ? "false"
+                                              : defaultValue,
+                                      })(
+                                        <Select
+                                          placeholder={placeholder}
+                                          style={{ width: "100%" }}
+                                        >
+                                          {item.dictOptions.map((option) => {
+                                            const optionValue =
+                                              option.dictValue === true
+                                                ? "true"
+                                                : option.dictValue === false
+                                                  ? "false"
+                                                  : option.dictValue;
+                                            return (
+                                              <Option
+                                                key={optionValue}
+                                                value={optionValue}
+                                              >
+                                                {option.dictName} ({item.label})
+                                              </Option>
+                                            );
+                                          })}
+                                        </Select>,
+                                      )}
+                                    </Item>
+                                  </div>
                                 </Tooltip>
                               </li>
                             );
                           } else {
                             return (
                               <li key={fieldName}>
-                                <Tooltip title={item.label}>
-                                  <Item>
-                                    {getFieldDecorator(fieldName, {
-                                      rules,
-                                      initialValue: defaultValue,
-                                    })(
-                                      <Input
-                                        allowClear
-                                        addonBefore={
-                                          <div style={{ width: labelWidth }}>
-                                            {item.label}
-                                          </div>
-                                        }
-                                        placeholder={placeholder}
-                                        key={fieldName}
-                                        onChange={(e) => {
-                                          this.onDealChange(
-                                            e.target.value,
-                                            item,
-                                          );
-                                        }}
-                                      />,
-                                    )}
-                                  </Item>
+                                <Tooltip content={item.label}>
+                                  <div>
+                                    <Item>
+                                      {getFieldDecorator(fieldName, {
+                                        rules,
+                                        initialValue: defaultValue,
+                                      })(
+                                        <Input
+                                          allowClear
+                                          addonBefore={
+                                            <div style={{ width: labelWidth }}>
+                                              {item.label}
+                                            </div>
+                                          }
+                                          placeholder={placeholder}
+                                          key={fieldName}
+                                          onChange={(e) => {
+                                            this.onDealChange(
+                                              e.target.value,
+                                              item,
+                                            );
+                                          }}
+                                        />,
+                                      )}
+                                    </Item>
+                                  </div>
                                 </Tooltip>
                               </li>
                             );
@@ -864,12 +868,12 @@ class AddModal extends Component {
                       <div style={{ width: 80 }}>
                         <Popconfirm
                           title={getIntlContent("SHENYU.COMMON.DELETE")}
-                          placement="bottom"
+                          position="bottom"
                           onCancel={(e) => {
-                            e.stopPropagation();
+                            e?.stopPropagation();
                           }}
                           onConfirm={(e) => {
-                            e.stopPropagation();
+                            e?.stopPropagation();
                             this.handleDeleteHandle(index);
                           }}
                           okText={getIntlContent("SHENYU.COMMON.SURE")}
@@ -1061,57 +1065,37 @@ class AddModal extends Component {
 
   getParamValueInput = (item, index) => {
     if (item.operator === "TimeBefore" || item.operator === "TimeAfter") {
-      let date = new Date();
-      const defaultDay = date
-        .getFullYear()
-        .toString()
-        .concat("-")
-        .concat(date.getMonth() + 1)
-        .concat("-")
-        .concat(date.getDate());
+      const today = new Date();
+      const defaultDay = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
       return (
-        <Input.Group compact style={{ top: -2 }}>
+        <div style={{ display: "flex", gap: 4 }}>
           <DatePicker
+            onChangeWithDateFirst={false}
             style={{ width: "51%" }}
-            onChange={(e) => {
-              let day = e
-                ? e
-                    .eraYear()
-                    .toString()
-                    .concat("-")
-                    .concat(e.month() + 1)
-                    .concat("-")
-                    .concat(e.date())
-                : defaultDay;
+            format="yyyy-MM-dd"
+            onChange={(day) => {
               this.conditionChange(
                 index,
                 "paramValue",
-                `${formatDateString(day)} ${formatTimeString(item.paramValue)}`,
+                `${day || formatDateString(defaultDay)} ${formatTimeString(item.paramValue)}`,
               );
             }}
-            value={formatDate(item.paramValue)}
+            value={formatDate(item.paramValue)?.toDate()}
           />
           <TimePicker
+            onChangeWithDateFirst={false}
             style={{ width: "49%" }}
-            onChange={(e) => {
-              let time = e
-                ? ""
-                    .concat(" ")
-                    .concat(e.hours())
-                    .concat(":")
-                    .concat(e.minutes())
-                    .concat(":")
-                    .concat(e.seconds())
-                : "";
+            format="HH:mm:ss"
+            onChange={(time) => {
               this.conditionChange(
                 index,
                 "paramValue",
-                `${formatDateString(item.paramValue)} ${formatTimeString(time)}`,
+                `${formatDateString(item.paramValue)} ${time || ""}`,
               );
             }}
-            value={formatTime(item.paramValue)}
+            value={formatTime(item.paramValue)?.toDate()}
           />
-        </Input.Group>
+        </div>
       );
     } else {
       return (
@@ -1175,7 +1159,7 @@ class AddModal extends Component {
               addonAfter={
                 <Button
                   size="small"
-                  type="link"
+                  theme="borderless"
                   onClick={() => {
                     this.setState({ visible: true });
                   }}
@@ -1307,8 +1291,8 @@ class AddModal extends Component {
                             item.operator === "isBlank" ? "none" : "block",
                         }}
                       >
-                        <Tooltip title={item.paramValue}>
-                          {this.getParamValueInput(item, index)}
+                        <Tooltip content={item.paramValue}>
+                          <div>{this.getParamValueInput(item, index)}</div>
                         </Tooltip>
                       </Col>
                       <Col span={4}>
@@ -1694,7 +1678,7 @@ class AddModal extends Component {
     const operations = (
       <Button
         type="primary"
-        icon="import"
+        icon={<ResourceIcon type="import" />}
         onClick={() => {
           this.setState({ showDiscoveryImportModal: true });
         }}
@@ -1720,12 +1704,15 @@ class AddModal extends Component {
             // divide, grpc, websocket plugin
             isDiscovery ? (
               <Tabs
+                lazyRender={false}
+                keepDOM
                 defaultActiveKey="1"
                 size="small"
                 tabBarExtraContent={operations}
               >
                 <TabPane
                   tab={getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.BASIC")}
+                  itemKey="1"
                   key="1"
                 >
                   {this.renderBasicConfig()}
@@ -1734,6 +1721,7 @@ class AddModal extends Component {
                   tab={getIntlContent(
                     "SHENYU.DISCOVERY.SELECTOR.CONFIG.DISCOVERY",
                   )}
+                  itemKey="2"
                   key="2"
                 >
                   {this.renderDiscoveryConfig()}

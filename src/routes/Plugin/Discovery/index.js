@@ -17,7 +17,17 @@
 
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Button, Input, Pagination, Row, Switch, Tag, Typography } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Pagination from "@douyinfe/semi-ui/lib/es/pagination";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Tag from "@douyinfe/semi-ui/lib/es/tag";
+import Typography from "@douyinfe/semi-ui/lib/es/typography";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
+import Input from "../../../components/ui/Input";
+import Switch from "../../../components/ui/Switch";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
 import { message } from "../../../components/ui/feedback";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import discoveryStyles from "./discovery.less";
@@ -27,7 +37,6 @@ import { DiscoveryCard } from "./DiscoveryCard";
 import AuthButton from "../../../utils/AuthButton";
 import { getUpdateModal, updatePluginsEnabled } from "../../../utils/plugin";
 
-const { Search } = Input;
 const { Title } = Typography;
 
 @connect(({ global, discovery, loading, shenyuDict }) => ({
@@ -277,17 +286,7 @@ export default class DiscoveryProxy extends Component {
   };
 
   searchSelector = () => {
-    const { searchKey } = this.state;
-    const { currentPage, pageSize, currentNamespaceId } = this.props;
-    this.props.dispatch({
-      type: "discovery/fetchProxySelectors",
-      payload: {
-        currentPage,
-        pageSize,
-        name: searchKey,
-        namespaceId: currentNamespaceId,
-      },
-    });
+    this.onPageChange(1, this.props.pageSize);
   };
 
   addSelector = () => {
@@ -553,110 +552,134 @@ export default class DiscoveryProxy extends Component {
       color: this.state.isPluginEnabled ? "green" : "red",
     };
     return (
-      <div className={discoveryStyles.main}>
-        <Row
-          style={{
-            marginBottom: "0px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{ display: "flex", alignItems: "end", flex: 1, margin: 0 }}
-          >
-            <Title
-              level={2}
-              style={{ textTransform: "capitalize", margin: "0 20px 0 0" }}
-            >
-              TCP
-            </Title>
-            <Title level={3} type="secondary" style={{ margin: "0 20px 0 0" }}>
-              Proxy
-            </Title>
-            <Tag color={tag.color}>{tag.text}</Tag>
-          </div>
-          <div style={{ display: "flex", alignItems: "end", gap: 10 }}>
-            <Switch
-              checked={this.state.isPluginEnabled ?? false}
-              onChange={this.togglePluginStatus}
-            />
-            <AuthButton perms="system:plugin:edit">
-              <div className="edit" onClick={this.editClick}>
-                {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-              </div>
-            </AuthButton>
-          </div>
-        </Row>
-
-        <Row>
-          <div className={discoveryStyles["header-bar"]}>
-            <h3 style={{ overflow: "visible", margin: 0 }}>
-              {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}
-            </h3>
-            <AuthButton perms="plugin:tcpSelector:add">
-              <Button type="primary" onClick={this.addConfiguration}>
-                {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.CONFIGURATION")}
-              </Button>
-            </AuthButton>
-            {/* <div className={styles.headerSearch}> */}
-            <div>
-              <AuthButton perms="plugin:tcpSelector:query">
-                <Search
-                  placeholder={getIntlContent(
-                    "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME",
-                  )}
-                  enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
-                  size="default"
-                  onChange={this.searchSelectorOnchange}
-                  onSearch={this.searchSelector}
-                  style={{
-                    marginRight: "20px",
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                />
-              </AuthButton>
-            </div>
-
-            <AuthButton perms="plugin:tcpSelector:add">
-              <Button
-                type="primary"
-                onClick={this.addSelector}
-                style={{ marginRight: "20px" }}
-              >
-                {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.ADD")}
-              </Button>
-            </AuthButton>
-          </div>
-        </Row>
-
-        <Row>
-          <div
+      <LocaleProvider locale={this.props.language === "zh-CN" ? zhCN : enUS}>
+        <div className={discoveryStyles.main}>
+          <Row
             style={{
-              margin: "0px 0",
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gridAutoFlow: "row",
-              gridGap: "20px",
-              justifyContent: "stretch",
-              alignItems: "stretch",
+              marginBottom: "0px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
-            {this.renderCards(proxySelectorList)}
-          </div>
-        </Row>
+            <div
+              style={{ display: "flex", alignItems: "end", flex: 1, margin: 0 }}
+            >
+              <Title
+                level={2}
+                style={{ textTransform: "capitalize", margin: "0 20px 0 0" }}
+              >
+                TCP
+              </Title>
+              <Title
+                level={3}
+                type="secondary"
+                style={{ margin: "0 20px 0 0" }}
+              >
+                Proxy
+              </Title>
+              <Tag color={tag.color}>{tag.text}</Tag>
+            </div>
+            <div style={{ display: "flex", alignItems: "end", gap: 10 }}>
+              <Switch
+                checked={this.state.isPluginEnabled ?? false}
+                onChange={this.togglePluginStatus}
+              />
+              <AuthButton perms="system:plugin:edit">
+                {({ icon }) => (
+                  <Button
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                    theme="borderless"
+                    onClick={this.editClick}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                  </Button>
+                )}
+              </AuthButton>
+            </div>
+          </Row>
 
-        <Row style={{ marginTop: "20px" }}>
-          <Pagination
-            onChange={this.onPageChange}
-            current={currentPage}
-            pageSize={pageSize}
-            total={totalPage}
-          />
-        </Row>
-        {popup}
-      </div>
+          <Row>
+            <div className={discoveryStyles["header-bar"]}>
+              <h3 style={{ overflow: "visible", margin: 0 }}>
+                {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.TITLE")}
+              </h3>
+              <AuthButton perms="plugin:tcpSelector:add">
+                {({ icon }) => (
+                  <Button
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                    type="primary"
+                    onClick={this.addConfiguration}
+                  >
+                    {getIntlContent(
+                      "SHENYU.PLUGIN.SELECTOR.LIST.CONFIGURATION",
+                    )}
+                  </Button>
+                )}
+              </AuthButton>
+              {/* <div className={styles.headerSearch}> */}
+              <div>
+                <AuthButton perms="plugin:tcpSelector:query">
+                  {({ icon }) => (
+                    <form
+                      className={discoveryStyles.search}
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        this.searchSelector();
+                      }}
+                    >
+                      <Input
+                        value={this.state.searchKey}
+                        placeholder={getIntlContent(
+                          "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME",
+                        )}
+                        onChange={this.searchSelectorOnchange}
+                      />
+                      <Button
+                        icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                        htmlType="submit"
+                      >
+                        {getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                      </Button>
+                    </form>
+                  )}
+                </AuthButton>
+              </div>
+
+              <AuthButton perms="plugin:tcpSelector:add">
+                {({ icon }) => (
+                  <Button
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                    type="primary"
+                    onClick={this.addSelector}
+                    style={{ marginRight: "20px" }}
+                  >
+                    {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.ADD")}
+                  </Button>
+                )}
+              </AuthButton>
+            </div>
+          </Row>
+
+          <Row>
+            <div className={discoveryStyles.cards}>
+              {this.renderCards(proxySelectorList)}
+            </div>
+          </Row>
+
+          <Row style={{ marginTop: "20px" }}>
+            <Pagination
+              onChange={(page, size) =>
+                this.onPageChange(size === pageSize ? page : 1, size)
+              }
+              currentPage={currentPage}
+              pageSize={pageSize}
+              total={totalPage}
+            />
+          </Row>
+          {popup}
+        </div>
+      </LocaleProvider>
     );
   }
 }

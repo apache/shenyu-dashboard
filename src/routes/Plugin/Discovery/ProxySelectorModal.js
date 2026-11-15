@@ -17,19 +17,17 @@
 
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import {
-  Button,
-  Col,
-  Divider,
-  Form,
-  Input,
-  Modal,
-  Row,
-  Select,
-  Tabs,
-  Tooltip,
-} from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import Divider from "@douyinfe/semi-ui/lib/es/divider";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Tabs from "@douyinfe/semi-ui/lib/es/tabs";
+import Tooltip from "@douyinfe/semi-ui/lib/es/tooltip";
 import classnames from "classnames";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import Modal from "../../../components/ui/Modal";
+import Select from "../../../components/ui/Select";
 import { message } from "../../../components/ui/feedback";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import styles from "../index.less";
@@ -269,9 +267,10 @@ export class ProxySelectorModalComponent extends Component {
         cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
       >
         <Form onSubmit={this.handleSubmit}>
-          <Tabs defaultActiveKey="1" size="small">
+          <Tabs lazyRender={false} keepDOM defaultActiveKey="1" size="small">
             <TabPane
               tab={getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.BASIC")}
+              itemKey="1"
               key="1"
             >
               <FormItem
@@ -298,7 +297,7 @@ export class ProxySelectorModalComponent extends Component {
                     addonAfter={
                       <Button
                         size="small"
-                        type="link"
+                        theme="borderless"
                         onClick={() => {
                           this.setState({ visible: true });
                         }}
@@ -403,27 +402,29 @@ export class ProxySelectorModalComponent extends Component {
                               if (item.dataType === 1) {
                                 return (
                                   <li key={fieldName}>
-                                    <Tooltip title={placeholder}>
-                                      <FormItem>
-                                        {getFieldDecorator(fieldName, {
-                                          rules,
-                                          initialValue: defaultValue,
-                                        })(
-                                          <Input
-                                            allowClear
-                                            disabled={!isAdd}
-                                            addonBefore={
-                                              <div
-                                                style={{ width: labelWidth }}
-                                              >
-                                                {item.label}
-                                              </div>
-                                            }
-                                            placeholder={placeholder}
-                                            key={fieldName}
-                                          />,
-                                        )}
-                                      </FormItem>
+                                    <Tooltip content={placeholder}>
+                                      <div>
+                                        <FormItem>
+                                          {getFieldDecorator(fieldName, {
+                                            rules,
+                                            initialValue: defaultValue,
+                                          })(
+                                            <Input
+                                              allowClear
+                                              disabled={!isAdd}
+                                              addonBefore={
+                                                <div
+                                                  style={{ width: labelWidth }}
+                                                >
+                                                  {item.label}
+                                                </div>
+                                              }
+                                              placeholder={placeholder}
+                                              key={fieldName}
+                                            />,
+                                          )}
+                                        </FormItem>
+                                      </div>
                                     </Tooltip>
                                   </li>
                                 );
@@ -433,69 +434,76 @@ export class ProxySelectorModalComponent extends Component {
                               ) {
                                 return (
                                   <li key={fieldName}>
-                                    <Tooltip title={placeholder}>
-                                      <FormItem>
-                                        {getFieldDecorator(fieldName, {
-                                          rules,
-                                          initialValue:
-                                            defaultValue === true
-                                              ? "true"
-                                              : defaultValue === false
-                                                ? "false"
-                                                : defaultValue,
-                                        })(
-                                          <Select
-                                            disabled={!isAdd}
-                                            placeholder={placeholder}
-                                            style={{ width: 260 }}
-                                          >
-                                            {item.dictOptions.map((option) => {
-                                              const optionValue =
-                                                option.dictValue === true
-                                                  ? "true"
-                                                  : option.dictValue === false
-                                                    ? "false"
-                                                    : option.dictValue;
-                                              return (
-                                                <Option
-                                                  key={optionValue}
-                                                  value={optionValue}
-                                                >
-                                                  {option.dictName} (
-                                                  {item.label})
-                                                </Option>
-                                              );
-                                            })}
-                                          </Select>,
-                                        )}
-                                      </FormItem>
+                                    <Tooltip content={placeholder}>
+                                      <div>
+                                        <FormItem>
+                                          {getFieldDecorator(fieldName, {
+                                            rules,
+                                            initialValue:
+                                              defaultValue === true
+                                                ? "true"
+                                                : defaultValue === false
+                                                  ? "false"
+                                                  : defaultValue,
+                                          })(
+                                            <Select
+                                              disabled={!isAdd}
+                                              placeholder={placeholder}
+                                              style={{ width: 260 }}
+                                            >
+                                              {item.dictOptions.map(
+                                                (option) => {
+                                                  const optionValue =
+                                                    option.dictValue === true
+                                                      ? "true"
+                                                      : option.dictValue ===
+                                                          false
+                                                        ? "false"
+                                                        : option.dictValue;
+                                                  return (
+                                                    <Option
+                                                      key={optionValue}
+                                                      value={optionValue}
+                                                    >
+                                                      {option.dictName} (
+                                                      {item.label})
+                                                    </Option>
+                                                  );
+                                                },
+                                              )}
+                                            </Select>,
+                                          )}
+                                        </FormItem>
+                                      </div>
                                     </Tooltip>
                                   </li>
                                 );
                               } else {
                                 return (
                                   <li key={fieldName}>
-                                    <Tooltip title={placeholder}>
-                                      <FormItem>
-                                        {getFieldDecorator(fieldName, {
-                                          rules,
-                                          initialValue: defaultValue,
-                                        })(
-                                          <Input
-                                            allowClear
-                                            disabled={!isAdd}
-                                            addonBefore={
-                                              <div
-                                                style={{ width: labelWidth }}
-                                              >
-                                                {item.label}
-                                              </div>
-                                            }
-                                            placeholder={placeholder}
-                                            key={fieldName}
-                                          />,
-                                        )}
-                                      </FormItem>
+                                    <Tooltip content={placeholder}>
+                                      <div>
+                                        <FormItem>
+                                          {getFieldDecorator(fieldName, {
+                                            rules,
+                                            initialValue: defaultValue,
+                                          })(
+                                            <Input
+                                              allowClear
+                                              disabled={!isAdd}
+                                              addonBefore={
+                                                <div
+                                                  style={{ width: labelWidth }}
+                                                >
+                                                  {item.label}
+                                                </div>
+                                              }
+                                              placeholder={placeholder}
+                                              key={fieldName}
+                                            />,
+                                          )}
+                                        </FormItem>
+                                      </div>
                                     </Tooltip>
                                   </li>
                                 );
@@ -511,6 +519,7 @@ export class ProxySelectorModalComponent extends Component {
             </TabPane>
             <TabPane
               tab={getIntlContent("SHENYU.DISCOVERY.SELECTOR.CONFIG.DISCOVERY")}
+              itemKey="2"
               key="2"
             >
               <FormItem

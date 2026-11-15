@@ -16,8 +16,8 @@
  */
 
 import React, { Component } from "react";
-import { Modal } from "antd";
 import { connect } from "react-redux";
+import Modal from "../../../components/ui/Modal";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 export const mapStateToProps = ({ discovery, global }) => ({

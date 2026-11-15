@@ -99,6 +99,7 @@ it("searches selectors from page one while preserving the filter and page size",
       pageSize: 50,
       pluginId: "5",
       name: "demo",
+      rulePageSize: 12,
       namespaceId: "namespace-1",
     },
   });
@@ -154,8 +155,33 @@ it.each([[[]], [[{ name: "divide", pluginId: "stale-id" }]]])(
         pageSize: 50,
         pluginId: "5",
         name: "demo",
+        rulePageSize: 12,
         namespaceId: "namespace-1",
       },
     });
   },
 );
+
+it("clears old rule selection and search when activating another selector", () => {
+  const { component } = makeSearchComponent();
+  component.state.ruleSelectedRowKeys = ["old-rule"];
+  component.state.ruleName = "old-filter";
+  component.rowClick({ id: "new-selector" });
+  expect(component.state.ruleSelectedRowKeys).toEqual([]);
+  expect(component.state.ruleName).toBeUndefined();
+});
+it("starts rule search from page one", () => {
+  const { component } = makeSearchComponent();
+  component.state.rulePage = 4;
+  component.getAllRules = jest.fn();
+  component.searchRule();
+  expect(component.state.rulePage).toBe(1);
+  expect(component.getAllRules).toHaveBeenCalledWith(1, 12);
+});
+
+it("carries the displayed child page size when reloading selectors", () => {
+  const { component, dispatch } = makeSearchComponent();
+  component.state.rulePageSize = 50;
+  component.getAllSelectors(1, 20, component.props.plugins);
+  expect(dispatch.mock.calls[0][0].payload.rulePageSize).toBe(50);
+});

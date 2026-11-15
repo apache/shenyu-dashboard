@@ -97,3 +97,24 @@ it("includes the active namespace when refreshing after add", () => {
     namespaceId: "namespace-1",
   });
 });
+
+it("starts a new proxy search on page one", () => {
+  const dispatch = jest.fn();
+  const c = new DiscoveryProxy({
+    dispatch,
+    currentPage: 3,
+    pageSize: 20,
+    currentNamespaceId: "ns",
+  });
+  c.state.searchKey = "needle";
+  c.searchSelector();
+  expect(dispatch).toHaveBeenCalledWith({
+    type: "discovery/fetchProxySelectors",
+    payload: {
+      currentPage: 1,
+      pageSize: 20,
+      name: "needle",
+      namespaceId: "ns",
+    },
+  });
+});

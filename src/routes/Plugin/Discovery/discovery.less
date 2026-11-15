@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-
-
 .main {
   width: 100%;
   height: 100%;
@@ -43,7 +41,6 @@
   }
 }
 
-
 .header-bar {
   margin: 20px 0;
   display: flex;
@@ -53,7 +50,9 @@
   padding: 0 20px;
   border-radius: 5px;
   box-shadow: 1px 2px 2px rgba(191, 189, 189, 0.5);
-  height: 40px;
+  min-height: 40px;
+  flex-wrap: wrap;
+  gap: 8px;
   background: #fff;
 }
 
@@ -61,7 +60,6 @@
   display: flex;
   justify-content: space-around;
 }
-
 
 .editable-cell {
   position: relative;
@@ -78,20 +76,29 @@
   padding: 4px 11px;
 }
 
-
 .discoveryCard {
   :global {
-    .ant-card-body {
-      padding: 10px
+    .semi-card-body {
+      padding: 10px;
     }
 
-    .ant-card-actions {
+    .semi-card-footer {
       background-color: white;
     }
   }
-  border-radius: 5px ;
-  box-shadow: 1px 2px 2px rgba(191, 189, 189, 0.5)
+
+  border-radius: 5px;
+  box-shadow: 1px 2px 2px rgba(191, 189, 189, 0.5);
 }
 
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
 
-
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

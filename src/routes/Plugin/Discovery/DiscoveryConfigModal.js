@@ -16,8 +16,15 @@
  */
 
 import React, { Component } from "react";
-import { Button, Col, Form, Input, Modal, Popconfirm, Row, Select } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
 import { connect } from "react-redux";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import Modal from "../../../components/ui/Modal";
+import Select from "../../../components/ui/Select";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { getDiscoveryProps } from "./optionalFields";
 
@@ -119,7 +126,7 @@ class DiscoveryConfigModal extends Component {
         footer={[
           isSetConfig === true ? (
             <Popconfirm
-              placement="topLeft"
+              position="topLeft"
               title={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.DELETE")}
               onConfirm={() => handleConfigDelete(id)}
               okText={getIntlContent("SHENYU.COMMON.SURE")}

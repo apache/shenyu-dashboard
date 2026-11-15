@@ -16,7 +16,12 @@
  */
 
 import React, { Component } from "react";
-import { Card, Popover, Typography, Skeleton, Icon, Popconfirm } from "antd";
+import Card from "@douyinfe/semi-ui/lib/es/card";
+import Popover from "@douyinfe/semi-ui/lib/es/popover";
+import Typography from "@douyinfe/semi-ui/lib/es/typography";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
 
 import { getIntlContent } from "../../../utils/IntlUtils";
 import discoveryStyles from "./discovery.less";
@@ -86,7 +91,7 @@ export class DiscoveryCard extends Component {
     };
 
     return (
-      <Popover placement="leftTop" content={content}>
+      <Popover position="leftTop" content={content}>
         <Card
           title={
             <div style={{ fontSize: "17px", lineHeight: "1.5" }}>
@@ -95,43 +100,51 @@ export class DiscoveryCard extends Component {
           }
           bordered={false}
           className={discoveryStyles.discoveryCard}
-          actions={[
-            <AuthButton perms="plugin:tcp:modify">
-              <Icon
-                type="reload"
-                key="reload"
-                style={{ color: "#2E496E", fontSize: "17px" }}
-                onClick={() => handleRefresh(data.discoveryHandlerId)}
-              />
-            </AuthButton>,
-            <AuthButton perms="plugin:tcp:modify">
-              <Icon
-                type="edit"
-                key="edit"
-                style={{ color: "#1352A2", fontSize: "17px" }}
-                onClick={() => updateSelector(data.id)}
-              />
-            </AuthButton>,
-            <Popconfirm
-              title={getIntlContent("SHENYU.DISCOVERY.SELECTOR.DELETE.CONFIRM")}
-              icon={
-                <Icon type="question-circle-o" style={{ color: "#CC0000" }} />
-              }
-              onConfirm={() => handleDelete(data.id)}
-              okText={getIntlContent("SHENYU.COMMON.YES")}
-              cancelText={getIntlContent("SHENYU.COMMON.NO")}
-              key="popconfirm"
-            >
-              <AuthButton perms="plugin:tcpSelector:delete">
-                <Icon
-                  type="delete"
-                  key="delete"
-                  style={{ color: "#CC0000", fontSize: "17px" }}
-                />
+          footer={
+            <div style={{ display: "flex", justifyContent: "space-around" }}>
+              <AuthButton perms="plugin:tcp:modify">
+                {() => (
+                  <Button
+                    theme="borderless"
+                    aria-label={getIntlContent("SHENYU.COMMON.REFRESH")}
+                    icon={<ResourceIcon type="reload" />}
+                    onClick={() => handleRefresh(data.discoveryHandlerId)}
+                  />
+                )}
               </AuthButton>
-            </Popconfirm>,
-          ]}
-          extra={
+              <AuthButton perms="plugin:tcp:modify">
+                {() => (
+                  <Button
+                    theme="borderless"
+                    aria-label={getIntlContent("SHENYU.COMMON.CHANGE")}
+                    icon={<ResourceIcon type="edit" />}
+                    onClick={() => updateSelector(data.id)}
+                  />
+                )}
+              </AuthButton>
+              <AuthButton perms="plugin:tcpSelector:delete">
+                {() => (
+                  <Popconfirm
+                    motion={false}
+                    title={getIntlContent(
+                      "SHENYU.DISCOVERY.SELECTOR.DELETE.CONFIRM",
+                    )}
+                    onConfirm={() => handleDelete(data.id)}
+                    okText={getIntlContent("SHENYU.COMMON.YES")}
+                    cancelText={getIntlContent("SHENYU.COMMON.NO")}
+                  >
+                    <Button
+                      theme="borderless"
+                      type="danger"
+                      aria-label={getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                      icon={<ResourceIcon type="delete" />}
+                    />
+                  </Popconfirm>
+                )}
+              </AuthButton>
+            </div>
+          }
+          headerExtraContent={
             <div
               style={{
                 fontSize: "15px",
@@ -143,28 +156,26 @@ export class DiscoveryCard extends Component {
             </div>
           }
         >
-          <Skeleton loading={false} avatar active>
-            <Meta
-              avatar={
-                <div style={{ marginLeft: "20px", marginTop: "10px" }}>
-                  {getAvatarIcon()}
-                </div>
-              }
-              title={
-                <div
-                  style={{
-                    marginLeft: "40px",
-                    fontSize: "15px",
-                    lineHeight: "30px",
-                  }}
-                >
-                  {`${getIntlContent("SHENYU.DISCOVERY.SELECTOR.FORWARDPORT")}: ${forwardPort}`}
-                  <br />
-                  {`${getIntlContent("SHENYU.COMMON.TYPE")}: ${discovery.type}`}
-                </div>
-              }
-            />
-          </Skeleton>
+          <Meta
+            avatar={
+              <div style={{ marginLeft: "20px", marginTop: "10px" }}>
+                {getAvatarIcon()}
+              </div>
+            }
+            title={
+              <div
+                style={{
+                  marginLeft: "40px",
+                  fontSize: "15px",
+                  lineHeight: "30px",
+                }}
+              >
+                {`${getIntlContent("SHENYU.DISCOVERY.SELECTOR.FORWARDPORT")}: ${forwardPort}`}
+                <br />
+                {`${getIntlContent("SHENYU.COMMON.TYPE")}: ${discovery.type}`}
+              </div>
+            }
+          />
         </Card>
       </Popover>
     );

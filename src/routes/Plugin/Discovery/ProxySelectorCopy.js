@@ -16,8 +16,9 @@
  */
 
 import React, { Component } from "react";
-import { Modal, Select } from "antd";
 import { connect } from "react-redux";
+import Modal from "../../../components/ui/Modal";
+import Select from "../../../components/ui/Select";
 import { message } from "../../../components/ui/feedback";
 import { fetchProxySelector } from "../../../services/api";
 import { getIntlContent } from "../../../utils/IntlUtils";
@@ -99,6 +100,8 @@ export class ProxySelectorCopyComponent extends Component {
         visible={visible}
         centered
         title={getIntlContent("SHENYU.COMMON.SOURCE")}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onCancel={this.handleCancel}
         onOk={this.handleOk}
         confirmLoading={loading}
@@ -108,13 +111,9 @@ export class ProxySelectorCopyComponent extends Component {
           disabled={disabled}
           style={{ width: "100%" }}
           showSearch
+          value={selectedValue}
           onChange={this.handleChangeSelect}
           placeholder={getIntlContent("SHENYU.SELECTOR.SOURCE.PLACEHOLDER")}
-          filterOption={(inputValue, option) =>
-            option.props.children
-              .toLowerCase()
-              .indexOf(inputValue.toLowerCase()) >= 0
-          }
         >
           {this.handleOptions()}
         </Select>

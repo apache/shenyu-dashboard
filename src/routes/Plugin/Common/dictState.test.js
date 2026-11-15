@@ -17,8 +17,7 @@
 
 import React from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { Form } from "antd";
-import RuleForm from "../../../components/ui/Form";
+import Form from "../../../components/ui/Form";
 import ConnectedSelector from "./Selector";
 import ConnectedRule from "./Rule";
 
@@ -39,7 +38,7 @@ jest.mock("../Discovery/DiscoveryImportModal", () => (props) => {
 // mounted with a real form but without a store.
 const unwrap = (component) => Form.create()(component.WrappedComponent);
 const Selector = unwrap(ConnectedSelector);
-const Rule = RuleForm.create()(ConnectedRule.WrappedComponent);
+const Rule = Form.create()(ConnectedRule.WrappedComponent);
 
 beforeEach(() => {
   importModalProps = undefined;
@@ -68,9 +67,10 @@ const createDispatch = () => {
 };
 
 const matchModeSelection = () =>
-  document.querySelector(
-    "#matchMode .ant-select-selection-selected-value, .semi-select-selection-text",
-  ).textContent;
+  document
+    .querySelector("#matchMode")
+    .closest(".semi-select")
+    .querySelector(".semi-select-selection-text").textContent;
 
 describe("dictionary responses that arrive after mount", () => {
   it("re-render Selector options", () => {
