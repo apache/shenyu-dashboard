@@ -414,7 +414,7 @@
   "SHENYU.REGISTRY.NAMESPACE.INPUT": "Please enter the namespace",
   "SHENYU.REGISTRY.NAMESPACE.LENGTH": "The namespace must be no more than 128 characters",
   "SHENYU.REGISTRY.MODAL.TITLE": "Add Registry Data",
-  "SHENYU.REGISTRY.PASSPORT": "Passport",
+  "SHENYU.REGISTRY.PASSPORT": "Password",
   "SHENYU.REGISTRY.PASSPORT.INPUT": "Please enter the password",
   "SHENYU.INSTANCE.SELECT.LASTBEATTIME": "LastBeatTime",
   "SHENYU.INSTANCE.SELECT.CREATETIME": "RegisterTime",
