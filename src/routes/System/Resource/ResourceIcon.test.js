@@ -18,7 +18,7 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createHash } from "crypto";
-import Icon from "./ResourceIcon";
+import Icon from "../../../components/ui/ResourceIcon";
 import { iconMap } from "./IconModal";
 
 it("preserves the resource catalog and legacy SVG glyphs", () => {

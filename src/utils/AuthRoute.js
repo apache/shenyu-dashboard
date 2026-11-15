@@ -228,9 +228,11 @@ export function getAuthMenus(plugins, menuTree, permissions, beginCache) {
   return authMenus;
 }
 
-export function refreshAuthMenus({ dispatch }) {
+export function refreshAuthMenus({ dispatch, permissionsCleared = false }) {
   dispatch({
-    type: "global/refreshPermission",
+    type: permissionsCleared
+      ? "global/fetchPermission"
+      : "global/refreshPermission",
     payload: {
       callback: () => {
         dispatch({

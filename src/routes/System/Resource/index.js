@@ -27,7 +27,7 @@ import { connect } from "react-redux";
 import Input from "../../../components/ui/Input";
 import { message } from "../../../components/ui/feedback";
 import AddModal from "./AddModal";
-import ResourceIcon from "./ResourceIcon";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { resetAuthMenuCache } from "../../../utils/AuthRoute";

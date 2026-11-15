@@ -90,11 +90,39 @@ it("deletes only the clicked namespace without mutating bulk selection", () => {
   expect(action.type).toBe("namespace/delete");
   expect(action.payload.list).toEqual(["row-1"]);
 
-  action.callback();
+  action.callback({ currentNamespaceId: "active-namespace" });
 
   expect(dispatch).toHaveBeenCalledWith({
     type: "global/saveCurrentNamespaceId",
     payload: "default",
   });
-  expect(component.state.selectedRowKeys).toEqual([]);
+  expect(component.state.selectedRowKeys).toEqual(["bulk-1"]);
+});
+
+it("reloads page one through the model after creation without a competing page query", () => {
+  const dispatch = jest.fn();
+  const component = makeComponent({ dispatch });
+  component.state = {
+    ...component.state,
+    currentPage: 3,
+    pageSize: 20,
+    namespaceId: "searched",
+  };
+  component.addClick();
+  component.state.popup.props.handleOk({ name: "Created", description: "" });
+  const action = dispatch.mock.calls[0][0];
+  expect(action.type).toBe("namespace/add");
+  expect(action.fetchValue).toEqual(
+    expect.objectContaining({
+      currentPage: 1,
+      pageSize: 20,
+      namespaceId: "searched",
+    }),
+  );
+  action.callback();
+  expect(component.state.currentPage).toBe(1);
+  expect(component.state.popup).toBe("");
+  expect(
+    dispatch.mock.calls.some(([entry]) => entry.type === "namespace/fetch"),
+  ).toBe(false);
 });

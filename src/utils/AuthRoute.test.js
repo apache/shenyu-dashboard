@@ -21,6 +21,7 @@ import AuthRoute, {
   getAuthMenus,
   getBaseRedirectPath,
   resetAuthMenuCache,
+  refreshAuthMenus,
 } from "./AuthRoute";
 
 jest.mock("./IntlUtils", () => ({ getIntlContent: (key) => key }));
@@ -250,3 +251,24 @@ it("renders the route when permissions are granted", () => {
   expect(rendered.type).toBe(Route);
   expect(rendered.props.path).toBe("/system/role");
 });
+
+it.each([false, true])(
+  "uses the foreground loader only when permissions were cleared: %p",
+  (permissionsCleared) => {
+    const dispatch = jest.fn();
+    refreshAuthMenus({ dispatch, permissionsCleared });
+    const request = dispatch.mock.calls[0][0];
+    expect(request.type).toBe(
+      permissionsCleared
+        ? "global/fetchPermission"
+        : "global/refreshPermission",
+    );
+    request.payload.callback();
+    const plugins = dispatch.mock.calls[1][0];
+    expect(plugins.type).toBe("global/fetchPlugins");
+    plugins.payload.callback();
+    expect(dispatch).toHaveBeenLastCalledWith({
+      type: "resource/fetchMenuTree",
+    });
+  },
+);

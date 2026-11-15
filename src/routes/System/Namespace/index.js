@@ -16,28 +16,34 @@
  */
 
 import React, { Component } from "react";
-import { Button, Input, Popconfirm, Table } from "antd";
-import { connect } from "react-redux";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
+import { batch, connect } from "react-redux";
+import Input from "../../../components/ui/Input";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
+import styles from "./index.module.less";
 import { message } from "../../../components/ui/feedback";
-import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { refreshAuthMenus } from "../../../utils/AuthRoute";
 import { defaultNamespaceId } from "../../../components/_utils/utils";
 
-@connect(({ namespace, resource, loading, global }) => ({
+@connect(({ namespace, loading, global }) => ({
   namespace,
-  authMenu: resource.authMenu,
+  namespaces: global.namespaces,
   language: global.language,
   currentNamespaceId: global.currentNamespaceId,
   loading: loading.effects["namespace/fetch"],
 }))
 export default class Namespace extends Component {
-  components = resizableComponents;
-
   constructor(props) {
     super(props);
+    this.unmounted = false;
     this.state = {
       currentPage: 1,
       pageSize: 12,
@@ -67,21 +73,12 @@ export default class Namespace extends Component {
     }
   }
 
-  handleResize =
-    (index) =>
-    (e, { size }) => {
-      this.setState(({ columns }) => {
-        const nextColumns = [...columns];
-        nextColumns[index] = {
-          ...nextColumns[index],
-          width: size.width,
-        };
-        return { columns: nextColumns };
-      });
-    };
+  componentWillUnmount() {
+    this.unmounted = true;
+  }
 
   onSelectChange = (selectedRowKeys) => {
-    this.setState({ selectedRowKeys }, this.query);
+    this.setState({ selectedRowKeys });
   };
 
   currentQueryPayload = (override) => {
@@ -103,17 +100,19 @@ export default class Namespace extends Component {
     });
   };
 
-  pageOnchange = (page) => {
-    this.setState({ currentPage: page }, this.query);
+  onPaginationChange = (page, pageSize) => {
+    this.setState(
+      (state) => ({
+        currentPage: pageSize === state.pageSize ? page : 1,
+        pageSize,
+      }),
+      this.query,
+    );
   };
 
-  onShowSizeChange = (currentPage, pageSize) => {
-    this.setState({ currentPage: 1, pageSize }, this.query);
-  };
-
-  closeModal = (refresh = false) => {
-    if (refresh) {
-      this.setState({ popup: "", currentPage: 1 }, this.query);
+  closeModal = (resetPage = false) => {
+    if (resetPage) {
+      this.setState({ popup: "", currentPage: 1 });
       return;
     }
     this.setState({ popup: "" });
@@ -174,32 +173,51 @@ export default class Namespace extends Component {
   deleteClick = (record) => {
     const {
       dispatch,
-      currentNamespaceId,
+      namespaces = [],
       namespace: { namespaceList },
     } = this.props;
-    const { selectedRowKeys } = this.state;
-    const deleteKeys = record ? [record.id] : selectedRowKeys;
-    if (deleteKeys && deleteKeys.length > 0) {
+    const candidates = record ? [record.id] : this.state.selectedRowKeys;
+    const knownNamespaces = [
+      ...namespaces,
+      ...namespaceList,
+      ...(record ? [record] : []),
+    ];
+    const protectedIds = new Set(
+      knownNamespaces
+        .filter((item) => item.namespaceId === defaultNamespaceId)
+        .map((item) => item.id),
+    );
+    const deleteKeys = candidates.filter((id) => !protectedIds.has(id));
+    const deletedIds = new Set(deleteKeys);
+    const deletedNamespaces = new Set(
+      knownNamespaces
+        .filter((item) => deletedIds.has(item.id) && item.namespaceId)
+        .map((item) => item.namespaceId),
+    );
+    if (deleteKeys.length) {
       dispatch({
         type: "namespace/delete",
-        payload: {
-          list: deleteKeys,
-        },
+        payload: { list: deleteKeys },
         fetchValue: this.currentQueryPayload(),
-        callback: () => {
-          this.setState({ selectedRowKeys: [] });
-          refreshAuthMenus({ dispatch });
-          let deletedCurrentNamespace =
-            namespaceList.find((namespace) =>
-              deleteKeys.some((namespaceId) => namespaceId === namespace.id),
-            )?.namespaceId === currentNamespaceId;
-          if (deletedCurrentNamespace) {
-            dispatch({
-              type: "global/saveCurrentNamespaceId",
-              payload: defaultNamespaceId,
-            });
-          }
-          dispatch({ type: "global/fetchNamespaces" });
+        callback: ({ currentNamespaceId }) => {
+          const permissionsCleared = deletedNamespaces.has(currentNamespaceId);
+          batch(() => {
+            if (!this.unmounted) {
+              this.setState(({ selectedRowKeys }) => ({
+                selectedRowKeys: selectedRowKeys.filter(
+                  (id) => !deletedIds.has(id),
+                ),
+              }));
+            }
+            if (permissionsCleared) {
+              dispatch({
+                type: "global/saveCurrentNamespaceId",
+                payload: defaultNamespaceId,
+              });
+            }
+            refreshAuthMenus({ dispatch, permissionsCleared });
+            dispatch({ type: "global/fetchNamespaces" });
+          });
         },
       });
     } else {
@@ -222,7 +240,7 @@ export default class Namespace extends Component {
                 name,
                 description,
               },
-              fetchValue: this.currentQueryPayload(),
+              fetchValue: this.currentQueryPayload({ currentPage: 1 }),
               callback: () => {
                 this.closeModal(true);
                 refreshAuthMenus({ dispatch });
@@ -256,7 +274,11 @@ export default class Namespace extends Component {
           ellipsis: true,
           width: 300,
           render: (text) => {
-            return <div style={{ color: "#1f640a" }}>{text || "----"}</div>;
+            return (
+              <div style={{ color: "var(--semi-color-text-0)" }}>
+                {text || "----"}
+              </div>
+            );
           },
         },
         {
@@ -267,7 +289,11 @@ export default class Namespace extends Component {
           key: "name",
           width: 240,
           render: (text) => {
-            return <div style={{ color: "#1f640a" }}>{text || "----"}</div>;
+            return (
+              <div style={{ color: "var(--semi-color-text-0)" }}>
+                {text || "----"}
+              </div>
+            );
           },
         },
         {
@@ -277,7 +303,9 @@ export default class Namespace extends Component {
           ellipsis: true,
           key: "desc",
           render: (text) => {
-            return <div style={{ color: "#014955" }}>{text}</div>;
+            return (
+              <div style={{ color: "var(--semi-color-text-2)" }}>{text}</div>
+            );
           },
         },
         {
@@ -292,21 +320,25 @@ export default class Namespace extends Component {
             return record.namespaceId === defaultNamespaceId ? (
               ""
             ) : (
-              <div className="optionParts">
+              <div className={styles.rowActions}>
                 <AuthButton perms="system:namespace:edit">
-                  <div
-                    className="edit"
-                    onClick={() => {
-                      this.editClick(record);
-                    }}
-                  >
-                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                  </div>
+                  {({ icon }) => (
+                    <Button
+                      theme="borderless"
+                      htmlType="button"
+                      icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      onClick={() => this.editClick(record)}
+                    >
+                      {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                    </Button>
+                  )}
                 </AuthButton>
                 <AuthButton perms="system:namespace:delete">
                   <Popconfirm
                     title={getIntlContent("SHENYU.COMMON.DELETE")}
-                    placement="bottom"
+                    position="bottom"
+                    motion={false}
+                    okType="danger"
                     onCancel={(e) => {
                       e.stopPropagation();
                     }}
@@ -317,14 +349,16 @@ export default class Namespace extends Component {
                     okText={getIntlContent("SHENYU.COMMON.SURE")}
                     cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
                   >
-                    <span
-                      className="edit"
+                    <Button
+                      type="danger"
+                      theme="borderless"
+                      htmlType="button"
                       onClick={(e) => {
                         e.stopPropagation();
                       }}
                     >
                       {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
-                    </span>
+                    </Button>
                   </Popconfirm>
                 </AuthButton>
               </div>
@@ -336,17 +370,17 @@ export default class Namespace extends Component {
   }
 
   render() {
-    const { namespace, loading, authMenu } = this.props;
+    const { namespace, loading, language } = this.props;
     const { namespaceList, total } = namespace;
-    const { currentPage, pageSize, selectedRowKeys, name, namespaceId, popup } =
-      this.state;
-    const columns = this.state.columns.map((col, index) => ({
-      ...col,
-      onHeaderCell: (column) => ({
-        width: column.width,
-        onResize: this.handleResize(index),
-      }),
-    }));
+    const {
+      currentPage,
+      pageSize,
+      selectedRowKeys,
+      name,
+      namespaceId,
+      popup,
+      columns,
+    } = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
@@ -354,96 +388,103 @@ export default class Namespace extends Component {
         disabled: record.namespaceId === defaultNamespaceId,
       }),
     };
-    const flatList = (map, list) => {
-      list.forEach((element) => {
-        if (!element.children) {
-          map[element.id] = element;
-        } else {
-          flatList(map, element.children);
-        }
-      });
-      return map;
-    };
-    const flatAuthMenu = flatList({}, authMenu);
-
-    namespaceList.forEach((p) => {
-      p.url = (flatAuthMenu[p.id] ?? {}).path;
-    });
-
     return (
-      <div className="plug-content-wrap">
-        <div style={{ display: "flex" }}>
-          <Input
-            allowClear
-            value={name}
-            onChange={this.searchOnchange}
-            placeholder={getIntlContent("SHENYU.NAMESPACE.INPUTNAME")}
-            style={{ width: 240 }}
-          />
-          <Input
-            allowClear
-            value={namespaceId}
-            onChange={this.searchNamespaceIdOnchange}
-            placeholder={getIntlContent("SHENYU.NAMESPACE.INPUTNAMESPACEID")}
-            style={{ width: 300, marginLeft: 20 }}
-          />
-          <AuthButton perms="system:plugin:list">
-            <Button
-              type="primary"
-              style={{ marginLeft: 20 }}
-              onClick={this.searchClick}
-            >
-              {getIntlContent("SHENYU.SYSTEM.SEARCH")}
-            </Button>
-          </AuthButton>
-          <AuthButton perms="system:plugin:delete">
-            <Popconfirm
-              title={getIntlContent("SHENYU.COMMON.DELETE")}
-              placement="bottom"
-              onConfirm={() => {
-                this.deleteClick();
-              }}
-              okText={getIntlContent("SHENYU.COMMON.SURE")}
-              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-            >
-              <Button style={{ marginLeft: 20 }} type="danger">
-                {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
-              </Button>
-            </Popconfirm>
-          </AuthButton>
-          <AuthButton perms="system:plugin:add">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.addClick}
-            >
-              {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
-            </Button>
-          </AuthButton>
-        </div>
+      <LocaleProvider locale={language === "zh-CN" ? zhCN : enUS}>
+        <div className="plug-content-wrap">
+          <form
+            className={styles.toolbar}
+            onSubmit={(event) => {
+              event.preventDefault();
+              this.searchClick();
+            }}
+          >
+            <Input
+              allowClear
+              value={name}
+              onChange={this.searchOnchange}
+              placeholder={getIntlContent("SHENYU.NAMESPACE.INPUTNAME")}
+              className={styles.nameFilter}
+            />
+            <Input
+              allowClear
+              value={namespaceId}
+              onChange={this.searchNamespaceIdOnchange}
+              placeholder={getIntlContent("SHENYU.NAMESPACE.INPUTNAMESPACEID")}
+              className={styles.idFilter}
+            />
+            <AuthButton perms="system:namespace:list">
+              {({ icon }) => (
+                <Button
+                  type="primary"
+                  theme="solid"
+                  htmlType="submit"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                </Button>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:namespace:delete">
+              {({ icon }) => (
+                <Popconfirm
+                  title={getIntlContent("SHENYU.COMMON.DELETE")}
+                  position="bottom"
+                  motion={false}
+                  okType="danger"
+                  onConfirm={() => this.deleteClick()}
+                  okText={getIntlContent("SHENYU.COMMON.SURE")}
+                  cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                >
+                  <Button
+                    type="danger"
+                    theme="solid"
+                    htmlType="button"
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
+                  </Button>
+                </Popconfirm>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:namespace:add">
+              {({ icon }) => (
+                <Button
+                  type="primary"
+                  theme="solid"
+                  htmlType="button"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  onClick={this.addClick}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
+                </Button>
+              )}
+            </AuthButton>
+          </form>
 
-        <Table
-          size="small"
-          components={this.components}
-          style={{ marginTop: 30 }}
-          bordered
-          loading={loading}
-          columns={columns}
-          dataSource={namespaceList}
-          rowSelection={rowSelection}
-          pagination={{
-            total,
-            showTotal: (showTotal) => `${showTotal}`,
-            showSizeChanger: true,
-            pageSizeOptions: ["12", "20", "50", "100"],
-            current: currentPage,
-            pageSize,
-            onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange,
-          }}
-        />
-        {popup}
-      </div>
+          <Table
+            size="small"
+            resizable
+            rowKey="id"
+            scroll={{ x: 1000 }}
+            style={{ marginTop: 30 }}
+            bordered
+            loading={loading}
+            columns={columns}
+            dataSource={namespaceList}
+            rowSelection={rowSelection}
+            pagination={{
+              total,
+              showTotal: true,
+              showSizeChanger: true,
+              pageSizeOpts: [12, 20, 50, 100],
+              currentPage,
+              pageSize,
+              onChange: this.onPaginationChange,
+            }}
+          />
+          {popup}
+        </div>
+      </LocaleProvider>
     );
   }
 }

@@ -30,12 +30,17 @@ export default {
   state: {
     namespaceList: [],
     total: 0,
+    latestQuery: null,
   },
 
   effects: {
-    *fetch(params, { call, put }) {
-      const { payload } = params;
-      const json = yield call(getAllNamespaces, payload);
+    *fetch(params, { call, put, select }) {
+      // A fresh snapshot distinguishes even concurrent identical queries.
+      const query = { ...params.payload };
+      yield put({ type: "startQuery", payload: query });
+      const json = yield call(getAllNamespaces, query);
+      const latestQuery = yield select((state) => state.namespace.latestQuery);
+      if (latestQuery !== query) return;
       if (json.code === 200) {
         let { page, dataList } = json.data;
         dataList = dataList.map((item) => {
@@ -70,7 +75,7 @@ export default {
         message.warn(json.message);
       }
     },
-    *delete(params, { call, put }) {
+    *delete(params, { call, put, select }) {
       const { payload, fetchValue, callback } = params;
       const { list } = payload;
       const json = yield call(deleteNamespace, { list });
@@ -78,7 +83,11 @@ export default {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
         );
-        callback();
+        // Namespace selection may have changed while the mutation was pending.
+        const currentNamespaceId = yield select(
+          (state) => state.global.currentNamespaceId,
+        );
+        callback({ currentNamespaceId });
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
@@ -102,13 +111,16 @@ export default {
 
     *reload(params, { put }) {
       const { fetchValue } = params;
-      const { name, currentPage, enabled, pageSize } = fetchValue;
-      const payload = { name, enabled, currentPage, pageSize };
+      const { name, namespaceId, currentPage, enabled, pageSize } = fetchValue;
+      const payload = { name, namespaceId, enabled, currentPage, pageSize };
       yield put({ type: "fetch", payload });
     },
   },
 
   reducers: {
+    startQuery(state, { payload }) {
+      return { ...state, latestQuery: payload };
+    },
     saveNamespaces(state, { payload }) {
       return {
         ...state,
