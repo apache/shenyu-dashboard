@@ -17,7 +17,7 @@
 
 import React from "react";
 import classNames from "classnames";
-import { Icon } from "antd";
+import ResourceIcon from "../ui/ResourceIcon";
 import styles from "./index.less";
 
 export default function Result({
@@ -30,8 +30,20 @@ export default function Result({
   ...restProps
 }) {
   const iconMap = {
-    error: <Icon className={styles.error} type="close-circle" />,
-    success: <Icon className={styles.success} type="check-circle" />,
+    error: (
+      <span className={styles.error} role="img" aria-label="icon: close-circle">
+        <ResourceIcon type="close-circle" />
+      </span>
+    ),
+    success: (
+      <span
+        className={styles.success}
+        role="img"
+        aria-label="icon: check-circle"
+      >
+        <ResourceIcon type="check-circle" />
+      </span>
+    ),
   };
   const clsString = classNames(styles.result, className);
   return (

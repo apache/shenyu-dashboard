@@ -17,7 +17,7 @@
 
 import React, { createElement } from "react";
 import classNames from "classnames";
-import { Button } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
 import getTypeConfig from "./typeConfig";
 import { getIntlContent } from "../../utils/IntlUtils";
 import styles from "./index.less";
@@ -54,7 +54,7 @@ const Exception = ({
                 to: "/",
                 href: "/",
               },
-              <Button type="primary">
+              <Button type="primary" theme="solid" htmlType="button">
                 {getIntlContent("SHENYU.EXCEPTION.BACK.HOME")}
               </Button>,
             )}

@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-import React, { Fragment } from "react";
-import { Button, Icon, Card } from "antd";
+import React from "react";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Card from "@douyinfe/semi-ui/lib/es/card";
 import Result from "components/Result";
+import Icon from "../../components/ui/ResourceIcon";
 import PageHeaderLayout from "../../layouts/PageHeaderLayout";
 
 const extra = (
@@ -55,7 +57,11 @@ const extra = (
   </>
 );
 
-const actions = <Button type="primary">返回修改</Button>;
+const actions = (
+  <Button type="primary" theme="solid" htmlType="button">
+    返回修改
+  </Button>
+);
 
 export default () => (
   <PageHeaderLayout>

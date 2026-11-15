@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-@import '~antd/lib/style/themes/default.less';
-
 .exception {
   display: flex;
   align-items: center;
@@ -29,7 +27,7 @@
     zoom: 1;
     &:before,
     &:after {
-      content: ' ';
+      content: " ";
       display: table;
     }
     &:after {
@@ -62,7 +60,7 @@
     }
 
     .desc {
-      color: @text-color-secondary;
+      color: var(--semi-color-text-2);
       font-size: 20px;
       line-height: 28px;
       margin-bottom: 16px;
@@ -76,7 +74,7 @@
   }
 }
 
-@media screen and (max-width: @screen-xl) {
+@media screen and (max-width: 1200px) {
   .exception {
     .imgBlock {
       padding-right: 88px;
@@ -84,7 +82,7 @@
   }
 }
 
-@media screen and (max-width: @screen-sm) {
+@media screen and (max-width: 576px) {
   .exception {
     display: block;
     text-align: center;
@@ -95,7 +93,7 @@
   }
 }
 
-@media screen and (max-width: @screen-xs) {
+@media screen and (max-width: 480px) {
   .exception {
     .imgBlock {
       margin-bottom: -24px;

@@ -16,7 +16,9 @@
  */
 
 import React, { PureComponent } from "react";
-import { Button, Spin, Card } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Spin from "@douyinfe/semi-ui/lib/es/spin";
+import Card from "@douyinfe/semi-ui/lib/es/card";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import styles from "./style.less";
@@ -39,19 +41,41 @@ export default class TriggerException extends PureComponent {
     const { isloading } = this.props;
     return (
       <Card>
-        <Spin spinning={isloading} wrapperClassName={styles.trigger}>
-          <Button type="danger" onClick={() => this.triggerError(401)}>
-            触发401
-          </Button>
-          <Button type="danger" onClick={() => this.triggerError(403)}>
-            触发403
-          </Button>
-          <Button type="danger" onClick={() => this.triggerError(500)}>
-            触发500
-          </Button>
-          <Button type="danger" onClick={() => this.triggerError(404)}>
-            触发404
-          </Button>
+        <Spin spinning={isloading}>
+          <div className={styles.trigger}>
+            <Button
+              type="danger"
+              theme="solid"
+              htmlType="button"
+              onClick={() => this.triggerError(401)}
+            >
+              触发401
+            </Button>
+            <Button
+              type="danger"
+              theme="solid"
+              htmlType="button"
+              onClick={() => this.triggerError(403)}
+            >
+              触发403
+            </Button>
+            <Button
+              type="danger"
+              theme="solid"
+              htmlType="button"
+              onClick={() => this.triggerError(500)}
+            >
+              触发500
+            </Button>
+            <Button
+              type="danger"
+              theme="solid"
+              htmlType="button"
+              onClick={() => this.triggerError(404)}
+            >
+              触发404
+            </Button>
+          </div>
         </Spin>
       </Card>
     );

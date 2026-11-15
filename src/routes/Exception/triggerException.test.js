@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { Provider } from "react-redux";
 import TriggerException from "./triggerException";
 
@@ -38,20 +38,40 @@ describe("TriggerException", () => {
     // Before the first dispatch, dva-loading's `effects` map is empty, so
     // `loading.effects["error/query"]` is undefined rather than false.
     const { container } = renderWithStore({ loading: { effects: {} } });
-    expect(container.querySelector(".ant-spin-spinning")).toBeNull();
+    expect(
+      container.querySelector(".semi-spin:not(.semi-spin-hidden)"),
+    ).toBeNull();
   });
 
   it("is spinning while the error/query effect is in flight", () => {
     const { container } = renderWithStore({
       loading: { effects: { "error/query": true } },
     });
-    expect(container.querySelector(".ant-spin-spinning")).not.toBeNull();
+    expect(
+      container.querySelector(".semi-spin:not(.semi-spin-hidden)"),
+    ).not.toBeNull();
   });
 
   it("is not spinning once the error/query effect has finished", () => {
     const { container } = renderWithStore({
       loading: { effects: { "error/query": false } },
     });
-    expect(container.querySelector(".ant-spin-spinning")).toBeNull();
+    expect(
+      container.querySelector(".semi-spin:not(.semi-spin-hidden)"),
+    ).toBeNull();
   });
+});
+
+const Trigger = TriggerException.WrappedComponent;
+it("dispatches the selected error without changing codes", () => {
+  const dispatch = jest.fn();
+  render(<Trigger dispatch={dispatch} isloading={false} />);
+  [401, 403, 500, 404].forEach((code) => {
+    fireEvent.click(screen.getByRole("button", { name: `触发${code}` }));
+    expect(dispatch).toHaveBeenLastCalledWith({
+      type: "error/query",
+      payload: { code },
+    });
+  });
+  expect(dispatch).toHaveBeenCalledTimes(4);
 });
