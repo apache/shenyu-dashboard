@@ -36,7 +36,9 @@ Main layout now implements the existing collapse callback, removes its fixed
 header controls remain onscreen with a long namespace label and compact sidebar.
 This does not claim all application pages or phone layouts are fully responsive.
 Breadcrumbs use a shared modern provider and derive their contents from the latest
-route, rather than retaining a stale initial trail. Route authorization decisions
+route, rather than retaining a stale initial trail. Route-based breadcrumb paths
+normalize duplicate separators so a root route cannot produce a protocol-relative
+link such as `//users`. Route authorization decisions
 and model effects are unchanged. Native permission-button child icons and render
 functions preserve grants, fallback and revocation behavior.
 
@@ -46,7 +48,7 @@ Validation:
   contracts pass against their original implementations (the login harness mocks
   an existing TypeScript captcha utility). A late-menu expansion regression fails
   before the state derivation fix.
-- All 122 suites / 817 tests pass, plus lint, production build and whitespace
+- All 122 suites / 818 tests pass, plus lint, production build and whitespace
   checks. Existing unrelated style/tool/test warnings remain. No new dependency.
 - Tests exercise conditional captcha, active-tab values, frozen menu data, route
   selection, breadcrumbs, canonical locale, exact password-change payload and

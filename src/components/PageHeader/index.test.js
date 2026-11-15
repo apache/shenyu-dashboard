@@ -92,3 +92,15 @@ it("refreshes breadcrumbs when the current route context changes", () => {
   expect(screen.queryByText("One")).toBeNull();
   expect(screen.getByText("Two")).toBeTruthy();
 });
+
+it("keeps root-relative route breadcrumbs on the current host", () => {
+  const routes = [
+    { path: "/", breadcrumbName: "Home route", component: () => null },
+    { path: "users", breadcrumbName: "Users route", component: () => null },
+    { path: ":id", breadcrumbName: "User detail" },
+  ];
+  render(<PageHeader routes={routes} params={{ id: "42" }} />);
+  expect(
+    screen.getByRole("link", { name: "Users route" }).getAttribute("href"),
+  ).toBe("/users");
+});

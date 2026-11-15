@@ -178,14 +178,15 @@ export default class PageHeader extends PureComponent {
   itemRender = (route, params, routes, paths) => {
     const { linkElement = "a" } = this.props;
     const last = routes.indexOf(route) === routes.length - 1;
+    const breadcrumbPath = paths.join("/").replace(/\/+/g, "/") || "/";
     return last || !route.component ? (
       <span>{route.breadcrumbName}</span>
     ) : (
       createElement(
         linkElement,
         {
-          href: paths.join("/") || "/",
-          to: paths.join("/") || "/",
+          href: breadcrumbPath,
+          to: breadcrumbPath,
         },
         route.breadcrumbName,
       )
