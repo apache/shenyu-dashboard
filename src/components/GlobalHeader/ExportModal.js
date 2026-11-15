@@ -15,70 +15,21 @@
  * limitations under the License.
  */
 
-import React, { Component, forwardRef } from "react";
-import { Modal, Form, Button, Dropdown, Menu, Icon } from "antd";
+import React, { Component } from "react";
 import { connect } from "react-redux";
+import Modal from "../ui/Modal";
+import Form from "../ui/Form";
+import Select from "../ui/Select";
 import { getIntlContent } from "../../utils/IntlUtils";
 import { defaultNamespaceId } from "../_utils/utils";
 
 const FormItem = Form.Item;
-
-const NamespaceSelector = forwardRef(
-  // eslint-disable-next-line no-unused-vars
-  ({ onChange, currentNamespaceId, namespaces }, ref) => {
-    const handleNamespaceChange = (value) => {
-      onChange(value.key);
-    };
-    return (
-      <Dropdown
-        overlay={
-          <Menu onClick={handleNamespaceChange}>
-            {namespaces.map((namespace) => {
-              let isCurrentNamespace =
-                currentNamespaceId === namespace.namespaceId;
-              return (
-                <Menu.Item
-                  key={namespace.namespaceId}
-                  disabled={isCurrentNamespace}
-                >
-                  <span>{namespace.name}</span>
-                </Menu.Item>
-              );
-            })}
-          </Menu>
-        }
-      >
-        <Button>
-          <a
-            className="ant-dropdown-link"
-            style={{ fontWeight: "bold" }}
-            onClick={(e) => e.preventDefault()}
-          >
-            {`${getIntlContent("SHENYU.SYSTEM.NAMESPACE")} / ${
-              namespaces.find(
-                (namespace) => currentNamespaceId === namespace.namespaceId,
-              )?.name
-            } `}
-          </a>
-          <Icon type="down" />
-        </Button>
-      </Dropdown>
-    );
-  },
-);
 
 @connect(({ global }) => ({
   platform: global.platform,
   namespaces: global.namespaces,
 }))
 class ExportModal extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentNamespaceId: defaultNamespaceId,
-    };
-  }
-
   handleSubmit = (e) => {
     const { form, handleOk } = this.props;
     e.preventDefault();
@@ -89,13 +40,8 @@ class ExportModal extends Component {
     });
   };
 
-  handleNamespacesValueChange = (value) => {
-    this.setState({ currentNamespaceId: value });
-  };
-
   render() {
-    let { handleCancel, form, config, namespaces } = this.props;
-    let { currentNamespaceId } = this.state;
+    const { handleCancel, form, namespaces } = this.props;
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
@@ -105,9 +51,6 @@ class ExportModal extends Component {
         sm: { span: 17 },
       },
     };
-    if (config) {
-      config = JSON.parse(config);
-    }
 
     return (
       <Modal
@@ -131,14 +74,21 @@ class ExportModal extends Component {
                   required: true,
                 },
               ],
-              initialValue: currentNamespaceId,
-              valuePropName: "namespace",
+              initialValue: defaultNamespaceId,
             })(
-              <NamespaceSelector
-                onChange={this.handleNamespacesValueChange}
-                currentNamespaceId={currentNamespaceId}
-                namespaces={namespaces}
-              />,
+              <Select
+                showSearch
+                placeholder={getIntlContent("SHENYU.SYSTEM.NAMESPACE")}
+              >
+                {namespaces.map((namespace) => (
+                  <Select.Option
+                    key={namespace.namespaceId}
+                    value={namespace.namespaceId}
+                  >
+                    {namespace.name}
+                  </Select.Option>
+                ))}
+              </Select>,
             )}
           </FormItem>
         </Form>
