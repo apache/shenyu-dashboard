@@ -16,15 +16,40 @@
  */
 
 import React, { Component } from "react";
-import { Table, Button, Popconfirm, Select, Input, Popover, Tag } from "antd";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import Popover from "@douyinfe/semi-ui/lib/es/popover";
+import Tag from "@douyinfe/semi-ui/lib/es/tag";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import { connect } from "react-redux";
 import { message } from "../../../components/ui/feedback";
-import { resizableComponents } from "../../../utils/resizable";
+import Input from "../../../components/ui/Input";
+import Select from "../../../components/ui/Select";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
+import styles from "./index.module.less";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 
 const { Option } = Select;
+
+export const getHandleDetails = (record) => {
+  try {
+    const fields = JSON.parse(record.extObj || "{}");
+    return {
+      ...record,
+      required: fields?.required ?? record.required,
+      defaultValue: fields?.defaultValue ?? record.defaultValue,
+      placeholder: fields?.placeholder ?? record.placeholder,
+      rule: fields?.rule ?? record.rule,
+    };
+  } catch {
+    return { ...record };
+  }
+};
 
 @connect(({ pluginHandle, loading, global }) => ({
   pluginHandle,
@@ -32,8 +57,6 @@ const { Option } = Select;
   loading: loading.effects["pluginHandle/fetch"],
 }))
 export default class PluginHandle extends Component {
-  components = resizableComponents;
-
   constructor(props) {
     super(props);
     this.state = {
@@ -52,37 +75,39 @@ export default class PluginHandle extends Component {
   }
 
   async componentDidMount() {
+    this.mounted = true;
     await this.loadPluginDict();
+    if (!this.mounted) return;
 
     this.initPluginColumns();
 
     this.query();
   }
 
-  async componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     const { language } = this.props;
-    const { localeName } = this.state;
-    if (language !== localeName) {
-      await this.loadPluginDict();
+    if (language !== prevProps.language) {
       this.initPluginColumns();
       this.changeLocale(language);
     }
   }
 
+  componentWillUnmount() {
+    this.mounted = false;
+  }
+
   /**
    * condition query page list
    */
-  query = () => {
-    const { dispatch } = this.props;
+  currentQueryPayload = (override = {}) => {
     const { pluginId, field, currentPage, pageSize } = this.state;
-    dispatch({
+    return { pluginId, field, currentPage, pageSize, ...override };
+  };
+
+  query = () => {
+    this.props.dispatch({
       type: "pluginHandle/fetch",
-      payload: {
-        pluginId,
-        field,
-        currentPage,
-        pageSize,
-      },
+      payload: this.currentQueryPayload(),
     });
   };
 
@@ -94,15 +119,19 @@ export default class PluginHandle extends Component {
     await dispatch({
       type: "pluginHandle/fetchPluginList",
     });
-    this.setState({ pluginDict: this.props.pluginHandle.pluginDropDownList });
+    const pluginDict = this.props.pluginHandle.pluginDropDownList;
+    if (this.mounted) this.setState({ pluginDict });
+    return pluginDict;
   };
 
-  pageOnchange = (page) => {
-    this.setState({ currentPage: page }, this.query);
-  };
-
-  onShowSizeChange = (currentPage, pageSize) => {
-    this.setState({ currentPage: 1, pageSize }, this.query);
+  onPaginationChange = (page, pageSize) => {
+    this.setState(
+      (state) => ({
+        currentPage: pageSize === state.pageSize ? page : 1,
+        pageSize,
+      }),
+      this.query,
+    );
   };
 
   /**
@@ -114,7 +143,6 @@ export default class PluginHandle extends Component {
       reset
         ? { popup: "", currentPage: 1, pluginId: "", field: "" }
         : { popup: "" },
-      this.query,
     );
   };
 
@@ -130,25 +158,24 @@ export default class PluginHandle extends Component {
     this.setState({ currentPage: 1 }, this.query);
   };
 
-  editClick = (record, copy) => {
+  editClick = async (record, copy) => {
     const { dispatch } = this.props;
-    const { currentPage, pageSize } = this.state;
-    this.loadPluginDict();
-    const pluginDropDownList = this.state.pluginDict;
+    const pluginDropDownList = await this.loadPluginDict();
+    if (!this.mounted) return;
     dispatch({
       type: "pluginHandle/fetchItem",
       payload: {
         id: record.id,
       },
       callback: (pluginHandle) => {
-        let obj = JSON.parse(pluginHandle.extObj);
-        Object.assign(pluginHandle, obj);
+        if (!this.mounted) return;
+        const details = getHandleDetails(pluginHandle);
         this.setState({
           popup: (
             <AddModal
               pluginDropDownList={pluginDropDownList}
               disabled={true}
-              {...pluginHandle}
+              {...details}
               handleOk={(values) => {
                 const {
                   field,
@@ -191,10 +218,11 @@ export default class PluginHandle extends Component {
                 dispatch({
                   type: `pluginHandle/${copy ? "add" : "update"}`,
                   payload,
-                  fetchValue: {
-                    currentPage,
-                    pageSize,
-                  },
+                  fetchValue: this.currentQueryPayload({
+                    pluginId: "",
+                    field: "",
+                    currentPage: 1,
+                  }),
                   callback: () => {
                     this.closeModal(true);
                   },
@@ -210,10 +238,9 @@ export default class PluginHandle extends Component {
     });
   };
 
-  addClick = () => {
-    const { currentPage, pageSize } = this.state;
-    this.loadPluginDict();
-    const pluginDropDownList = this.state.pluginDict;
+  addClick = async () => {
+    const pluginDropDownList = await this.loadPluginDict();
+    if (!this.mounted) return;
     this.setState({
       popup: (
         <AddModal
@@ -255,10 +282,11 @@ export default class PluginHandle extends Component {
                 rule,
                 extObj,
               },
-              fetchValue: {
-                currentPage,
-                pageSize,
-              },
+              fetchValue: this.currentQueryPayload({
+                pluginId: "",
+                field: "",
+                currentPage: 1,
+              }),
               callback: () => {
                 this.closeModal(true);
               },
@@ -278,19 +306,16 @@ export default class PluginHandle extends Component {
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { currentPage, pageSize, selectedRowKeys } = this.state;
+    const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "pluginHandle/delete",
         payload: {
           list: selectedRowKeys,
         },
-        fetchValue: {
-          currentPage,
-          pageSize,
-        },
+        fetchValue: this.currentQueryPayload({ currentPage: 1 }),
         callback: () => {
-          this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
+          this.setState({ selectedRowKeys: [], currentPage: 1 });
         },
       });
     } else {
@@ -298,19 +323,6 @@ export default class PluginHandle extends Component {
       message.warn("Please select data");
     }
   };
-
-  handleResize =
-    (index) =>
-    (e, { size }) => {
-      this.setState(({ columns }) => {
-        const nextColumns = [...columns];
-        nextColumns[index] = {
-          ...nextColumns[index],
-          width: size.width,
-        };
-        return { columns: nextColumns };
-      });
-    };
 
   changeLocale(locale) {
     this.setState({
@@ -331,31 +343,7 @@ export default class PluginHandle extends Component {
           sorter: (a, b) => a.pluginId - b.pluginId,
           width: 140,
           render: (text) => {
-            const { pluginHandle } = this.props;
-            const { pluginHandleList } = pluginHandle;
             const pluginDropDownList = this.state.pluginDict;
-            if (pluginHandleList) {
-              pluginHandleList.forEach((item) => {
-                if (item.extObj) {
-                  let obj = {};
-                  try {
-                    obj = JSON.parse(item.extObj);
-                  } catch (e) {
-                    // eslint-disable-next-line no-console
-                    console.error(e);
-                  }
-                  if (obj.required) {
-                    item.required = obj.required;
-                  }
-                  if (obj.defaultValue) {
-                    item.defaultValue = obj.defaultValue;
-                  }
-                  if (obj.placeholder) {
-                    item.placeholder = obj.placeholder;
-                  }
-                }
-              });
-            }
             if (pluginDropDownList) {
               let arr = pluginDropDownList.filter((item) => item.id === text);
               if (arr && arr.length > 0) {
@@ -405,7 +393,7 @@ export default class PluginHandle extends Component {
           dataIndex: "field",
           key: "field",
           ellipsis: true,
-          // width: 200,
+          width: 200,
           render: (text, record) => {
             let content = (
               <div>
@@ -422,9 +410,13 @@ export default class PluginHandle extends Component {
             );
             return (
               <Popover
-                placement="topLeft"
-                content={content}
-                title={getIntlContent("SHENYU.PLUGIN.LABEL")}
+                position="topLeft"
+                content={
+                  <div className={styles.detail}>
+                    <strong>{getIntlContent("SHENYU.PLUGIN.LABEL")}</strong>
+                    {content}
+                  </div>
+                }
               >
                 <div style={{ color: "#1f640a" }}>{text || "----"}</div>
               </Popover>
@@ -486,7 +478,7 @@ export default class PluginHandle extends Component {
               );
             } else if (text === 3) {
               return (
-                <Tag color="magenta">
+                <Tag color="pink">
                   {getIntlContent("SHENYU.PLUGIN.DROPDOWN")}
                 </Tag>
               );
@@ -515,29 +507,33 @@ export default class PluginHandle extends Component {
           key: "time",
           ellipsis: true,
           fixed: "right",
-          width: 100,
+          width: 180,
           render: (text, record) => {
             return (
-              <div className="optionParts">
+              <div className={styles.actions}>
                 <AuthButton perms="system:pluginHandler:edit">
-                  <div
-                    className="edit"
-                    onClick={() => {
-                      this.editClick(record);
-                    }}
-                  >
-                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                  </div>
+                  {({ icon }) => (
+                    <Button
+                      theme="borderless"
+                      htmlType="button"
+                      icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      onClick={() => this.editClick(record)}
+                    >
+                      {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                    </Button>
+                  )}
                 </AuthButton>
                 <AuthButton perms="system:pluginHandler:add">
-                  <div
-                    className="edit"
-                    onClick={() => {
-                      this.editClick(record, true);
-                    }}
-                  >
-                    {getIntlContent("SHENYU.COMMON.COPY")}
-                  </div>
+                  {({ icon }) => (
+                    <Button
+                      theme="borderless"
+                      htmlType="button"
+                      icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      onClick={() => this.editClick(record, true)}
+                    >
+                      {getIntlContent("SHENYU.COMMON.COPY")}
+                    </Button>
+                  )}
                 </AuthButton>
               </div>
             );
@@ -548,7 +544,7 @@ export default class PluginHandle extends Component {
   }
 
   render() {
-    const { pluginHandle, loading } = this.props;
+    const { pluginHandle, loading, language } = this.props;
     const { pluginHandleList, total } = pluginHandle;
     const pluginDropDownList = this.state.pluginDict;
     const {
@@ -561,108 +557,118 @@ export default class PluginHandle extends Component {
       columns = [],
     } = this.state;
 
-    const tableColumns = columns.map((col, index) => ({
-      ...col,
-      onHeaderCell: (column) => ({
-        width: column.width,
-        onResize: this.handleResize(index),
-      }),
-    }));
-
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
 
     return (
-      <div className="plug-content-wrap">
-        <div style={{ display: "flex" }}>
-          <Select
-            value={pluginId || undefined}
-            onChange={this.searchOnchange}
-            placeholder={getIntlContent("SHENYU.PLUGIN.SELECTNAME")}
-            style={{ width: 240 }}
-            allowClear
-            showSearch
-            filterOption={(input, option) =>
-              option.props.children
-                .toLowerCase()
-                .indexOf(input.toLowerCase()) >= 0
-            }
+      <LocaleProvider locale={language === "zh-CN" ? zhCN : enUS}>
+        <div className="plug-content-wrap">
+          <form
+            className={styles.toolbar}
+            onSubmit={(event) => {
+              event.preventDefault();
+              this.searchClick();
+            }}
           >
-            {pluginDropDownList &&
-              pluginDropDownList.map((item, i) => {
-                return (
-                  <Option key={i} value={item.id}>
-                    {item.name}
-                  </Option>
-                );
-              })}
-          </Select>
-          <Input
-            allowClear
-            value={field}
-            onChange={this.fieldOnchange}
-            placeholder={getIntlContent("SHENYU.PLUGIN.FIELDNAME")}
-            style={{ width: 240, marginLeft: 20 }}
+            <Select
+              value={pluginId || undefined}
+              onChange={this.searchOnchange}
+              placeholder={getIntlContent("SHENYU.PLUGIN.SELECTNAME")}
+              style={{ width: 240 }}
+              allowClear
+              showSearch
+            >
+              {pluginDropDownList &&
+                pluginDropDownList.map((item, i) => {
+                  return (
+                    <Option key={i} value={item.id}>
+                      {item.name}
+                    </Option>
+                  );
+                })}
+            </Select>
+            <Input
+              allowClear
+              value={field}
+              onChange={this.fieldOnchange}
+              placeholder={getIntlContent("SHENYU.PLUGIN.FIELDNAME")}
+              className={styles.filter}
+            />
+            <AuthButton perms="system:pluginHandler:list">
+              {({ icon }) => (
+                <Button
+                  type="primary"
+                  theme="solid"
+                  htmlType="submit"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                </Button>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:pluginHandler:delete">
+              {({ icon }) => (
+                <Popconfirm
+                  title={getIntlContent("SHENYU.COMMON.DELETE")}
+                  position="bottom"
+                  motion={false}
+                  okType="danger"
+                  onConfirm={this.deleteClick}
+                  okText={getIntlContent("SHENYU.COMMON.SURE")}
+                  cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                >
+                  <Button
+                    type="danger"
+                    theme="solid"
+                    htmlType="button"
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  >
+                    {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                  </Button>
+                </Popconfirm>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:pluginHandler:add">
+              {({ icon }) => (
+                <Button
+                  type="primary"
+                  theme="solid"
+                  htmlType="button"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  onClick={this.addClick}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
+                </Button>
+              )}
+            </AuthButton>
+          </form>
+
+          <Table
+            size="small"
+            resizable
+            rowKey="id"
+            style={{ marginTop: 30 }}
+            bordered
+            loading={loading}
+            columns={columns}
+            scroll={{ x: 1208 }}
+            dataSource={pluginHandleList.map(getHandleDetails)}
+            rowSelection={rowSelection}
+            pagination={{
+              total,
+              showTotal: true,
+              showSizeChanger: true,
+              pageSizeOpts: [12, 20, 50, 100],
+              currentPage,
+              pageSize,
+              onChange: this.onPaginationChange,
+            }}
           />
-          <AuthButton perms="system:pluginHandler:list">
-            <Button
-              type="primary"
-              style={{ marginLeft: 20 }}
-              onClick={this.searchClick}
-            >
-              {getIntlContent("SHENYU.SYSTEM.SEARCH")}
-            </Button>
-          </AuthButton>
-          <AuthButton perms="system:pluginHandler:delete">
-            <Popconfirm
-              title={getIntlContent("SHENYU.COMMON.DELETE")}
-              placement="bottom"
-              onConfirm={() => {
-                this.deleteClick();
-              }}
-              okText={getIntlContent("SHENYU.COMMON.SURE")}
-              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-            >
-              <Button style={{ marginLeft: 20 }} type="danger">
-                {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
-              </Button>
-            </Popconfirm>
-          </AuthButton>
-          <AuthButton perms="system:pluginHandler:add">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.addClick}
-            >
-              {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
-            </Button>
-          </AuthButton>
+          {popup}
         </div>
-        <Table
-          size="small"
-          components={this.components}
-          style={{ marginTop: 30 }}
-          bordered
-          loading={loading}
-          columns={tableColumns}
-          // scroll={{ x: 1550 }}
-          dataSource={pluginHandleList}
-          rowSelection={rowSelection}
-          pagination={{
-            total,
-            showTotal: (showTotal) => `${showTotal}`,
-            showSizeChanger: true,
-            pageSizeOptions: ["12", "20", "50", "100"],
-            current: currentPage,
-            pageSize,
-            onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange,
-          }}
-        />
-        {popup}
-      </div>
+      </LocaleProvider>
     );
   }
 }
