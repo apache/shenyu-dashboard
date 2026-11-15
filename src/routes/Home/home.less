@@ -15,53 +15,68 @@
  * limitations under the License.
  */
 
-@import "~antd/lib/style/themes/default.less";
-
 .content {
   text-align: center;
-  padding-top: 28px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #e8e8e8;
+  padding: 28px 0 20px;
+  border-bottom: 1px solid var(--semi-color-border);
   margin-bottom: 24px;
 
   span {
     font-size: 32px;
-    color: @primary-color;
+    color: var(--semi-color-primary);
   }
 }
 
 .processContent {
-  margin-left: 30px;
-  margin-right: 30px;
+  margin: 0 24px 24px;
 }
 
-.contextHide {
-  margin-bottom: 0;
-  margin-right: 0;
-  margin-left: 0;
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
 }
 
-.row {
-  padding: 15px;
+.card {
+  min-width: 0;
 }
 
 .logItem {
-  padding: 15px !important;
-  border: none;
-  border-radius: 20px;
-  opacity: 0.8;
-  box-shadow: 3px 3px 10px rgba(76, 76, 76, 0.5);
-  border-radius: 15px;
+  margin-bottom: 12px;
 }
 
-.card {
-  box-shadow: 3px 5px 15px rgba(50, 50, 50, 0.5);
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 25px;
+.logButton {
+  width: 100%;
+  height: auto;
+  min-height: 32px;
+  white-space: normal;
+  text-align: left;
 }
 
-.logItem,
-.card {
-  border-top: 1px solid rgba(255, 255, 255, 0.5);
-  border-left: 1px solid rgba(255, 255, 255, 0.5);
+.logTitle {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.pluginDetail {
+  max-width: min(420px, calc(100vw - 48px));
+  max-height: 400px;
+  padding: 12px;
+  overflow: auto;
+}
+
+.logContext {
+  max-height: 400px;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 1000px) {
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
