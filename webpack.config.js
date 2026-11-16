@@ -18,6 +18,17 @@
 // Admin serves /static/** anonymously, including the login route's chunks.
 export default (config) => ({
   ...config,
+  resolve: {
+    ...config.resolve,
+    alias: {
+      ...(config.resolve && config.resolve.alias),
+      // Webpack 3's asset rule treats the package's .mjs entry as a data URL.
+      // Node resolves its supported CommonJS export; remove with the builder migration.
+      "@microlink/react-json-view$": require.resolve(
+        "@microlink/react-json-view",
+      ),
+    },
+  },
   output: {
     ...config.output,
     chunkFilename: `static/${config.output.chunkFilename}`,
