@@ -36,16 +36,15 @@ jest.mock("antd", () => {
   );
   return {
     ...antd,
-    message: {
-      error: jest.fn(),
-      success: jest.fn(),
-      warn: jest.fn(),
-    },
   };
 });
 
-jest.mock("dva/fetch", () => jest.fn());
-jest.mock("react-json-view", () => (props) => {
+jest.mock("../../../components/ui/feedback", () => ({
+  message: { error: jest.fn(), success: jest.fn(), warn: jest.fn() },
+}));
+
+jest.mock("../../../utils/fetch", () => jest.fn());
+jest.mock("@microlink/react-json-view", () => (props) => {
   const ReactModule = jest.requireActual("react");
   return ReactModule.createElement("div", {
     "data-rjv-src": JSON.stringify(props.src ?? null),

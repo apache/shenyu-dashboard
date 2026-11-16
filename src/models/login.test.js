@@ -1,12 +1,13 @@
-import { runSaga, effects } from "dva/saga";
-import { message } from "antd";
+import { runSaga } from "redux-saga";
+import * as effects from "redux-saga/effects";
+import { message } from "../components/ui/feedback";
 import model from "./login";
 import { queryLogin } from "../services/api";
 
 jest.mock("../services/api", () => ({
   queryLogin: jest.fn(),
 }));
-jest.mock("antd", () => ({
+jest.mock("../components/ui/feedback", () => ({
   message: { destroy: jest.fn(), error: jest.fn() },
 }));
 jest.mock("../components/_utils/utils", () => ({

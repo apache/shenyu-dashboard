@@ -16,33 +16,42 @@
  */
 
 import React, { Component } from "react";
-import { Modal, Form, Select, Input, Switch } from "antd";
-
-import { connect } from "dva";
+import { Form } from "@douyinfe/semi-ui/lib/es/form";
+import Modal from "@douyinfe/semi-ui/lib/es/modal";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
+import "@douyinfe/semi-ui/lib/es/_base/base.css";
+import { connect } from "react-redux";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
-const FormItem = Form.Item;
-const { Option } = Select;
-const { TextArea } = Input;
 @connect(({ global }) => ({
   platform: global.platform,
+  language: global.language,
 }))
 class AddModal extends Component {
-  handleSubmit = (e) => {
-    const { form, handleOk, id = "" } = this.props;
-    e.preventDefault();
-    form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        handleOk({ ...values, id });
-      }
-    });
+  getFormApi = (formApi) => {
+    this.formApi = formApi;
+  };
+
+  handleSubmit = (event) => {
+    if (event && event.preventDefault) {
+      event.preventDefault();
+    }
+    this.formApi.submitForm();
+  };
+
+  handleValidSubmit = (values) => {
+    const { handleOk, id = "" } = this.props;
+    handleOk({ ...values, id });
   };
 
   render() {
-    let {
+    const {
       handleCancel,
       platform,
-      form,
+      language,
+      isShow,
       appName = "",
       serviceName = "",
       rpcType = "",
@@ -53,211 +62,144 @@ class AddModal extends Component {
       parameterTypes = "",
       enabled = true,
     } = this.props;
-    let { rpcTypeEnums } = platform;
-
-    const { getFieldDecorator } = form;
-    const formItemLayout = {
-      labelCol: {
-        sm: { span: 8 },
-      },
-      wrapperCol: {
-        sm: { span: 16 },
-      },
+    const locale =
+      language || window.sessionStorage.getItem("locale") || "en-US";
+    const initValues = {
+      appName,
+      serviceName,
+      rpcType,
+      methodName,
+      rpcExt,
+      path,
+      pathDesc,
+      parameterTypes,
+      enabled,
     };
+
     return (
-      <Modal
-        width={450}
-        centered
-        title={getIntlContent("SHENYU.META.DATA")}
-        visible
-        okText={getIntlContent("SHENYU.COMMON.SURE")}
-        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-        onOk={this.handleSubmit}
-        onCancel={handleCancel}
-      >
-        <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem
-            label={getIntlContent("SHENYU.AUTH.APPNAME")}
-            {...formItemLayout}
+      <LocaleProvider locale={locale.toLowerCase() === "en-us" ? enUS : zhCN}>
+        <Modal
+          width={450}
+          centered
+          title={getIntlContent("SHENYU.META.DATA")}
+          visible
+          okText={getIntlContent("SHENYU.COMMON.SURE")}
+          cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+          okButtonProps={{ "aria-label": getIntlContent("SHENYU.COMMON.SURE") }}
+          cancelButtonProps={{
+            "aria-label": getIntlContent("SHENYU.COMMON.CALCEL"),
+          }}
+          onOk={this.handleSubmit}
+          onCancel={handleCancel}
+        >
+          <Form
+            initValues={initValues}
+            getFormApi={this.getFormApi}
+            onSubmit={this.handleValidSubmit}
+            allowEmpty
+            autoScrollToError
+            labelPosition="left"
+            labelAlign="right"
+            labelWidth={130}
           >
-            {getFieldDecorator("appName", {
-              rules: [
+            <Form.Input
+              field="appName"
+              label={getIntlContent("SHENYU.AUTH.APPNAME")}
+              rules={[
                 {
                   required: true,
                   message:
                     getIntlContent("SHENYU.AUTH.INPUT") +
                     getIntlContent("SHENYU.AUTH.APPNAME"),
                 },
-              ],
-              initialValue: appName,
-            })(
-              <Input
-                allowClear
-                placeholder={getIntlContent("SHENYU.AUTH.APPNAME")}
-              />,
-            )}
-          </FormItem>
-
-          <FormItem
-            label={getIntlContent("SHENYU.META.FUNC.NAME")}
-            {...formItemLayout}
-          >
-            {getFieldDecorator("methodName", {
-              rules: [
+              ]}
+              placeholder={getIntlContent("SHENYU.AUTH.APPNAME")}
+              showClear
+            />
+            <Form.Input
+              field="methodName"
+              label={getIntlContent("SHENYU.META.FUNC.NAME")}
+              rules={[
                 {
                   required: true,
                   message:
                     getIntlContent("SHENYU.AUTH.INPUT") +
                     getIntlContent("SHENYU.META.FUNC.NAME"),
                 },
-              ],
-              initialValue: methodName,
-            })(
-              <Input
-                allowClear
-                placeholder={getIntlContent("SHENYU.META.FUNC.NAME")}
-              />,
-            )}
-          </FormItem>
-          <FormItem
-            label={getIntlContent("SHENYU.META.PATH")}
-            {...formItemLayout}
-          >
-            {getFieldDecorator("path", {
-              rules: [
+              ]}
+              placeholder={getIntlContent("SHENYU.META.FUNC.NAME")}
+              showClear
+            />
+            <Form.Input
+              field="path"
+              label={getIntlContent("SHENYU.META.PATH")}
+              rules={[
                 {
                   required: true,
                   message:
                     getIntlContent("SHENYU.AUTH.INPUT") +
                     getIntlContent("SHENYU.META.PATH"),
                 },
-              ],
-              initialValue: path,
-            })(
-              <Input
-                allowClear
-                placeholder={getIntlContent("SHENYU.META.PATH")}
-              />,
-            )}
-          </FormItem>
-          <FormItem
-            label={getIntlContent("SHENYU.AUTH.PATH.DESCRIBE")}
-            {...formItemLayout}
-          >
-            {getFieldDecorator("pathDesc", {
-              rules: [
-                {
-                  required: false,
-                  message:
-                    getIntlContent("SHENYU.AUTH.INPUT") +
-                    getIntlContent("SHENYU.AUTH.PATH.DESCRIBE"),
-                },
-              ],
-              initialValue: pathDesc,
-            })(
-              <Input
-                allowClear
-                placeholder={getIntlContent("SHENYU.AUTH.PATH.DESCRIBE")}
-              />,
-            )}
-          </FormItem>
-          <FormItem
-            label={`${getIntlContent("SHENYU.AUTH.PARAMS")}${getIntlContent("SHENYU.COMMON.TYPE")}`}
-            {...formItemLayout}
-          >
-            {getFieldDecorator("parameterTypes", {
-              rules: [
-                {
-                  required: false,
-                  message: `${getIntlContent("SHENYU.AUTH.INPUT")}${getIntlContent("SHENYU.AUTH.PARAMS")}${getIntlContent("SHENYU.COMMON.TYPE")}`,
-                },
-              ],
-              initialValue: parameterTypes,
-            })(
-              <Input
-                allowClear
-                placeholder={`${getIntlContent("SHENYU.AUTH.PARAMS")}${getIntlContent("SHENYU.COMMON.TYPE")}`}
-              />,
-            )}
-          </FormItem>
-          <FormItem
-            label={`Rpc${getIntlContent("SHENYU.META.EXPAND.PARAMS")}`}
-            {...formItemLayout}
-          >
-            {getFieldDecorator("rpcExt", {
-              rules: [
-                {
-                  message: `${getIntlContent("SHENYU.AUTH.INPUT")}Rpc${getIntlContent("SHENYU.META.EXPAND.PARAMS")}`,
-                },
-              ],
-              initialValue: rpcExt,
-            })(
-              <TextArea
-                placeholder={`Rpc${getIntlContent("SHENYU.META.EXPAND.PARAMS")}`}
-                rows={3}
-              />,
-            )}
-          </FormItem>
-          <FormItem
-            label={getIntlContent("SHENYU.META.SERVER.INTER")}
-            {...formItemLayout}
-          >
-            {getFieldDecorator("serviceName", {
-              rules: [
+              ]}
+              placeholder={getIntlContent("SHENYU.META.PATH")}
+              showClear
+            />
+            <Form.Input
+              field="pathDesc"
+              label={getIntlContent("SHENYU.AUTH.PATH.DESCRIBE")}
+              placeholder={getIntlContent("SHENYU.AUTH.PATH.DESCRIBE")}
+              showClear
+            />
+            <Form.Input
+              field="parameterTypes"
+              label={`${getIntlContent("SHENYU.AUTH.PARAMS")}${getIntlContent("SHENYU.COMMON.TYPE")}`}
+              placeholder={`${getIntlContent("SHENYU.AUTH.PARAMS")}${getIntlContent("SHENYU.COMMON.TYPE")}`}
+              showClear
+            />
+            <Form.TextArea
+              field="rpcExt"
+              label={`Rpc${getIntlContent("SHENYU.META.EXPAND.PARAMS")}`}
+              placeholder={`Rpc${getIntlContent("SHENYU.META.EXPAND.PARAMS")}`}
+              rows={3}
+            />
+            <Form.Input
+              field="serviceName"
+              label={getIntlContent("SHENYU.META.SERVER.INTER")}
+              rules={[
                 {
                   required: true,
                   message: getIntlContent("SHENYU.META.INPUTSERVICEINTERFACE"),
                 },
-              ],
-              initialValue: serviceName,
-            })(
-              <Input
-                allowClear
-                placeholder={getIntlContent("SHENYU.META.SERVER.INTER")}
-              />,
-            )}
-          </FormItem>
-          {/* select */}
-          <FormItem
-            label={`Rpc${getIntlContent("SHENYU.COMMON.TYPE")}`}
-            {...formItemLayout}
-          >
-            {getFieldDecorator("rpcType", {
-              rules: [
+              ]}
+              placeholder={getIntlContent("SHENYU.META.SERVER.INTER")}
+              showClear
+            />
+            <Form.Select
+              field="rpcType"
+              motion={false}
+              label={`Rpc${getIntlContent("SHENYU.COMMON.TYPE")}`}
+              rules={[
                 {
                   required: true,
                   message: getIntlContent("SHENYU.META.SELECTRPCTYPE"),
                 },
-              ],
-              initialValue: rpcType,
-            })(
-              <Select>
-                {rpcTypeEnums.map((item) => {
-                  return (
-                    <Option key={item.name} value={item.name}>
-                      {item.name}
-                    </Option>
-                  );
-                })}
-              </Select>,
-            )}
-          </FormItem>
-          {/* status */}
-          {
-            <FormItem
-              {...formItemLayout}
+              ]}
+              optionList={platform.rpcTypeEnums.map((item) => ({
+                label: item.name,
+                value: item.name,
+              }))}
+              style={{ width: "100%" }}
+            />
+            <Form.Switch
+              field="enabled"
               label={getIntlContent("SHENYU.SYSTEM.STATUS")}
-            >
-              {getFieldDecorator("enabled", {
-                initialValue: enabled,
-                valuePropName: "checked",
-              })(<Switch disabled={!this.props.isShow} />)}
-            </FormItem>
-          }
-        </Form>
-      </Modal>
+              disabled={!isShow}
+            />
+          </Form>
+        </Modal>
+      </LocaleProvider>
     );
   }
 }
 
-export default Form.create()(AddModal);
+export default AddModal;

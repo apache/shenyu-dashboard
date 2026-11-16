@@ -15,174 +15,248 @@
  * limitations under the License.
  */
 
-/* eslint-disable max-classes-per-file */
 import React from "react";
-// import ReactDOM from 'react-dom';
-import "antd/dist/antd.css";
-
-import { Transfer, Table } from "antd";
-import difference from "lodash/difference";
+import Transfer from "@douyinfe/semi-ui/lib/es/transfer";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Input from "@douyinfe/semi-ui/lib/es/input";
+import Button from "@douyinfe/semi-ui/lib/es/button";
 import { getIntlContent } from "../../../utils/IntlUtils";
-// import uniqBy from 'lodash/uniqBy';
-// import reqwest from 'reqwest';
 
-const columns = [
-  {
-    dataIndex: "path",
-    title: getIntlContent("SHENYU.AUTH.RESOUCE.PATH"),
-    width: 200,
-    textWrap: "word-break",
-    align: "center",
-    ellipsis: true,
-  },
-  {
-    dataIndex: "appName",
-    title: getIntlContent("SHENYU.AUTH.APPNAME"),
-    width: 100,
-    textWrap: "word-break",
-    align: "center",
-    ellipsis: true,
-  },
-];
+const pageSize = 10;
+const panelStyle = {
+  flex: "1 1 420px",
+  minWidth: 0,
+  padding: 12,
+  border: "1px solid var(--semi-color-border)",
+  borderRadius: 6,
+  boxSizing: "border-box",
+};
+const matches = (input, row) =>
+  String(row.appName || "").includes(input) ||
+  String(row.path || "").includes(input);
 
-class TableTransfer extends React.Component {
+export default class TableTransferComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataSource: this.props.datalist,
-      pagination: {
-        current: 1,
-        pageSize: 10,
-      },
+      sourceKeys: [],
+      selectedKeys: [],
+      sourcePage: 1,
+      selectedPage: 1,
+      selectedSearch: "",
     };
   }
 
-  render() {
-    const { authName } = this.props;
-    const { dataSource, pagination } = this.state;
-    return (
-      <Transfer
-        titles={["ALL", authName]}
-        {...this.props}
-        dataSource={dataSource}
-        rowKey={(record) => record.path}
-      >
-        {({
-          direction, // 渲染列表的方向
-          filteredItems,
-          onItemSelectAll, // 勾选一组条目
-          onItemSelect, // 勾选条目
-          selectedKeys: listSelectedKeys, // 选中的条目
-          disabled: listDisabled, // 是否禁用列表
-        }) => {
-          const rowSelection = {
-            getCheckboxProps: (item) => ({
-              disabled: listDisabled || item.disabled,
-            }),
-            onSelectAll(selected, selectedRows) {
-              const treeSelectedKeys = selectedRows
-                .filter((item) => !item.disabled)
-                .map(({ path }) => path);
-              const diffKeys = selected
-                ? difference(treeSelectedKeys, listSelectedKeys)
-                : difference(listSelectedKeys, treeSelectedKeys);
-              onItemSelectAll(diffKeys, selected);
-            },
-            onSelect({ path }, selected) {
-              onItemSelect(path, selected);
-            },
-            selectedRowKeys: listSelectedKeys,
-          };
+  getResourceRows = () => {
+    const { auth, datalist } = this.props;
+    const granted = new Set(auth.map((row) => row.path));
+    return datalist.filter((row) => !granted.has(row.path)).concat(auth);
+  };
 
-          const handleTableChange = (paginationObj) => {
-            if (direction === "left") {
-              // eslint-disable-next-line react/no-access-state-in-setstate
-              const pager = { ...this.state.pagination };
-              pager.current = paginationObj.current;
-              this.setState({
-                pagination: pager,
-              });
-              // this.fetch(paginationObj);
-            }
-          };
-
-          // const rightDataSource = this.props.auth
-          // const rightDataSource = dataSource.filter(item=>targetKeys.includes(item.path))
-          // const judgeArr = rightDataSource.map(it=>it.path)
-          // const leftDataSource = dataSource.map(item => ({
-          //   ...item,
-          //   disabled: judgeArr.includes(item.path) ,
-
-          // }));
-
-          return (
-            <Table
-              rowSelection={rowSelection}
-              columns={columns}
-              rowKey={(record) => record.path}
-              style={{ pointerEvents: listDisabled ? "none" : null }}
-              dataSource={filteredItems}
-              // dataSource={direction === 'left' ? leftDataSource : rightDataSource}
-              size="small"
-              onChange={handleTableChange}
-              onRow={({ path, disabled: itemDisabled }) => ({
-                onClick: () => {
-                  if (itemDisabled || listDisabled) return;
-                  onItemSelect(path, !listSelectedKeys.includes(path));
-                },
-              })}
-              pagination={direction === "left" ? pagination : true}
-            />
-          );
-        }}
-      </Transfer>
-    );
-  }
-}
-
-class TableTransferComponent extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      targetKeys: this.props.auth.map((item) => item.path),
-      authName: this.props.authName,
-      datalist: this.props.datalist,
-      auth: this.props.auth.map((item) => {
-        item.key = item.id;
-        return item;
-      }),
-    };
-  }
-
-  onChange = (targetKeys) => {
-    this.setState({
-      targetKeys,
+  getDisplayRows = () => {
+    const rows = new Map();
+    this.getResourceRows().forEach((row) => {
+      const existing = rows.get(row.path);
+      rows.set(row.path, {
+        ...row,
+        key: row.path,
+        value: row.path,
+        label: row.path,
+        disabled: Boolean(row.disabled || (existing && existing.disabled)),
+      });
     });
+    return [...rows.values()];
+  };
 
-    // 传递更数据
-    let data = this.state.datalist.filter((item) =>
-      targetKeys.includes(item.path),
+  applyTargets = (targetKeys) => {
+    const selected = new Set(targetKeys);
+    this.props.handleGetUpdateMetas(
+      this.getResourceRows().filter((row) => selected.has(row.path)),
     );
+    this.setState({
+      sourceKeys: [],
+      selectedKeys: [],
+      sourcePage: 1,
+      selectedPage: 1,
+    });
+  };
 
-    this.props.handleGetUpdateMetas(data);
+  move = (direction) => {
+    const targets = new Set(this.props.targetKeys);
+    const rows = new Map(this.getDisplayRows().map((row) => [row.path, row]));
+    const marked =
+      direction === "source" ? this.state.sourceKeys : this.state.selectedKeys;
+    marked.forEach((path) => {
+      if (!rows.has(path) || rows.get(path).disabled) return;
+      if (direction === "source") targets.add(path);
+      else targets.delete(path);
+    });
+    this.applyTargets([...targets]);
+  };
+
+  renderPanel = (direction, rows, search, onSearch, title) => {
+    const keysField = direction === "source" ? "sourceKeys" : "selectedKeys";
+    const pageField = direction === "source" ? "sourcePage" : "selectedPage";
+    const marked = this.state[keysField];
+    const currentPage = Math.max(
+      1,
+      Math.min(this.state[pageField], Math.ceil(rows.length / pageSize)),
+    );
+    const pageRows = rows.slice(
+      (currentPage - 1) * pageSize,
+      currentPage * pageSize,
+    );
+    const disabledGrants = new Set(
+      this.props.auth
+        .filter((row) => row.enabled === false)
+        .map((row) => row.path),
+    );
+    const columns = [
+      {
+        key: "path",
+        dataIndex: "path",
+        title: getIntlContent("SHENYU.AUTH.RESOUCE.PATH"),
+        width: 280,
+        ellipsis: true,
+        render: (path) => (
+          <>
+            <span>{path}</span>
+            {direction === "selected" && disabledGrants.has(path) && (
+              <small
+                style={{ marginLeft: 8, color: "var(--semi-color-danger)" }}
+              >
+                {getIntlContent("SHENYU.AUTH.RESOURCE.CONTAINS.DISABLED")}
+              </small>
+            )}
+          </>
+        ),
+      },
+      {
+        key: "appName",
+        dataIndex: "appName",
+        title: getIntlContent("SHENYU.AUTH.APPNAME"),
+        width: 140,
+        ellipsis: true,
+      },
+    ];
+    return (
+      <section aria-label={title} style={panelStyle}>
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 12,
+            flexWrap: "wrap",
+          }}
+        >
+          <strong style={{ overflowWrap: "anywhere" }}>{title}</strong>
+          <Button
+            theme="solid"
+            type={direction === "source" ? "primary" : "danger"}
+            disabled={!marked.length}
+            onClick={() => this.move(direction)}
+          >
+            {getIntlContent(
+              direction === "source"
+                ? "SHENYU.AUTH.RESOURCE.GRANT"
+                : "SHENYU.AUTH.RESOURCE.REMOVE",
+            )}{" "}
+            ({marked.length})
+          </Button>
+        </div>
+        <Input
+          value={search}
+          showClear
+          aria-label={getIntlContent(
+            direction === "source"
+              ? "SHENYU.AUTH.RESOURCE.SEARCH.AVAILABLE"
+              : "SHENYU.AUTH.RESOURCE.SEARCH.SELECTED",
+          )}
+          placeholder={getIntlContent("SHENYU.AUTH.RESOURCE.SEARCH")}
+          onChange={onSearch}
+        />
+        <Table
+          style={{ marginTop: 12 }}
+          size="small"
+          rowKey="path"
+          columns={columns}
+          dataSource={pageRows}
+          scroll={{ x: 460 }}
+          pagination={{
+            currentPage,
+            pageSize,
+            total: rows.length,
+            showSizeChanger: false,
+            formatPageText: ({ total }) => String(total),
+            onChange: (page) => this.setState({ [pageField]: page }),
+          }}
+          rowSelection={{
+            selectedRowKeys: marked,
+            getCheckboxProps: (row) => ({ disabled: row.disabled }),
+            onChange: (keys) => this.setState({ [keysField]: keys }),
+          }}
+          onRow={(row) => ({
+            onClick: (event) => {
+              if (
+                row.disabled ||
+                event.target.closest("input,button,label,.semi-checkbox")
+              )
+                return;
+              this.setState((prev) => ({
+                [keysField]: prev[keysField].includes(row.path)
+                  ? prev[keysField].filter((key) => key !== row.path)
+                  : [...prev[keysField], row.path],
+              }));
+            },
+          })}
+        />
+      </section>
+    );
   };
 
   render() {
-    // eslint-disable-next-line
+    const { targetKeys, authName } = this.props;
+    const selected = new Set(targetKeys);
     return (
-      <TableTransfer
-        auth={this.state.auth}
-        authName={this.state.authName}
-        datalist={this.state.datalist}
-        targetKeys={this.state.targetKeys}
-        onChange={this.onChange}
-        showSearch={true}
-        filterOption={(inputValue, item) =>
-          item.appName.indexOf(inputValue) !== -1 ||
-          item.path.indexOf(inputValue) !== -1
+      <Transfer
+        style={{
+          width: "100%",
+          minWidth: 0,
+          height: "auto",
+          gap: 16,
+          flexWrap: "wrap",
+        }}
+        dataSource={this.getDisplayRows()}
+        value={[...selected]}
+        onChange={this.applyTargets}
+        filter={matches}
+        renderSourcePanel={({ filterData, inputValue, onSearch }) =>
+          this.renderPanel(
+            "source",
+            filterData.filter((row) => !selected.has(row.path)),
+            inputValue,
+            (value) => {
+              this.setState({ sourcePage: 1 });
+              onSearch(value);
+            },
+            getIntlContent("SHENYU.AUTH.RESOURCE.AVAILABLE"),
+          )
+        }
+        renderSelectedPanel={({ selectedData }) =>
+          this.renderPanel(
+            "selected",
+            selectedData.filter((row) =>
+              matches(this.state.selectedSearch, row),
+            ),
+            this.state.selectedSearch,
+            (value) =>
+              this.setState({ selectedSearch: value, selectedPage: 1 }),
+            authName,
+          )
         }
       />
     );
   }
 }
-export default TableTransferComponent;

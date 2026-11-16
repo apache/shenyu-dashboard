@@ -17,9 +17,10 @@
 
 /* eslint-disable no-unused-expressions */
 /* eslint-disable react/static-property-placement */
-import { Modal, Form, Input, message } from "antd";
+import { Modal, Form, Input } from "antd";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { message } from "../../../components/ui/feedback";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { importSwagger } from "../../../services/api";
 

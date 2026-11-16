@@ -24,13 +24,15 @@ import SearchApi from "./SearchApi";
 jest.mock("antd", () => ({
   Tree: jest.fn(() => null),
   Empty: () => null,
-  message: { error: jest.fn() },
   Typography: { Text: () => null },
   Button: () => null,
   Row: () => null,
   Col: () => null,
   Spin: ({ children }) => children,
   Tooltip: () => null,
+}));
+jest.mock("../../../components/ui/feedback", () => ({
+  message: { error: jest.fn() },
 }));
 jest.mock("../../../services/api", () => ({
   getRootTag: jest.fn(),

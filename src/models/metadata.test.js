@@ -49,3 +49,42 @@ it("preserves the path filter when reloading metadata", () => {
   );
   expect(generator.next().done).toBe(true);
 });
+
+it.each(["namespace-1", "namespace-2"])(
+  "only saves a page response while its namespace remains active (%s)",
+  (currentNamespaceId) => {
+    const payload = {
+      namespaceId: "namespace-1",
+      path: "",
+      currentPage: 1,
+      pageSize: 12,
+    };
+    const response = {
+      code: 200,
+      data: {
+        page: { totalCount: 1 },
+        dataList: [{ id: "record-1", path: "/example" }],
+      },
+    };
+    const save = jest.fn((action) => action);
+    const effects = {
+      call: () => response,
+      put: save,
+      select: (read) => read({ global: { currentNamespaceId } }),
+    };
+    const request = model.effects.fetch({ payload }, effects);
+    let step = request.next();
+    while (!step.done) step = request.next(step.value);
+    if (currentNamespaceId === payload.namespaceId) {
+      expect(save).toHaveBeenCalledWith({
+        type: "saveUsers",
+        payload: {
+          total: 1,
+          dataList: [{ id: "record-1", key: "record-1", path: "/example" }],
+        },
+      });
+    } else {
+      expect(save).not.toHaveBeenCalled();
+    }
+  },
+);

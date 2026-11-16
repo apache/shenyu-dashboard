@@ -17,7 +17,7 @@
 
 import React from "react";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import fetch from "dva/fetch";
+import fetch from "../../../utils/fetch";
 import {
   createOrUpdateMockRequest,
   deleteMockRequest,
@@ -27,7 +27,7 @@ import ApiContext from "./ApiContext";
 import ApiDebug from "./ApiDebug";
 import { buildEnvironmentHost, isValidHttpUrl } from "../../../utils/UrlUtils";
 
-jest.mock("dva/fetch", () => jest.fn());
+jest.mock("../../../utils/fetch", () => jest.fn());
 jest.mock("../../../services/api", () => ({
   createOrUpdateMockRequest: jest.fn(),
   deleteMockRequest: jest.fn(),
@@ -41,7 +41,7 @@ jest.mock(
     ({ children }) =>
       children,
 );
-jest.mock("react-json-view", () => () => <div />);
+jest.mock("@microlink/react-json-view", () => () => <div />);
 jest.mock("../../../utils/IntlUtils", () => ({
   getIntlContent: (key) => key,
 }));

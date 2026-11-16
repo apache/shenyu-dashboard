@@ -17,9 +17,10 @@
 
 /* eslint-disable no-unused-expressions */
 /* eslint-disable react/jsx-no-constructed-context-values */
-import { Col, Row, Card, Empty, message } from "antd";
+import { Col, Row, Card, Empty } from "antd";
 import React, { useEffect, useRef, useState } from "react";
-import { connect } from "dva";
+import { connect } from "react-redux";
+import { message } from "../../components/ui/feedback";
 import {
   getApi,
   getApiDetail,

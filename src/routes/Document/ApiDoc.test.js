@@ -17,9 +17,11 @@
 
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { createStore } from "redux";
 import ConnectedApiDoc from "./ApiDoc";
 
-// render the raw component so tests can inject a dispatch without a dva store
+// render the raw component so tests can inject a dispatch without a Redux store
 const ApiDoc = ConnectedApiDoc.WrappedComponent;
 
 jest.mock("../../services/api", () => ({
@@ -59,6 +61,22 @@ const renderWithDict = (dics) => {
   render(<ApiDoc dispatch={dispatch} />);
   return dispatch;
 };
+
+it("dispatches environment loading through the runtime Redux provider", async () => {
+  const store = createStore((state = {}) => state);
+  const dispatch = jest.spyOn(store, "dispatch");
+  render(
+    <Provider store={store}>
+      <ConnectedApiDoc />
+    </Provider>,
+  );
+
+  await waitFor(() =>
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "shenyuDict/fetchByType" }),
+    ),
+  );
+});
 
 it("maps enabled apidoc env entries to envProps", async () => {
   const dispatch = renderWithDict([

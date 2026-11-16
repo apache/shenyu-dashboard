@@ -16,56 +16,110 @@
  */
 
 import React, { Component } from "react";
-import { Modal, Form } from "antd";
-// import styles from "./index.less";
+import Modal from "@douyinfe/semi-ui/lib/es/modal";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
+import "@douyinfe/semi-ui/lib/es/_base/base.css";
 import TableTransferComponent from "./TableTransfer";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
-class RelateMetadata extends Component {
+const grantSignature = (rows) =>
+  rows
+    .map((row) => JSON.stringify([row.path, row.appName]))
+    .sort()
+    .join("\n");
+
+export default class RelateMetadata extends Component {
+  static getDerivedStateFromProps(props, state) {
+    if (props.id !== state.id) {
+      return {
+        id: props.id,
+        authPathDTOList: [...props.auth],
+        validationError: null,
+      };
+    }
+    return null;
+  }
+
   constructor(props) {
     super(props);
     this.state = {
-      authPathDTOList: [],
-      id: this.props.id,
+      id: props.id,
+      authPathDTOList: [...props.auth],
+      validationError: null,
     };
   }
 
-  // 获取穿梭框中右侧数据以便更新
-  getUpdateMetas = (data) => {
-    this.setState({
-      authPathDTOList: data,
-    });
+  getUpdateMetas = (authPathDTOList) => {
+    this.setState({ authPathDTOList, validationError: null });
   };
 
   handleSubmit = () => {
-    const { handleOk } = this.props;
-    // 需要传值更新
-    handleOk(this.state);
+    const { authPathDTOList } = this.state;
+    if (!authPathDTOList.length) {
+      this.setState({ validationError: "SHENYU.AUTH.RESOURCE.REQUIRED" });
+      return;
+    }
+    if (grantSignature(authPathDTOList) === grantSignature(this.props.auth)) {
+      this.props.handleCancel();
+      return;
+    }
+    const selected = new Set(authPathDTOList.map((row) => row.path));
+    if (
+      this.props.auth.some(
+        (row) => row.enabled === false && selected.has(row.path),
+      )
+    ) {
+      this.setState({
+        validationError: "SHENYU.AUTH.RESOURCE.DISABLED.REPLACEMENT",
+      });
+      return;
+    }
+    this.props.handleOk({
+      id: this.props.id,
+      authPathDTOList: authPathDTOList.map((row) => ({ ...row })),
+    });
   };
 
   render() {
-    let { authName, handleCancel, auth, dataList } = this.props;
+    const { id, authName, handleCancel, auth, dataList, language } = this.props;
+    const { authPathDTOList, validationError } = this.state;
+    const locale =
+      language || window.sessionStorage.getItem("locale") || "en-US";
     return (
-      <Modal
-        width={1200}
-        centered
-        visible
-        title={getIntlContent("SHENYU.AUTH.EDITOR.RESOURCE")}
-        okText={getIntlContent("SHENYU.COMMON.SURE")}
-        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-        onOk={this.handleSubmit}
-        onCancel={handleCancel}
-      >
-        {/* 放置穿梭框组件 */}
-        <TableTransferComponent
-          authName={authName}
-          auth={auth}
-          datalist={dataList}
-          handleGetUpdateMetas={(data) => this.getUpdateMetas(data)}
-        />
-      </Modal>
+      <LocaleProvider locale={locale.toLowerCase() === "en-us" ? enUS : zhCN}>
+        <Modal
+          width={1200}
+          style={{ maxWidth: "calc(100vw - 32px)", minWidth: 0 }}
+          centered
+          visible
+          title={getIntlContent("SHENYU.AUTH.EDITOR.RESOURCE")}
+          okText={getIntlContent("SHENYU.COMMON.SURE")}
+          cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+          okButtonProps={{ "aria-label": getIntlContent("SHENYU.COMMON.SURE") }}
+          cancelButtonProps={{
+            "aria-label": getIntlContent("SHENYU.COMMON.CALCEL"),
+          }}
+          bodyStyle={{ maxHeight: "calc(100vh - 220px)", overflow: "auto" }}
+          onOk={this.handleSubmit}
+          onCancel={handleCancel}
+        >
+          <TableTransferComponent
+            key={id}
+            authName={authName}
+            auth={auth}
+            datalist={dataList}
+            targetKeys={authPathDTOList.map((row) => row.path)}
+            handleGetUpdateMetas={this.getUpdateMetas}
+          />
+          {validationError && (
+            <p role="alert" style={{ color: "var(--semi-color-danger)" }}>
+              {getIntlContent(validationError)}
+            </p>
+          )}
+        </Modal>
+      </LocaleProvider>
     );
   }
 }
-
-export default Form.create()(RelateMetadata);

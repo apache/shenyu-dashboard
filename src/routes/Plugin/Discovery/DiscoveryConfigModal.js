@@ -17,7 +17,7 @@
 
 import React, { Component } from "react";
 import { Button, Col, Form, Input, Modal, Popconfirm, Row, Select } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { getDiscoveryProps } from "./optionalFields";
 

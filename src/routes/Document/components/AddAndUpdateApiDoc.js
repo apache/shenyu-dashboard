@@ -18,10 +18,11 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable radix */
 /* eslint-disable react/static-property-placement */
-import { Modal, Form, Input, Select, message, Radio } from "antd";
+import { Modal, Form, Input, Select, Radio } from "antd";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import ReactJson from "react-json-view";
+import ReactJson from "@microlink/react-json-view";
+import { message } from "../../../components/ui/feedback";
 import { Method, RPCTYPE, API_SOURCE_TYPE, STATE_TYPE } from "./globalData";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { addApi, updateApi } from "../../../services/api";

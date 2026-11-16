@@ -85,3 +85,8 @@ and outdated login behavior rather than current ShenYu workflows (see
 currently no business E2E suite. Browser tests with a disposable ShenYu Admin
 environment are follow-up work tracked in
 [issue #657](https://github.com/apache/shenyu-dashboard/issues/657).
+
+## UI migration
+
+See the [Semi Design migration stages](docs/semi-migration.md) for the metadata
+editor pilot, compatibility constraints, validation and later migration scope.

@@ -17,18 +17,9 @@
 
 /* eslint-disable no-unused-expressions */
 
-import {
-  Tree,
-  Empty,
-  message,
-  Typography,
-  Button,
-  Row,
-  Col,
-  Spin,
-  Tooltip,
-} from "antd";
+import { Tree, Empty, Typography, Button, Row, Col, Spin, Tooltip } from "antd";
 import React, { useEffect, useImperativeHandle, useState } from "react";
+import { message } from "../../../components/ui/feedback";
 import { getRootTag, getParentTagId, getApi } from "../../../services/api";
 import { Method } from "./globalData";
 import AddAndUpdateTag from "./AddAndUpdateTag";

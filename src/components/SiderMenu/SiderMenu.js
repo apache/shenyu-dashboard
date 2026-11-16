@@ -18,8 +18,8 @@
 import React, { PureComponent } from "react";
 import { Layout, Menu, Icon, Switch } from "antd";
 import pathToRegexp from "path-to-regexp";
-import { Link } from "dva/router";
 import { Resizable } from "react-resizable";
+import { Link } from "../../runtime/router";
 import styles from "./index.less";
 import { urlToList } from "../_utils/pathTools";
 import { getCurrentLocale, getIntlContent } from "../../utils/IntlUtils";

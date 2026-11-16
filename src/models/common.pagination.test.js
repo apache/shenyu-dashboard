@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-import { runSaga, effects } from "dva/saga";
+import { runSaga } from "redux-saga";
+import * as effects from "redux-saga/effects";
 import { getAllSelectors } from "../services/api";
 import model from "./common";
 
 jest.mock("../services/api", () => ({
   getAllSelectors: jest.fn(),
 }));
-jest.mock("antd", () => ({
+jest.mock("../components/ui/feedback", () => ({
   message: {
     error: jest.fn(),
     success: jest.fn(),

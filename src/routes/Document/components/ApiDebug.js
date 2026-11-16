@@ -22,7 +22,6 @@ import {
   Form,
   Icon,
   Input,
-  message,
   Row,
   Select,
   Tabs,
@@ -36,8 +35,9 @@ import React, {
   useRef,
   useState,
 } from "react";
-import ReactJson from "react-json-view";
-import fetch from "dva/fetch";
+import ReactJson from "@microlink/react-json-view";
+import { message } from "../../../components/ui/feedback";
+import fetch from "../../../utils/fetch";
 import {
   createOrUpdateMockRequest,
   deleteMockRequest,

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Link } from "dva/router";
+import { Link } from "../runtime/router";
 import PageHeader from "../components/PageHeader";
 import styles from "./PageHeaderLayout.less";
 
