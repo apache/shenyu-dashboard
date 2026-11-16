@@ -22,6 +22,10 @@ export function fixedZero(val) {
   return val * 1 < 10 ? `0${val}` : val;
 }
 
+export function getLastTagName(tags) {
+  return tags?.[tags.length - 1]?.name;
+}
+
 export function getPlainNode(nodeList, parentPath = "") {
   const arr = [];
   nodeList.forEach((node) => {

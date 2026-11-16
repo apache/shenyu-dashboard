@@ -15,10 +15,6 @@
  * limitations under the License.
  */
 
-export function getLastTagName(tags) {
-  return tags?.[tags.length - 1]?.name;
-}
-
 export function getDiscoveryProps(props) {
   return props || {};
 }

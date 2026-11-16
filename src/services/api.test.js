@@ -189,3 +189,42 @@ it.each(["addPlugin", "updatePlugin"])(
     expect(options.body.get("enabled")).toBe("false");
   },
 );
+
+it.each([0, 1, 2, 3])(
+  "aggregates APIs using one-based pagination with %i total pages",
+  async (totalPage) => {
+    fetch.mockImplementation(async (url) => {
+      const requestedPage = Number(
+        new URL(url, "http://localhost").searchParams.get("currentPage"),
+      );
+      // PageParameter coerces page zero to page one on the server.
+      const currentPage = Math.max(1, requestedPage);
+      return {
+        status: 200,
+        json: async () => ({
+          code: 200,
+          data: {
+            dataList: totalPage ? [{ id: `api-${currentPage}` }] : [],
+            page: { totalPage },
+          },
+        }),
+      };
+    });
+
+    const res = await api.getApi("tag-1");
+
+    expect(res.code).toBe(200);
+    expect(res.data.dataList.map((item) => item.id)).toEqual(
+      Array.from({ length: totalPage }, (_, index) => `api-${index + 1}`),
+    );
+    expect(
+      fetch.mock.calls.map(([url]) =>
+        Number(
+          new URL(url, "http://localhost").searchParams.get("currentPage"),
+        ),
+      ),
+    ).toEqual(
+      Array.from({ length: Math.max(1, totalPage) }, (_, index) => index + 1),
+    );
+  },
+);

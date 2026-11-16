@@ -370,6 +370,16 @@ export const getRouterData = (app) => {
           import(/* webpackChunkName: "route-login" */ "../routes/User/Login"),
       ),
     },
+    "/document/apidoc": {
+      component: dynamicWrapper(
+        app,
+        [],
+        () =>
+          import(
+            /* webpackChunkName: "route-document" */ "../routes/Document/ApiDoc"
+          ),
+      ),
+    },
   };
   // Get name from ./menu.js or just set it in the router data.
   const menuData = getFlatMenuData(getMenuData());

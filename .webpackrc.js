@@ -38,6 +38,7 @@ const adminChunks = [
   "route-plugin-handle",
   "route-appauth",
   "route-dict",
+  "route-document",
 ];
 
 export default {
