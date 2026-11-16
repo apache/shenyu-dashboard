@@ -82,6 +82,16 @@ it("preserves repeated and blank query fields and decodes values", () => {
     { name: "q", value: "hello world" },
     { name: "id", value: "2" },
   ]);
+  expect(codes(model)).toContain("REPEATED_QUERY");
+});
+
+it("warns for repeated decoded query names in raw HTTP samples", () => {
+  const model = parseRawHttp("GET /a?id=&%69d=2 HTTP/1.1\r\nHost: x\r\n");
+  expect(model.query).toEqual([
+    { name: "id", value: "" },
+    { name: "id", value: "2" },
+  ]);
+  expect(codes(model)).toContain("REPEATED_QUERY");
 });
 
 it("keeps repeated headers and cookies", () => {
@@ -132,6 +142,18 @@ it("reports multiple URLs", () => {
     "curl https://api.example.com/a https://api.example.com/b",
   );
   expect(codes(model)).toContain("MULTIPLE_URLS");
+});
+
+it.each([
+  "--url https://a.example/ --url https://b.example/",
+  "--url=https://a.example/ --url=https://b.example/",
+  "https://a.example/ --url https://b.example/",
+  "--url https://a.example/ https://b.example/",
+])("reports repeated URL assignments and keeps the first URL: %s", (args) => {
+  const model = parseCurl(`curl ${args}`);
+  expect(model.ok).toBe(false);
+  expect(codes(model)).toContain("MULTIPLE_URLS");
+  expect(model.host).toBe("a.example");
 });
 
 it("reports an unclosed quote", () => {

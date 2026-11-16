@@ -42,7 +42,7 @@ it("uses the legacy condition shape and exact path operator", () => {
   const drafts = buildConditionDrafts(request);
   expect(drafts[0].condition).toEqual({
     paramType: "uri",
-    operator: "match",
+    operator: "=",
     paramName: "/",
     paramValue: "/orders/123",
   });
@@ -128,7 +128,20 @@ it("keeps the raw encoded path instead of translating it", () => {
   expect(drafts[0].condition.paramValue).toBe("/a%2Fb");
 });
 
-it("drops redundant conditions but keeps distinct repeated query values", () => {
+it.each(["/orders/*", "/orders/{id}", "/orders/**"])(
+  "keeps pattern characters literal in the exact path %s",
+  (path) => {
+    const drafts = buildConditionDrafts({ ...request, path });
+    expect(drafts[0].condition).toEqual({
+      paramType: "uri",
+      operator: "=",
+      paramName: "/",
+      paramValue: path,
+    });
+  },
+);
+
+it("drops redundant conditions and keeps only the first query value", () => {
   const drafts = buildConditionDrafts({
     ...request,
     headers: [
@@ -144,7 +157,35 @@ it("drops redundant conditions but keeps distinct repeated query values", () => 
   const headers = drafts.filter((item) => item.key.indexOf("header:") === 0);
   const queries = drafts.filter((item) => item.key.indexOf("query:") === 0);
   expect(headers).toHaveLength(1);
-  expect(queries.map((item) => item.condition.paramValue)).toEqual(["1", "2"]);
+  expect(queries.map((item) => item.condition.paramValue)).toEqual(["1"]);
+});
+
+it("keeps a blank first query value and handles special query names", () => {
+  const drafts = buildConditionDrafts({
+    ...request,
+    query: [
+      { name: "id", value: "" },
+      { name: "id", value: "2" },
+      { name: "__proto__", value: "first" },
+      { name: "__proto__", value: "second" },
+    ],
+  });
+  const queries = drafts.filter((item) => item.condition.paramType === "query");
+  expect(queries.map((item) => item.condition)).toEqual([
+    {
+      paramType: "query",
+      operator: "isBlank",
+      paramName: "id",
+      paramValue: "",
+    },
+    {
+      paramType: "query",
+      operator: "=",
+      paramName: "__proto__",
+      paramValue: "first",
+    },
+  ]);
+  expect(queries.every((item) => !item.selected)).toBe(true);
 });
 
 it("returns an empty draft for a missing request", () => {

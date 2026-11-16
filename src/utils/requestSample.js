@@ -125,18 +125,25 @@ function decodeComponent(value) {
   }
 }
 
-function parseQuery(search) {
+function parseQuery(search, model) {
   if (!search) {
     return [];
   }
+  const names = new Set();
   return search.split("&").map((pair) => {
     const index = pair.indexOf("=");
-    if (index === -1) {
-      return { name: decodeComponent(pair), value: "" };
+    const name = decodeComponent(index === -1 ? pair : pair.slice(0, index));
+    if (names.has(name)) {
+      addIssue(
+        model,
+        "REPEATED_QUERY",
+        `Query parameter "${name}" is repeated; only its first value can be matched and is offered for review`,
+      );
     }
+    names.add(name);
     return {
-      name: decodeComponent(pair.slice(0, index)),
-      value: decodeComponent(pair.slice(index + 1)),
+      name,
+      value: index === -1 ? "" : decodeComponent(pair.slice(index + 1)),
     };
   });
 }
@@ -281,7 +288,7 @@ function readOptions(tokens, model) {
         ) {
           addIssue(model, "FILE_READ", `Option ${flag} reads a local file`);
         } else {
-          storeOption(options, VALUE_FLAGS[flag], value);
+          storeOption(options, VALUE_FLAGS[flag], value, model);
         }
         index += 1;
       } else if (NOOP_FLAGS.indexOf(flag) !== -1) {
@@ -299,15 +306,8 @@ function readOptions(tokens, model) {
         addIssue(model, "UNKNOWN_OPTION", `Option ${flag} is not supported`);
         index += 1;
       }
-    } else if (!options.url) {
-      options.url = token;
-      index += 1;
     } else {
-      addIssue(
-        model,
-        "MULTIPLE_URLS",
-        "Only one request URL can be imported at a time",
-      );
+      storeOption(options, "url", token, model);
       index += 1;
     }
   }
@@ -315,9 +315,17 @@ function readOptions(tokens, model) {
   return options;
 }
 
-function storeOption(options, kind, value) {
+function storeOption(options, kind, value, model) {
   if (kind === "url") {
-    options.url = value;
+    if (options.url) {
+      addIssue(
+        model,
+        "MULTIPLE_URLS",
+        "Only one request URL can be imported at a time; the first URL is kept for review",
+      );
+    } else {
+      options.url = value;
+    }
   } else if (kind === "method") {
     options.method = value;
   } else if (kind === "header") {
@@ -362,7 +370,7 @@ function applyUrl(model, rawUrl) {
   const searchIndex = rawUrl.indexOf("?");
   if (searchIndex !== -1 && (hashIndex === -1 || searchIndex < hashIndex)) {
     const end = hashIndex === -1 ? rawUrl.length : hashIndex;
-    model.query = parseQuery(rawUrl.slice(searchIndex + 1, end));
+    model.query = parseQuery(rawUrl.slice(searchIndex + 1, end), model);
   }
 }
 
@@ -483,7 +491,7 @@ export function parseRawHttp(input) {
     const queryIndex = target.indexOf("?");
     model.path = queryIndex === -1 ? target : target.slice(0, queryIndex);
     if (queryIndex !== -1) {
-      model.query = parseQuery(target.slice(queryIndex + 1));
+      model.query = parseQuery(target.slice(queryIndex + 1), model);
     }
   } else {
     addIssue(

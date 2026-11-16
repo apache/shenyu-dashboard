@@ -79,7 +79,7 @@ export function buildConditionDrafts(request) {
       sensitive: false,
       condition: {
         paramType: "uri",
-        operator: "match",
+        operator: "=",
         paramName: "/",
         paramValue: request.path,
       },
@@ -119,7 +119,14 @@ export function buildConditionDrafts(request) {
     });
   });
 
+  const queryNames = new Set();
   (request.query || []).forEach((item, index) => {
+    // The gateway reads query parameters with getFirst, so later values
+    // cannot form separate matching conditions for the same request.
+    if (queryNames.has(item.name)) {
+      return;
+    }
+    queryNames.add(item.name);
     drafts.push({
       key: `query:${index}`,
       label: `Query ${item.name || "(blank)"}`,

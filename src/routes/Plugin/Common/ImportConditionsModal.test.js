@@ -62,6 +62,28 @@ it("does not apply when nothing is selected", () => {
   expect(onApply).not.toHaveBeenCalled();
 });
 
+it("warns about repeated query values and applies only the reviewed first value", () => {
+  const { component, onApply } = createModal();
+  component.setState({ text: "curl 'https://api.example.com/a?id=1&id=2'" });
+  component.handleParse();
+  expect(component.state.sample.issues).toEqual([
+    expect.objectContaining({ code: "REPEATED_QUERY" }),
+  ]);
+  expect(component.renderIssues()).not.toBeNull();
+  expect(component.state.selected).toEqual(["path", "method"]);
+  const queries = component.state.drafts.filter(
+    (item) => item.condition.paramType === "query",
+  );
+  expect(queries).toHaveLength(1);
+  component.handleToggle(queries[0].key, true);
+  component.handleApply();
+  expect(onApply).toHaveBeenCalledWith([
+    expect.objectContaining({ paramType: "uri", operator: "=" }),
+    expect.objectContaining({ paramType: "req_method" }),
+    expect.objectContaining({ paramType: "query", paramValue: "1" }),
+  ]);
+});
+
 it("clears the parsed state on cancel", () => {
   const { component, onCancel } = createModal();
   component.setState({ text: "curl https://api.example.com/a" });
