@@ -390,6 +390,11 @@ it("synchronizes the current form into the flattened JSON mode", () => {
   );
   jsonMode();
   expect(JSON.parse(jsonInput().value)).toEqual({
+    sort: 1,
+    logged: true,
+    matchMode: "0",
+    matchRestful: false,
+    ruleConditions,
     name: "renamedTool",
     description: "Order tool",
     enabled: true,
@@ -398,7 +403,7 @@ it("synchronizes the current form into the flattened JSON mode", () => {
   });
 });
 
-it("submits JSON mode with the existing rule-level defaults", () => {
+it("preserves existing rule-level values in JSON mode", () => {
   const { props } = setup({
     sort: 27,
     logged: false,
@@ -424,10 +429,10 @@ it("submits JSON mode with the existing rule-level defaults", () => {
       requestConfig: tool.requestConfig,
       description: tool.description,
     }),
-    sort: 1,
-    logged: true,
-    matchMode: "0",
-    matchRestful: false,
+    sort: 27,
+    logged: false,
+    matchMode: "1",
+    matchRestful: true,
     ruleConditions,
   });
 });
@@ -637,3 +642,79 @@ it("reopens structured request configuration without discarding parameters or de
     description: "Order tool",
   });
 });
+
+it("uses defaults for a new tool submitted in JSON mode", () => {
+  const { props } = setup();
+  jsonMode();
+  confirm();
+  expect(props.handleOk).toHaveBeenCalledWith(
+    expect.objectContaining({
+      sort: 1,
+      logged: true,
+      matchMode: "0",
+      matchRestful: false,
+      ruleConditions,
+    }),
+  );
+});
+
+it("preserves form edits and stored conditions when switching to JSON", () => {
+  const conditions = [{ ...ruleConditions[0], paramValue: "/api/**" }];
+  const { props } = setup({
+    sort: 27,
+    logged: false,
+    ruleConditions: conditions,
+  });
+  fireEvent.change(screen.getByPlaceholderText("SHENYU.SELECTOR.INPUTORDER"), {
+    target: { value: "15" },
+  });
+  jsonMode();
+  confirm();
+  expect(props.handleOk).toHaveBeenCalledWith(
+    expect.objectContaining({
+      sort: 15,
+      logged: false,
+      ruleConditions: conditions,
+    }),
+  );
+});
+
+it.each(["form", "json"])(
+  "preserves JSON rule overrides across a round trip and %s submission",
+  async (mode) => {
+    const { props } = setup({ sort: 27, logged: true });
+    jsonMode();
+    const rules = {
+      sort: 42,
+      logged: false,
+      matchMode: "1",
+      matchRestful: true,
+      ruleConditions: [{ ...ruleConditions[0], paramValue: "/custom/**" }],
+    };
+    fireEvent.change(jsonInput(), {
+      target: {
+        value: JSON.stringify({
+          name: "roundTrip",
+          description: "Changed",
+          parameters: [],
+          requestConfig: "{}",
+          ...rules,
+        }),
+      },
+    });
+    fireEvent.click(
+      screen.getByRole("radio", { name: "SHENYU.MCP.TOOLS.ADD.MODE.FORM" }),
+    );
+    expect(
+      screen.getByPlaceholderText("SHENYU.SELECTOR.INPUTORDER").value,
+    ).toBe("42");
+    if (mode === "json") jsonMode();
+    confirm();
+    await waitFor(() =>
+      expect(props.handleOk).toHaveBeenCalledWith(
+        expect.objectContaining(rules),
+      ),
+    );
+    expect(props.handleOk.mock.calls[0][0]).not.toHaveProperty("loged");
+  },
+);

@@ -72,7 +72,38 @@ class AddModal extends Component {
   };
 
   setFormValues = (fields) => {
-    this.formApi.setValues({ ...this.formApi.getValues(), ...fields });
+    this.formApi.setValues(
+      { ...this.formApi.getValues(), ...fields },
+      { isOverride: true },
+    );
+  };
+
+  getRuleValues = (values = {}) => {
+    const defaults = {
+      sort: 1,
+      logged: true,
+      matchMode: "0",
+      matchRestful: false,
+      ruleConditions: [
+        {
+          paramType: "uri",
+          operator: "pathPattern",
+          paramName: "/",
+          paramValue: "/**",
+        },
+      ],
+    };
+    const formValues = this.formApi ? this.formApi.getValues() : {};
+    const ruleValues = { ...defaults };
+    [this.props, formValues, values].forEach((source) => {
+      Object.keys(defaults).forEach((key) => {
+        if (source[key] !== undefined) ruleValues[key] = source[key];
+      });
+    });
+    const sort = parseInt(ruleValues.sort, 10);
+    ruleValues.sort = Number.isNaN(sort) ? 1 : sort;
+    ruleValues.matchMode = String(ruleValues.matchMode);
+    return ruleValues;
   };
 
   initParameters = (props) => {
@@ -214,6 +245,7 @@ class AddModal extends Component {
     const values = this.formApi.getValues();
     // Get form data
     const toolJson = {
+      ...this.getRuleValues(),
       name: values.name || "",
       description: values.description || "",
       enabled: values.enabled !== undefined ? values.enabled : true,
@@ -234,6 +266,7 @@ class AddModal extends Component {
 
       // Update form fields
       this.setFormValues({
+        ...this.getRuleValues(parsedJson),
         name: parsedJson.name || "",
         description: parsedJson.description || "",
         enabled: parsedJson.enabled !== undefined ? parsedJson.enabled : true,
@@ -286,7 +319,7 @@ class AddModal extends Component {
       const parsedJson = this.parseToolJson(jsonText);
 
       // Update form fields (silent update, no validation triggered)
-      const fieldsToUpdate = {};
+      const fieldsToUpdate = this.getRuleValues(parsedJson);
       if (parsedJson.name !== undefined) fieldsToUpdate.name = parsedJson.name;
       if (parsedJson.description !== undefined)
         fieldsToUpdate.description = parsedJson.description;
@@ -376,6 +409,7 @@ class AddModal extends Component {
 
     // Build complete tool configuration object
     const toolJson = {
+      ...this.getRuleValues(),
       name: values.name || "",
       description: values.description || "",
       enabled: values.enabled !== undefined ? values.enabled : true,
@@ -502,14 +536,7 @@ class AddModal extends Component {
         logged,
         matchMode,
         matchRestful,
-        ruleConditions: [
-          {
-            paramType: "uri",
-            operator: "pathPattern",
-            paramName: "/",
-            paramValue: "/**",
-          },
-        ],
+        ruleConditions: this.getRuleValues().ruleConditions,
       });
     }
   };
@@ -525,12 +552,6 @@ class AddModal extends Component {
 
     try {
       const parsedJson = this.parseToolJson(jsonText);
-
-      // Validate required fields
-      if (!parsedJson.name || !parsedJson.name.trim()) {
-        message.error(getIntlContent("SHENYU.MCP.JSON.EDIT.TOOL.NAME.ERROR"));
-        return;
-      }
 
       // Validate required fields
       if (!parsedJson.name || !parsedJson.name.trim()) {
@@ -557,19 +578,7 @@ class AddModal extends Component {
           requestConfig: finalData.requestConfig,
           description: finalData.description,
         }),
-        // Add required rule-level fields default values
-        sort: 1,
-        logged: true,
-        matchMode: "0",
-        matchRestful: false,
-        ruleConditions: [
-          {
-            paramType: "uri",
-            operator: "pathPattern",
-            paramName: "/",
-            paramValue: "/**",
-          },
-        ],
+        ...this.getRuleValues(parsedJson),
       };
 
       handleOk(transformedData);
