@@ -21,40 +21,68 @@ import { Provider } from "react-redux";
 import { createStore } from "redux";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import PolicyTimePicker from "./PolicyTimePicker";
+import DashboardLocale from "../../../components/ui/DashboardLocale";
 
-it("updates an open calendar when the application language changes", async () => {
-  const store = createStore(
-    (state, action) =>
-      action.type === "language"
-        ? { global: { language: action.language } }
-        : state,
-    { global: { language: "en-US" } },
-  );
-  render(
-    <Provider store={store}>
-      <PolicyTimePicker
-        placeholder="Policy time"
-        value={moment("2026-07-01 10:20:30", "YYYY-MM-DD HH:mm:ss")}
-      />
-    </Provider>,
-  );
-  fireEvent.click(screen.getByPlaceholderText("Policy time"));
-  expect(
-    await screen.findByRole("button", { name: "Confirm", exact: true }),
-  ).toBeTruthy();
-  act(() => {
-    store.dispatch({ type: "language", language: "zh-CN" });
-  });
-  expect(
-    await screen.findByRole("button", { name: "确定", exact: true }),
-  ).toBeTruthy();
-  expect(
-    screen.queryByRole("button", { name: "Confirm", exact: true }),
-  ).toBeNull();
-  expect(screen.getByPlaceholderText("Policy time").value).toBe(
-    "2026-07-01 10:20:30",
-  );
-});
+jest.mock("../../../services/api", () => ({}));
+jest.mock("../../../components/ui/feedback", () => ({ message: {} }));
+jest.mock("../../../utils/IntlUtils", () => ({}));
+jest.mock("../../../components/_utils/utils", () => ({
+  defaultNamespaceId: "default-namespace",
+}));
+
+afterEach(() => sessionStorage.removeItem("locale"));
+
+it.each([
+  ["zh-CN", "确定", "en-US", "Confirm"],
+  ["en-US", "Confirm", "zh-CN", "确定"],
+  [null, "Confirm", "zh-CN", "确定"],
+  ["", "Confirm", "zh-CN", "确定"],
+  ["unsupported", "Confirm", "zh-CN", "确定"],
+])(
+  "initializes the nested calendar from saved locale %s and updates an open calendar",
+  async (savedLocale, initialConfirm, nextLanguage, nextConfirm) => {
+    if (savedLocale !== null) sessionStorage.setItem("locale", savedLocale);
+    let model;
+    jest.isolateModules(() => {
+      // Import after setting storage, as on application startup.
+      // eslint-disable-next-line global-require
+      model = require("../../../models/global").default;
+    });
+    const store = createStore(
+      (state, action) =>
+        action.type === "global/changeLanguage"
+          ? { global: model.reducers.changeLanguage(state.global, action) }
+          : state,
+      { global: model.state },
+    );
+    render(
+      <Provider store={store}>
+        <DashboardLocale>
+          <PolicyTimePicker
+            placeholder="Policy time"
+            value={moment("2026-07-01 10:20:30", "YYYY-MM-DD HH:mm:ss")}
+          />
+        </DashboardLocale>
+      </Provider>,
+    );
+    fireEvent.click(screen.getByPlaceholderText("Policy time"));
+    expect(
+      await screen.findByRole("button", { name: initialConfirm, exact: true }),
+    ).toBeTruthy();
+    act(() => {
+      store.dispatch({ type: "global/changeLanguage", payload: nextLanguage });
+    });
+    expect(
+      await screen.findByRole("button", { name: nextConfirm, exact: true }),
+    ).toBeTruthy();
+    expect(
+      screen.queryByRole("button", { name: initialConfirm, exact: true }),
+    ).toBeNull();
+    expect(screen.getByPlaceholderText("Policy time").value).toBe(
+      "2026-07-01 10:20:30",
+    );
+  },
+);
 
 it("renders a disabled policy time without opening a calendar", () => {
   const store = createStore(() => ({ global: { language: "en-US" } }));
