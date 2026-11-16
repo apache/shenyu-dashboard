@@ -16,27 +16,24 @@
  */
 
 import React, { Component } from "react";
-import {
-  Button,
-  Card,
-  Col,
-  Input,
-  Popover,
-  Row,
-  Select,
-  Table,
-  Tag,
-  Typography,
-} from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Card from "@douyinfe/semi-ui/lib/es/card";
+import Tag from "@douyinfe/semi-ui/lib/es/tag";
+import Popover from "@douyinfe/semi-ui/lib/es/popover";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import { connect } from "react-redux";
 import dayjs from "dayjs";
 import * as echarts from "echarts";
-import { resizableComponents } from "../../../utils/resizable";
+import Input from "../../../components/ui/Input";
+import Select from "../../../components/ui/Select";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
+import styles from "./index.module.less";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { sortByDate, sortByNumber } from "../../../utils/sorter";
-
-const { Text } = Typography;
 
 const { Option } = Select;
 
@@ -55,8 +52,6 @@ export const disposeCharts = (...charts) => {
   loading: loading.effects["instance/fetch"],
 }))
 export default class Instance extends Component {
-  components = resizableComponents;
-
   constructor(props) {
     super(props);
     this.state = {
@@ -81,6 +76,11 @@ export default class Instance extends Component {
       document.getElementById("lineDataDiv"),
     );
     window.addEventListener("resize", this.handleChartResize);
+    if (typeof ResizeObserver !== "undefined") {
+      this.chartObserver = new ResizeObserver(this.handleChartResize);
+      this.chartObserver.observe(document.getElementById("pieDataDiv"));
+      this.chartObserver.observe(document.getElementById("lineDataDiv"));
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -91,7 +91,7 @@ export default class Instance extends Component {
       this.changeLocale(language);
     }
     if (prevProps.currentNamespaceId !== currentNamespaceId) {
-      this.query();
+      this.setState({ currentPage: 1, selectedRowKeys: [] }, this.query);
       this.queryAnalysis();
     }
     if (prevProps.instance.pieData !== instance.pieData) {
@@ -104,23 +104,11 @@ export default class Instance extends Component {
 
   componentWillUnmount() {
     window.removeEventListener("resize", this.handleChartResize);
+    if (this.chartObserver) this.chartObserver.disconnect();
     disposeCharts(this.pieChartInstance, this.lineChartInstance);
     this.pieChartInstance = null;
     this.lineChartInstance = null;
   }
-
-  handleResize =
-    (index) =>
-    (e, { size }) => {
-      this.setState(({ columns }) => {
-        const nextColumns = [...columns];
-        nextColumns[index] = {
-          ...nextColumns[index],
-          width: size.width,
-        };
-        return { columns: nextColumns };
-      });
-    };
 
   handleChartResize = () => {
     resizeCharts(this.pieChartInstance, this.lineChartInstance);
@@ -276,12 +264,14 @@ export default class Instance extends Component {
     this.lineChartInstance.setOption(option, { replaceMerge: ["series"] });
   };
 
-  pageOnchange = (page) => {
-    this.setState({ currentPage: page }, this.query);
-  };
-
-  onShowSizeChange = (currentPage, pageSize) => {
-    this.setState({ currentPage: 1, pageSize }, this.query);
+  onPaginationChange = (page, pageSize) => {
+    this.setState(
+      (state) => ({
+        currentPage: pageSize === state.pageSize ? page : 1,
+        pageSize,
+      }),
+      this.query,
+    );
   };
 
   instanceIpOnchange = (e) => {
@@ -376,9 +366,9 @@ export default class Instance extends Component {
           render: (text, record) => {
             const tag = (
               <div>
-                <Tag color="#9dd3a8">{record.instanceType}</Tag>
-                <Tag color="#CCCC99">{record.instanceIp}</Tag>
-                <Tag color="#DCDC17">{record.instancePort}</Tag>
+                <Tag color="green">{record.instanceType}</Tag>
+                <Tag color="grey">{record.instanceIp}</Tag>
+                <Tag color="yellow">{record.instancePort}</Tag>
               </div>
             );
             const t = JSON.stringify(
@@ -388,9 +378,13 @@ export default class Instance extends Component {
             );
             const content = (
               <div>
-                <Text type="secondary">{`${getIntlContent("SHENYU.SYSTEM.CREATETIME")}: ${record.dateCreated ? new Date(record.dateCreated).toLocaleString() : "----"}`}</Text>
+                <span
+                  className={styles.detailDate}
+                >{`${getIntlContent("SHENYU.SYSTEM.CREATETIME")}: ${record.dateCreated ? new Date(record.dateCreated).toLocaleString() : "----"}`}</span>
                 <br />
-                <Text type="secondary">{`${getIntlContent("SHENYU.SYSTEM.UPDATETIME")}: ${record.dateUpdated ? new Date(record.dateUpdated).toLocaleString() : "----"}`}</Text>
+                <span
+                  className={styles.detailDate}
+                >{`${getIntlContent("SHENYU.SYSTEM.UPDATETIME")}: ${record.dateUpdated ? new Date(record.dateUpdated).toLocaleString() : "----"}`}</span>
                 <hr />
                 <div style={{ fontWeight: "bold" }}>
                   <pre>
@@ -400,7 +394,14 @@ export default class Instance extends Component {
               </div>
             );
             return (
-              <Popover content={content} title={tag}>
+              <Popover
+                content={
+                  <div className={styles.detail}>
+                    {tag}
+                    {content}
+                  </div>
+                }
+              >
                 <div>{text || "----"}</div>
               </Popover>
             );
@@ -478,97 +479,93 @@ export default class Instance extends Component {
   }
 
   render() {
-    const { instance, loading } = this.props;
+    const { instance, loading, language } = this.props;
     const { instanceList, total } = instance;
     const { currentPage, pageSize, selectedRowKeys, instanceIp, instanceType } =
       this.state;
-    const columns = this.state.columns.map((col, index) => ({
-      ...col,
-      onHeaderCell: (column) => ({
-        width: column.width,
-        onResize: this.handleResize(index),
-      }),
-    }));
+    const { columns } = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
 
     return (
-      <div className="plug-content-wrap">
-        <div style={{ display: "flex" }}>
-          <Input
-            allowClear
-            value={instanceIp}
-            onChange={this.instanceIpOnchange}
-            placeholder={getIntlContent("SHENYU.INSTANCE.IP")}
-            style={{ width: 240 }}
-          />
-          <Select
-            value={instanceType != null ? instanceType : undefined}
-            onChange={this.instanceTypeOnchange}
-            placeholder={getIntlContent("SHENYU.INSTANCE.SELECT.TYPE")}
-            style={{ width: 150, marginLeft: 20 }}
-            allowClear
+      <LocaleProvider locale={language === "zh-CN" ? zhCN : enUS}>
+        <div className="plug-content-wrap">
+          <form
+            className={styles.toolbar}
+            onSubmit={(event) => {
+              event.preventDefault();
+              this.searchClick();
+            }}
           >
-            <Option value="bootstrap">
-              {getIntlContent("SHENYU.INSTANCE.SELECT.TYPE.BOOTSTRAP")}
-            </Option>
-            <Option value="client">
-              {getIntlContent("SHENYU.INSTANCE.SELECT.TYPE.CLIENT")}
-            </Option>
-          </Select>
-          <AuthButton perms="system:instance:list">
-            <Button
-              type="primary"
-              style={{ marginLeft: 20 }}
-              onClick={this.searchClick}
+            <Input
+              allowClear
+              value={instanceIp}
+              onChange={this.instanceIpOnchange}
+              placeholder={getIntlContent("SHENYU.INSTANCE.IP")}
+              className={styles.ipFilter}
+            />
+            <Select
+              value={instanceType != null ? instanceType : undefined}
+              onChange={this.instanceTypeOnchange}
+              placeholder={getIntlContent("SHENYU.INSTANCE.SELECT.TYPE")}
+              style={{ width: 150 }}
+              allowClear
             >
-              {getIntlContent("SHENYU.SYSTEM.SEARCH")}
-            </Button>
-          </AuthButton>
+              <Option value="bootstrap">
+                {getIntlContent("SHENYU.INSTANCE.SELECT.TYPE.BOOTSTRAP")}
+              </Option>
+              <Option value="client">
+                {getIntlContent("SHENYU.INSTANCE.SELECT.TYPE.CLIENT")}
+              </Option>
+            </Select>
+            <AuthButton perms="system:instance:list">
+              {({ icon }) => (
+                <Button
+                  type="primary"
+                  theme="solid"
+                  htmlType="submit"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                </Button>
+              )}
+            </AuthButton>
+          </form>
+
+          <div className={styles.charts}>
+            <Card>
+              <div id="pieDataDiv" className={styles.chart} />
+            </Card>
+            <Card>
+              <div id="lineDataDiv" className={styles.chart} />
+            </Card>
+          </div>
+
+          <Table
+            size="small"
+            resizable
+            rowKey="id"
+            scroll={{ x: 950 }}
+            style={{ marginTop: 30 }}
+            bordered
+            loading={loading}
+            columns={columns}
+            dataSource={instanceList}
+            rowSelection={rowSelection}
+            pagination={{
+              total,
+              showTotal: true,
+              showSizeChanger: true,
+              pageSizeOpts: [12, 20, 50, 100],
+              currentPage,
+              pageSize,
+              onChange: this.onPaginationChange,
+            }}
+          />
         </div>
-
-        <Row gutter={16} style={{ marginBottom: 24 }}>
-          <Col span={12}>
-            <Card>
-              <div
-                id="pieDataDiv"
-                style={{ width: "800px", height: "400px" }}
-              />
-            </Card>
-          </Col>
-          <Col span={12}>
-            <Card>
-              <div
-                id="lineDataDiv"
-                style={{ width: "800px", height: "400px" }}
-              />
-            </Card>
-          </Col>
-        </Row>
-
-        <Table
-          size="small"
-          components={this.components}
-          style={{ marginTop: 30 }}
-          bordered
-          loading={loading}
-          columns={columns}
-          dataSource={instanceList}
-          rowSelection={rowSelection}
-          pagination={{
-            total,
-            showTotal: (showTotal) => `${showTotal}`,
-            showSizeChanger: true,
-            pageSizeOptions: ["12", "20", "50", "100"],
-            current: currentPage,
-            pageSize,
-            onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange,
-          }}
-        />
-      </div>
+      </LocaleProvider>
     );
   }
 }

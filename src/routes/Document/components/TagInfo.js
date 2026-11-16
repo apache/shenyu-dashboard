@@ -15,7 +15,12 @@
  * limitations under the License.
  */
 
-import { Typography, Button, Row, Col, Table, Popconfirm } from "antd";
+import Typography from "@douyinfe/semi-ui/lib/es/typography";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
 import React, { useContext } from "react";
 import dayjs from "dayjs";
 import ApiContext from "./ApiContext";
@@ -76,7 +81,7 @@ function TagInfo(props) {
   return (
     <Row gutter={24}>
       <Col span={12}>
-        <Title level={2}>{tagDetail.name}</Title>
+        <Title heading={2}>{tagDetail.name}</Title>
       </Col>
       <Col span={12} style={{ textAlign: "right", minHeight: "56px" }}>
         <Button onClick={handleUpdate}>
@@ -85,18 +90,18 @@ function TagInfo(props) {
         &nbsp;&nbsp;
         <Popconfirm
           title={getIntlContent("SHENYU.COMMON.DELETE")}
-          placement="bottom"
+          position="bottom"
           onCancel={(e) => {
-            e.stopPropagation();
+            e?.stopPropagation();
           }}
           onConfirm={(e) => {
-            e.stopPropagation();
+            e?.stopPropagation();
             handleDelete(e);
           }}
           okText={getIntlContent("SHENYU.COMMON.SURE")}
           cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         >
-          <Button ghost type="danger">
+          <Button theme="outline" type="danger">
             {getIntlContent("SHENYU.BUTTON.SYSTEM.DELETE")}
           </Button>
         </Popconfirm>

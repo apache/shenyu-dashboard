@@ -15,9 +15,14 @@
  * limitations under the License.
  */
 
-import React, { Fragment } from "react";
-import { Button, Row, Col, Icon, Steps, Card } from "antd";
+import React from "react";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Card from "@douyinfe/semi-ui/lib/es/card";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import Steps from "@douyinfe/semi-ui/lib/es/steps";
 import Result from "components/Result";
+import Icon from "../../components/ui/ResourceIcon";
 import PageHeaderLayout from "../../layouts/PageHeaderLayout";
 
 const { Step } = Steps;
@@ -28,7 +33,6 @@ const desc1 = (
       fontSize: 12,
       color: "rgba(0, 0, 0, 0.45)",
       position: "relative",
-      left: 42,
     }}
   >
     <div style={{ margin: "8px 0 4px" }}>
@@ -40,7 +44,7 @@ const desc1 = (
 );
 
 const desc2 = (
-  <div style={{ fontSize: 12, position: "relative", left: 42 }}>
+  <div style={{ fontSize: 12 }}>
     <div style={{ margin: "8px 0 4px" }}>
       周毛毛
       <Icon type="dingding-o" style={{ color: "#00A0E9", marginLeft: 8 }} />
@@ -77,11 +81,7 @@ const extra = (
         2016-12-12 ~ 2017-12-12
       </Col>
     </Row>
-    <Steps
-      style={{ marginLeft: -42, width: "calc(100% + 84px)" }}
-      progressDot
-      current={1}
-    >
+    <Steps type="basic" current={1}>
       <Step
         title={<span style={{ fontSize: 14 }}>创建项目</span>}
         description={desc1}
@@ -98,9 +98,11 @@ const extra = (
 
 const actions = (
   <>
-    <Button type="primary">返回列表</Button>
-    <Button>查看项目</Button>
-    <Button>打 印</Button>
+    <Button type="primary" theme="solid" htmlType="button">
+      返回列表
+    </Button>
+    <Button htmlType="button">查看项目</Button>
+    <Button htmlType="button">打 印</Button>
   </>
 );
 

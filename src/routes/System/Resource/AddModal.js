@@ -23,7 +23,7 @@ import Form from "../../../components/ui/Form";
 import Select from "../../../components/ui/Select";
 import InputNumber from "../../../components/ui/InputNumber";
 import Input from "../../../components/ui/Input";
-import ResourceIcon from "./ResourceIcon";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
 import IconModal from "./IconModal";
 import { getIntlContent } from "../../../utils/IntlUtils";
 

@@ -51,7 +51,7 @@ it("renders an empty list instead of crashing on a non-array value", () => {
 
 it("deletes only the clicked row when header names are duplicated", () => {
   const onChange = jest.fn();
-  const { container } = render(
+  render(
     <HeadersEditor
       value={JSON.stringify([
         { index: 0, key: "", value: "first" },
@@ -62,7 +62,7 @@ it("deletes only the clicked row when header names are duplicated", () => {
     />,
   );
 
-  fireEvent.click(container.querySelectorAll(".anticon-minus-circle-o")[0]);
+  fireEvent.click(screen.getAllByLabelText("SHENYU.COMMON.DELETE")[0]);
 
   expect(JSON.parse(onChange.mock.calls[0][0])).toEqual([
     { index: 1, key: "", value: "second" },

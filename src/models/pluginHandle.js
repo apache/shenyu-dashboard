@@ -37,6 +37,13 @@ export default {
   },
 
   effects: {
+    *reload(params, { put }) {
+      const { fetchValue } = params;
+      const { pluginId, field, currentPage, pageSize } = fetchValue;
+      const payload = { pluginId, field, currentPage, pageSize };
+      yield put({ type: "fetch", payload });
+    },
+
     *fetch(params, { call, put }) {
       const { payload } = params;
       const json = yield call(getAllPluginHandles, payload);
@@ -200,14 +207,6 @@ export default {
           },
         });
       }
-    },
-    *reload(params, { put }) {
-      const { fetchValue } = params;
-      const { pluginId, field, currentPage, pageSize } = fetchValue;
-      yield put({
-        type: "fetch",
-        payload: { pluginId, field, currentPage, pageSize },
-      });
     },
   },
   reducers: {

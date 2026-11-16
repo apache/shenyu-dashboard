@@ -32,12 +32,16 @@ export default {
   state: {
     userList: [],
     total: 0,
+    latestQuery: null,
   },
 
   effects: {
-    *fetch(params, { call, put }) {
-      const { payload } = params;
-      const json = yield call(getAllUsers, payload);
+    *fetch(params, { call, put, select }) {
+      const query = { ...params.payload };
+      yield put({ type: "startQuery", payload: query });
+      const json = yield call(getAllUsers, query);
+      const latestQuery = yield select((state) => state.manage.latestQuery);
+      if (latestQuery !== query) return;
       if (json.code === 200) {
         let { page, dataList } = json.data;
         dataList = dataList.map((item) => {
@@ -142,6 +146,9 @@ export default {
   },
 
   reducers: {
+    startQuery(state, { payload }) {
+      return { ...state, latestQuery: payload };
+    },
     saveUsers(state, { payload }) {
       return {
         ...state,

@@ -21,6 +21,34 @@ describe("updateTreeNodes", () => {
     expect(tree[0].children[0].children[0].title).toBe("old");
   });
 
+  it("renames a nested tag without changing its key or descendants", () => {
+    const api = {
+      id: "api",
+      name: "API name",
+      key: "0-tag-0-api-0",
+      title: "/api",
+    };
+    const tag = {
+      id: "child",
+      name: "Old name",
+      key: "0-tag-0",
+      title: "Old name",
+      children: [api],
+    };
+    const tree = [{ id: "root", name: "Root", children: [tag] }];
+
+    const result = updateTreeNodes(tree, "child", "New name", "New name");
+    expect(result.updated).toBe(true);
+    expect(result.nodes[0].children[0]).toEqual({
+      ...tag,
+      title: "New name",
+      name: "New name",
+    });
+    expect(result.nodes[0].children[0].children[0]).toBe(api);
+    expect(tree[0].children[0]).toBe(tag);
+    expect(tag.name).toBe("Old name");
+  });
+
   it("reports when the tree does not contain the requested node", () => {
     const result = updateTreeNodes([{ id: "root" }], "missing", "new");
 

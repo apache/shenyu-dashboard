@@ -16,9 +16,11 @@
  */
 
 import React from "react";
-import { Spin } from "antd";
+import Spin from "@douyinfe/semi-ui/lib/es/spin";
 
 export default class PromiseRender extends React.PureComponent {
+  requestId = 0;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -28,6 +30,7 @@ export default class PromiseRender extends React.PureComponent {
   }
 
   componentDidMount() {
+    this.mounted = true;
     this.setRenderComponent(this.props);
   }
 
@@ -35,6 +38,7 @@ export default class PromiseRender extends React.PureComponent {
     if (nextProps.promise !== prevState.prevPropsPromise) {
       return {
         prevPropsPromise: nextProps.promise,
+        component: null,
       };
     }
     return null;
@@ -46,17 +50,26 @@ export default class PromiseRender extends React.PureComponent {
     }
   }
 
+  componentWillUnmount() {
+    this.mounted = false;
+    this.requestId += 1;
+  }
+
   // set render Component : ok or error
   setRenderComponent(props) {
+    this.requestId += 1;
+    const requestId = this.requestId;
     const ok = this.checkIsInstantiation(props.ok);
     const error = this.checkIsInstantiation(props.error);
     props.promise
       .then(() => {
+        if (!this.mounted || requestId !== this.requestId) return;
         this.setState({
           component: ok,
         });
       })
       .catch(() => {
+        if (!this.mounted || requestId !== this.requestId) return;
         this.setState({
           component: error,
         });
@@ -80,6 +93,9 @@ export default class PromiseRender extends React.PureComponent {
       <Component {...this.props} />
     ) : (
       <div
+        role="status"
+        aria-label="Loading permissions"
+        aria-busy="true"
         style={{
           width: "100%",
           height: "100%",

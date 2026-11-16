@@ -16,10 +16,19 @@
  */
 
 import React, { Component } from "react";
-import { Table, Button, Popconfirm, Input, Tag, Popover } from "antd";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import Tag from "@douyinfe/semi-ui/lib/es/tag";
+import Popover from "@douyinfe/semi-ui/lib/es/popover";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import { connect } from "react-redux";
+import Input from "../../../components/ui/Input";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
+import styles from "./index.module.less";
 import { message } from "../../../components/ui/feedback";
-import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
@@ -30,8 +39,6 @@ import AuthButton from "../../../utils/AuthButton";
   loading: loading.effects["registry/fetch"],
 }))
 export default class Registry extends Component {
-  components = resizableComponents;
-
   constructor(props) {
     super(props);
     this.state = {
@@ -65,26 +72,25 @@ export default class Registry extends Component {
   /**
    * condition query page list
    */
-  query = () => {
-    const { dispatch } = this.props;
+  currentQueryPayload = (overrides) => {
     const { registryId, address, currentPage, pageSize } = this.state;
-    dispatch({
+    return { registryId, address, currentPage, pageSize, ...overrides };
+  };
+
+  query = () =>
+    this.props.dispatch({
       type: "registry/fetch",
-      payload: {
-        registryId,
-        address,
-        currentPage,
-        pageSize,
-      },
+      payload: this.currentQueryPayload(),
     });
-  };
 
-  pageOnchange = (page) => {
-    this.setState({ currentPage: page }, this.query);
-  };
-
-  onShowSizeChange = (currentPage, pageSize) => {
-    this.setState({ currentPage: 1, pageSize }, this.query);
+  onPaginationChange = (page, pageSize) => {
+    this.setState(
+      (state) => ({
+        currentPage: pageSize === state.pageSize ? page : 1,
+        pageSize,
+      }),
+      this.query,
+    );
   };
 
   /**
@@ -96,7 +102,6 @@ export default class Registry extends Component {
       reset
         ? { popup: "", currentPage: 1, registryId: "", address: "" }
         : { popup: "" },
-      this.query,
     );
   };
 
@@ -114,7 +119,6 @@ export default class Registry extends Component {
 
   editClick = (record) => {
     const { dispatch } = this.props;
-    const { currentPage, pageSize } = this.state;
     dispatch({
       type: "registry/getDetail",
       payload: {
@@ -129,10 +133,11 @@ export default class Registry extends Component {
                 dispatch({
                   type: "registry/update",
                   payload: values,
-                  fetchValue: {
-                    currentPage,
-                    pageSize,
-                  },
+                  fetchValue: this.currentQueryPayload({
+                    currentPage: 1,
+                    registryId: "",
+                    address: "",
+                  }),
                   callback: () => {
                     this.closeModal(true);
                   },
@@ -149,7 +154,6 @@ export default class Registry extends Component {
   };
 
   addClick = () => {
-    const { currentPage, pageSize } = this.state;
     this.setState({
       popup: (
         <AddModal
@@ -158,10 +162,11 @@ export default class Registry extends Component {
             dispatch({
               type: "registry/add",
               payload: values,
-              fetchValue: {
-                currentPage,
-                pageSize,
-              },
+              fetchValue: this.currentQueryPayload({
+                currentPage: 1,
+                registryId: "",
+                address: "",
+              }),
               callback: () => {
                 this.closeModal(true);
               },
@@ -181,19 +186,21 @@ export default class Registry extends Component {
 
   deleteClick = () => {
     const { dispatch } = this.props;
-    const { currentPage, pageSize, selectedRowKeys } = this.state;
+    const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
         type: "registry/delete",
         payload: {
           list: selectedRowKeys,
         },
-        fetchValue: {
-          currentPage,
-          pageSize,
-        },
+        fetchValue: this.currentQueryPayload({ currentPage: 1 }),
         callback: () => {
-          this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
+          this.setState((state) => ({
+            selectedRowKeys: state.selectedRowKeys.filter(
+              (id) => !selectedRowKeys.includes(id),
+            ),
+            currentPage: 1,
+          }));
         },
       });
     } else {
@@ -201,19 +208,6 @@ export default class Registry extends Component {
       message.warn("Please select data");
     }
   };
-
-  handleResize =
-    (index) =>
-    (e, { size }) => {
-      this.setState(({ columns }) => {
-        const nextColumns = [...columns];
-        nextColumns[index] = {
-          ...nextColumns[index],
-          width: size.width,
-        };
-        return { columns: nextColumns };
-      });
-    };
 
   changeLocale(locale) {
     this.setState({
@@ -255,9 +249,22 @@ export default class Registry extends Component {
           width: 120,
           render: (text) => (
             <Popover
-              content={<div style={{ wordBreak: "break-all" }}>{text}</div>}
+              trigger="hover"
+              position="top"
+              content={
+                <div style={{ wordBreak: "break-all", maxWidth: 360 }}>
+                  {text}
+                </div>
+              }
             >
-              <div>{text || "--"}</div>
+              <Button
+                theme="borderless"
+                type="tertiary"
+                htmlType="button"
+                className={styles.address}
+              >
+                {text || "--"}
+              </Button>
             </Popover>
           ),
         },
@@ -294,19 +301,21 @@ export default class Registry extends Component {
           dataIndex: "operate",
           key: "operate",
           ellipsis: true,
-          width: 80,
+          width: 110,
           render: (text, record) => {
             return (
               <div className="optionParts">
                 <AuthButton perms="system:registry:edit">
-                  <div
-                    className="edit"
-                    onClick={() => {
-                      this.editClick(record);
-                    }}
-                  >
-                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                  </div>
+                  {({ icon }) => (
+                    <Button
+                      theme="borderless"
+                      htmlType="button"
+                      icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      onClick={() => this.editClick(record)}
+                    >
+                      {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                    </Button>
+                  )}
                 </AuthButton>
               </div>
             );
@@ -317,7 +326,7 @@ export default class Registry extends Component {
   }
 
   render() {
-    const { registry, loading } = this.props;
+    const { registry, loading, language } = this.props;
     const { registryList, total } = registry;
     const {
       currentPage,
@@ -329,97 +338,108 @@ export default class Registry extends Component {
       columns = [],
     } = this.state;
 
-    const tableColumns = columns.map((col, index) => ({
-      ...col,
-      onHeaderCell: (column) => ({
-        width: column.width,
-        onResize: this.handleResize(index),
-      }),
-    }));
-
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
 
     return (
-      <div className="plug-content-wrap">
-        <div style={{ display: "flex" }}>
-          <Input
-            allowClear
-            value={registryId}
-            onChange={this.registryIdOnchange}
-            placeholder={getIntlContent("SHENYU.REGISTRY.REGISTRY_ID")}
-            style={{ width: 240 }}
-          />
-          <Input
-            allowClear
-            value={address}
-            onChange={this.addressOnchange}
-            placeholder={getIntlContent("SHENYU.REGISTRY.ADDRESS")}
-            style={{ width: 240, marginLeft: 20 }}
-
-            // onSearch={this.searchClick}
-          />
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+      <LocaleProvider locale={language === "zh-CN" ? zhCN : enUS}>
+        <div className="plug-content-wrap">
+          <form
+            className={styles.toolbar}
+            onSubmit={(event) => {
+              event.preventDefault();
+              this.searchClick();
+            }}
+          >
+            <Input
+              allowClear
+              value={registryId}
+              onChange={this.registryIdOnchange}
+              placeholder={getIntlContent("SHENYU.REGISTRY.REGISTRY_ID")}
+              className={styles.filter}
+            />
+            <Input
+              allowClear
+              value={address}
+              onChange={this.addressOnchange}
+              placeholder={getIntlContent("SHENYU.REGISTRY.ADDRESS")}
+              className={styles.filter}
+            />
             <AuthButton perms="system:registry:list">
-              <Button
-                type="primary"
-                onClick={this.searchClick}
-                style={{ marginLeft: 20 }}
-              >
-                {getIntlContent("SHENYU.SYSTEM.SEARCH")}
-              </Button>
+              {({ icon }) => (
+                <Button
+                  type="primary"
+                  theme="solid"
+                  htmlType="submit"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                </Button>
+              )}
             </AuthButton>
             <AuthButton perms="system:registry:delete">
-              <Popconfirm
-                title={getIntlContent("SHENYU.COMMON.DELETE")}
-                placement="bottom"
-                onConfirm={() => {
-                  this.deleteClick();
-                }}
-                okText={getIntlContent("SHENYU.COMMON.SURE")}
-                cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-              >
-                <Button type="danger" style={{ marginLeft: 20 }}>
-                  {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
-                </Button>
-              </Popconfirm>
+              {({ icon }) => (
+                <Popconfirm
+                  title={getIntlContent("SHENYU.COMMON.DELETE")}
+                  position="bottom"
+                  motion={false}
+                  okType="danger"
+                  onConfirm={() => this.deleteClick()}
+                  okText={getIntlContent("SHENYU.COMMON.SURE")}
+                  cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                >
+                  <Button
+                    type="danger"
+                    theme="solid"
+                    htmlType="button"
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  >
+                    {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                  </Button>
+                </Popconfirm>
+              )}
             </AuthButton>
             <AuthButton perms="system:registry:add">
-              <Button
-                type="primary"
-                onClick={this.addClick}
-                style={{ marginLeft: 20 }}
-              >
-                {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
-              </Button>
+              {({ icon }) => (
+                <Button
+                  type="primary"
+                  theme="solid"
+                  htmlType="button"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  onClick={this.addClick}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
+                </Button>
+              )}
             </AuthButton>
-          </div>
-        </div>
+          </form>
 
-        <Table
-          size="small"
-          components={this.components}
-          style={{ marginTop: 30 }}
-          bordered
-          loading={loading}
-          columns={tableColumns}
-          dataSource={registryList}
-          rowSelection={rowSelection}
-          pagination={{
-            total,
-            showTotal: (showTotal) => `${showTotal}`,
-            showSizeChanger: true,
-            pageSizeOptions: ["12", "20", "50", "100"],
-            current: currentPage,
-            pageSize,
-            onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange,
-          }}
-        />
-        {popup}
-      </div>
+          <Table
+            size="small"
+            resizable
+            rowKey="id"
+            scroll={{ x: 1000 }}
+            style={{ marginTop: 30 }}
+            bordered
+            loading={loading}
+            columns={columns}
+            dataSource={registryList}
+            rowSelection={rowSelection}
+            pagination={{
+              total,
+              showTotal: true,
+              showSizeChanger: true,
+              pageSizeOpts: [12, 20, 50, 100],
+              currentPage,
+              pageSize,
+              onChange: this.onPaginationChange,
+            }}
+          />
+          {popup}
+        </div>
+      </LocaleProvider>
     );
   }
 }

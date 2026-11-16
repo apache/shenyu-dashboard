@@ -16,23 +16,26 @@
  */
 
 import React, { Component } from "react";
-import {
-  Button,
-  Col,
-  Input,
-  Popconfirm,
-  Popover,
-  Row,
-  Switch,
-  Table,
-  Tag,
-  Typography,
-} from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import Popover from "@douyinfe/semi-ui/lib/es/popover";
+import Tag from "@douyinfe/semi-ui/lib/es/tag";
+import Typography from "@douyinfe/semi-ui/lib/es/typography";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import { connect } from "react-redux";
 import ReactJson from "@microlink/react-json-view";
+import Input from "../../../components/ui/Input";
+import Switch from "../../../components/ui/Switch";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
+import managementStyles from "../../../components/ui/ManagementList.module.less";
+import mcpStyles from "./index.module.less";
 import { message } from "../../../components/ui/feedback";
 import { serializeUpstreamProps } from "../../../utils/upstreamLabels";
-import styles from "../index.less";
 import Selector from "../Common/Selector";
 import Tools from "./ToolsModalLoader";
 import JsonEditModal from "./JsonEditModal";
@@ -45,7 +48,6 @@ import {
 } from "../../../utils/namespacePlugin";
 import SwaggerImportModal from "./SwaggerImportModal";
 
-const { Search } = Input;
 const { Title } = Typography;
 @connect(({ common, global, loading }) => ({
   ...global,
@@ -53,6 +55,8 @@ const { Title } = Typography;
   loading: loading.effects["global/fetchPlatform"],
 }))
 export default class McpServer extends Component {
+  jsonRequest = 0;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -118,15 +122,36 @@ export default class McpServer extends Component {
         });
       }
     }
+    if (prevProps.currentSelector?.id !== this.props.currentSelector?.id) {
+      this.jsonRequest += 1;
+      this.setState({
+        toolPage: 1,
+        toolName: undefined,
+        jsonEditVisible: false,
+        currentJsonData: null,
+        toolSelectedRowKeys: [],
+      });
+    }
+    if (prevProps.selectorList !== this.props.selectorList) {
+      this.setState({ toolPage: 1, toolName: undefined });
+    }
     if (prevProps.currentNamespaceId !== currentNamespaceId) {
-      if (plugins) {
-        this.getAllSelectors(selectorPage, selectorPageSize, plugins);
-      }
+      this.jsonRequest += 1;
+      this.setState({
+        selectorPage: 1,
+        toolPage: 1,
+        popup: "",
+        jsonEditVisible: false,
+        currentJsonData: null,
+        mcpConfigVisible: false,
+      });
+      if (plugins) this.getAllSelectors(1, selectorPageSize, plugins);
     }
   }
   /* eslint-enable no-unused-vars */
 
   componentWillUnmount() {
+    this.jsonRequest += 1;
     const { dispatch } = this.props;
     dispatch({
       type: "common/resetData",
@@ -148,9 +173,10 @@ export default class McpServer extends Component {
         pluginId: tempPluginId,
         name: selectorName,
         namespaceId: currentNamespaceId,
+        rulePageSize: this.state.toolPageSize,
       },
     });
-    this.setState({ selectorSelectedRowKeys: [] });
+    this.setState({ toolPage: 1, selectorSelectedRowKeys: [] });
     this.setState({ toolSelectedRowKeys: [] });
   };
 
@@ -199,8 +225,9 @@ export default class McpServer extends Component {
 
   searchSelector = () => {
     const { plugins } = this.props;
-    const { selectorPage, selectorPageSize } = this.state;
-    this.getAllSelectors(selectorPage, selectorPageSize, plugins);
+    const { selectorPageSize } = this.state;
+    this.setState({ selectorPage: 1 });
+    this.getAllSelectors(1, selectorPageSize, plugins);
   };
 
   isDiscovery = (pluginId) => {
@@ -269,6 +296,7 @@ export default class McpServer extends Component {
                   currentPage: selectorPage,
                   pageSize: selectorPageSize,
                   namespaceId: currentNamespaceId,
+                  ...this.getSelectorFilters(),
                 },
                 callback: (selectorId) => {
                   this.addDiscoveryUpstream({
@@ -314,6 +342,7 @@ export default class McpServer extends Component {
                   currentPage: selectorPage,
                   pageSize: selectorPageSize,
                   namespaceId: currentNamespaceId,
+                  ...this.getSelectorFilters(),
                 },
                 callback: () => {
                   this.closeModal();
@@ -367,6 +396,7 @@ export default class McpServer extends Component {
                   currentPage: toolPage,
                   pageSize: toolPageSize,
                   namespaceId: currentNamespaceId,
+                  ...this.getToolFilters(),
                 },
                 callback: () => {
                   this.closeModal();
@@ -638,6 +668,7 @@ export default class McpServer extends Component {
                       currentPage: selectorPage,
                       pageSize: selectorPageSize,
                       namespaceId: currentNamespaceId,
+                      ...this.getSelectorFilters(),
                     },
                     callback: () => {
                       const {
@@ -704,6 +735,7 @@ export default class McpServer extends Component {
                       currentPage: selectorPage,
                       pageSize: selectorPageSize,
                       namespaceId: currentNamespaceId,
+                      ...this.getSelectorFilters(),
                     },
                     callback: () => {
                       this.closeModal();
@@ -736,6 +768,7 @@ export default class McpServer extends Component {
         currentPage: selectorPage,
         pageSize: selectorPageSize,
         namespaceId: currentNamespaceId,
+        ...this.getSelectorFilters(),
       },
     });
   };
@@ -776,9 +809,17 @@ export default class McpServer extends Component {
         currentPage: selectorPage,
         pageSize: selectorPageSize,
         namespaceId: currentNamespaceId,
+        ...this.getSelectorFilters(),
       },
     });
   };
+
+  getSelectorFilters = () => ({
+    name: this.state.selectorName,
+    rulePageSize: this.state.toolPageSize,
+  });
+
+  getToolFilters = () => ({ name: this.state.toolName });
 
   pageSelectorChange = (page) => {
     this.setState({ selectorPage: page });
@@ -798,7 +839,11 @@ export default class McpServer extends Component {
     const { id } = record;
     const { dispatch, currentNamespaceId } = this.props;
     const { toolPageSize } = this.state;
-    this.setState({ toolPage: 1 });
+    this.setState({
+      toolPage: 1,
+      toolName: undefined,
+      toolSelectedRowKeys: [],
+    });
     dispatch({
       type: "common/saveCurrentSelector",
       payload: {
@@ -866,6 +911,7 @@ export default class McpServer extends Component {
                     currentPage: toolPage,
                     pageSize: toolPageSize,
                     namespaceId: currentNamespaceId,
+                    ...this.getToolFilters(),
                   },
                   callback: () => {
                     this.closeModal();
@@ -896,6 +942,7 @@ export default class McpServer extends Component {
         currentPage: toolPage,
         pageSize: toolPageSize,
         namespaceId: currentNamespaceId,
+        ...this.getToolFilters(),
       },
     });
   };
@@ -944,9 +991,10 @@ export default class McpServer extends Component {
         currentPage,
         pageSize: toolPageSize,
         namespaceId: currentNamespaceId,
+        ...this.getToolFilters(),
       },
       callback: () => {
-        this.setState({ toolSelectedRowKeys: [] });
+        this.setState({ toolSelectedRowKeys: [], toolPage: currentPage });
       },
     });
   };
@@ -963,6 +1011,9 @@ export default class McpServer extends Component {
   };
 
   editToolByJson = (record) => {
+    this.jsonRequest += 1;
+    const requestId = this.jsonRequest;
+    const selectorId = this.props.currentSelector?.id;
     const { dispatch, currentNamespaceId } = this.props;
     const { id } = record;
 
@@ -973,6 +1024,12 @@ export default class McpServer extends Component {
         namespaceId: currentNamespaceId,
       },
       callback: (rule) => {
+        if (
+          requestId !== this.jsonRequest ||
+          currentNamespaceId !== this.props.currentNamespaceId ||
+          selectorId !== this.props.currentSelector?.id
+        )
+          return;
         this.setState({
           currentJsonData: rule,
           jsonEditVisible: true,
@@ -998,21 +1055,19 @@ export default class McpServer extends Component {
         currentPage: toolPage,
         pageSize: toolPageSize,
         namespaceId: currentNamespaceId,
+        ...this.getToolFilters(),
       },
       callback: () => {
         this.setState({
           jsonEditVisible: false,
           currentJsonData: null,
         });
-        message.success(getIntlContent("SHENYU.MCP.JSON.EDIT.UPDATE.SUCCESS"));
-
-        // 刷新工具列表以确保最新数据显示
-        this.getAllTools(toolPage, toolPageSize);
       },
     });
   };
 
   handleJsonEditCancel = () => {
+    this.jsonRequest += 1;
     this.setState({
       jsonEditVisible: false,
       currentJsonData: null,
@@ -1077,27 +1132,39 @@ export default class McpServer extends Component {
         title: getIntlContent("SHENYU.SELECTOR.EXEORDER"),
         dataIndex: "sort",
         key: "sort",
+        width: 60,
       },
       {
         align: "center",
         title: getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"),
         dataIndex: "name",
         key: "name",
+        width: 160,
       },
       {
         align: "center",
         title: getIntlContent("SHENYU.COMMON.OPEN"),
         dataIndex: "enabled",
         key: "enabled",
+        width: 120,
         render: (text, row) => (
-          <Switch
-            checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-            unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-            checked={text}
-            onChange={(checked) => {
-              this.enableSelector({ list: [row.id], enabled: checked });
-            }}
-          />
+          <span
+            className={managementStyles.status}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Switch
+              aria-label={`${row.name}: ${getIntlContent("SHENYU.COMMON.OPEN")}`}
+              checked={text}
+              onChange={(checked) => {
+                this.enableSelector({ list: [row.id], enabled: checked });
+              }}
+            />
+            <span>
+              {getIntlContent(
+                text ? "SHENYU.COMMON.OPEN" : "SHENYU.COMMON.CLOSE",
+              )}
+            </span>
+          </span>
         ),
       },
       {
@@ -1105,68 +1172,87 @@ export default class McpServer extends Component {
         title: getIntlContent("SHENYU.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
+        width: 240,
         render: (text, record) => {
           return (
-            <div>
+            <div className={mcpStyles.actions}>
               <AuthButton
                 perms={`plugin:${this.state.pluginName}Selector:edit`}
               >
-                <span
-                  style={{ marginRight: 8 }}
-                  className="edit"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    this.editSelector(record);
-                  }}
-                >
-                  {getIntlContent("SHENYU.COMMON.CHANGE")}
-                </span>
+                {({ icon }) => (
+                  <Button
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                    htmlType="button"
+                    theme="borderless"
+                    size="small"
+                    className="edit"
+                    onClick={(e) => {
+                      e?.stopPropagation();
+                      this.editSelector(record);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.COMMON.CHANGE")}
+                  </Button>
+                )}
               </AuthButton>
-              <span
+              <Button
+                htmlType="button"
+                theme="borderless"
+                size="small"
                 style={{ marginRight: 8 }}
                 className="edit"
                 onClick={(e) => {
-                  e.stopPropagation();
+                  e?.stopPropagation();
                   this.showSSEConfig(record);
                 }}
               >
                 {getIntlContent("SHENYU.MCP.CONFIG.SSE")}
-              </span>
-              <span
+              </Button>
+              <Button
+                htmlType="button"
+                theme="borderless"
+                size="small"
                 style={{ marginRight: 8 }}
                 className="edit"
                 onClick={(e) => {
-                  e.stopPropagation();
+                  e?.stopPropagation();
                   this.showStreamableConfig(record);
                 }}
               >
                 {getIntlContent("SHENYU.MCP.CONFIG.STREAMABLE")}
-              </span>
+              </Button>
               <AuthButton
                 perms={`plugin:${this.state.pluginName}Selector:delete`}
               >
-                <Popconfirm
-                  title={getIntlContent("SHENYU.COMMON.DELETE")}
-                  placement="bottom"
-                  onCancel={(e) => {
-                    e.stopPropagation();
-                  }}
-                  onConfirm={(e) => {
-                    e.stopPropagation();
-                    this.deleteSelector(record);
-                  }}
-                  okText={getIntlContent("SHENYU.COMMON.SURE")}
-                  cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-                >
-                  <span
-                    className="edit"
-                    onClick={(e) => {
-                      e.stopPropagation();
+                {({ icon }) => (
+                  <Popconfirm
+                    title={getIntlContent("SHENYU.COMMON.DELETE")}
+                    position="bottom"
+                    motion={false}
+                    onCancel={(e) => {
+                      e?.stopPropagation();
                     }}
+                    onConfirm={(e) => {
+                      e?.stopPropagation();
+                      this.deleteSelector(record);
+                    }}
+                    okText={getIntlContent("SHENYU.COMMON.SURE")}
+                    cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
                   >
-                    {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
-                  </span>
-                </Popconfirm>
+                    <Button
+                      icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      htmlType="button"
+                      theme="borderless"
+                      size="small"
+                      className="edit"
+                      onClick={(e) => {
+                        e?.stopPropagation();
+                      }}
+                    >
+                      {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                    </Button>
+                  </Popconfirm>
+                )}
               </AuthButton>
             </div>
           );
@@ -1189,34 +1275,43 @@ export default class McpServer extends Component {
         title: getIntlContent("SHENYU.SELECTOR.EXEORDER"),
         dataIndex: "sort",
         key: "sort",
+        width: 60,
       },
       {
         align: "center",
         title: getIntlContent("SHENYU.COMMON.TOOL.NAME"),
         dataIndex: "name",
         key: "name",
+        width: 160,
       },
       {
         align: "center",
         title: getIntlContent("SHENYU.COMMON.TOOL.REQUESTPARAMS"),
         dataIndex: "handle",
         key: "requestParams",
+        width: 110,
         render: (text) => {
           const handle = JSON.parse(text);
           const parameters = handle?.parameters || {};
           return (
             <Popover
               content={
-                <ReactJson
-                  name={false}
-                  displayDataTypes={false}
-                  src={parameters}
-                  theme="monokai"
-                />
+                <div className={managementStyles.detail}>
+                  <strong>
+                    {getIntlContent("SHENYU.COMMON.TOOL.REQUESTPARAMS")}
+                  </strong>
+                  <ReactJson
+                    name={false}
+                    displayDataTypes={false}
+                    src={parameters}
+                    theme="monokai"
+                  />
+                </div>
               }
-              title={getIntlContent("SHENYU.COMMON.TOOL.REQUESTPARAMS")}
             >
-              <a>{getIntlContent("SHENYU.COMMON.PREVIEW")}</a>
+              <Button htmlType="button" theme="borderless" size="small">
+                {getIntlContent("SHENYU.COMMON.PREVIEW")}
+              </Button>
             </Popover>
           );
         },
@@ -1226,6 +1321,7 @@ export default class McpServer extends Component {
         title: getIntlContent("SHENYU.COMMON.TOOL.REQUESTCONFIG"),
         dataIndex: "handle",
         key: "requestConfig",
+        width: 110,
         render: (text) => {
           const handle = JSON.parse(text);
           const requestConfig =
@@ -1235,16 +1331,22 @@ export default class McpServer extends Component {
           return (
             <Popover
               content={
-                <ReactJson
-                  name={false}
-                  displayDataTypes={false}
-                  src={requestConfig}
-                  theme="monokai"
-                />
+                <div className={managementStyles.detail}>
+                  <strong>
+                    {getIntlContent("SHENYU.COMMON.TOOL.REQUESTCONFIG")}
+                  </strong>
+                  <ReactJson
+                    name={false}
+                    displayDataTypes={false}
+                    src={requestConfig}
+                    theme="monokai"
+                  />
+                </div>
               }
-              title={getIntlContent("SHENYU.COMMON.TOOL.REQUESTCONFIG")}
             >
-              <a>{getIntlContent("SHENYU.COMMON.PREVIEW")}</a>
+              <Button htmlType="button" theme="borderless" size="small">
+                {getIntlContent("SHENYU.COMMON.PREVIEW")}
+              </Button>
             </Popover>
           );
         },
@@ -1254,15 +1356,25 @@ export default class McpServer extends Component {
         title: getIntlContent("SHENYU.COMMON.OPEN"),
         dataIndex: "enabled",
         key: "enabled",
+        width: 120,
         render: (text, row) => (
-          <Switch
-            checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-            unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-            checked={text}
-            onChange={(checked) => {
-              this.enableTool({ list: [row.id], enabled: checked });
-            }}
-          />
+          <span
+            className={managementStyles.status}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Switch
+              aria-label={`${row.name}: ${getIntlContent("SHENYU.COMMON.OPEN")}`}
+              checked={text}
+              onChange={(checked) => {
+                this.enableTool({ list: [row.id], enabled: checked });
+              }}
+            />
+            <span>
+              {getIntlContent(
+                text ? "SHENYU.COMMON.OPEN" : "SHENYU.COMMON.CLOSE",
+              )}
+            </span>
+          </span>
         ),
       },
       {
@@ -1270,6 +1382,7 @@ export default class McpServer extends Component {
         title: getIntlContent("SHENYU.SYSTEM.UPDATETIME"),
         dataIndex: "dateCreated",
         key: "dateCreated",
+        width: 150,
         sorter: (a, b) => (a.dateCreated > b.dateCreated ? 1 : -1),
       },
       {
@@ -1277,56 +1390,74 @@ export default class McpServer extends Component {
         title: getIntlContent("SHENYU.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
+        width: 240,
         render: (text, record) => {
           return (
-            <div>
+            <div className={mcpStyles.actions}>
               <AuthButton perms={`plugin:${this.state.pluginName}Rule:edit`}>
-                <span
-                  className="edit"
-                  style={{ marginRight: 8 }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    this.editTool(record);
-                  }}
-                >
-                  {getIntlContent("SHENYU.COMMON.CHANGE")}
-                </span>
-              </AuthButton>
-              <AuthButton perms={`plugin:${this.state.pluginName}Rule:edit`}>
-                <span
-                  className="edit"
-                  style={{ marginRight: 8 }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    this.editToolByJson(record);
-                  }}
-                >
-                  {getIntlContent("SHENYU.MCP.EDIT.JSON")}
-                </span>
-              </AuthButton>
-              <AuthButton perms={`plugin:${this.state.pluginName}Rule:delete`}>
-                <Popconfirm
-                  title={getIntlContent("SHENYU.COMMON.DELETE")}
-                  placement="bottom"
-                  onCancel={(e) => {
-                    e.stopPropagation();
-                  }}
-                  onConfirm={(e) => {
-                    e.stopPropagation();
-                    this.deleteTool(record);
-                  }}
-                  okText={getIntlContent("SHENYU.COMMON.SURE")}
-                  cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-                >
-                  <span
+                {({ icon }) => (
+                  <Button
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                    htmlType="button"
+                    theme="borderless"
+                    size="small"
                     className="edit"
                     onClick={(e) => {
-                      e.stopPropagation();
+                      e?.stopPropagation();
+                      this.editTool(record);
                     }}
                   >
-                    {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
-                  </span>
-                </Popconfirm>
+                    {getIntlContent("SHENYU.COMMON.CHANGE")}
+                  </Button>
+                )}
+              </AuthButton>
+              <AuthButton perms={`plugin:${this.state.pluginName}Rule:edit`}>
+                {({ icon }) => (
+                  <Button
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                    htmlType="button"
+                    theme="borderless"
+                    size="small"
+                    className="edit"
+                    onClick={(e) => {
+                      e?.stopPropagation();
+                      this.editToolByJson(record);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.MCP.EDIT.JSON")}
+                  </Button>
+                )}
+              </AuthButton>
+              <AuthButton perms={`plugin:${this.state.pluginName}Rule:delete`}>
+                {({ icon }) => (
+                  <Popconfirm
+                    title={getIntlContent("SHENYU.COMMON.DELETE")}
+                    position="bottom"
+                    motion={false}
+                    onCancel={(e) => {
+                      e?.stopPropagation();
+                    }}
+                    onConfirm={(e) => {
+                      e?.stopPropagation();
+                      this.deleteTool(record);
+                    }}
+                    okText={getIntlContent("SHENYU.COMMON.SURE")}
+                    cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                  >
+                    <Button
+                      icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      htmlType="button"
+                      theme="borderless"
+                      size="small"
+                      className="edit"
+                      onClick={(e) => {
+                        e?.stopPropagation();
+                      }}
+                    >
+                      {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+                    </Button>
+                  </Popconfirm>
+                )}
               </AuthButton>
             </div>
           );
@@ -1352,232 +1483,324 @@ export default class McpServer extends Component {
     );
 
     return (
-      <div className="plug-content-wrap">
-        <Row
-          style={{
-            marginBottom: "5px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{ display: "flex", alignItems: "end", flex: 1, margin: 0 }}
-          >
-            <Title
-              level={2}
-              style={{ textTransform: "capitalize", margin: "0 20px 0 0" }}
-            >
-              {this.state.pluginName}
-            </Title>
-            <Title level={3} type="secondary" style={{ margin: "0 20px 0 0" }}>
-              {this.state.pluginRole}
-            </Title>
-            <Tag color={tag.color}>{tag.text}</Tag>
-          </div>
-          <div
+      <LocaleProvider locale={this.props.language === "zh-CN" ? zhCN : enUS}>
+        <div className="plug-content-wrap">
+          <Row
             style={{
+              marginBottom: "5px",
               display: "flex",
-              alignItems: "end",
-              gap: 10,
-              minHeight: 32,
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
-            <AuthButton perms="system:plugin:edit">
-              <Button type="primary" onClick={this.swaggerImportClick}>
-                {getIntlContent("SHENYU.MCP.SWAGGER.IMPORT")}
-              </Button>
-            </AuthButton>
-            <Switch
-              checked={this.state.isPluginEnabled ?? false}
-              onChange={this.togglePluginStatus}
-            />
-            <AuthButton perms="system:plugin:edit">
-              <div className="edit" onClick={this.editClick}>
-                {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-              </div>
-            </AuthButton>
-          </div>
-        </Row>
-        <Row gutter={20}>
-          <Col span={10}>
-            <div className="table-header">
-              <h3>{getIntlContent("SHENYU.PLUGIN.SERVER.LIST.TITLE")}</h3>
-              <div className={styles.headerSearch}>
-                <AuthButton
-                  perms={`plugin:${this.state.pluginName}Selector:query`}
-                >
-                  <Search
-                    className={styles.search}
-                    style={{ minWidth: "130px" }}
-                    placeholder={getIntlContent(
-                      "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME",
-                    )}
-                    enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
-                    size="default"
-                    onChange={this.searchSelectorOnchange}
-                    onSearch={this.searchSelector}
-                  />
-                </AuthButton>
-                <AuthButton
-                  perms={`plugin:${this.state.pluginName}Selector:add`}
-                >
-                  <Button type="primary" onClick={this.addSelector}>
-                    {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.ADD")}
-                  </Button>
-                </AuthButton>
-                <AuthButton
-                  perms={`plugin:${this.state.pluginName}Selector:edit`}
-                >
-                  <Button
-                    type="primary"
-                    onClick={this.openSelectorClick}
-                    style={{ marginLeft: 10 }}
-                  >
-                    {getIntlContent(
-                      selectorList.some(
-                        (selector) =>
-                          selectorSelectedRowKeys.includes(selector.id) &&
-                          selector.enabled,
-                      )
-                        ? "SHENYU.PLUGIN.SELECTOR.BATCH.CLOSED"
-                        : "SHENYU.PLUGIN.SELECTOR.BATCH.OPENED",
-                    )}
-                  </Button>
-                </AuthButton>
-              </div>
+            <div
+              style={{ display: "flex", alignItems: "end", flex: 1, margin: 0 }}
+            >
+              <Title
+                level={2}
+                style={{ textTransform: "capitalize", margin: "0 20px 0 0" }}
+              >
+                {this.state.pluginName}
+              </Title>
+              <Title
+                level={3}
+                type="secondary"
+                style={{ margin: "0 20px 0 0" }}
+              >
+                {this.state.pluginRole}
+              </Title>
+              <Tag color={tag.color}>{tag.text}</Tag>
             </div>
-            <Table
-              size="small"
-              onRow={(record) => {
-                return {
-                  onClick: () => {
-                    this.rowClick(record);
-                  },
-                };
+            <div
+              style={{
+                display: "flex",
+                alignItems: "end",
+                gap: 10,
+                minHeight: 32,
               }}
-              style={{ marginTop: 30 }}
-              bordered
-              columns={selectColumns}
-              dataSource={selectorList}
-              rowSelection={selectorRowSelection}
-              pagination={{
-                total: selectorTotal,
-                showTotal: (showTotal) => `${showTotal}`,
-                showSizeChanger: true,
-                pageSizeOptions: ["12", "20", "50", "100"],
-                current: selectorPage,
-                pageSize: selectorPageSize,
-                onChange: this.pageSelectorChange,
-                onShowSizeChange: this.pageSelectorChangeSize,
-              }}
-              rowClassName={(item) => {
-                if (currentSelector && currentSelector.id === item.id) {
-                  return "table-selected";
-                } else {
-                  return "";
-                }
-              }}
-            />
-          </Col>
-          <Col span={14}>
-            <div className="table-header">
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <h3>{getIntlContent("SHENYU.PLUGIN.SELECTOR.TOOL.LIST")}</h3>
-                <AuthButton perms={`plugin:${this.state.pluginName}:modify`}>
+            >
+              <AuthButton perms="system:plugin:edit">
+                {({ icon }) => (
                   <Button
-                    icon="reload"
-                    onClick={this.asyncClick}
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                    htmlType="button"
                     type="primary"
+                    theme="solid"
+                    onClick={this.swaggerImportClick}
                   >
-                    {getIntlContent("SHENYU.COMMON.SYN")}{" "}
-                    {this.state.pluginName}
+                    {getIntlContent("SHENYU.MCP.SWAGGER.IMPORT")}
                   </Button>
-                </AuthButton>
-              </div>
-
-              <div className={styles.headerSearch}>
-                <AuthButton perms={`plugin:${this.state.pluginName}Rule:query`}>
-                  <Search
-                    className={styles.search}
-                    placeholder={getIntlContent(
-                      "SHENYU.PLUGIN.SEARCH.TOOL.NAME",
+                )}
+              </AuthButton>
+              <Switch
+                checked={this.state.isPluginEnabled ?? false}
+                onChange={this.togglePluginStatus}
+              />
+              <AuthButton perms="system:plugin:edit">
+                {({ icon }) => (
+                  <Button
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                    htmlType="button"
+                    theme="borderless"
+                    size="small"
+                    onClick={this.editClick}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                  </Button>
+                )}
+              </AuthButton>
+            </div>
+          </Row>
+          <Row gutter={20}>
+            <Col xs={24} xl={10} style={{ minWidth: 0 }}>
+              <div className={mcpStyles.panelHeader}>
+                <h3>{getIntlContent("SHENYU.PLUGIN.SERVER.LIST.TITLE")}</h3>
+                <div className={managementStyles.toolbar}>
+                  <AuthButton
+                    perms={`plugin:${this.state.pluginName}Selector:query`}
+                  >
+                    {({ icon }) => (
+                      <form
+                        className={mcpStyles.search}
+                        onSubmit={(event) => {
+                          event.preventDefault();
+                          this.searchSelector();
+                        }}
+                      >
+                        <Input
+                          className={managementStyles.filter}
+                          style={{ flex: "1 1 160px", width: "auto" }}
+                          value={this.state.selectorName || ""}
+                          placeholder={getIntlContent(
+                            "SHENYU.PLUGIN.SEARCH.SELECTOR.NAME",
+                          )}
+                          onChange={this.searchSelectorOnchange}
+                        />
+                        <Button
+                          icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                          htmlType="submit"
+                          type="primary"
+                          theme="solid"
+                        >
+                          {getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                        </Button>
+                      </form>
                     )}
-                    enterButton={getIntlContent("SHENYU.SYSTEM.SEARCH")}
-                    size="default"
-                    onChange={this.searchToolOnchange}
-                    onSearch={this.searchTool}
-                  />
-                </AuthButton>
-                <AuthButton perms={`plugin:${this.state.pluginName}Rule:add`}>
-                  <Button type="primary" onClick={this.addTool}>
-                    {getIntlContent("SHENYU.COMMON.ADD.TOOL")}
-                  </Button>
-                </AuthButton>
-                <AuthButton perms={`plugin:${this.state.pluginName}Rule:edit`}>
-                  <Button
-                    type="primary"
-                    onClick={this.openToolClick}
-                    style={{ marginLeft: 10 }}
+                  </AuthButton>
+                  <AuthButton
+                    perms={`plugin:${this.state.pluginName}Selector:add`}
                   >
-                    {getIntlContent(
-                      ruleList
-                        ? ruleList.some(
-                            (tool) =>
-                              toolSelectedRowKeys.includes(tool.id) &&
-                              tool.enabled,
+                    {({ icon }) => (
+                      <Button
+                        icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                        htmlType="button"
+                        type="primary"
+                        theme="solid"
+                        onClick={this.addSelector}
+                      >
+                        {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.ADD")}
+                      </Button>
+                    )}
+                  </AuthButton>
+                  <AuthButton
+                    perms={`plugin:${this.state.pluginName}Selector:edit`}
+                  >
+                    {({ icon }) => (
+                      <Button
+                        icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                        htmlType="button"
+                        type="primary"
+                        theme="solid"
+                        onClick={this.openSelectorClick}
+                        style={{ marginLeft: 10 }}
+                      >
+                        {getIntlContent(
+                          selectorList.some(
+                            (selector) =>
+                              selectorSelectedRowKeys.includes(selector.id) &&
+                              selector.enabled,
                           )
-                          ? "SHENYU.PLUGIN.SELECTOR.BATCH.CLOSED"
-                          : "SHENYU.PLUGIN.SELECTOR.BATCH.OPENED"
-                        : "",
+                            ? "SHENYU.PLUGIN.SELECTOR.BATCH.CLOSED"
+                            : "SHENYU.PLUGIN.SELECTOR.BATCH.OPENED",
+                        )}
+                      </Button>
                     )}
-                  </Button>
-                </AuthButton>
+                  </AuthButton>
+                </div>
               </div>
-            </div>
-            <Table
-              size="small"
-              style={{ marginTop: 30 }}
-              bordered
-              columns={toolsColumns}
-              expandedRowRender={expandedRowRender}
-              dataSource={ruleList}
-              rowSelection={toolRowSelection}
-              pagination={{
-                total: ruleTotal,
-                showTotal: (showTotal) => `${showTotal}`,
-                showSizeChanger: true,
-                pageSizeOptions: ["12", "20", "50", "100"],
-                current: toolPage,
-                pageSize: toolPageSize,
-                onChange: this.pageToolChange,
-                onShowSizeChange: this.pageToolChangeSize,
-              }}
+              <Table
+                size="small"
+                rowKey="id"
+                scroll={{ x: 650 }}
+                onRow={(record) => {
+                  return {
+                    className:
+                      currentSelector?.id === record.id ? "table-selected" : "",
+                    onClick: () => {
+                      this.rowClick(record);
+                    },
+                  };
+                }}
+                style={{ marginTop: 30 }}
+                bordered
+                columns={selectColumns}
+                dataSource={selectorList}
+                rowSelection={selectorRowSelection}
+                pagination={{
+                  total: selectorTotal,
+                  showTotal: true,
+                  showSizeChanger: true,
+                  pageSizeOpts: [12, 20, 50, 100],
+                  currentPage: selectorPage,
+                  pageSize: selectorPageSize,
+                  onChange: (page, size) =>
+                    size === selectorPageSize
+                      ? this.pageSelectorChange(page)
+                      : this.pageSelectorChangeSize(page, size),
+                }}
+              />
+            </Col>
+            <Col xs={24} xl={14} style={{ minWidth: 0 }}>
+              <div className={mcpStyles.panelHeader}>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <h3>{getIntlContent("SHENYU.PLUGIN.SELECTOR.TOOL.LIST")}</h3>
+                  <AuthButton perms={`plugin:${this.state.pluginName}:modify`}>
+                    {({ icon }) => (
+                      <Button
+                        htmlType="button"
+                        icon={<ResourceIcon type={icon || "reload"} />}
+                        onClick={this.asyncClick}
+                        type="primary"
+                        theme="solid"
+                      >
+                        {getIntlContent("SHENYU.COMMON.SYN")}{" "}
+                        {this.state.pluginName}
+                      </Button>
+                    )}
+                  </AuthButton>
+                </div>
+
+                <div className={managementStyles.toolbar}>
+                  <AuthButton
+                    perms={`plugin:${this.state.pluginName}Rule:query`}
+                  >
+                    {({ icon }) => (
+                      <form
+                        className={mcpStyles.search}
+                        onSubmit={(event) => {
+                          event.preventDefault();
+                          this.searchTool();
+                        }}
+                      >
+                        <Input
+                          className={managementStyles.filter}
+                          style={{ flex: "1 1 160px", width: "auto" }}
+                          value={this.state.toolName || ""}
+                          placeholder={getIntlContent(
+                            "SHENYU.PLUGIN.SEARCH.TOOL.NAME",
+                          )}
+                          onChange={this.searchToolOnchange}
+                        />
+                        <Button
+                          icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                          htmlType="submit"
+                          type="primary"
+                          theme="solid"
+                        >
+                          {getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                        </Button>
+                      </form>
+                    )}
+                  </AuthButton>
+                  <AuthButton perms={`plugin:${this.state.pluginName}Rule:add`}>
+                    {({ icon }) => (
+                      <Button
+                        icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                        htmlType="button"
+                        type="primary"
+                        theme="solid"
+                        onClick={this.addTool}
+                      >
+                        {getIntlContent("SHENYU.COMMON.ADD.TOOL")}
+                      </Button>
+                    )}
+                  </AuthButton>
+                  <AuthButton
+                    perms={`plugin:${this.state.pluginName}Rule:edit`}
+                  >
+                    {({ icon }) => (
+                      <Button
+                        icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                        htmlType="button"
+                        type="primary"
+                        theme="solid"
+                        onClick={this.openToolClick}
+                        style={{ marginLeft: 10 }}
+                      >
+                        {getIntlContent(
+                          ruleList
+                            ? ruleList.some(
+                                (tool) =>
+                                  toolSelectedRowKeys.includes(tool.id) &&
+                                  tool.enabled,
+                              )
+                              ? "SHENYU.PLUGIN.SELECTOR.BATCH.CLOSED"
+                              : "SHENYU.PLUGIN.SELECTOR.BATCH.OPENED"
+                            : "",
+                        )}
+                      </Button>
+                    )}
+                  </AuthButton>
+                </div>
+              </div>
+              <Table
+                size="small"
+                rowKey="id"
+                scroll={{ x: 1100 }}
+                style={{ marginTop: 30 }}
+                bordered
+                columns={toolsColumns}
+                expandedRowRender={expandedRowRender}
+                dataSource={ruleList}
+                rowSelection={toolRowSelection}
+                pagination={{
+                  total: ruleTotal,
+                  showTotal: true,
+                  showSizeChanger: true,
+                  pageSizeOpts: [12, 20, 50, 100],
+                  currentPage: toolPage,
+                  pageSize: toolPageSize,
+                  onChange: (page, size) =>
+                    size === toolPageSize
+                      ? this.pageToolChange(page)
+                      : this.pageToolChangeSize(page, size),
+                }}
+              />
+            </Col>
+          </Row>
+          {popup}
+          {this.state.jsonEditVisible && (
+            <JsonEditModal
+              visible={this.state.jsonEditVisible}
+              data={this.state.currentJsonData}
+              onOk={this.handleJsonEditOk}
+              onCancel={this.handleJsonEditCancel}
             />
-          </Col>
-        </Row>
-        {popup}
-        {this.state.jsonEditVisible && (
-          <JsonEditModal
-            visible={this.state.jsonEditVisible}
-            data={this.state.currentJsonData}
-            onOk={this.handleJsonEditOk}
-            onCancel={this.handleJsonEditCancel}
-          />
-        )}
-        {this.state.mcpConfigVisible && (
-          <McpConfigModal
-            visible={this.state.mcpConfigVisible}
-            configType={this.state.mcpConfigType}
-            selectorList={
-              this.state.currentSelectorForConfig
-                ? [this.state.currentSelectorForConfig]
-                : selectorList
-            }
-            onCancel={this.handleMcpConfigCancel}
-          />
-        )}
-      </div>
+          )}
+          {this.state.mcpConfigVisible && (
+            <McpConfigModal
+              visible={this.state.mcpConfigVisible}
+              configType={this.state.mcpConfigType}
+              selectorList={
+                this.state.currentSelectorForConfig
+                  ? [this.state.currentSelectorForConfig]
+                  : selectorList
+              }
+              onCancel={this.handleMcpConfigCancel}
+            />
+          )}
+        </div>
+      </LocaleProvider>
     );
   }
 }

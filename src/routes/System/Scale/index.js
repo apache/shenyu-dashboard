@@ -16,21 +16,23 @@
  */
 
 import React, { Component } from "react";
-import {
-  Button,
-  Input,
-  Popconfirm,
-  Row,
-  Select,
-  Switch,
-  Table,
-  Typography,
-} from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Typography from "@douyinfe/semi-ui/lib/es/typography";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import { connect } from "react-redux";
 import moment from "moment";
+import Input from "../../../components/ui/Input";
+import Select from "../../../components/ui/Select";
+import Switch from "../../../components/ui/Switch";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
+import styles from "../../../components/ui/ManagementList.module.less";
 import { message } from "../../../components/ui/feedback";
 import PolicyModal from "./PolicyModal";
-import PolicyTimePicker from "./PolicyTimePicker";
 import RuleModal from "./RuleModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
@@ -40,7 +42,8 @@ const DEFAULT_SCALE_TYPE = 0;
 const { Option } = Select;
 const { Title } = Typography;
 
-@connect(({ scale, loading }) => ({
+@connect(({ scale, loading, global }) => ({
+  language: global.language,
   scale,
   loadingRule: loading.effects["scale/fetchRule"],
   loadingPolicy: loading.effects["scale/fetchPolicy"],
@@ -67,18 +70,16 @@ export default class Scale extends Component {
     this.setState({ selectedRowKeys });
   };
 
+  getRuleQuery = () => {
+    const { currentPage, pageSize, metricName, type, status } = this.state;
+    return { currentPage, pageSize, metricName, type, status };
+  };
+
   getScaleRules = () => {
     const { dispatch } = this.props;
-    const { currentPage, pageSize, metricName, type, status } = this.state;
     dispatch({
       type: "scale/fetchRule",
-      payload: {
-        currentPage,
-        pageSize,
-        metricName,
-        type,
-        status,
-      },
+      payload: this.getRuleQuery(),
     });
   };
 
@@ -205,17 +206,26 @@ export default class Scale extends Component {
     const { dispatch } = this.props;
     const { currentPage, pageSize, selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
+      const targetPage = Math.min(
+        currentPage,
+        Math.max(
+          1,
+          Math.ceil(
+            (this.props.scale.total - selectedRowKeys.length) / pageSize,
+          ),
+        ),
+      );
       dispatch({
         type: "scale/deleteRules",
         payload: {
           list: selectedRowKeys,
         },
         fetchValue: {
-          currentPage,
-          pageSize,
+          ...this.getRuleQuery(),
+          currentPage: targetPage,
         },
         callback: () => {
-          this.setState({ selectedRowKeys: [] });
+          this.setState({ selectedRowKeys: [], currentPage: targetPage });
         },
       });
     } else {
@@ -312,35 +322,40 @@ export default class Scale extends Component {
         key: "status",
         ellipsis: true,
         render: (text, row) => (
-          <Switch
-            checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-            unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-            checked={Boolean(text)}
-            onChange={(checked) => {
-              dispatch({
-                type: "scale/updatePolicy",
-                payload: {
-                  ...row,
-                  status: Number(checked),
-                  beginTime:
-                    row.beginTime &&
-                    moment(row.beginTime, "YYYY-MM-DD HH:mm:ss").format(
-                      "YYYY-MM-DDTHH:mm:ss[Z]",
-                    ),
-                  endTime:
-                    row.endTime &&
-                    moment(row.endTime, "YYYY-MM-DD HH:mm:ss").format(
-                      "YYYY-MM-DDTHH:mm:ss[Z]",
-                    ),
-                },
-                callback: () => {
-                  this.setState({ selectedRowKeys: [] });
-                  this.closeModal();
-                  this.getAllPolicies();
-                },
-              });
-            }}
-          />
+          <AuthButton
+            perms="system:scale:edit"
+            noAuth={<Switch disabled checked={Number(text) === 1} />}
+          >
+            {() => (
+              <Switch
+                checked={Number(text) === 1}
+                onChange={(checked) => {
+                  dispatch({
+                    type: "scale/updatePolicy",
+                    payload: {
+                      ...row,
+                      status: Number(checked),
+                      beginTime:
+                        row.beginTime &&
+                        moment(row.beginTime, "YYYY-MM-DD HH:mm:ss").format(
+                          "YYYY-MM-DDTHH:mm:ss[Z]",
+                        ),
+                      endTime:
+                        row.endTime &&
+                        moment(row.endTime, "YYYY-MM-DD HH:mm:ss").format(
+                          "YYYY-MM-DDTHH:mm:ss[Z]",
+                        ),
+                    },
+                    callback: () => {
+                      this.setState({ selectedRowKeys: [] });
+                      this.closeModal();
+                      this.getAllPolicies();
+                    },
+                  });
+                }}
+              />
+            )}
+          </AuthButton>
         ),
       },
       {
@@ -348,9 +363,12 @@ export default class Scale extends Component {
         title: getIntlContent("SHENYU.SYSTEM.SCALE.BEGIN_TIME"),
         dataIndex: "beginTime",
         key: "beginTime",
+        width: 220,
         render: (value) =>
           value ? (
-            <PolicyTimePicker disabled value={moment(value)} />
+            <time dateTime={moment(value).format("YYYY-MM-DDTHH:mm:ss")}>
+              {moment(value).format("YYYY-MM-DD HH:mm:ss")}
+            </time>
           ) : (
             getIntlContent("SHENYU.SYSTEM.SCALE.NONE")
           ),
@@ -360,9 +378,12 @@ export default class Scale extends Component {
         title: getIntlContent("SHENYU.SYSTEM.SCALE.END_TIME"),
         dataIndex: "endTime",
         key: "endTime",
+        width: 220,
         render: (value) =>
           value ? (
-            <PolicyTimePicker disabled value={moment(value)} />
+            <time dateTime={moment(value).format("YYYY-MM-DDTHH:mm:ss")}>
+              {moment(value).format("YYYY-MM-DD HH:mm:ss")}
+            </time>
           ) : (
             getIntlContent("SHENYU.SYSTEM.SCALE.NONE")
           ),
@@ -377,14 +398,18 @@ export default class Scale extends Component {
           return (
             <div>
               <AuthButton perms="system:scale:edit">
-                <span
-                  className="edit"
-                  onClick={() => {
-                    this.editPolicyClick(record);
-                  }}
-                >
-                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                </span>
+                {({ icon }) => (
+                  <Button
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                    theme="borderless"
+                    className="edit"
+                    onClick={() => {
+                      this.editPolicyClick(record);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                  </Button>
+                )}
               </AuthButton>
             </div>
           );
@@ -422,23 +447,28 @@ export default class Scale extends Component {
         key: "status",
         ellipsis: true,
         render: (text, row) => (
-          <Switch
-            checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-            unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-            checked={Boolean(text)}
-            onChange={(checked) => {
-              dispatch({
-                type: "scale/updateRule",
-                payload: {
-                  ...row,
-                  status: Number(checked),
-                },
-                callback: () => {
-                  this.getScaleRules();
-                },
-              });
-            }}
-          />
+          <AuthButton
+            perms="system:scale:edit"
+            noAuth={<Switch disabled checked={Number(text) === 1} />}
+          >
+            {() => (
+              <Switch
+                checked={Number(text) === 1}
+                onChange={(checked) => {
+                  dispatch({
+                    type: "scale/updateRule",
+                    payload: {
+                      ...row,
+                      status: Number(checked),
+                    },
+                    callback: () => {
+                      this.getScaleRules();
+                    },
+                  });
+                }}
+              />
+            )}
+          </AuthButton>
         ),
       },
       {
@@ -446,7 +476,7 @@ export default class Scale extends Component {
         title: getIntlContent("SHENYU.SYSTEM.SCALE.MINIMUM"),
         dataIndex: "minimum",
         key: "minimum",
-        render: (value) => value || getIntlContent("SHENYU.SYSTEM.SCALE.NONE"),
+        render: (value) => value ?? getIntlContent("SHENYU.SYSTEM.SCALE.NONE"),
         ellipsis: true,
       },
       {
@@ -454,7 +484,7 @@ export default class Scale extends Component {
         title: getIntlContent("SHENYU.SYSTEM.SCALE.MAXIMUM"),
         dataIndex: "maximum",
         key: "maximum",
-        render: (value) => value || getIntlContent("SHENYU.SYSTEM.SCALE.NONE"),
+        render: (value) => value ?? getIntlContent("SHENYU.SYSTEM.SCALE.NONE"),
         ellipsis: true,
       },
       {
@@ -467,14 +497,18 @@ export default class Scale extends Component {
           return (
             <div>
               <AuthButton perms="system:scale:edit">
-                <span
-                  className="edit"
-                  onClick={() => {
-                    this.editRuleClick(record);
-                  }}
-                >
-                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                </span>
+                {({ icon }) => (
+                  <Button
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                    theme="borderless"
+                    className="edit"
+                    onClick={() => {
+                      this.editRuleClick(record);
+                    }}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                  </Button>
+                )}
               </AuthButton>
             </div>
           );
@@ -488,129 +522,162 @@ export default class Scale extends Component {
     };
 
     return (
-      <div className="plug-content-wrap">
-        <Row
-          style={{
-            marginBottom: "5px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{ display: "flex", alignItems: "end", flex: 1, margin: 0 }}
+      <LocaleProvider locale={this.props.language === "zh-CN" ? zhCN : enUS}>
+        <div className="plug-content-wrap">
+          <Row
+            style={{
+              marginBottom: "5px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
           >
-            <Title
-              level={2}
-              style={{ textTransform: "capitalize", margin: "0 20px 0 0" }}
+            <div
+              style={{ display: "flex", alignItems: "end", flex: 1, margin: 0 }}
             >
-              {getIntlContent("SHENYU.SYSTEM.SCALE.TITLE")}
-            </Title>
-          </div>
-        </Row>
-        <Table
-          size="small"
-          style={{ marginTop: 30, marginBottom: 30 }}
-          bordered
-          loading={loadingPolicy}
-          columns={policyColumns}
-          dataSource={policyList}
-          pagination={false}
-          rowKey="id"
-        />
-
-        <div style={{ display: "flex" }}>
-          <Input
-            allowClear
-            value={metricName}
-            onChange={this.searchMetricNameOnchange}
-            placeholder={getIntlContent(
-              "SHENYU.SYSTEM.SCALE.SEARCH.CONFIG_NAME",
-            )}
-            style={{ width: 240 }}
+              <Title
+                level={2}
+                style={{ textTransform: "capitalize", margin: "0 20px 0 0" }}
+              >
+                {getIntlContent("SHENYU.SYSTEM.SCALE.TITLE")}
+              </Title>
+            </div>
+          </Row>
+          <Table
+            size="small"
+            style={{ marginTop: 30, marginBottom: 30 }}
+            bordered
+            loading={loadingPolicy}
+            scroll={{ x: 1000 }}
+            columns={policyColumns}
+            dataSource={policyList}
+            pagination={false}
+            rowKey="id"
           />
-          <Select
-            value={type}
-            onChange={this.searchTypeOnchange}
-            placeholder={getIntlContent(
-              "SHENYU.SYSTEM.SCALE.SEARCH.CONFIG_TYPE",
-            )}
-            style={{ width: 150, marginLeft: 20 }}
-            allowClear
-          >
-            {Object.entries(ConfigType).map(([value, text]) => (
-              <Option key={value} value={value}>
-                {getIntlContent(text)}
-              </Option>
-            ))}
-          </Select>
-          <Select
-            value={status}
-            onChange={this.searchStatusOnchange}
-            placeholder={getIntlContent("SHENYU.SYSTEM.SCALE.SEARCH.STATUS")}
-            style={{ width: 150, marginLeft: 20 }}
-            allowClear
-          >
-            <Option value="0">{getIntlContent("SHENYU.COMMON.CLOSE")}</Option>
-            <Option value="1">{getIntlContent("SHENYU.COMMON.OPEN")}</Option>
-          </Select>
-          <AuthButton perms="system:scale:list">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.searchClick}
-            >
-              {getIntlContent("SHENYU.SYSTEM.SEARCH")}
-            </Button>
-          </AuthButton>
-          <AuthButton perms="system:scale:delete">
-            <Popconfirm
-              title={getIntlContent("SHENYU.COMMON.DELETE")}
-              placement="bottom"
-              onConfirm={() => {
-                this.deleteClick();
-              }}
-              okText={getIntlContent("SHENYU.COMMON.SURE")}
-              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-            >
-              <Button style={{ marginLeft: 20 }} type="danger">
-                {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
-              </Button>
-            </Popconfirm>
-          </AuthButton>
-          <AuthButton perms="system:scale:add">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.addClick}
-            >
-              {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
-            </Button>
-          </AuthButton>
-        </div>
 
-        <Table
-          size="small"
-          style={{ marginTop: 30 }}
-          bordered
-          loading={loadingRule}
-          columns={ruleColumns}
-          dataSource={ruleList}
-          rowSelection={rowSelection}
-          rowKey="id"
-          pagination={{
-            total,
-            showTotal: (showTotal) => `${showTotal}`,
-            showSizeChanger: true,
-            pageSizeOptions: ["12", "20", "50", "100"],
-            current: currentPage,
-            pageSize,
-            onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange,
-          }}
-        />
-        {popup}
-      </div>
+          <div className={styles.toolbar}>
+            <AuthButton perms="system:scale:list">
+              {({ icon }) => (
+                <form
+                  className={styles.toolbar}
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    this.searchClick();
+                  }}
+                >
+                  <Input
+                    allowClear
+                    value={metricName}
+                    onChange={this.searchMetricNameOnchange}
+                    placeholder={getIntlContent(
+                      "SHENYU.SYSTEM.SCALE.SEARCH.CONFIG_NAME",
+                    )}
+                    style={{ width: 240 }}
+                  />
+                  <Select
+                    value={type}
+                    onChange={this.searchTypeOnchange}
+                    placeholder={getIntlContent(
+                      "SHENYU.SYSTEM.SCALE.SEARCH.CONFIG_TYPE",
+                    )}
+                    style={{ width: 150, marginLeft: 20 }}
+                    allowClear
+                  >
+                    {Object.entries(ConfigType).map(([value, text]) => (
+                      <Option key={value} value={value}>
+                        {getIntlContent(text)}
+                      </Option>
+                    ))}
+                  </Select>
+                  <Select
+                    value={status}
+                    onChange={this.searchStatusOnchange}
+                    placeholder={getIntlContent(
+                      "SHENYU.SYSTEM.SCALE.SEARCH.STATUS",
+                    )}
+                    style={{ width: 150, marginLeft: 20 }}
+                    allowClear
+                  >
+                    <Option value="0">
+                      {getIntlContent("SHENYU.COMMON.CLOSE")}
+                    </Option>
+                    <Option value="1">
+                      {getIntlContent("SHENYU.COMMON.OPEN")}
+                    </Option>
+                  </Select>
+                  <Button
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                    style={{ marginLeft: 20 }}
+                    type="primary"
+                    htmlType="submit"
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                  </Button>
+                </form>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:scale:delete">
+              {({ icon }) => (
+                <Popconfirm
+                  title={getIntlContent("SHENYU.COMMON.DELETE")}
+                  position="bottom"
+                  motion={false}
+                  onConfirm={() => {
+                    this.deleteClick();
+                  }}
+                  okText={getIntlContent("SHENYU.COMMON.SURE")}
+                  cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                >
+                  <Button
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                    style={{ marginLeft: 20 }}
+                    type="danger"
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
+                  </Button>
+                </Popconfirm>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:scale:add">
+              {({ icon }) => (
+                <Button
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  style={{ marginLeft: 20 }}
+                  type="primary"
+                  onClick={this.addClick}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
+                </Button>
+              )}
+            </AuthButton>
+          </div>
+
+          <Table
+            size="small"
+            style={{ marginTop: 30 }}
+            bordered
+            loading={loadingRule}
+            scroll={{ x: 850 }}
+            columns={ruleColumns}
+            dataSource={ruleList}
+            rowSelection={rowSelection}
+            rowKey="id"
+            pagination={{
+              total,
+              showTotal: true,
+              showSizeChanger: true,
+              pageSizeOpts: [12, 20, 50, 100],
+              currentPage,
+              pageSize,
+              onChange: (page, size) =>
+                size === pageSize
+                  ? this.pageOnchange(page)
+                  : this.onShowSizeChange(page, size),
+            }}
+          />
+          {popup}
+        </div>
+      </LocaleProvider>
     );
   }
 }

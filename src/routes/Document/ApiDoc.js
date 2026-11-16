@@ -17,7 +17,10 @@
 
 /* eslint-disable no-unused-expressions */
 /* eslint-disable react/jsx-no-constructed-context-values */
-import { Col, Row, Card, Empty } from "antd";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Card from "@douyinfe/semi-ui/lib/es/card";
+import Empty from "@douyinfe/semi-ui/lib/es/empty";
 import React, { useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import { message } from "../../components/ui/feedback";

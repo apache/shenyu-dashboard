@@ -37,6 +37,13 @@ export default {
   },
 
   effects: {
+    *reload(params, { put }) {
+      const { fetchValue } = params;
+      const { type, dictCode, dictName, currentPage, pageSize } = fetchValue;
+      const payload = { type, dictCode, dictName, currentPage, pageSize };
+      yield put({ type: "fetch", payload });
+    },
+
     *fetch(params, { call, put }) {
       yield put({
         type: "saveShenYuDicts",
@@ -145,14 +152,6 @@ export default {
           callback(dataList);
         }
       }
-    },
-    *reload(params, { put }) {
-      const { fetchValue } = params;
-      const { type, dictCode, dictName, currentPage, pageSize } = fetchValue;
-      yield put({
-        type: "fetch",
-        payload: { type, dictCode, dictName, currentPage, pageSize },
-      });
     },
   },
   reducers: {

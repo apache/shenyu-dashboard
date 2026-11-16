@@ -17,7 +17,8 @@
 
 import React from "react";
 import Loadable from "react-loadable";
-import { Button, Spin } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Spin from "@douyinfe/semi-ui/lib/es/spin";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import loadMetadataTable from "./loadMetadataTable";
 
@@ -25,7 +26,7 @@ export function TableLoading({ error, retry }) {
   return error ? (
     <div role="alert">
       <p>{getIntlContent("SHENYU.META.TABLE.LOAD.FAILED")}</p>
-      <Button onClick={retry}>
+      <Button htmlType="button" onClick={retry}>
         {getIntlContent("SHENYU.META.EDITOR.RETRY")}
       </Button>
     </div>

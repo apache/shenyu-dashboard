@@ -45,7 +45,18 @@ it("refreshes the table and the analysis when the namespace changes", () => {
     currentNamespaceId: "namespace-b",
   });
 
+  component.state.currentPage = 3;
+  component.state.selectedRowKeys = ["old-instance"];
+  component.setState = (update, callback) => {
+    component.state = { ...component.state, ...update };
+    callback?.();
+  };
   component.componentDidUpdate(prevProps);
+
+  expect(component.state).toMatchObject({
+    currentPage: 1,
+    selectedRowKeys: [],
+  });
 
   expect(dispatch.mock.calls.map(([action]) => action)).toEqual([
     {

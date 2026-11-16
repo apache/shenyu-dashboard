@@ -20,8 +20,8 @@ import Card from "@douyinfe/semi-ui/lib/es/card";
 import Button from "@douyinfe/semi-ui/lib/es/button";
 import Modal from "../../../components/ui/Modal";
 import Input from "../../../components/ui/Input";
-import ResourceIcon from "./ResourceIcon";
-import styles from "./IconModal.less";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
+import styles from "./IconModal.module.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 export const iconMap = {

@@ -1,0 +1,72 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.login {
+  padding: 24px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 24px rgba(0, 21, 41, 0.18);
+
+  .tabs {
+    padding: 0 2px;
+    margin: 0 -2px;
+
+    :global {
+      .semi-tabs-tab {
+        font-size: 16px;
+        line-height: 24px;
+      }
+    }
+  }
+
+  :global {
+    .semi-tabs .semi-tabs-bar {
+      border-bottom: 0;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .semi-form-field {
+      margin-bottom: 16px;
+      padding: 0;
+    }
+  }
+
+  .prefixIcon {
+    margin: 0 8px 0 12px;
+    flex-shrink: 0;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.25);
+  }
+
+  .getCaptcha {
+    display: block;
+    width: 100%;
+  }
+
+  .submit {
+    width: 100%;
+    margin-top: 8px;
+    background-color: rgba(91, 66, 54, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0);
+  }
+
+  .submit:hover {
+    background-color: rgba(91, 66, 54, 1);
+    border: 1px solid black;
+  }
+}

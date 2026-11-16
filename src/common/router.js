@@ -16,40 +16,61 @@
  */
 
 import React, { createElement } from "react";
-import { Button, Spin } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Spin from "@douyinfe/semi-ui/lib/es/spin";
 import pathToRegexp from "path-to-regexp";
 import Loadable from "react-loadable";
 import { getMenuData } from "./menu";
 import { getIntlContent } from "../utils/IntlUtils";
 
+import userModel from "../models/user";
+import loginModel from "../models/login";
+import mcpServerModel from "../models/mcpServer";
+import discoveryModel from "../models/discovery";
+import commonModel from "../models/common";
+import roleModel from "../models/role";
+import manageModel from "../models/manage";
+import dataPermissionModel from "../models/dataPermission";
+import resourceModel from "../models/resource";
+import alertModel from "../models/alert";
+import scaleModel from "../models/scale";
+import namespaceModel from "../models/namespace";
+import metadataModel from "../models/metadata";
+import pluginModel from "../models/plugin";
+import instanceModel from "../models/instance";
+import registryModel from "../models/registry";
+import namespacePluginModel from "../models/namespacePlugin";
+import pluginHandleModel from "../models/pluginHandle";
+import authModel from "../models/auth";
+import shenyuDictModel from "../models/shenyuDict";
+import errorModel from "../models/error";
+
 let routerDataCache;
 
-// Literal, lazy requires preserve registration timing without a directory context.
-/* eslint-disable global-require */
+// Model registration remains explicit and synchronous before route rendering.
 const modelLoaders = {
-  user: () => require("../models/user").default,
-  login: () => require("../models/login").default,
-  mcpServer: () => require("../models/mcpServer").default,
-  discovery: () => require("../models/discovery").default,
-  common: () => require("../models/common").default,
-  role: () => require("../models/role").default,
-  manage: () => require("../models/manage").default,
-  dataPermission: () => require("../models/dataPermission").default,
-  resource: () => require("../models/resource").default,
-  alert: () => require("../models/alert").default,
-  scale: () => require("../models/scale").default,
-  namespace: () => require("../models/namespace").default,
-  metadata: () => require("../models/metadata").default,
-  plugin: () => require("../models/plugin").default,
-  instance: () => require("../models/instance").default,
-  registry: () => require("../models/registry").default,
-  namespacePlugin: () => require("../models/namespacePlugin").default,
-  pluginHandle: () => require("../models/pluginHandle").default,
-  auth: () => require("../models/auth").default,
-  shenyuDict: () => require("../models/shenyuDict").default,
-  error: () => require("../models/error").default,
+  user: () => userModel,
+  login: () => loginModel,
+  mcpServer: () => mcpServerModel,
+  discovery: () => discoveryModel,
+  common: () => commonModel,
+  role: () => roleModel,
+  manage: () => manageModel,
+  dataPermission: () => dataPermissionModel,
+  resource: () => resourceModel,
+  alert: () => alertModel,
+  scale: () => scaleModel,
+  namespace: () => namespaceModel,
+  metadata: () => metadataModel,
+  plugin: () => pluginModel,
+  instance: () => instanceModel,
+  registry: () => registryModel,
+  namespacePlugin: () => namespacePluginModel,
+  pluginHandle: () => pluginHandleModel,
+  auth: () => authModel,
+  shenyuDict: () => shenyuDictModel,
+  error: () => errorModel,
 };
-/* eslint-enable global-require */
 
 const modelNotExisted = (app, model) =>
   // eslint-disable-next-line

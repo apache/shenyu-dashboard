@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import React from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import ImportConditionsModal from "./ImportConditionsModal";
 
 function createModal() {
@@ -102,4 +104,33 @@ it("keeps the parsed sample when the input is unsupported", () => {
   component.handleToggle("path", true);
   component.handleApply();
   expect(onApply).toHaveBeenCalled();
+});
+
+it("parses and reviews repeated values through the Semi modal controls", () => {
+  const onApply = jest.fn();
+  render(
+    <ImportConditionsModal visible onApply={onApply} onCancel={jest.fn()} />,
+  );
+  fireEvent.change(screen.getByLabelText("Request sample"), {
+    target: { value: "curl 'https://api.example.com/orders/*?id=1&id=2'" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Parse" }));
+  expect(screen.getByText("This sample is only partly supported")).toBeTruthy();
+  const checkboxes = screen.getAllByRole("checkbox");
+  expect(checkboxes.filter((item) => item.checked)).toHaveLength(2);
+  fireEvent.click(screen.getByText("Query id"));
+  fireEvent.click(screen.getByRole("button", { name: "Apply selected" }));
+  expect(onApply).toHaveBeenCalledWith([
+    expect.objectContaining({
+      paramType: "uri",
+      operator: "=",
+      paramValue: "/orders/*",
+    }),
+    expect.objectContaining({ paramType: "req_method", paramValue: "GET" }),
+    expect.objectContaining({
+      paramType: "query",
+      paramName: "id",
+      paramValue: "1",
+    }),
+  ]);
 });

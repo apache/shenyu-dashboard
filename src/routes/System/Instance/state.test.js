@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-import Instance from "./index";
+import ConnectedInstance from "./index";
 import enUS from "../../../locales/en-US.json";
 import zhCN from "../../../locales/zh-CN.json";
 
-jest.mock("dva", () => ({ connect: () => (component) => component }));
 jest.mock("../../../utils/IntlUtils", () => ({
   getCurrentLocale: jest.fn(),
   getIntlContent: (key) => key,
 }));
+
+const Instance = ConnectedInstance.WrappedComponent;
 
 describe("Instance state column", () => {
   let renderState;

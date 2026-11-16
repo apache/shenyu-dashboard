@@ -1,0 +1,95 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.resourceLayout {
+  display: grid;
+  grid-template-columns: minmax(260px, 7fr) minmax(0, 17fr);
+  gap: 20px;
+}
+
+.resourcePane {
+  min-width: 0;
+}
+
+.headerSearch,
+.buttonToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.buttonToolbar {
+  margin-bottom: 24px;
+}
+
+.search {
+  display: flex;
+  flex: 1 1 220px;
+  gap: 8px;
+  min-width: 0;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .resourceLayout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.menuTree {
+  width: 100%;
+  min-width: 0;
+}
+
+.menuLabel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.menuActions {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.menuTitle {
+  padding: 0;
+  overflow: hidden;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+
+  &:focus-visible {
+    outline: 2px solid var(--semi-color-primary);
+    outline-offset: 2px;
+  }
+}

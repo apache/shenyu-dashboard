@@ -15,33 +15,35 @@
  * limitations under the License.
  */
 
+* {
+  box-sizing: border-box;
+}
+
 html,
 body,
-:global(#root) {
+#root {
   height: 100%;
 }
 
-:global {
-  .plug-content-wrap {
-    padding: 24px;
-  }
-
-  .open {
-    color: #14c974;
-  }
-
-  .close {
-    color: #ff586d;
-  }
-
-  .optionParts {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-  }
+.plug-content-wrap {
+  padding: 24px;
 }
 
-:global(.ant-layout) {
+.open {
+  color: #14c974;
+}
+
+.close {
+  color: #ff586d;
+}
+
+.optionParts {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.semi-layout {
   min-height: 100%;
 }
 
@@ -50,24 +52,20 @@ ol {
   list-style: none;
 }
 
-:global(.ant-table) {
-  background: #fff;
+.table-selected {
+  background: lighten(#1890ff, 25%);
 }
 
-:global(.table-selected) {
-  background: lighten(@primary-color, 25%);
-}
-
-:global(.edit) {
+.edit {
   cursor: pointer;
-  color: @primary-color;
+  color: #1890ff;
 
   &:hover {
-    color: @primary-color;
+    color: #1890ff;
   }
 }
 
-:global(.searchblock) {
+.searchblock {
   display: flex !important;
 
   button {
@@ -75,17 +73,7 @@ ol {
   }
 }
 
-:global(.ant-table table) {
-  padding: 0 !important;
-}
-
-:global {
-  .ant-table-small > .ant-table-content > .ant-table-body {
-    margin: 0 !important;
-  }
-}
-
-:global(.table-header) {
+.table-header {
   white-space: nowrap;
   display: flex;
   align-items: center;
@@ -110,59 +98,33 @@ canvas {
 }
 
 body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--semi-color-text-0);
+  background: #f0f2f5;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-// temp fix for https://github.com/ant-design/ant-design/commit/a1fafb5b727b62cb0be29ce6e9eca8f579d4f8b7
-:global {
-  .ant-spin-nested-loading {
-    overflow: auto;
-  }
-
-  .ant-spin-container {
-    overflow: visible !important;
-  }
-
-  .global-spin {
-    width: 100%;
-    margin: 40px 0 !important;
-  }
-
-  .react-resizable {
-    position: relative;
-    background-clip: padding-box;
-  }
-
-  .react-resizable-handle {
-    position: absolute;
-    right: -5px;
-    bottom: 0;
-    z-index: 1;
-    width: 10px;
-    height: 100%;
-    cursor: col-resize;
-  }
+.global-spin {
+  width: 100%;
+  margin: 40px 0 !important;
 }
 
-:global {
-  .ant-modal {
-    max-width: calc(100vw - 32px);
-  }
+.react-resizable {
+  position: relative;
+  background-clip: padding-box;
 }
 
-:global(.ant-table-thead){
-  background: #eff1f4;
-}
-
-:global(.ant-popover) {
-  word-wrap: break-word;
-  white-space: normal;
-  max-width: 500px;
-  overflow: auto;
-}
-
-:global(.ant-table-body) {
-  overflow-x: auto !important;
+.react-resizable-handle {
+  position: absolute;
+  right: -5px;
+  bottom: 0;
+  z-index: 1;
+  width: 10px;
+  height: 100%;
+  cursor: col-resize;
 }

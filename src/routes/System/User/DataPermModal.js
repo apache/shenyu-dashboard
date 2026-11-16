@@ -16,32 +16,30 @@
  */
 
 import React, { Component } from "react";
-import {
-  Modal,
-  Tree,
-  Icon,
-  Button,
-  Checkbox,
-  Table,
-  Row,
-  Col,
-  Input,
-  Empty,
-  Dropdown,
-  Menu,
-} from "antd";
+import Tree from "@douyinfe/semi-ui/lib/es/tree";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Checkbox from "@douyinfe/semi-ui/lib/es/checkbox";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import Empty from "@douyinfe/semi-ui/lib/es/empty";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import { connect } from "react-redux";
+import Modal from "../../../components/ui/Modal";
+import Input from "../../../components/ui/Input";
+import Select from "../../../components/ui/Select";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { titleCase } from "../../../utils/utils";
 import { defaultNamespaceId } from "../../../components/_utils/utils";
-
-const { TreeNode } = Tree;
-const { Search } = Input;
 
 @connect(({ dataPermission, resource, global, loading }) => ({
   dataPermission,
   resource,
   namespaces: global.namespaces,
+  language: global.language,
   selectorPermisionLoading:
     loading.effects["dataPermission/fetchDataPermisionSelectors"],
   rulePermisionLoading:
@@ -49,6 +47,14 @@ const { Search } = Input;
 }))
 export default class DataPermModal extends Component {
   pluginRequestId = 0;
+
+  scopeVersion = 0;
+
+  selectorRequestId = 0;
+
+  ruleRequests = new Map();
+
+  ruleRequestId = 0;
 
   constructor(props) {
     super(props);
@@ -69,8 +75,25 @@ export default class DataPermModal extends Component {
     this.getPluginTreeData();
   }
 
+  componentDidUpdate(previous) {
+    if (previous.userId !== this.props.userId) {
+      this.scopeVersion += 1;
+      this.ruleRequests.clear();
+      this.setState(
+        {
+          selectorData: null,
+          currentPermissionSelectorPage: 1,
+          ruleListMap: {},
+          selectorExpandedRowKeys: [],
+        },
+        () => this.getPermissionSelectorList(1),
+      );
+    }
+  }
+
   componentWillUnmount() {
     this.pluginRequestId += 1;
+    this.scopeVersion += 1;
   }
 
   getPluginTreeData = () => {
@@ -102,6 +125,10 @@ export default class DataPermModal extends Component {
   getPermissionSelectorList = (page) => {
     const { dispatch, userId } = this.props;
     const { currentPlugin, pageSize, currentNamespaceId } = this.state;
+    if (!currentPlugin) return;
+    const scope = this.scopeVersion;
+    this.selectorRequestId += 1;
+    const requestId = this.selectorRequestId;
     dispatch({
       type: "dataPermission/fetchDataPermisionSelectors",
       payload: {
@@ -112,16 +139,20 @@ export default class DataPermModal extends Component {
         namespaceId: currentNamespaceId,
       },
       callback: (res) => {
-        this.setState({
-          selectorData: res,
-        });
+        if (scope === this.scopeVersion && requestId === this.selectorRequestId)
+          this.setState({ selectorData: res });
       },
     });
   };
 
   getPermissionRuleList = (selectorId, page) => {
     const { dispatch, userId } = this.props;
-    let { currentPlugin, ruleListMap, pageSize } = this.state;
+    const { currentPlugin, pageSize, currentNamespaceId } = this.state;
+    if (!currentPlugin) return;
+    const scope = this.scopeVersion;
+    this.ruleRequestId += 1;
+    const requestId = this.ruleRequestId;
+    this.ruleRequests.set(selectorId, requestId);
     dispatch({
       type: "dataPermission/fetchDataPermisionRules",
       payload: {
@@ -130,117 +161,108 @@ export default class DataPermModal extends Component {
         userId,
         pluginId: currentPlugin.pluginId,
         selectorId,
+        namespaceId: currentNamespaceId,
       },
       callback: (res) => {
-        if (res.dataList && res.dataList.length > 0) {
-          res.dataList.forEach((e) => {
-            e.selectorId = selectorId;
-          });
-        }
         if (
-          ruleListMap[selectorId] &&
-          ruleListMap[selectorId].currentRulePage
-        ) {
-          res.currentRulePage = ruleListMap[selectorId].currentRulePage;
-        } else {
-          res.currentRulePage = 1;
-        }
-        ruleListMap[selectorId] = res;
-        this.setState({
-          ruleListMap,
-        });
+          scope !== this.scopeVersion ||
+          requestId !== this.ruleRequests.get(selectorId)
+        )
+          return;
+        this.setState((previous) => ({
+          ruleListMap: {
+            ...previous.ruleListMap,
+            [selectorId]: {
+              ...res,
+              currentRulePage: page,
+              dataList: (res.dataList || []).map((row) => ({
+                ...row,
+                selectorId,
+              })),
+            },
+          },
+        }));
       },
     });
   };
 
-  onSelectPlugin = (selectedKeys, e) => {
-    const currentPlugin = e.node.props.dataRef;
+  onSelectPlugin = (key, selected, currentPlugin) => {
+    if (!selected || !currentPlugin.pluginId) return;
+    this.scopeVersion += 1;
+    this.ruleRequests.clear();
     this.setState(
       {
         currentPlugin,
         currentPermissionSelectorPage: 1,
+        selectorData: null,
         ruleListMap: {},
+        selectorExpandedRowKeys: [],
       },
-      () => {
-        this.getPermissionSelectorList(1);
-      },
+      () => this.getPermissionSelectorList(1),
     );
+  };
+
+  refreshGrant = (scope, selectorId) => {
+    if (scope !== this.scopeVersion) return;
+    const {
+      currentPermissionSelectorPage,
+      selectorExpandedRowKeys,
+      ruleListMap,
+    } = this.state;
+    this.getPermissionSelectorList(currentPermissionSelectorPage);
+    if (selectorExpandedRowKeys.includes(selectorId))
+      this.getPermissionRuleList(
+        selectorId,
+        ruleListMap[selectorId]?.currentRulePage || 1,
+      );
   };
 
   handleCheckSelector = (record) => {
     const { dispatch, userId } = this.props;
-    const { currentPermissionSelectorPage } = this.state;
-    let type = record.isChecked
-      ? "dataPermission/deletePermisionSelector"
-      : "dataPermission/addPermisionSelector";
+    const scope = this.scopeVersion;
     dispatch({
-      type,
-      payload: {
-        dataId: record.dataId,
-        userId,
-      },
-      callback: () => {
-        this.getPermissionSelectorList(currentPermissionSelectorPage);
-        this.getPermissionRuleList(record.dataId, 1);
-      },
+      type: record.isChecked
+        ? "dataPermission/deletePermisionSelector"
+        : "dataPermission/addPermisionSelector",
+      payload: { dataId: record.dataId, userId },
+      callback: () => this.refreshGrant(scope, record.dataId),
     });
   };
 
   handleCheckRule = (record) => {
     const { dispatch, userId } = this.props;
-    const { currentPermissionSelectorPage, ruleListMap } = this.state;
-    let type = record.isChecked
-      ? "dataPermission/deletePermisionRule"
-      : "dataPermission/addPermisionRule";
+    const scope = this.scopeVersion;
     dispatch({
-      type,
-      payload: {
-        dataId: record.dataId,
-        userId,
-      },
-      callback: () => {
-        this.getPermissionSelectorList(currentPermissionSelectorPage);
-        let page = ruleListMap[record.selectorId].currentRulePage || 1;
-        this.getPermissionRuleList(record.selectorId, page);
-      },
+      type: record.isChecked
+        ? "dataPermission/deletePermisionRule"
+        : "dataPermission/addPermisionRule",
+      payload: { dataId: record.dataId, userId },
+      callback: () => this.refreshGrant(scope, record.selectorId),
     });
   };
 
   handleExpandRuleTable = (expanded, record) => {
-    let { selectorExpandedRowKeys } = this.state;
-    if (expanded) {
-      selectorExpandedRowKeys.push(record.dataId);
-      this.setState({
-        selectorExpandedRowKeys,
-      });
-    } else {
-      selectorExpandedRowKeys = selectorExpandedRowKeys.filter(
-        (e) => e !== record.dataId,
-      );
-      this.setState({
-        selectorExpandedRowKeys,
-      });
-    }
-    this.getPermissionRuleList(record.dataId, 1);
+    this.setState((previous) => ({
+      selectorExpandedRowKeys: expanded
+        ? [...new Set([...previous.selectorExpandedRowKeys, record.dataId])]
+        : previous.selectorExpandedRowKeys.filter((id) => id !== record.dataId),
+    }));
+    if (expanded) this.getPermissionRuleList(record.dataId, 1);
+    else this.ruleRequests.delete(record.dataId);
   };
 
   selectorPageOnchange = (page) => {
-    this.setState({ currentPermissionSelectorPage: page });
+    this.ruleRequests.clear();
+    this.setState({
+      currentPermissionSelectorPage: page,
+      selectorExpandedRowKeys: [],
+      ruleListMap: {},
+    });
     this.getPermissionSelectorList(page);
   };
 
-  rulePageOnchange = (page, selectorId) => {
-    let { ruleListMap } = this.state;
-    ruleListMap[selectorId].currentRulePage = page;
-    this.setState(
-      {
-        ruleListMap,
-      },
-      () => {
-        this.getPermissionRuleList(selectorId, page);
-      },
-    );
-  };
+  rulePageOnchange = (page, selectorId) =>
+    this.getPermissionRuleList(selectorId, page);
 
   filterPlugin = () => {
     let {
@@ -269,9 +291,9 @@ export default class DataPermModal extends Component {
           if (!currentCategory) {
             treeData.push({
               title: currentPluginInfo.role,
-              key: currentPluginInfo.role,
-              selectable: false,
-              icon: "unordered-list",
+              key: `role:${currentPluginInfo.role}`,
+              disabled: true,
+              icon: <ResourceIcon type="unordered-list" />,
               sort: plugin.sort,
               children: [],
             });
@@ -282,7 +304,7 @@ export default class DataPermModal extends Component {
             title: titleCase(currentPluginInfo.name),
             selectable: true,
             sort: plugin.sort,
-            icon: plugin.meta.icon,
+            icon: <ResourceIcon type={plugin.meta.icon} />,
             pluginId: currentPluginInfo.pluginId,
           });
         }
@@ -305,7 +327,7 @@ export default class DataPermModal extends Component {
     return (
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Search
+          <Input
             placeholder={getIntlContent("SHENYU.PLUGIN.INPUTNAME")}
             onChange={this.onSearch}
           />
@@ -313,13 +335,13 @@ export default class DataPermModal extends Component {
         {pluginMenuList.length > 0 ? (
           <Col span={24}>
             <Tree
-              defaultExpandAll
+              expandAll
+              value={this.state.currentPlugin?.pluginId}
+              keyMaps={{ label: "title" }}
+              treeData={pluginMenuList}
               style={{ background: "white" }}
               onSelect={this.onSelectPlugin}
-              showIcon
-            >
-              {this.renderTreeNodes(pluginMenuList)}
-            </Tree>
+            />
           </Col>
         ) : (
           <Col span={24}>
@@ -328,33 +350,6 @@ export default class DataPermModal extends Component {
         )}
       </Row>
     );
-  };
-
-  renderTreeNodes = (data) => {
-    return data.map((item) => {
-      if (item.children && item.children.length > 0) {
-        return (
-          <TreeNode
-            selectable={item.selectable}
-            title={item.title}
-            icon={<Icon type={item.icon} />}
-            key={item.key}
-            dataRef={item}
-          >
-            {this.renderTreeNodes(item.children)}
-          </TreeNode>
-        );
-      } else {
-        return (
-          <TreeNode
-            icon={<Icon type={item.icon} />}
-            title={item.title}
-            key={item.key}
-            dataRef={item}
-          />
-        );
-      }
-    });
   };
 
   renderSelectorRuleTable = () => {
@@ -370,7 +365,8 @@ export default class DataPermModal extends Component {
           return (
             <Checkbox
               checked={isChecked}
-              onClick={this.handleCheckRule.bind(this, record)}
+              onChange={() => this.handleCheckRule(record)}
+              aria-label={record.dataName}
             />
           );
         },
@@ -387,12 +383,14 @@ export default class DataPermModal extends Component {
       return (
         <Table
           size="small"
+          rowKey="dataId"
+          loading={this.props.rulePermisionLoading}
           bordered
           columns={ruleColumns}
-          dataSource={ruleData && ruleData.dataList}
+          dataSource={ruleData?.dataList || []}
           pagination={{
             total: (ruleData && ruleData.total) || 0,
-            current: currentRulePage || 1,
+            currentPage: currentRulePage || 1,
             pageSize,
             onChange: (page) => {
               this.rulePageOnchange(page, record.dataId);
@@ -406,13 +404,14 @@ export default class DataPermModal extends Component {
       {
         title: getIntlContent("SHENYU.SYSTEM.DATA.PERMISSION.CHECKED"),
         dataIndex: "isChecked",
-        width: 90,
+        width: 120,
         key: "isChecked",
         render: (isChecked, record) => {
           return (
             <Checkbox
               checked={isChecked}
-              onClick={this.handleCheckSelector.bind(this, record)}
+              onChange={() => this.handleCheckSelector(record)}
+              aria-label={record.dataName}
             />
           );
         },
@@ -426,18 +425,19 @@ export default class DataPermModal extends Component {
 
     return (
       <Table
-        style={{ width: "350px" }}
+        style={{ width: "100%" }}
+        loading={this.props.selectorPermisionLoading}
         size="small"
         bordered
         columns={columns}
         expandedRowRender={expandedRowRender}
-        dataSource={selectorData && selectorData.dataList}
+        dataSource={selectorData?.dataList || []}
         rowKey="dataId"
         expandedRowKeys={selectorExpandedRowKeys}
         onExpand={this.handleExpandRuleTable}
         pagination={{
-          total: selectorData && selectorData.total,
-          current: currentPermissionSelectorPage,
+          total: selectorData?.total || 0,
+          currentPage: currentPermissionSelectorPage,
           pageSize,
           onChange: this.selectorPageOnchange,
         }}
@@ -446,6 +446,8 @@ export default class DataPermModal extends Component {
   };
 
   handleNamespacesValueChange = (value) => {
+    this.scopeVersion += 1;
+    this.ruleRequests.clear();
     this.setState(
       {
         currentNamespaceId: value.key,
@@ -464,74 +466,62 @@ export default class DataPermModal extends Component {
     let { handleCancel, namespaces } = this.props;
     let { currentNamespaceId } = this.state;
     return (
-      <Modal
-        width={800}
-        centered
-        title={
-          <div
-            style={{
-              height: 24,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <div>{getIntlContent("SHENYU.SYSTEM.DATA.PERMISSION.CONFIG")}</div>
-            <div style={{ marginRight: 30 }}>
-              <Dropdown
-                placement="bottomCenter"
-                overlay={
-                  <Menu onClick={this.handleNamespacesValueChange}>
-                    {namespaces.map((namespace) => {
-                      let isCurrentNamespace =
-                        currentNamespaceId === namespace.namespaceId;
-                      return (
-                        <Menu.Item
-                          key={namespace.namespaceId}
-                          disabled={isCurrentNamespace}
-                        >
-                          <span>{namespace.name}</span>
-                        </Menu.Item>
-                      );
-                    })}
-                  </Menu>
-                }
-              >
-                <Button>
-                  <a
-                    className="ant-dropdown-link"
-                    style={{ fontWeight: "bold" }}
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    {`${getIntlContent("SHENYU.SYSTEM.NAMESPACE")} / ${
-                      namespaces.find(
-                        (namespace) =>
-                          currentNamespaceId === namespace.namespaceId,
-                      )?.name
-                    } `}
-                  </a>
-                  <Icon type="down" />
-                </Button>
-              </Dropdown>
+      <LocaleProvider locale={this.props.language === "zh-CN" ? zhCN : enUS}>
+        <Modal
+          width={1000}
+          centered
+          title={
+            <div
+              style={{
+                minHeight: 32,
+                flexWrap: "wrap",
+                gap: 12,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div>
+                {getIntlContent("SHENYU.SYSTEM.DATA.PERMISSION.CONFIG")}
+              </div>
+              <div style={{ marginRight: 30 }}>
+                <Select
+                  aria-label={getIntlContent("SHENYU.SYSTEM.NAMESPACE")}
+                  value={currentNamespaceId}
+                  style={{ minWidth: 160, maxWidth: 260 }}
+                  onChange={(key) => this.handleNamespacesValueChange({ key })}
+                >
+                  {namespaces.map((namespace) => (
+                    <Select.Option
+                      key={namespace.namespaceId}
+                      value={namespace.namespaceId}
+                    >
+                      {namespace.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </div>
             </div>
-          </div>
-        }
-        visible
-        cancelText={getIntlContent("SHENYU.COMMON.CLOSE")}
-        onCancel={handleCancel}
-        footer={[
-          <Button key="back" onClick={handleCancel}>
-            {getIntlContent("SHENYU.COMMON.CLOSE")}
-          </Button>,
-        ]}
-      >
-        <Row gutter={20}>
-          <Col span={10} style={{ minWidth: 280 }}>
-            {this.renderPluginTree()}
-          </Col>
-          <Col span={14}>{this.renderSelectorRuleTable()}</Col>
-        </Row>
-      </Modal>
+          }
+          visible
+          cancelText={getIntlContent("SHENYU.COMMON.CLOSE")}
+          onCancel={handleCancel}
+          footer={[
+            <Button key="back" onClick={handleCancel}>
+              {getIntlContent("SHENYU.COMMON.CLOSE")}
+            </Button>,
+          ]}
+        >
+          <Row gutter={20}>
+            <Col xs={24} md={8}>
+              {this.renderPluginTree()}
+            </Col>
+            <Col xs={24} md={16}>
+              {this.renderSelectorRuleTable()}
+            </Col>
+          </Row>
+        </Modal>
+      </LocaleProvider>
     );
   }
 }

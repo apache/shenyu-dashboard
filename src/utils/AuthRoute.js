@@ -17,7 +17,7 @@
 
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Spin } from "antd";
+import Spin from "@douyinfe/semi-ui/lib/es/spin";
 import { Redirect, Route } from "../runtime/router";
 import { filterTree } from "./utils";
 import { getIntlContent } from "./IntlUtils";
@@ -228,9 +228,11 @@ export function getAuthMenus(plugins, menuTree, permissions, beginCache) {
   return authMenus;
 }
 
-export function refreshAuthMenus({ dispatch }) {
+export function refreshAuthMenus({ dispatch, permissionsCleared = false }) {
   dispatch({
-    type: "global/refreshPermission",
+    type: permissionsCleared
+      ? "global/fetchPermission"
+      : "global/refreshPermission",
     payload: {
       callback: () => {
         dispatch({

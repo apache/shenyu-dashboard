@@ -36,7 +36,7 @@ jest.mock("../services/api", () => ({
   updateShenYuDictEnabled: jest.fn(),
 }));
 
-jest.mock("antd", () => ({
+jest.mock("../components/ui/feedback", () => ({
   message: { success: jest.fn(), warn: jest.fn() },
 }));
 

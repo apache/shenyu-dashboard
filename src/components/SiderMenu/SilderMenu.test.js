@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+import React from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { urlToList } from "../_utils/pathTools";
 import SiderMenu, { getFlatMenuKeys, getMenuMatchKeys } from "./SiderMenu";
 
@@ -111,5 +114,49 @@ describe("SiderMenu#getSelectedMenuKeys", () => {
       "/plugin",
       "/plugin/detail",
     ]);
+  });
+});
+
+it("opens the active parents when menu data arrives without a route change", () => {
+  const props = { menuData: menu, location: { pathname: "/dashboard/name" } };
+  const next = SiderMenu.getDerivedStateFromProps(props, {
+    prevPathname: "/dashboard/name",
+    menuData: [],
+    openKeys: [],
+  });
+  expect(next?.openKeys).toContain("/dashboard");
+});
+
+it("renders late menu links without mutating input and dispatches route selection", () => {
+  const dispatch = jest.fn();
+  const data = Object.freeze([
+    Object.freeze({
+      path: "/system",
+      name: "System",
+      children: Object.freeze([
+        Object.freeze({ path: "/system/manage", name: "Users", children: [] }),
+      ]),
+    }),
+  ]);
+  const props = {
+    dispatch,
+    menuData: [],
+    location: { pathname: "/system/manage" },
+    onCollapse: jest.fn(),
+  };
+  const view = render(
+    <MemoryRouter>
+      <SiderMenu {...props} />
+    </MemoryRouter>,
+  );
+  view.rerender(
+    <MemoryRouter>
+      <SiderMenu {...props} menuData={data} />
+    </MemoryRouter>,
+  );
+  fireEvent.click(screen.getByRole("link", { name: "Users" }));
+  expect(dispatch).toHaveBeenCalledWith({
+    type: "global/saveCurrentRoutr",
+    payload: { currentRouter: data[0].children[0] },
   });
 });

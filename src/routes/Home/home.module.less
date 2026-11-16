@@ -1,0 +1,82 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.content {
+  text-align: center;
+  padding: 28px 0 20px;
+  border-bottom: 1px solid var(--semi-color-border);
+  margin-bottom: 24px;
+
+  span {
+    font-size: 32px;
+    color: var(--semi-color-primary);
+  }
+}
+
+.processContent {
+  margin: 0 24px 24px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.card {
+  min-width: 0;
+}
+
+.logItem {
+  margin-bottom: 12px;
+}
+
+.logButton {
+  width: 100%;
+  height: auto;
+  min-height: 32px;
+  white-space: normal;
+  text-align: left;
+}
+
+.logTitle {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.pluginDetail {
+  max-width: min(420px, calc(100vw - 48px));
+  max-height: 400px;
+  padding: 12px;
+  overflow: auto;
+}
+
+.logContext {
+  max-height: 400px;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 1000px) {
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

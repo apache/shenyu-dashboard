@@ -16,8 +16,12 @@
  */
 
 import React, { Component } from "react";
-import { Modal, Button, Typography, Divider, Input } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Typography from "@douyinfe/semi-ui/lib/es/typography";
+import Divider from "@douyinfe/semi-ui/lib/es/divider";
 import ReactJson from "@microlink/react-json-view";
+import Input from "../../../components/ui/Input";
+import Modal from "../../../components/ui/Modal";
 import { message } from "../../../components/ui/feedback";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { clipboardCopy } from "../../../utils/utils";
@@ -197,8 +201,10 @@ class McpConfigModal extends Component {
   handleCopyConfig = (config) => {
     const configText = JSON.stringify(config, null, 2);
     clipboardCopy(configText)
-      .then(() => {
-        message.success(getIntlContent("SHENYU.MCP.CONFIG.COPY.SUCCESS"));
+      .then((copied) => {
+        if (copied)
+          message.success(getIntlContent("SHENYU.MCP.CONFIG.COPY.SUCCESS"));
+        else message.error(getIntlContent("SHENYU.MCP.CONFIG.COPY.FAILED"));
       })
       .catch(() => {
         message.error(getIntlContent("SHENYU.MCP.CONFIG.COPY.FAILED"));
@@ -208,8 +214,10 @@ class McpConfigModal extends Component {
   // 复制JSON文本
   copyJsonText = (text) => {
     clipboardCopy(text)
-      .then(() => {
-        message.success(getIntlContent("SHENYU.MCP.CONFIG.COPY.SUCCESS"));
+      .then((copied) => {
+        if (copied)
+          message.success(getIntlContent("SHENYU.MCP.CONFIG.COPY.SUCCESS"));
+        else message.error(getIntlContent("SHENYU.MCP.CONFIG.COPY.FAILED"));
       })
       .catch(() => {
         message.error(getIntlContent("SHENYU.MCP.CONFIG.COPY.FAILED"));
@@ -315,13 +323,15 @@ class McpConfigModal extends Component {
         width={800}
         footer={[
           <Button
+            htmlType="button"
             key="copy"
             type="primary"
+            theme="solid"
             onClick={() => this.handleCopyConfig(config)}
           >
             {getIntlContent("SHENYU.MCP.JSON.EDIT.COPY")}
           </Button>,
-          <Button key="close" onClick={onCancel}>
+          <Button htmlType="button" key="close" onClick={onCancel}>
             {getIntlContent("SHENYU.COMMON.CALCEL")}
           </Button>,
         ]}
@@ -426,8 +436,10 @@ class McpConfigModal extends Component {
               {getIntlContent("SHENYU.MCP.CONFIG.JSON.TITLE")}
             </Title>
             <Button
+              htmlType="button"
               size="small"
               type="primary"
+              theme="solid"
               onClick={() => this.copyJsonText(JSON.stringify(config, null, 2))}
             >
               {getIntlContent("SHENYU.MCP.CONFIG.COPY.JSON")}

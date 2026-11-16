@@ -16,11 +16,15 @@
  */
 
 import "./polyfill";
+import "@douyinfe/semi-ui/lib/es/_base/base.css";
 import React from "react";
 import { Provider } from "react-redux";
 import { createHashHistory as createHistory } from "history";
 import renderApp from "./runtime/render";
 import createApp from "./runtime/createApp";
+import globalModel from "./models/global";
+import { getRouterData } from "./common/router";
+import RouterConfig from "./router";
 
 // user BrowserHistory
 // import createHistory from 'history/createBrowserHistory';
@@ -64,13 +68,10 @@ const app = createApp({
 app.use(createLoading());
 
 // 3. Register global model
-app.model(require("./models/global").default);
+app.model(globalModel);
 
 // 4. Register route models before store startup and rendering.
-const { getRouterData } = require("./common/router");
-// eslint-disable-line global-require
 const routerData = getRouterData(app);
-const RouterConfig = require("./router").default; // eslint-disable-line global-require
 
 // 5. Start
 setRequestDispatch((action) => app._store.dispatch(action)); // eslint-disable-line no-underscore-dangle

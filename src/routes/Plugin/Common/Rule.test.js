@@ -16,8 +16,12 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
-import { Simulate } from "react-dom/test-utils";
+import {
+  act,
+  fireEvent,
+  render as renderView,
+  waitFor,
+} from "@testing-library/react";
 import Rule from "./Rule";
 
 jest.mock("react-redux", () => ({ connect: () => (component) => component }));
@@ -26,6 +30,7 @@ jest.mock("./RuleCopy", () => () => null);
 
 describe("Divide Rules form integration", () => {
   let container;
+  let view;
   let onSave;
   const canary = {
     enabled: true,
@@ -56,7 +61,7 @@ describe("Divide Rules form integration", () => {
       );
   };
   const render = (handle, pluginName = "divide", send = dispatch) => {
-    ReactDOM.render(
+    view = renderView(
       <Rule
         dispatch={send}
         pluginId="divide-id"
@@ -76,38 +81,42 @@ describe("Divide Rules form integration", () => {
         handleOk={onSave}
         onCancel={() => {}}
       />,
-      container,
+      { container },
     );
   };
   const click = (suffix) =>
-    Simulate.click(
+    fireEvent.click(
       Array.from(document.querySelectorAll("button")).find((button) =>
         button.textContent.endsWith(suffix),
       ),
     );
-  const submit = () =>
-    Simulate.click(
-      document.querySelector(".ant-modal-footer .ant-btn-primary"),
-    );
+  const submit = async () => {
+    await act(async () => {
+      fireEvent.click(
+        document.querySelector(".semi-modal-footer .semi-button-primary"),
+      );
+    });
+  };
   beforeEach(() => {
     container = document.createElement("div");
     document.body.appendChild(container);
     onSave = jest.fn();
   });
   afterEach(() => {
-    ReactDOM.unmountComponentAtNode(container);
+    view.unmount();
     container.remove();
   });
-  it("uses the existing submit path and preserves unrelated handle fields", () => {
+  it("uses the existing submit path and preserves unrelated handle fields", async () => {
     render({ retry: 2, timeout: 3000, custom: { tls: true }, canary });
     click("CANARY.CONFIG");
-    Simulate.change(
+    fireEvent.change(
       document.querySelector(
         'input[aria-label="SHENYU.CANARY.CANARY_LABELS SHENYU.CANARY.VALUE 1"]',
       ),
       { target: { value: "beta" } },
     );
-    submit();
+    await submit();
+    await act(async () => {});
     expect(onSave).toHaveBeenCalledTimes(1);
     const saved = onSave.mock.calls[0][0];
     expect(JSON.parse(saved.handle)).toMatchObject({
@@ -118,27 +127,36 @@ describe("Divide Rules form integration", () => {
     expect(saved.ruleConditions[0].paramValue).toBe("/orders/**");
     expect(saved.enabled).toBe(true);
   });
-  it("blocks submitting invalid Canary, including while collapsed", () => {
+  it("blocks submitting invalid Canary, including while collapsed", async () => {
     render({ retry: 2, canary: { ...canary, stickyKey: undefined } });
-    submit();
+    await submit();
+    await act(async () => {});
     expect(onSave).not.toHaveBeenCalled();
     expect(document.body.textContent).toContain("CANARY.SOURCE_REQUIRED");
   });
-  it("does not add Canary on legacy edits", () => {
+  it("does not add Canary on legacy edits", async () => {
     render({ retry: 2, custom: "retain" });
-    submit();
+    await submit();
+    await act(async () => {});
     expect(onSave).toHaveBeenCalledTimes(1);
     expect(JSON.parse(onSave.mock.calls[0][0].handle)).toEqual({
       retry: 2,
       custom: "retain",
     });
   });
-  it("removes Canary only after explicit removal and outer confirmation", () => {
+  it("removes Canary only after explicit removal and outer confirmation", async () => {
     render({ retry: 2, custom: "retain", canary });
     click("CANARY.REMOVE_CONFIG");
-    Simulate.click(document.querySelector(".ant-popover .ant-btn-primary"));
+    fireEvent.click(
+      await waitFor(
+        () =>
+          document.querySelector(".semi-popconfirm .semi-button-primary") ||
+          Promise.reject(new Error("Confirmation not ready")),
+      ),
+    );
     expect(onSave).not.toHaveBeenCalled();
-    submit();
+    await submit();
+    await act(async () => {});
     expect(JSON.parse(onSave.mock.calls[0][0].handle)).toEqual({
       retry: 2,
       custom: "retain",
@@ -158,7 +176,7 @@ describe("Divide Rules form integration", () => {
       }
     });
     expect(document.body.textContent).not.toContain("CANARY.ADD_CONFIG");
-    complete();
+    act(() => complete());
     expect(document.body.textContent).toContain("CANARY.ADD_CONFIG");
   });
 });

@@ -16,9 +16,17 @@
  */
 
 import React, { Component } from "react";
-import { Table, Button, Popconfirm, Switch } from "antd";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import dayjs from "dayjs";
 import { connect } from "react-redux";
+import Switch from "../../../components/ui/Switch";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
+import styles from "./index.module.less";
 import { message } from "../../../components/ui/feedback";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
@@ -71,12 +79,14 @@ export class AlertComponent extends Component {
     });
   };
 
-  pageOnchange = (page) => {
-    this.setState({ currentPage: page }, this.getAllAlerts);
-  };
-
-  onShowSizeChange = (currentPage, pageSize) => {
-    this.setState({ currentPage: 1, pageSize }, this.getAllAlerts);
+  onPaginationChange = (page, pageSize) => {
+    this.setState(
+      (state) => ({
+        currentPage: pageSize === state.pageSize ? page : 1,
+        pageSize,
+      }),
+      this.getAllAlerts,
+    );
   };
 
   closeModal = () => {
@@ -211,7 +221,8 @@ export class AlertComponent extends Component {
   }
 
   render() {
-    const { alert, loading, dispatch, currentNamespaceId } = this.props;
+    const { alert, loading, dispatch, currentNamespaceId, language } =
+      this.props;
     const { alertList, total } = alert;
     const { currentPage, pageSize, selectedRowKeys, popup } = this.state;
     const alertColumns = [
@@ -256,24 +267,30 @@ export class AlertComponent extends Component {
         key: "enable",
         ellipsis: true,
         render: (text, row) => (
-          <Switch
-            checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-            unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-            checked={text}
-            onChange={(checked) => {
-              dispatch({
-                type: "alert/update",
-                payload: {
-                  ...row,
-                  enable: checked,
-                  namespaceId: currentNamespaceId,
-                },
-                callback: () => {
-                  this.getAllAlerts();
-                },
-              });
-            }}
-          />
+          <span className={styles.status}>
+            <Switch
+              aria-label={`${row.name}: ${getIntlContent("SHENYU.SYSTEM.ALERT.ENABLE")}`}
+              checked={text}
+              onChange={(checked) => {
+                dispatch({
+                  type: "alert/update",
+                  payload: {
+                    ...row,
+                    enable: checked,
+                    namespaceId: currentNamespaceId,
+                  },
+                  callback: () => {
+                    this.getAllAlerts();
+                  },
+                });
+              }}
+            />
+            <span>
+              {getIntlContent(
+                text ? "SHENYU.COMMON.OPEN" : "SHENYU.COMMON.CLOSE",
+              )}
+            </span>
+          </span>
         ),
       },
       {
@@ -296,14 +313,16 @@ export class AlertComponent extends Component {
           return (
             <div>
               <AuthButton perms="system:alert:edit">
-                <span
-                  className="edit"
-                  onClick={() => {
-                    this.editClick(record);
-                  }}
-                >
-                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                </span>
+                {({ icon }) => (
+                  <Button
+                    theme="borderless"
+                    htmlType="button"
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                    onClick={() => this.editClick(record)}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                  </Button>
+                )}
               </AuthButton>
             </div>
           );
@@ -317,56 +336,69 @@ export class AlertComponent extends Component {
     };
 
     return (
-      <div className="plug-content-wrap">
-        <div style={{ display: "flex" }}>
-          <AuthButton perms="system:alert:delete">
-            <Popconfirm
-              title={getIntlContent("SHENYU.COMMON.DELETE")}
-              placement="bottom"
-              onConfirm={() => {
-                this.deleteClick();
-              }}
-              okText={getIntlContent("SHENYU.COMMON.SURE")}
-              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-            >
-              <Button type="danger">
-                {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
-              </Button>
-            </Popconfirm>
-          </AuthButton>
-          <AuthButton perms="system:alert:add">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.addClick}
-            >
-              {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
-            </Button>
-          </AuthButton>
-        </div>
+      <LocaleProvider locale={language === "zh-CN" ? zhCN : enUS}>
+        <div className="plug-content-wrap">
+          <div className={styles.toolbar}>
+            <AuthButton perms="system:alert:delete">
+              {({ icon }) => (
+                <Popconfirm
+                  title={getIntlContent("SHENYU.COMMON.DELETE")}
+                  position="bottom"
+                  motion={false}
+                  okType="danger"
+                  onConfirm={this.deleteClick}
+                  okText={getIntlContent("SHENYU.COMMON.SURE")}
+                  cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                >
+                  <Button
+                    type="danger"
+                    theme="solid"
+                    htmlType="button"
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
+                  </Button>
+                </Popconfirm>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:alert:add">
+              {({ icon }) => (
+                <Button
+                  type="primary"
+                  theme="solid"
+                  htmlType="button"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  onClick={this.addClick}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
+                </Button>
+              )}
+            </AuthButton>
+          </div>
 
-        <Table
-          size="small"
-          style={{ marginTop: 30 }}
-          bordered
-          loading={loading}
-          columns={alertColumns}
-          dataSource={alertList}
-          rowSelection={rowSelection}
-          rowKey="id"
-          pagination={{
-            total,
-            showTotal: (showTotal) => `${showTotal}`,
-            showSizeChanger: true,
-            pageSizeOptions: ["12", "20", "50", "100"],
-            current: currentPage,
-            pageSize,
-            onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange,
-          }}
-        />
-        {popup}
-      </div>
+          <Table
+            size="small"
+            scroll={{ x: 1000 }}
+            style={{ marginTop: 30 }}
+            bordered
+            loading={loading}
+            columns={alertColumns}
+            dataSource={alertList}
+            rowSelection={rowSelection}
+            rowKey="id"
+            pagination={{
+              total,
+              showTotal: true,
+              showSizeChanger: true,
+              pageSizeOpts: [12, 20, 50, 100],
+              currentPage,
+              pageSize,
+              onChange: this.onPaginationChange,
+            }}
+          />
+          {popup}
+        </div>
+      </LocaleProvider>
     );
   }
 }
@@ -375,6 +407,7 @@ const ConnectedAlert = connect(({ alert, loading, global }) => ({
   alert,
   loading: loading.effects["alert/fetch"],
   currentNamespaceId: global.currentNamespaceId,
+  language: global.language,
 }))(AlertComponent);
 
 export default ConnectedAlert;

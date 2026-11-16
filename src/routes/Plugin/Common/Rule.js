@@ -16,21 +16,19 @@
  */
 
 import React, { Component } from "react";
-import {
-  Button,
-  Col,
-  DatePicker,
-  Form,
-  Input,
-  Modal,
-  Row,
-  Select,
-  Switch,
-  TimePicker,
-} from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import DatePicker from "@douyinfe/semi-ui/lib/es/datePicker";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import TimePicker from "@douyinfe/semi-ui/lib/es/timePicker";
 import { connect } from "react-redux";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import Modal from "../../../components/ui/Modal";
+import Select from "../../../components/ui/Select";
+import Switch from "../../../components/ui/Switch";
 import { message } from "../../../components/ui/feedback";
-import styles from "../index.less";
+import styles from "../index.module.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import CommonRuleHandle from "./CommonRuleHandle";
 import ComposeRuleHandle from "./ComposeRuleHandle";
@@ -83,7 +81,6 @@ class AddModal extends Component {
       form: { setFieldsValue },
       currentNamespaceId,
     } = this.props;
-    this.setState({ pluginHandleList: [] });
     this.initDics();
     let type = 2;
     dispatch({
@@ -188,6 +185,7 @@ class AddModal extends Component {
     e.preventDefault();
     const { form, handleOk, multiRuleHandle } = this.props;
     const { ruleConditions, pluginHandleList } = this.state;
+    if (!pluginHandleList) return;
 
     form.validateFieldsAndScroll((err, values) => {
       const {
@@ -451,57 +449,37 @@ class AddModal extends Component {
 
   getParamValueInput = (item, index) => {
     if (item.operator === "TimeBefore" || item.operator === "TimeAfter") {
-      let date = new Date();
-      const defaultDay = date
-        .getFullYear()
-        .toString()
-        .concat("-")
-        .concat(date.getMonth() + 1)
-        .concat("-")
-        .concat(date.getDate());
+      const today = new Date();
+      const defaultDay = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
       return (
-        <Input.Group compact style={{ top: -2 }}>
+        <div style={{ display: "flex", gap: 4 }}>
           <DatePicker
+            onChangeWithDateFirst={false}
             style={{ width: "51%" }}
-            onChange={(e) => {
-              let day = e
-                ? e
-                    .eraYear()
-                    .toString()
-                    .concat("-")
-                    .concat(e.month() + 1)
-                    .concat("-")
-                    .concat(e.date())
-                : defaultDay;
+            format="yyyy-MM-dd"
+            onChange={(day) => {
               this.conditionChange(
                 index,
                 "paramValue",
-                `${formatDateString(day)} ${formatTimeString(item.paramValue)}`,
+                `${day || formatDateString(defaultDay)} ${formatTimeString(item.paramValue)}`,
               );
             }}
-            value={formatDate(item.paramValue)}
+            value={formatDate(item.paramValue)?.toDate()}
           />
           <TimePicker
+            onChangeWithDateFirst={false}
             style={{ width: "49%" }}
-            onChange={(e) => {
-              let time = e
-                ? ""
-                    .concat(" ")
-                    .concat(e.hours())
-                    .concat(":")
-                    .concat(e.minutes())
-                    .concat(":")
-                    .concat(e.seconds())
-                : "";
+            format="HH:mm:ss"
+            onChange={(time) => {
               this.conditionChange(
                 index,
                 "paramValue",
-                `${formatDateString(item.paramValue)} ${formatTimeString(time)}`,
+                `${formatDateString(item.paramValue)} ${time || ""}`,
               );
             }}
-            value={formatTime(item.paramValue)}
+            value={formatTime(item.paramValue)?.toDate()}
           />
-        </Input.Group>
+        </div>
       );
     } else {
       return (
@@ -541,7 +519,7 @@ class AddModal extends Component {
     } = this.state;
 
     let RuleHandleComponent;
-    if (customRulePage) {
+    if (customRulePage && pluginHandleList) {
       RuleHandleComponent = ComposeRuleHandle;
     } else if (pluginHandleList) {
       RuleHandleComponent = CommonRuleHandle;
@@ -572,6 +550,7 @@ class AddModal extends Component {
         visible
         okText={getIntlContent("SHENYU.COMMON.SURE")}
         cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+        okButtonProps={{ disabled: !pluginHandleList }}
         onOk={this.handleSubmit}
         onCancel={onCancel}
       >
@@ -597,7 +576,7 @@ class AddModal extends Component {
                 addonAfter={
                   <Button
                     size="small"
-                    type="link"
+                    theme="borderless"
                     onClick={() => {
                       this.setState({ visible: true });
                     }}
@@ -713,6 +692,7 @@ class AddModal extends Component {
                     <Col span={4}>
                       <Button
                         type="danger"
+                        htmlType="button"
                         onClick={() => {
                           this.handleDelete(index);
                         }}

@@ -16,10 +16,12 @@
  */
 
 import React, { Component, Fragment } from "react";
-import { Form, Select, Input } from "antd";
 import classnames from "classnames";
 import { connect } from "react-redux";
-import styles from "../index.less";
+import Form from "../../../components/ui/Form";
+import Select from "../../../components/ui/Select";
+import Input from "../../../components/ui/Input";
+import styles from "../index.module.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;

@@ -16,17 +16,27 @@
  */
 
 import React, { Component } from "react";
-import { Button, Input, Popconfirm, Switch, Table } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import { connect } from "react-redux";
+import Input from "../../../components/ui/Input";
+import Switch from "../../../components/ui/Switch";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
+import styles from "./index.module.less";
 import { message } from "../../../components/ui/feedback";
 import AddModal from "./AddModal";
 import DataPermModal from "./DataPermModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 
-@connect(({ manage, role, loading }) => ({
+@connect(({ manage, role, loading, global }) => ({
   manage,
   role,
+  language: global.language,
   loading: loading.effects["manage/fetch"],
 }))
 export default class Manage extends Component {
@@ -76,12 +86,14 @@ export default class Manage extends Component {
     }
   };
 
-  pageOnchange = (page) => {
-    this.setState({ currentPage: page }, this.getAllUsers);
-  };
-
-  onShowSizeChange = (currentPage, pageSize) => {
-    this.setState({ currentPage: 1, pageSize }, this.getAllUsers);
+  onPaginationChange = (page, pageSize) => {
+    this.setState(
+      (state) => ({
+        currentPage: pageSize === state.pageSize ? page : 1,
+        pageSize,
+      }),
+      this.getAllUsers,
+    );
   };
 
   closeModal = () => {
@@ -225,7 +237,7 @@ export default class Manage extends Component {
   }
 
   render() {
-    const { manage, loading, dispatch } = this.props;
+    const { manage, loading, dispatch, language } = this.props;
     const { userList, total } = manage;
     const { currentPage, pageSize, selectedRowKeys, userName, popup } =
       this.state;
@@ -258,25 +270,31 @@ export default class Manage extends Component {
               )
             }
           >
-            <Switch
-              disabled={row.userName === "admin"}
-              checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-              unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-              checked={text}
-              onChange={(checked) => {
-                dispatch({
-                  type: "manage/updateUserStatus",
-                  payload: {
-                    id: row.id,
-                    enabled: checked,
-                    userName: row.userName,
-                  },
-                  callback: () => {
-                    this.getAllUsers();
-                  },
-                });
-              }}
-            />
+            <span className={styles.status}>
+              <Switch
+                aria-label={`${row.userName}: ${getIntlContent("SHENYU.SYSTEM.STATUS")}`}
+                disabled={row.userName === "admin"}
+                checked={text}
+                onChange={(checked) => {
+                  dispatch({
+                    type: "manage/updateUserStatus",
+                    payload: {
+                      id: row.id,
+                      enabled: checked,
+                      userName: row.userName,
+                    },
+                    callback: () => {
+                      this.getAllUsers();
+                    },
+                  });
+                }}
+              />
+              <span>
+                {getIntlContent(
+                  text ? "SHENYU.COMMON.OPEN" : "SHENYU.COMMON.CLOSE",
+                )}
+              </span>
+            </span>
           </AuthButton>
         ),
       },
@@ -301,31 +319,35 @@ export default class Manage extends Component {
         title: getIntlContent("SHENYU.COMMON.OPERAT"),
         dataIndex: "operate",
         key: "operate",
+        width: 280,
         ellipsis: true,
         render: (text, record) => {
           return (
             record.userName !== "admin" && (
-              <div>
+              <div className={styles.actions}>
                 <AuthButton perms="system:manager:edit">
-                  <span
-                    className="edit"
-                    onClick={() => {
-                      this.editClick(record);
-                    }}
-                  >
-                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                  </span>
+                  {({ icon }) => (
+                    <Button
+                      theme="borderless"
+                      htmlType="button"
+                      icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      onClick={() => this.editClick(record)}
+                    >
+                      {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                    </Button>
+                  )}
                 </AuthButton>
                 <AuthButton perms="system:manager:configureDataPermission">
-                  &nbsp;&nbsp;&nbsp;
-                  <span
-                    className="edit"
-                    onClick={() => {
-                      this.permissionConfig(record);
-                    }}
-                  >
-                    {getIntlContent("SHENYU.BUTTON.DATA.PERMISSION.CONFIG")}
-                  </span>
+                  {({ icon }) => (
+                    <Button
+                      theme="borderless"
+                      htmlType="button"
+                      icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      onClick={() => this.permissionConfig(record)}
+                    >
+                      {getIntlContent("SHENYU.BUTTON.DATA.PERMISSION.CONFIG")}
+                    </Button>
+                  )}
                 </AuthButton>
               </div>
             )
@@ -343,71 +365,94 @@ export default class Manage extends Component {
     };
 
     return (
-      <div className="plug-content-wrap">
-        <div style={{ display: "flex" }}>
-          <Input
-            allowClear
-            value={userName}
-            onChange={this.searchOnchange}
-            placeholder={getIntlContent("SHENYU.SYSTEM.USER.NAME")}
-            style={{ width: 240 }}
-          />
-          <AuthButton perms="system:manager:list">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.searchClick}
-            >
-              {getIntlContent("SHENYU.SYSTEM.SEARCH")}
-            </Button>
-          </AuthButton>
-          <AuthButton perms="system:manager:delete">
-            <Popconfirm
-              title={getIntlContent("SHENYU.COMMON.DELETE")}
-              placement="bottom"
-              onConfirm={() => {
-                this.deleteClick();
-              }}
-              okText={getIntlContent("SHENYU.COMMON.SURE")}
-              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-            >
-              <Button style={{ marginLeft: 20 }} type="danger">
-                {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
-              </Button>
-            </Popconfirm>
-          </AuthButton>
-          <AuthButton perms="system:manager:add">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.addClick}
-            >
-              {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
-            </Button>
-          </AuthButton>
-        </div>
+      <LocaleProvider locale={language === "zh-CN" ? zhCN : enUS}>
+        <div className="plug-content-wrap">
+          <form
+            className={styles.toolbar}
+            onSubmit={(event) => {
+              event.preventDefault();
+              this.searchClick();
+            }}
+          >
+            <Input
+              allowClear
+              value={userName}
+              onChange={this.searchOnchange}
+              placeholder={getIntlContent("SHENYU.SYSTEM.USER.NAME")}
+              className={styles.filter}
+            />
+            <AuthButton perms="system:manager:list">
+              {({ icon }) => (
+                <Button
+                  type="primary"
+                  theme="solid"
+                  htmlType="submit"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                </Button>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:manager:delete">
+              {({ icon }) => (
+                <Popconfirm
+                  title={getIntlContent("SHENYU.COMMON.DELETE")}
+                  position="bottom"
+                  motion={false}
+                  okType="danger"
+                  onConfirm={() => this.deleteClick()}
+                  okText={getIntlContent("SHENYU.COMMON.SURE")}
+                  cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                >
+                  <Button
+                    type="danger"
+                    theme="solid"
+                    htmlType="button"
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
+                  </Button>
+                </Popconfirm>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:manager:add">
+              {({ icon }) => (
+                <Button
+                  type="primary"
+                  theme="solid"
+                  htmlType="button"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  onClick={this.addClick}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
+                </Button>
+              )}
+            </AuthButton>
+          </form>
 
-        <Table
-          size="small"
-          style={{ marginTop: 30 }}
-          bordered
-          loading={loading}
-          columns={userColumns}
-          dataSource={userList}
-          rowSelection={rowSelection}
-          pagination={{
-            total,
-            showTotal: (showTotal) => `${showTotal}`,
-            showSizeChanger: true,
-            pageSizeOptions: ["12", "20", "50", "100"],
-            current: currentPage,
-            pageSize,
-            onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange,
-          }}
-        />
-        {popup}
-      </div>
+          <Table
+            size="small"
+            rowKey="id"
+            scroll={{ x: 1100 }}
+            style={{ marginTop: 30 }}
+            bordered
+            loading={loading}
+            columns={userColumns}
+            dataSource={userList}
+            rowSelection={rowSelection}
+            pagination={{
+              total,
+              showTotal: true,
+              showSizeChanger: true,
+              pageSizeOpts: [12, 20, 50, 100],
+              currentPage,
+              pageSize,
+              onChange: this.onPaginationChange,
+            }}
+          />
+          {popup}
+        </div>
+      </LocaleProvider>
     );
   }
 }

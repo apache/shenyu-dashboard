@@ -16,13 +16,13 @@
  */
 
 /* eslint-disable react/static-property-placement */
-import React from "react";
-import PropTypes from "prop-types";
-import { Layout } from "antd";
+import React, { useMemo } from "react";
+import Layout from "@douyinfe/semi-ui/lib/es/layout";
 import { connect } from "react-redux";
 import { ContainerQuery } from "react-container-query";
 import classNames from "classnames";
 import pathToRegexp from "path-to-regexp";
+import BreadcrumbContext from "../components/PageHeader/BreadcrumbContext";
 import { message } from "../components/ui/feedback";
 import { Redirect, Route, Switch } from "../runtime/router";
 import DocumentTitle from "../components/DocumentTitle";
@@ -37,8 +37,6 @@ import AuthRoute, {
 import { getMenuData } from "../common/menu";
 import logo from "../assets/logo.svg";
 import TitleLogo from "../assets/TitleLogo.svg";
-
-const MyContext = React.createContext();
 
 message.config({
   top: 200,
@@ -88,6 +86,21 @@ const getBreadcrumbNameMap = (menuData, routerData) => {
   return { ...routerData, ...result, ...childResult };
 };
 
+function BreadcrumbProvider({ location, routerData, locale, children }) {
+  const value = useMemo(
+    () => ({
+      location,
+      breadcrumbNameMap: getBreadcrumbNameMap(getMenuData(), routerData),
+    }),
+    [location, routerData, locale],
+  );
+  return (
+    <BreadcrumbContext.Provider value={value}>
+      {children}
+    </BreadcrumbContext.Provider>
+  );
+}
+
 const query = {
   "screen-lg": {
     minWidth: 992,
@@ -111,11 +124,6 @@ const query = {
     loading.effects["global/fetchPlugins"],
 }))
 class BasicLayout extends React.PureComponent {
-  static childContextTypes = {
-    location: PropTypes.object,
-    breadcrumbNameMap: PropTypes.object,
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -123,14 +131,6 @@ class BasicLayout extends React.PureComponent {
         ? window.sessionStorage.getItem("locale")
         : "en-US",
       pluginsLoaded: false,
-    };
-  }
-
-  getChildContext() {
-    const { location, routerData } = this.props;
-    return {
-      location,
-      breadcrumbNameMap: getBreadcrumbNameMap(getMenuData(), routerData),
     };
   }
 
@@ -208,6 +208,12 @@ class BasicLayout extends React.PureComponent {
     return redirect;
   };
 
+  handleMenuCollapse = (collapsed) =>
+    this.props.dispatch({
+      type: "global/changeLayoutCollapsed",
+      payload: collapsed,
+    });
+
   handleLogout = () => {
     const { dispatch } = this.props;
     dispatch({
@@ -239,12 +245,11 @@ class BasicLayout extends React.PureComponent {
 
   render() {
     const { collapsed, routerData, match, location, dispatch } = this.props;
-    const { localeName } = this.state;
     const processedMenus = this.processMenus();
     const bashRedirect = this.getBaseRedirect();
 
     const layout = (
-      <Layout>
+      <Layout style={{ minHeight: "100vh" }}>
         <SiderMenu
           logo={logo}
           TitleLogo={TitleLogo}
@@ -254,8 +259,8 @@ class BasicLayout extends React.PureComponent {
           location={location}
           onCollapse={this.handleMenuCollapse}
         />
-        <Layout>
-          <Header style={{ padding: 0 }}>
+        <Layout style={{ minWidth: 0, flex: 1 }}>
+          <Header style={{ padding: 0, height: "auto" }}>
             <GlobalHeader
               logo={logo}
               collapsed={collapsed}
@@ -291,17 +296,21 @@ class BasicLayout extends React.PureComponent {
     );
 
     return (
-      <MyContext.Provider value={localeName}>
+      <BreadcrumbProvider
+        location={location}
+        routerData={routerData}
+        locale={this.state.localeName}
+      >
         <DocumentTitle title={this.getPageTitle()}>
           <ContainerQuery query={query}>
             {(params) => (
-              <div style={{ minWidth: 1200 }} className={classNames(params)}>
+              <div style={{ minWidth: 0 }} className={classNames(params)}>
                 {layout}
               </div>
             )}
           </ContainerQuery>
         </DocumentTitle>
-      </MyContext.Provider>
+      </BreadcrumbProvider>
     );
   }
 }

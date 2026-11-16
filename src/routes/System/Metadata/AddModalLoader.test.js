@@ -44,7 +44,7 @@ it("shows cancellable loading without allowing an early submit", () => {
   expect(
     screen.queryByRole("button", { name: "SHENYU.COMMON.SURE" }),
   ).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Close" }));
+  fireEvent.click(screen.getByRole("button", { name: /^close$/i }));
   expect(handleCancel).toHaveBeenCalledTimes(1);
   expect(handleOk).not.toHaveBeenCalled();
 });

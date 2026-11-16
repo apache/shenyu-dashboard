@@ -134,6 +134,7 @@ function formatter(data, parentAuthority, parentPath = "/") {
     }
     const result = {
       ...item,
+      name: item.locale ? getIntlContent(item.locale, item.name) : item.name,
       path,
       authority: item.authority || parentAuthority,
     };

@@ -30,12 +30,16 @@ export default {
   state: {
     registryList: [],
     total: 0,
+    latestQuery: null,
   },
 
   effects: {
-    *fetch(params, { call, put }) {
-      const { payload } = params;
-      const json = yield call(getRegistryList, payload);
+    *fetch(params, { call, put, select }) {
+      const query = { ...params.payload };
+      yield put({ type: "startQuery", payload: query });
+      const json = yield call(getRegistryList, query);
+      const latestQuery = yield select((state) => state.registry.latestQuery);
+      if (latestQuery !== query) return;
       if (json.code === 200) {
         let { dataList, page } = json.data;
         dataList = dataList.map((item) => {
@@ -127,6 +131,9 @@ export default {
   },
 
   reducers: {
+    startQuery(state, { payload }) {
+      return { ...state, latestQuery: payload };
+    },
     saveRegistryList(state, { payload }) {
       return {
         ...state,

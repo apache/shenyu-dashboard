@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-const EventEmitter = require("events").EventEmitter;
+import { EventEmitter } from "events";
 
 const emit = new EventEmitter();
 emit.setMaxListeners(50);

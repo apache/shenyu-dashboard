@@ -16,8 +16,13 @@
  */
 
 import React, { Component } from "react";
-import { Tabs, Form, Select, Row, Col, Input, Button } from "antd";
-import styles from "../index.less";
+import Tabs from "@douyinfe/semi-ui/lib/es/tabs";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Form from "../../../components/ui/Form";
+import Select from "../../../components/ui/Select";
+import Input from "../../../components/ui/Input";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;
@@ -386,7 +391,13 @@ export default class RequestRuleHandle extends Component {
       let type = formValues[row[0].fieldName];
       let value1 = row[1] && formValues[row[1].fieldName];
       let value2 = row.length > 2 && formValues[row[2].fieldName];
-      if (!type.startsWith("remove") && value1 && value2) {
+      if (
+        !type.startsWith("remove") &&
+        value1 &&
+        value2 !== undefined &&
+        value2 !== null &&
+        value2 !== ""
+      ) {
         handle[dataType][type][value1] = value2;
       }
       if (type.startsWith("remove")) {
@@ -419,15 +430,19 @@ export default class RequestRuleHandle extends Component {
         label={getIntlContent("SHENYU.COMMON.DEAL.COMPONENT")}
         labelCol={{ span: 4 }}
         wrapperCol={{ span: 20 }}
-        className={styles.rootFormItem}
       >
-        <Tabs defaultActiveKey={currentType} onChange={this.handleTabChange}>
-          <TabPane tab="Params" key="parameter">
+        <Tabs
+          lazyRender={false}
+          keepDOM
+          defaultActiveKey={currentType}
+          onChange={this.handleTabChange}
+        >
+          <TabPane tab="Params" itemKey="parameter" key="parameter">
             {parameterList &&
               parameterList.length > 0 &&
               parameterList.map((row, rowIndex) => {
                 return (
-                  <Row gutter={24} key={rowIndex} style={rowStyle}>
+                  <Row gutter={24} key={row[0].fieldName} style={rowStyle}>
                     {row.map((field, i) => {
                       let rules = [];
                       let placeholder = field.fieldLabel;
@@ -448,11 +463,11 @@ export default class RequestRuleHandle extends Component {
                                     );
                                   }}
                                   placeholder={placeholder}
-                                  style={{ width: 200 }}
+                                  style={{ width: "100%" }}
                                 >
                                   {parameterOperateType.map((opt) => {
                                     return (
-                                      <Option value={opt.value}>
+                                      <Option key={opt.value} value={opt.value}>
                                         {opt.label}
                                       </Option>
                                     );
@@ -482,6 +497,7 @@ export default class RequestRuleHandle extends Component {
                     <Col span={6}>
                       <Button
                         type="danger"
+                        htmlType="button"
                         style={{ marginRight: "20px" }}
                         onClick={() => {
                           this.handleDeleteRow("parameter", rowIndex);
@@ -502,12 +518,12 @@ export default class RequestRuleHandle extends Component {
                 );
               })}
           </TabPane>
-          <TabPane tab="Headers" key="header">
+          <TabPane tab="Headers" itemKey="header" key="header">
             {headerList &&
               headerList.length > 0 &&
               headerList.map((row, rowIndex) => {
                 return (
-                  <Row gutter={24} key={rowIndex} style={rowStyle}>
+                  <Row gutter={24} key={row[0].fieldName} style={rowStyle}>
                     {row.map((field, i) => {
                       let rules = [];
                       let placeholder = field.fieldLabel;
@@ -528,11 +544,11 @@ export default class RequestRuleHandle extends Component {
                                     );
                                   }}
                                   placeholder={placeholder}
-                                  style={{ width: 200 }}
+                                  style={{ width: "100%" }}
                                 >
                                   {headerOperateType.map((opt) => {
                                     return (
-                                      <Option value={opt.value}>
+                                      <Option key={opt.value} value={opt.value}>
                                         {opt.label}
                                       </Option>
                                     );
@@ -562,6 +578,7 @@ export default class RequestRuleHandle extends Component {
                     <Col span={6}>
                       <Button
                         type="danger"
+                        htmlType="button"
                         style={{ marginRight: "20px" }}
                         onClick={() => {
                           this.handleDeleteRow("header", rowIndex);
@@ -582,12 +599,12 @@ export default class RequestRuleHandle extends Component {
                 );
               })}
           </TabPane>
-          <TabPane tab="Cookies" key="cookie">
+          <TabPane tab="Cookies" itemKey="cookie" key="cookie">
             {cookieList &&
               cookieList.length > 0 &&
               cookieList.map((row, rowIndex) => {
                 return (
-                  <Row gutter={24} key={rowIndex} style={rowStyle}>
+                  <Row gutter={24} key={row[0].fieldName} style={rowStyle}>
                     {row.map((field, i) => {
                       let rules = [];
                       let placeholder = field.fieldLabel;
@@ -608,11 +625,11 @@ export default class RequestRuleHandle extends Component {
                                     );
                                   }}
                                   placeholder={placeholder}
-                                  style={{ width: 200 }}
+                                  style={{ width: "100%" }}
                                 >
                                   {cookieOperateType.map((opt) => {
                                     return (
-                                      <Option value={opt.value}>
+                                      <Option key={opt.value} value={opt.value}>
                                         {opt.label}
                                       </Option>
                                     );
@@ -642,6 +659,7 @@ export default class RequestRuleHandle extends Component {
                     <Col span={6}>
                       <Button
                         type="danger"
+                        htmlType="button"
                         style={{ marginRight: "20px" }}
                         onClick={() => {
                           this.handleDeleteRow("cookie", rowIndex);

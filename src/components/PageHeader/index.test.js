@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
-import { getBreadcrumb } from "./index";
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import PageHeader, { getBreadcrumb } from "./index";
+import BreadcrumbContext from "./BreadcrumbContext";
 import { urlToList } from "../_utils/pathTools";
 
 const routerData = {
@@ -67,4 +70,37 @@ describe("test getBreadcrumb", () => {
     });
     expect(urlNameList).toEqual(["用户列表", "用户信息"]);
   });
+});
+
+it("refreshes breadcrumbs when the current route context changes", () => {
+  const map = { "/one": { name: "One" }, "/two": { name: "Two" } };
+  const view = render(
+    <BreadcrumbContext.Provider
+      value={{ location: { pathname: "/one" }, breadcrumbNameMap: map }}
+    >
+      <PageHeader />
+    </BreadcrumbContext.Provider>,
+  );
+  expect(screen.getByText("One")).toBeTruthy();
+  view.rerender(
+    <BreadcrumbContext.Provider
+      value={{ location: { pathname: "/two" }, breadcrumbNameMap: map }}
+    >
+      <PageHeader />
+    </BreadcrumbContext.Provider>,
+  );
+  expect(screen.queryByText("One")).toBeNull();
+  expect(screen.getByText("Two")).toBeTruthy();
+});
+
+it("keeps root-relative route breadcrumbs on the current host", () => {
+  const routes = [
+    { path: "/", breadcrumbName: "Home route", component: () => null },
+    { path: "users", breadcrumbName: "Users route", component: () => null },
+    { path: ":id", breadcrumbName: "User detail" },
+  ];
+  render(<PageHeader routes={routes} params={{ id: "42" }} />);
+  expect(
+    screen.getByRole("link", { name: "Users route" }).getAttribute("href"),
+  ).toBe("/users");
 });

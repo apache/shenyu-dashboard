@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-import {
-  Button,
-  Col,
-  Empty,
-  Form,
-  Icon,
-  Input,
-  Row,
-  Select,
-  Tabs,
-  Typography,
-} from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import Empty from "@douyinfe/semi-ui/lib/es/empty";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Tabs from "@douyinfe/semi-ui/lib/es/tabs";
+import Typography from "@douyinfe/semi-ui/lib/es/typography";
 import React, {
   forwardRef,
   useContext,
   useEffect,
   useImperativeHandle,
+  useId,
   useRef,
   useState,
 } from "react";
 import ReactJson from "@microlink/react-json-view";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import Select from "../../../components/ui/Select";
+import Icon from "../../../components/ui/ResourceIcon";
 import { message } from "../../../components/ui/feedback";
 import fetch from "../../../utils/fetch";
 import {
@@ -54,7 +53,49 @@ import { buildEnvironmentHost, isValidHttpUrl } from "../../../utils/UrlUtils";
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
-const InputGroup = Input.Group;
+// The form owns the composed URL; the two controls edit its origin and path.
+const RequestAddress = forwardRef(
+  ({ initialValue, envProps, onAddressChange, onChange }, ref) => {
+    const environmentLabelId = useId();
+    return (
+      <div ref={ref} style={{ display: "flex", gap: 8 }}>
+        <span id={environmentLabelId} hidden>
+          {getIntlContent("SHENYU.COMMON.MAX.ENVIRONMENT")}
+        </span>
+        <Select
+          aria-labelledby={environmentLabelId}
+          style={{ width: "40%" }}
+          value={initialValue.envId}
+          onChange={(envId) => {
+            const host = buildEnvironmentHost(
+              Object.values(envProps)[envId].addressUrl,
+            );
+            onAddressChange({ ...initialValue, host, envId });
+            onChange(`${host}${initialValue.url ?? ""}`);
+          }}
+        >
+          {Object.values(envProps).map((env, index) => (
+            <Select.Option key={index} value={index}>
+              {`${env.envLabel} - ${env.addressUrl}`}
+            </Select.Option>
+          ))}
+        </Select>
+        <Input
+          allowClear
+          aria-label={getIntlContent("SHENYU.DOCUMENT.APIDOC.APIPATH")}
+          style={{ flex: 1, minWidth: 0 }}
+          value={initialValue.url || ""}
+          onChange={(event) => {
+            const url = event.target.value;
+            onAddressChange({ ...initialValue, url });
+            onChange(`${initialValue.host ?? ""}${url}`);
+          }}
+        />
+      </div>
+    );
+  },
+);
+RequestAddress.displayName = "RequestAddress";
 
 const safeParse = (str, fallback) => {
   try {
@@ -156,7 +197,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
         apiMock.header || JSON.stringify(getDefaultHeaderByKey(activeKey)),
       querys: apiMock.query || "[]",
     });
-    form.resetFields("requestUrl");
+    form.resetFields(["requestUrl"]);
     const restoredPath = path || apiDetail.apiPath;
     if (host && restoredPath) {
       form.setFieldsValue({ requestUrl: `${host}${restoredPath}` });
@@ -262,7 +303,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
       envId: null,
     });
     setRequestJson({});
-    form.resetFields("requestUrl");
+    form.resetFields(["requestUrl"]);
     // set the fields explicitly: state-dependent effects do not re-run on null -> null
     form.setFieldsValue({
       headers: JSON.stringify(getDefaultHeaderByKey(activeKey)),
@@ -282,7 +323,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Title level={4}>
+      <Title heading={4}>
         {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.INFORMATION")}
       </Title>
       <FormItem label={getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS")}>
@@ -306,37 +347,11 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
             },
           ],
         })(
-          <InputGroup compact>
-            <Select
-              style={{ width: "40%" }}
-              onChange={(envId) => {
-                const env = Object.values(envProps)[envId];
-                const host = buildEnvironmentHost(env.addressUrl);
-                setInitialValue({ ...initialValue, host, envId });
-                const requestUrl = `${host}${initialValue.url ?? ""}`;
-                form.setFieldsValue({ requestUrl });
-              }}
-              value={initialValue.envId}
-            >
-              {Object.values(envProps).map((e, i) => {
-                return (
-                  <Select.Option key={i} value={i}>
-                    {`${e.envLabel} - ${e.addressUrl}`}
-                  </Select.Option>
-                );
-              })}
-            </Select>
-            <Input
-              allowClear
-              style={{ width: "60%" }}
-              value={initialValue.url}
-              onChange={(e) => {
-                setInitialValue({ ...initialValue, url: e.target.value });
-                const requestUrl = `${initialValue.host ?? ""}${e.target.value}`;
-                form.setFieldsValue({ requestUrl });
-              }}
-            />
-          </InputGroup>,
+          <RequestAddress
+            initialValue={initialValue}
+            envProps={envProps}
+            onAddressChange={setInitialValue}
+          />,
         )}
       </FormItem>
 
@@ -375,7 +390,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
               {getIntlContent("SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.BODY")}
             </>
           }
-          key="1"
+          itemKey="1"
         >
           <Row gutter={16}>
             <Col span={14}>
@@ -400,7 +415,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
               {getIntlContent("SHENYU.DOCUMENT.APIDOC.DEBUG.MOCK.QUERY")}
             </>
           }
-          key="2"
+          itemKey="2"
         >
           <FormItem>
             {form.getFieldDecorator("querys", {
@@ -503,7 +518,7 @@ function ApiDebug() {
           tab={getIntlContent(
             "SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.INFORMATION",
           )}
-          key="1"
+          itemKey="1"
         >
           {Object.keys(responseInfo).length ? (
             <>
@@ -532,7 +547,7 @@ function ApiDebug() {
         </TabPane>
         <TabPane
           tab={getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.RESULTS")}
-          key="2"
+          itemKey="2"
         >
           {responseInfo.bodyType === "json" &&
           responseInfo.body !== null &&

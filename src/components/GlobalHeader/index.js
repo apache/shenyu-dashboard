@@ -16,14 +16,19 @@
  */
 
 import React, { PureComponent } from "react";
-import { Button, Dropdown, Form, Icon, Input, Menu, Modal } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Dropdown from "@douyinfe/semi-ui/lib/es/dropdown";
 import { connect } from "react-redux";
+import Form from "../ui/Form";
+import Input from "../ui/Input";
+import Modal from "../ui/Modal";
+import ResourceIcon from "../ui/ResourceIcon";
 import { withRouter } from "../../runtime/router";
 import ImportModal from "./ImportModal";
 import ExportModal from "./ExportModal";
 import ImportResultModal from "./ImportResultModal";
 import parseImportResult from "./parseImportResult";
-import styles from "./index.less";
+import styles from "./index.module.less";
 import { getCurrentLocale, getIntlContent } from "../../utils/IntlUtils";
 import { checkUserPassword } from "../../services/api";
 import { emit } from "../../utils/emit";
@@ -46,9 +51,6 @@ const TranslationOutlinedSvg = () => (
     <path d="M414.3 256h-60.6c-3.4 0-6.4 2.2-7.6 5.4L219 629.4c-.3.8-.4 1.7-.4 2.6 0 4.4 3.6 8 8 8h55.1c3.4 0 6.4-2.2 7.6-5.4L322 540h196.2L422 261.4a8.42 8.42 0 00-7.7-5.4zm12.4 228h-85.5L384 360.2 426.7 484zM936 528H800v-93c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v93H592c-13.3 0-24 10.7-24 24v176c0 13.3 10.7 24 24 24h136v152c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V752h136c13.3 0 24-10.7 24-24V552c0-13.3-10.7-24-24-24zM728 680h-88v-80h88v80zm160 0h-88v-80h88v80z" />
   </svg>
 );
-const TranslationOutlined = (props) => (
-  <Icon component={TranslationOutlinedSvg} {...props} />
-);
 
 @connect(({ global, manage, loading }) => ({
   manage,
@@ -63,8 +65,8 @@ class GlobalHeader extends PureComponent {
     super(props);
     this.state = {
       help: (
-        <Menu>
-          <Menu.Item>
+        <Dropdown.Menu>
+          <Dropdown.Item>
             <span>
               <a
                 href="https://shenyu.apache.org"
@@ -74,8 +76,8 @@ class GlobalHeader extends PureComponent {
                 Website
               </a>
             </span>
-          </Menu.Item>
-          <Menu.Item>
+          </Dropdown.Item>
+          <Dropdown.Item>
             <span>
               <a
                 href="https://github.com/apache/shenyu"
@@ -85,18 +87,24 @@ class GlobalHeader extends PureComponent {
                 Github
               </a>
             </span>
-          </Menu.Item>
-        </Menu>
+          </Dropdown.Item>
+        </Dropdown.Menu>
       ),
       menu: (
-        <Menu onClick={this.handleLocalesValueChange}>
-          <Menu.Item key="0">
+        <Dropdown.Menu>
+          <Dropdown.Item
+            key="0"
+            onClick={() => this.handleLocalesValueChange({ key: "0" })}
+          >
             <span>English</span>
-          </Menu.Item>
-          <Menu.Item key="1">
+          </Dropdown.Item>
+          <Dropdown.Item
+            key="1"
+            onClick={() => this.handleLocalesValueChange({ key: "1" })}
+          >
             <span>中文</span>
-          </Menu.Item>
-        </Menu>
+          </Dropdown.Item>
+        </Dropdown.Menu>
       ),
       localeName: window.sessionStorage.getItem("locale")
         ? window.sessionStorage.getItem("locale")
@@ -137,9 +145,9 @@ class GlobalHeader extends PureComponent {
       emit.emit("change_language", "en-US");
       window.sessionStorage.setItem("locale", "en-US");
       this.setState({
-        localeName: "en-Us",
+        localeName: "en-US",
       });
-      changeLocalName("en-Us");
+      changeLocalName("en-US");
     } else {
       emit.emit("change_language", "zh-CN");
       window.sessionStorage.setItem("locale", "zh-CN");
@@ -283,71 +291,92 @@ class GlobalHeader extends PureComponent {
       "/system/manage",
     ].indexOf(pathname);
     const menu = (
-      <Menu>
-        <Menu.Item
+      <Dropdown.Menu>
+        <Dropdown.Item
           key="1"
           onClick={() => {
             this.setState({ visible: true });
           }}
         >
-          <Icon type="form" />{" "}
+          <ResourceIcon type="form" />{" "}
           {getIntlContent("SHENYU.GLOBALHEADER.CHANGE.PASSWORD")}
-        </Menu.Item>
-        <Menu.Item key="0" onClick={onLogout}>
-          <Icon type="logout" /> {getIntlContent("SHENYU.GLOBALHEADER.LOGOUT")}
-        </Menu.Item>
-      </Menu>
+        </Dropdown.Item>
+        <Dropdown.Item key="0" onClick={onLogout}>
+          <ResourceIcon type="logout" />{" "}
+          {getIntlContent("SHENYU.GLOBALHEADER.LOGOUT")}
+        </Dropdown.Item>
+      </Dropdown.Menu>
     );
     const importMenu = (
-      <Menu>
+      <Dropdown.Menu>
         {this.checkAuth("system:manager:exportConfig") && (
-          <Menu.Item key="2" onClick={this.exportConfigClick}>
-            <Icon type="export" /> {getIntlContent("SHENYU.COMMON.EXPORT")}
-          </Menu.Item>
+          <Dropdown.Item key="2" onClick={this.exportConfigClick}>
+            <ResourceIcon type="export" />{" "}
+            {getIntlContent("SHENYU.COMMON.EXPORT")}
+          </Dropdown.Item>
         )}
         {this.checkAuth("system:manager:importConfig") && (
-          <Menu.Item key="3" onClick={this.importConfigClick}>
-            <Icon type="import" /> {getIntlContent("SHENYU.COMMON.IMPORT")}
-          </Menu.Item>
+          <Dropdown.Item key="3" onClick={this.importConfigClick}>
+            <ResourceIcon type="import" />{" "}
+            {getIntlContent("SHENYU.COMMON.IMPORT")}
+          </Dropdown.Item>
         )}
-      </Menu>
+      </Dropdown.Menu>
     );
     return (
       <div className={styles.header}>
-        <span className={styles.text}>
-          Apache ShenYu Gateway Management System
-        </span>
-        <div>
+        <div className={styles.brand}>
+          <Button
+            theme="borderless"
+            aria-label="Toggle navigation"
+            icon={
+              <ResourceIcon
+                type={this.props.collapsed ? "menu-unfold" : "menu-fold"}
+              />
+            }
+            onClick={() => this.props.onCollapse?.(!this.props.collapsed)}
+          />
+          <span className={styles.text}>
+            Apache ShenYu Gateway Management System
+          </span>
+        </div>
+        <div className={styles.controls}>
           {showNamespaces && (
             <div className={styles.item}>
               <Dropdown
-                placement="bottomCenter"
-                overlay={
-                  <Menu onClick={this.handleNamespacesValueChange}>
+                trigger="click"
+                position="bottom"
+                render={
+                  <Dropdown.Menu>
                     {namespaces.map((namespace) => {
                       let isCurrentNamespace =
                         currentNamespaceId === namespace.namespaceId;
                       return (
-                        <Menu.Item
+                        <Dropdown.Item
                           key={namespace.namespaceId}
+                          onClick={() =>
+                            this.handleNamespacesValueChange({
+                              key: namespace.namespaceId,
+                            })
+                          }
                           disabled={isCurrentNamespace}
                         >
                           <span>{namespace.name}</span>
-                        </Menu.Item>
+                        </Dropdown.Item>
                       );
                     })}
-                  </Menu>
+                  </Dropdown.Menu>
                 }
               >
                 <Button>
-                  <a
-                    className="ant-dropdown-link"
+                  <span
+                    className={styles.namespaceName}
                     style={{ fontWeight: "bold" }}
                     onClick={(e) => e.preventDefault()}
                   >
                     {`${getIntlContent("SHENYU.SYSTEM.NAMESPACE")} / ${namespaces.find((namespace) => currentNamespaceId === namespace.namespaceId)?.name} `}
-                  </a>
-                  <Icon type="down" />
+                  </span>
+                  <ResourceIcon type="down" />
                 </Button>
               </Dropdown>
             </div>
@@ -355,39 +384,51 @@ class GlobalHeader extends PureComponent {
           {(this.checkAuth("system:manager:importConfig") ||
             this.checkAuth("system:manager:exportConfig")) && (
             <div className={styles.item}>
-              <Dropdown overlay={importMenu}>
+              <Dropdown trigger="click" render={importMenu}>
                 <Button>
-                  <Icon type="import" />{" "}
+                  <ResourceIcon type="import" />{" "}
                   {getIntlContent("SHENYU.COMMON.IMPORT_EXPORT")}
                 </Button>
               </Dropdown>
             </div>
           )}
           <div className={styles.item}>
-            <Dropdown placement="bottomCenter" overlay={this.state.help}>
-              <Button>
-                <Icon type="question-circle" />
+            <Dropdown
+              trigger="click"
+              position="bottom"
+              render={this.state.help}
+            >
+              <Button aria-label="Help">
+                <ResourceIcon type="question-circle" />
               </Button>
             </Dropdown>
           </div>
           <div className={styles.item}>
-            <Dropdown placement="bottomCenter" overlay={this.state.menu}>
-              <Button>
-                <TranslationOutlined />
+            <Dropdown
+              trigger="click"
+              position="bottom"
+              render={this.state.menu}
+            >
+              <Button aria-label="Language">
+                <TranslationOutlinedSvg />
               </Button>
             </Dropdown>
           </div>
           <div className={`${styles.item} ${styles.right}`}>
-            <Dropdown.Button overlay={menu} icon={<Icon type="user" />}>
-              <span>{userName}</span>
-            </Dropdown.Button>
+            <Dropdown trigger="click" render={menu}>
+              <Button icon={<ResourceIcon type="user" />}>
+                <span>{userName}</span>
+              </Button>
+            </Dropdown>
           </div>
         </div>
         <Modal
           width="40%"
           title={getIntlContent("SHENYU.GLOBALHEADER.CHANGE.PASSWORD")}
           visible={visible}
-          forceRender
+          keepDOM
+          okText={getIntlContent("SHENYU.COMMON.SURE")}
+          cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
           okButtonProps={{
             loading,
           }}
@@ -455,7 +496,6 @@ class GlobalHeader extends PureComponent {
                 rules: [
                   {
                     validator(rule, value, callback) {
-                      const confirmPassword = getFieldValue("confirmPassword");
                       if (!value) {
                         callback(
                           getIntlContent(
@@ -479,9 +519,6 @@ class GlobalHeader extends PureComponent {
                           getIntlContent("SHENYU.GLOBALHEADER.PASSWORD.RULE"),
                         );
                         return;
-                      }
-                      if (confirmPassword) {
-                        validateFields(["confirmPassword"], { force: true });
                       }
                       callback();
                     },

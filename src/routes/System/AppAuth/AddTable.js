@@ -16,16 +16,14 @@
  */
 
 import React, { Component } from "react";
-import {
-  Modal,
-  Form,
-  Select,
-  Input,
-  Table,
-  Button,
-  Popconfirm,
-  Switch,
-} from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import Select from "@douyinfe/semi-ui/lib/es/select";
+import Modal from "../../../components/ui/Modal";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import Switch from "../../../components/ui/Switch";
 import { message } from "../../../components/ui/feedback";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
@@ -78,17 +76,7 @@ export class AddTableComponent extends Component {
           />
         ),
       },
-      /* {
-        title: getIntlContent("SHENYU.AUTH.PATH.DESCRIBE"),
-        dataIndex: 'pathDesc',
-        editable: 'true',
-        render: (text, record) => (
-          <Input
-            value={text}
-            onChange={(e) => this.handleTableInput({ pathDesc: e.target.value }, record)}
-          />
-        )
-      }, */
+
       {
         title: getIntlContent("SHENYU.COMMON.OPERAT"),
         dataIndex: "operation",
@@ -96,9 +84,14 @@ export class AddTableComponent extends Component {
           this.state.allData.length > 1 ? (
             <Popconfirm
               title={getIntlContent("SHENYU.COMMON.DELETE")}
+              motion={false}
+              okText={getIntlContent("SHENYU.COMMON.SURE")}
+              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
               onConfirm={() => this.handleDelete(record.key)}
             >
-              <a>{getIntlContent("SHENYU.COMMON.DELETE.NAME")}</a>
+              <Button htmlType="button" theme="borderless" type="danger">
+                {getIntlContent("SHENYU.COMMON.DELETE.NAME")}
+              </Button>
             </Popconfirm>
           ) : null,
       },
@@ -107,6 +100,7 @@ export class AddTableComponent extends Component {
       allData: [],
       newSelectInput: [],
       pathTableVisible: true,
+      pagination: 1,
     };
   }
 
@@ -114,6 +108,8 @@ export class AddTableComponent extends Component {
   handleChange = (value) => {
     this.props.form.setFieldsValue({ appName: value });
     this.setState({
+      newSelectInput: [],
+      pagination: 1,
       allData: normalizePathRows(
         this.props.metaGroup[value] === undefined ||
           this.props.metaGroup[value] === null
@@ -253,7 +249,9 @@ export class AddTableComponent extends Component {
               ],
             })(
               <Select
-                showSearch
+                motion={false}
+                filter
+                allowCreate
                 placeholder={getIntlContent("SHENYU.AUTH.SELECT.APP")}
                 onChange={this.handleChange}
                 onSearch={(value) => this.onSearchSelect(value, "0")}
@@ -327,9 +325,11 @@ export class AddTableComponent extends Component {
             <div>
               {data.length < 1 ? (
                 <Button
+                  htmlType="button"
                   disabled
                   onClick={this.handleAddTd}
                   type="primary"
+                  theme="solid"
                   style={{
                     marginBottom: 16,
                   }}
@@ -338,8 +338,10 @@ export class AddTableComponent extends Component {
                 </Button>
               ) : (
                 <Button
+                  htmlType="button"
                   onClick={this.handleAddTd}
                   type="primary"
+                  theme="solid"
                   style={{
                     marginBottom: 16,
                   }}
@@ -351,9 +353,12 @@ export class AddTableComponent extends Component {
                 bordered
                 columns={columns}
                 dataSource={data}
-                onChange={this.handleTableChange}
-                rowKey={(record) => record.key}
-                pagination={{ current: this.state.pagination, pageSize: 10 }}
+                rowKey="key"
+                pagination={{
+                  currentPage: this.state.pagination,
+                  pageSize: 10,
+                  onChange: (page) => this.handleTableChange({ current: page }),
+                }}
               />
             </div>
           )}

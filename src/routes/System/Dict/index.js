@@ -16,10 +16,20 @@
  */
 
 import React, { Component } from "react";
-import { Table, Input, Button, Popconfirm, Popover, Tag, Switch } from "antd";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import Popover from "@douyinfe/semi-ui/lib/es/popover";
+import Tag from "@douyinfe/semi-ui/lib/es/tag";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import { connect } from "react-redux";
 import { message } from "../../../components/ui/feedback";
-import { resizableComponents } from "../../../utils/resizable";
+import Input from "../../../components/ui/Input";
+import Switch from "../../../components/ui/Switch";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
+import styles from "./index.module.less";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
@@ -30,8 +40,6 @@ import AuthButton from "../../../utils/AuthButton";
   loading: loading.effects["shenyuDict/fetch"],
 }))
 export default class ShenYuDict extends Component {
-  components = resizableComponents;
-
   constructor(props) {
     super(props);
     this.state = {
@@ -63,44 +71,30 @@ export default class ShenYuDict extends Component {
     }
   }
 
-  handleResize =
-    (index) =>
-    (e, { size }) => {
-      this.setState(({ columns }) => {
-        const nextColumns = [...columns];
-        nextColumns[index] = {
-          ...nextColumns[index],
-          width: size.width,
-        };
-        return { columns: nextColumns };
-      });
-    };
-
   onSelectChange = (selectedRowKeys) => {
-    this.setState({ selectedRowKeys }, this.query);
+    this.setState({ selectedRowKeys });
+  };
+
+  currentQueryPayload = (override = {}) => {
+    const { type, dictName, dictCode, currentPage, pageSize } = this.state;
+    return { type, dictName, dictCode, currentPage, pageSize, ...override };
   };
 
   query = () => {
-    const { dispatch } = this.props;
-    const { type, dictName, dictCode, currentPage, pageSize } = this.state;
-    dispatch({
+    this.props.dispatch({
       type: "shenyuDict/fetch",
-      payload: {
-        type,
-        dictName,
-        dictCode,
-        currentPage,
-        pageSize,
-      },
+      payload: this.currentQueryPayload(),
     });
   };
 
-  pageOnchange = (page) => {
-    this.setState({ currentPage: page }, this.query);
-  };
-
-  onShowSizeChange = (currentPage, pageSize) => {
-    this.setState({ currentPage: 1, pageSize }, this.query);
+  onPaginationChange = (page, pageSize) => {
+    this.setState(
+      (state) => ({
+        currentPage: pageSize === state.pageSize ? page : 1,
+        pageSize,
+      }),
+      this.query,
+    );
   };
 
   closeModal = () => {
@@ -216,12 +210,6 @@ export default class ShenYuDict extends Component {
   };
 
   addClick = () => {
-    const {
-      type: filterType,
-      dictCode: filterDictCode,
-      dictName: filterDictName,
-      pageSize,
-    } = this.state;
     this.setState({
       popup: (
         <AddModal
@@ -241,13 +229,7 @@ export default class ShenYuDict extends Component {
                 sort,
                 enabled,
               },
-              fetchValue: {
-                type: filterType,
-                dictCode: filterDictCode,
-                dictName: filterDictName,
-                currentPage: 1,
-                pageSize,
-              },
+              fetchValue: this.currentQueryPayload({ currentPage: 1 }),
               callback: () => {
                 this.closeModal();
                 this.setState({ selectedRowKeys: [], currentPage: 1 });
@@ -262,22 +244,20 @@ export default class ShenYuDict extends Component {
     });
   };
 
-  statusSwitch = ({ list, enabled, callback }) => {
+  statusSwitch = ({
+    list,
+    enabled,
+    callback = () => {},
+    currentPage = this.state.currentPage,
+  }) => {
     const { dispatch } = this.props;
-    const { type, dictCode, dictName, currentPage, pageSize } = this.state;
     dispatch({
       type: "shenyuDict/updateEn",
       payload: {
         list,
         enabled,
       },
-      fetchValue: {
-        type,
-        dictCode,
-        dictName,
-        currentPage: callback ? 1 : currentPage,
-        pageSize,
-      },
+      fetchValue: this.currentQueryPayload({ currentPage }),
       callback,
     });
   };
@@ -295,6 +275,7 @@ export default class ShenYuDict extends Component {
           this.statusSwitch({
             list: selectedRowKeys,
             enabled: !user.enabled,
+            currentPage: 1,
             callback: () => {
               this.setState({ selectedRowKeys: [], currentPage: 1 });
             },
@@ -356,9 +337,13 @@ export default class ShenYuDict extends Component {
     );
     return (
       <Popover
-        placement="topLeft"
-        content={content}
-        title={getIntlContent("SHENYU.DIC")}
+        position="topLeft"
+        content={
+          <div className={styles.detail}>
+            <strong>{getIntlContent("SHENYU.DIC")}</strong>
+            {content}
+          </div>
+        }
       >
         {value}
       </Popover>
@@ -381,7 +366,7 @@ export default class ShenYuDict extends Component {
           dataIndex: "type",
           key: "type",
           ellipsis: true,
-          // width: 180,
+          width: 180,
           sorter: (a, b) => (a.type > b.type ? 1 : -1),
           render: (text) => {
             if (text.length < 5) {
@@ -401,7 +386,7 @@ export default class ShenYuDict extends Component {
           dataIndex: "dictName",
           key: "dictName",
           ellipsis: true,
-          // width: 200,
+          width: 200,
           render: (text, record) =>
             this.commonPopover(
               record,
@@ -415,7 +400,7 @@ export default class ShenYuDict extends Component {
           dataIndex: "dictCode",
           key: "dictCode",
           ellipsis: true,
-          // width: 200,
+          width: 200,
           render: (text, record) =>
             this.commonPopover(
               record,
@@ -429,7 +414,7 @@ export default class ShenYuDict extends Component {
           dataIndex: "dictValue",
           key: "dictValue",
           ellipsis: true,
-          // width: 140,
+          width: 140,
           render: (text, record) =>
             this.commonPopover(
               record,
@@ -454,7 +439,7 @@ export default class ShenYuDict extends Component {
           dataIndex: "enabled",
           ellipsis: true,
           key: "enabled",
-          width: 100,
+          width: 140,
           render: (text, row) => (
             <AuthButton
               perms="system:dict:disable"
@@ -470,17 +455,23 @@ export default class ShenYuDict extends Component {
                 )
               }
             >
-              <Switch
-                checkedChildren={getIntlContent("SHENYU.COMMON.OPEN")}
-                unCheckedChildren={getIntlContent("SHENYU.COMMON.CLOSE")}
-                checked={text}
-                onChange={(checked) => {
-                  this.statusSwitch({
-                    list: [row.id],
-                    enabled: checked,
-                  });
-                }}
-              />
+              <span className={styles.status}>
+                <Switch
+                  aria-label={`${row.dictName}: ${getIntlContent("SHENYU.SYSTEM.STATUS")}`}
+                  checked={text}
+                  onChange={(checked) => {
+                    this.statusSwitch({
+                      list: [row.id],
+                      enabled: checked,
+                    });
+                  }}
+                />
+                <span>
+                  {getIntlContent(
+                    text ? "SHENYU.COMMON.OPEN" : "SHENYU.COMMON.CLOSE",
+                  )}
+                </span>
+              </span>
             </AuthButton>
           ),
         },
@@ -491,30 +482,34 @@ export default class ShenYuDict extends Component {
           ellipsis: true,
           dataIndex: "operate",
           key: "operate",
-          width: 80,
+          width: 180,
           fixed: "right",
           render: (text, record) => {
             return (
-              <div className="optionParts">
+              <div className={styles.actions}>
                 <AuthButton perms="system:dict:edit">
-                  <div
-                    className="edit"
-                    onClick={() => {
-                      this.editClick(record);
-                    }}
-                  >
-                    {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-                  </div>
+                  {({ icon }) => (
+                    <Button
+                      theme="borderless"
+                      htmlType="button"
+                      icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      onClick={() => this.editClick(record)}
+                    >
+                      {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                    </Button>
+                  )}
                 </AuthButton>
                 <AuthButton perms="system:dict:add">
-                  <div
-                    className="edit"
-                    onClick={() => {
-                      this.editClick(record, true);
-                    }}
-                  >
-                    {getIntlContent("SHENYU.COMMON.COPY")}
-                  </div>
+                  {({ icon }) => (
+                    <Button
+                      theme="borderless"
+                      htmlType="button"
+                      icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                      onClick={() => this.editClick(record, true)}
+                    >
+                      {getIntlContent("SHENYU.COMMON.COPY")}
+                    </Button>
+                  )}
                 </AuthButton>
               </div>
             );
@@ -525,7 +520,7 @@ export default class ShenYuDict extends Component {
   }
 
   render() {
-    const { shenyuDict, loading } = this.props;
+    const { shenyuDict, loading, language } = this.props;
     const { shenyuDictList, total } = shenyuDict;
 
     const {
@@ -537,112 +532,129 @@ export default class ShenYuDict extends Component {
       dictName,
       popup,
     } = this.state;
-    const columns = this.state.columns.map((col, index) => ({
-      ...col,
-      onHeaderCell: (column) => ({
-        width: column.width,
-        onResize: this.handleResize(index),
-      }),
-    }));
+    const { columns } = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
 
     return (
-      <div className="plug-content-wrap">
-        <div style={{ display: "flex" }}>
-          <Input
-            allowClear
-            value={type}
-            placeholder={getIntlContent("SHENYU.DIC.INPUTTYPE")}
-            onChange={this.searchTypeOnchange}
-            style={{ width: 240 }}
-          />
-          &nbsp;&nbsp;
-          <Input
-            allowClear
-            value={dictCode}
-            placeholder={getIntlContent("SHENYU.DIC.INPUTCODE")}
-            onChange={this.searchDictCodeOnchange}
-            style={{ width: 240 }}
-          />
-          &nbsp;&nbsp;
-          <Input
-            allowClear
-            value={dictName}
-            placeholder={getIntlContent("SHENYU.DIC.INPUTNAME")}
-            onChange={this.searchDictNameOnchange}
-            style={{ width: 240 }}
-          />
-          <AuthButton perms="system:dict:list">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.searchClick}
-            >
-              {getIntlContent("SHENYU.SYSTEM.SEARCH")}
-            </Button>
-          </AuthButton>
-          <AuthButton perms="system:dict:delete">
-            <Popconfirm
-              title={getIntlContent("SHENYU.COMMON.DELETE")}
-              placement="bottom"
-              onConfirm={() => {
-                this.deleteClick();
-              }}
-              okText={getIntlContent("SHENYU.COMMON.SURE")}
-              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-            >
-              <Button style={{ marginLeft: 20 }} type="danger">
-                {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
-              </Button>
-            </Popconfirm>
-          </AuthButton>
-          <AuthButton perms="system:dict:add">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.addClick}
-            >
-              {getIntlContent("SHENYU.COMMON.ADD")}
-            </Button>
-          </AuthButton>
-          <AuthButton perms="system:dict:disable">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.enableClick}
-            >
-              {getIntlContent("SHENYU.PLUGIN.BATCH")}
-            </Button>
-          </AuthButton>
-        </div>
+      <LocaleProvider locale={language === "zh-CN" ? zhCN : enUS}>
+        <div className="plug-content-wrap">
+          <form
+            className={styles.toolbar}
+            onSubmit={(event) => {
+              event.preventDefault();
+              this.searchClick();
+            }}
+          >
+            <Input
+              allowClear
+              value={type}
+              placeholder={getIntlContent("SHENYU.DIC.INPUTTYPE")}
+              onChange={this.searchTypeOnchange}
+              className={styles.filter}
+            />
+            <Input
+              allowClear
+              value={dictCode}
+              placeholder={getIntlContent("SHENYU.DIC.INPUTCODE")}
+              onChange={this.searchDictCodeOnchange}
+              className={styles.filter}
+            />
+            <Input
+              allowClear
+              value={dictName}
+              placeholder={getIntlContent("SHENYU.DIC.INPUTNAME")}
+              onChange={this.searchDictNameOnchange}
+              className={styles.filter}
+            />
+            <AuthButton perms="system:dict:list">
+              {({ icon }) => (
+                <Button
+                  type="primary"
+                  theme="solid"
+                  htmlType="submit"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                </Button>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:dict:delete">
+              {({ icon }) => (
+                <Popconfirm
+                  title={getIntlContent("SHENYU.COMMON.DELETE")}
+                  position="bottom"
+                  motion={false}
+                  okType="danger"
+                  onConfirm={this.deleteClick}
+                  okText={getIntlContent("SHENYU.COMMON.SURE")}
+                  cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                >
+                  <Button
+                    type="danger"
+                    theme="solid"
+                    htmlType="button"
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
+                  </Button>
+                </Popconfirm>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:dict:add">
+              {({ icon }) => (
+                <Button
+                  type="primary"
+                  theme="solid"
+                  htmlType="button"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  onClick={this.addClick}
+                >
+                  {getIntlContent("SHENYU.COMMON.ADD")}
+                </Button>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:dict:disable">
+              {({ icon }) => (
+                <Button
+                  type="primary"
+                  theme="solid"
+                  htmlType="button"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  onClick={this.enableClick}
+                >
+                  {getIntlContent("SHENYU.PLUGIN.BATCH")}
+                </Button>
+              )}
+            </AuthButton>
+          </form>
 
-        <Table
-          size="small"
-          components={this.components}
-          style={{ marginTop: 30 }}
-          bordered
-          rowKey={(record) => record.id}
-          loading={loading}
-          columns={columns}
-          // scroll={{ x: 1350 }}
-          dataSource={shenyuDictList}
-          rowSelection={rowSelection}
-          pagination={{
-            total,
-            showTotal: (showTotal) => `${showTotal}`,
-            showSizeChanger: true,
-            pageSizeOptions: ["12", "20", "50", "100"],
-            current: currentPage,
-            pageSize,
-            onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange,
-          }}
-        />
-        {popup}
-      </div>
+          <Table
+            size="small"
+            resizable
+            style={{ marginTop: 30 }}
+            bordered
+            rowKey="id"
+            loading={loading}
+            columns={columns}
+            scroll={{ x: 1168 }}
+            dataSource={shenyuDictList}
+            rowSelection={rowSelection}
+            pagination={{
+              total,
+              showTotal: true,
+              showSizeChanger: true,
+              pageSizeOpts: [12, 20, 50, 100],
+              currentPage,
+              pageSize,
+              onChange: this.onPaginationChange,
+            }}
+          />
+          {popup}
+        </div>
+      </LocaleProvider>
     );
   }
 }

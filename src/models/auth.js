@@ -42,9 +42,13 @@ export default {
   },
 
   effects: {
-    *fetch(params, { call, put }) {
+    *fetch(params, { call, put, select }) {
       const { payload } = params;
       const json = yield call(getAllAuths, payload);
+      const namespaceId = yield select(
+        (state) => state.global.currentNamespaceId,
+      );
+      if (namespaceId !== payload.namespaceId) return;
       if (json.code === 200) {
         let { page, dataList } = json.data;
         dataList = dataList.map((item) => {

@@ -31,7 +31,7 @@ tab | 选项卡头显示文字 | ReactNode | -
 name | 控件标记，提交数据中同样以此为 key | String | -
 rules | 校验规则，同 Form getFieldDecorator(id, options) 中 [option.rules 的规则](getFieldDecorator(id, options)) | object[] | -
 
-除上述属性以外，Login.UserName 还支持 antd.Input 的所有属性，并且自带默认的基础配置，包括 `placeholder` `size` `prefix` 等，这些基础配置均可被覆盖。
+除上述属性以外，Login.UserName 还支持 共享 Semi Input 包装组件 的所有属性，并且自带默认的基础配置，包括 `placeholder` `size` `prefix` 等，这些基础配置均可被覆盖。
 
 ### Login.Password、Login.Mobile 同 Login.UserName
 
@@ -45,4 +45,4 @@ onGetCaptcha | 点击获取校验码的回调 | () => void | -
 
 ### Login.Submit
 
-支持 antd.Button 的所有属性。
+支持 Semi Button 的所有属性。

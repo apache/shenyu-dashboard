@@ -16,16 +16,25 @@
  */
 
 import React, { Component } from "react";
-import { Table, Input, Button, Popconfirm } from "antd";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
+import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
+import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import { connect } from "react-redux";
+import Input from "../../../components/ui/Input";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
+import styles from "./index.module.less";
 import { message } from "../../../components/ui/feedback";
 import AddModal from "./AddModal";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 
-@connect(({ role, resource, loading }) => ({
+@connect(({ role, resource, loading, global }) => ({
   role,
   resource,
+  language: global.language,
   loading: loading.effects["role/fetch"],
 }))
 export default class Role extends Component {
@@ -61,12 +70,14 @@ export default class Role extends Component {
     });
   };
 
-  pageOnchange = (page) => {
-    this.setState({ currentPage: page }, this.getAllRoles);
-  };
-
-  onShowSizeChange = (currentPage, pageSize) => {
-    this.setState({ currentPage: 1, pageSize }, this.getAllRoles);
+  onPaginationChange = (page, pageSize) => {
+    this.setState(
+      (state) => ({
+        currentPage: pageSize === state.pageSize ? page : 1,
+        pageSize,
+      }),
+      this.getAllRoles,
+    );
   };
 
   closeModal = () => {
@@ -189,7 +200,7 @@ export default class Role extends Component {
   };
 
   render() {
-    const { role, loading } = this.props;
+    const { role, loading, language } = this.props;
     const { roleList, total } = role;
     const { currentPage, pageSize, selectedRowKeys, roleName, popup } =
       this.state;
@@ -233,14 +244,16 @@ export default class Role extends Component {
         render: (text, record) => {
           return (
             <AuthButton perms="system:role:edit">
-              <div
-                className="edit"
-                onClick={() => {
-                  this.editClick(record);
-                }}
-              >
-                {getIntlContent("SHENYU.SYSTEM.EDITOR")}
-              </div>
+              {({ icon }) => (
+                <Button
+                  theme="borderless"
+                  htmlType="button"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  onClick={() => this.editClick(record)}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.EDITOR")}
+                </Button>
+              )}
             </AuthButton>
           );
         },
@@ -253,71 +266,94 @@ export default class Role extends Component {
     };
 
     return (
-      <div className="plug-content-wrap">
-        <div style={{ display: "flex" }}>
-          <Input
-            allowClear
-            value={roleName}
-            onChange={this.searchOnchange}
-            placeholder={getIntlContent("SHENYU.SYSTEM.ROLE.INPUT.NAME")}
-            style={{ width: 240 }}
-          />
-          <AuthButton perms="system:role:list">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.searchClick}
-            >
-              {getIntlContent("SHENYU.SYSTEM.SEARCH")}
-            </Button>
-          </AuthButton>
-          <AuthButton perms="system:role:delete">
-            <Popconfirm
-              title={getIntlContent("SHENYU.COMMON.DELETE")}
-              placement="bottom"
-              onConfirm={() => {
-                this.deleteClick();
-              }}
-              okText={getIntlContent("SHENYU.COMMON.SURE")}
-              cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-            >
-              <Button style={{ marginLeft: 20 }} type="danger">
-                {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
-              </Button>
-            </Popconfirm>
-          </AuthButton>
-          <AuthButton perms="system:role:add">
-            <Button
-              style={{ marginLeft: 20 }}
-              type="primary"
-              onClick={this.addClick}
-            >
-              {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
-            </Button>
-          </AuthButton>
-        </div>
+      <LocaleProvider locale={language === "zh-CN" ? zhCN : enUS}>
+        <div className="plug-content-wrap">
+          <form
+            className={styles.toolbar}
+            onSubmit={(event) => {
+              event.preventDefault();
+              this.searchClick();
+            }}
+          >
+            <Input
+              allowClear
+              value={roleName}
+              onChange={this.searchOnchange}
+              placeholder={getIntlContent("SHENYU.SYSTEM.ROLE.INPUT.NAME")}
+              className={styles.filter}
+            />
+            <AuthButton perms="system:role:list">
+              {({ icon }) => (
+                <Button
+                  type="primary"
+                  theme="solid"
+                  htmlType="submit"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.SEARCH")}
+                </Button>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:role:delete">
+              {({ icon }) => (
+                <Popconfirm
+                  title={getIntlContent("SHENYU.COMMON.DELETE")}
+                  position="bottom"
+                  motion={false}
+                  okType="danger"
+                  onConfirm={this.deleteClick}
+                  okText={getIntlContent("SHENYU.COMMON.SURE")}
+                  cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+                >
+                  <Button
+                    type="danger"
+                    theme="solid"
+                    htmlType="button"
+                    icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  >
+                    {getIntlContent("SHENYU.SYSTEM.DELETEDATA")}
+                  </Button>
+                </Popconfirm>
+              )}
+            </AuthButton>
+            <AuthButton perms="system:role:add">
+              {({ icon }) => (
+                <Button
+                  type="primary"
+                  theme="solid"
+                  htmlType="button"
+                  icon={icon ? <ResourceIcon type={icon} /> : undefined}
+                  onClick={this.addClick}
+                >
+                  {getIntlContent("SHENYU.SYSTEM.ADDDATA")}
+                </Button>
+              )}
+            </AuthButton>
+          </form>
 
-        <Table
-          size="small"
-          style={{ marginTop: 30 }}
-          bordered
-          loading={loading}
-          columns={roleColumns}
-          dataSource={roleList}
-          rowSelection={rowSelection}
-          pagination={{
-            total,
-            showTotal: (showTotal) => `${showTotal}`,
-            showSizeChanger: true,
-            pageSizeOptions: ["12", "20", "50", "100"],
-            current: currentPage,
-            pageSize,
-            onShowSizeChange: this.onShowSizeChange,
-            onChange: this.pageOnchange,
-          }}
-        />
-        {popup}
-      </div>
+          <Table
+            size="small"
+            rowKey="id"
+            scroll={{ x: 1000 }}
+            style={{ marginTop: 30 }}
+            bordered
+            loading={loading}
+            columns={roleColumns}
+            dataSource={roleList}
+            rowSelection={rowSelection}
+            pagination={{
+              total,
+              showTotal: true,
+              showSizeChanger: true,
+              pageSizeOpts: [12, 20, 50, 100],
+              currentPage,
+              pageSize,
+              onChange: this.onPaginationChange,
+            }}
+          />
+          {popup}
+        </div>
+      </LocaleProvider>
     );
   }
 }

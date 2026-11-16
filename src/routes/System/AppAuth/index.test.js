@@ -267,3 +267,26 @@ it("does not close a newer resource editor when an earlier save succeeds", () =>
   saved.callback();
   expect(component.state.popup.props.id).toBe("auth-2");
 });
+it("ignores delayed edit and create responses after changing namespace", () => {
+  const dispatch = jest.fn();
+  const component = makeComponent(dispatch);
+  component.editClick({ id: "auth-one" });
+  const edit = dispatch.mock.calls[0][0];
+  component.addClick();
+  const create = dispatch.mock.calls.at(-1)[0];
+  const previous = component.props;
+  component.props = { ...previous, currentNamespaceId: "namespace-2" };
+  component.componentDidUpdate(previous);
+  edit.callback({ id: "auth-one" });
+  create.callback({});
+  expect(component.state.popup).toBe("");
+  expect(dispatch).toHaveBeenCalledWith(
+    expect.objectContaining({
+      type: "auth/fetch",
+      payload: expect.objectContaining({
+        namespaceId: "namespace-2",
+        currentPage: 1,
+      }),
+    }),
+  );
+});

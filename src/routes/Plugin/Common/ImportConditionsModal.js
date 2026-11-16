@@ -16,7 +16,12 @@
  */
 
 import React, { Component } from "react";
-import { Alert, Button, Checkbox, Input, Modal, Tag } from "antd";
+import Banner from "@douyinfe/semi-ui/lib/es/banner";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Checkbox from "@douyinfe/semi-ui/lib/es/checkbox";
+import Tag from "@douyinfe/semi-ui/lib/es/tag";
+import Input from "../../../components/ui/Input";
+import Modal from "../../../components/ui/Modal";
 import {
   buildConditionDrafts,
   toConditions,
@@ -76,10 +81,10 @@ class ImportConditionsModal extends Component {
       return null;
     }
     return (
-      <Alert
+      <Banner
         type="warning"
-        showIcon
-        message="This sample is only partly supported"
+        closeIcon={null}
+        title="This sample is only partly supported"
         description={
           <ul>
             {sample.issues.map((issue) => (
@@ -137,6 +142,7 @@ class ImportConditionsModal extends Component {
         ]}
       >
         <TextArea
+          aria-label="Request sample"
           rows={6}
           value={this.state.text}
           onChange={(e) => this.setState({ text: e.target.value })}

@@ -16,7 +16,18 @@
  */
 
 import React from "react";
-import { Icon } from "antd";
+
+function Icon({ component: Glyph, ...props }) {
+  return (
+    <span
+      {...props}
+      aria-hidden="true"
+      style={{ display: "inline-flex", ...props.style }}
+    >
+      <Glyph />
+    </span>
+  );
+}
 
 const ZkSvg = () => (
   <svg className="icon" viewBox="0 0 1024 1024" width="1em" height="1em">

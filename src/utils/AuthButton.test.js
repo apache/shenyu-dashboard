@@ -15,7 +15,14 @@
  * limitations under the License.
  */
 
-import { checkButtonAuth } from "./AuthButton";
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import { PlusOutline, DeleteOutline } from "@ant-design/icons/lib/dist";
+import AuthButton, { checkButtonAuth } from "./AuthButton";
+
+const Gate = AuthButton.WrappedComponent;
 
 it("returns only the exact permission granted by the current namespace", () => {
   const edit = { perms: "rule:edit", icon: "edit" };
@@ -47,3 +54,97 @@ it.each(["toString", "constructor", "perms"])(
     expect(checkButtonAuth(perms, permissions)).toBeNull();
   },
 );
+
+it("keeps permission icons on native buttons", () => {
+  render(
+    <Gate
+      perms="add"
+      global={{ permissions: { button: [{ perms: "add", icon: "plus" }] } }}
+    >
+      <Button>Add</Button>
+    </Gate>,
+  );
+  expect(
+    screen
+      .getByRole("button", { name: /Add$/ })
+      .querySelector("svg path")
+      .getAttribute("d"),
+  ).toBe(PlusOutline.icon.children[0].attrs.d);
+});
+
+it("keeps permission icons on native confirmation buttons", () => {
+  render(
+    <Gate
+      perms="delete"
+      global={{
+        permissions: { button: [{ perms: "delete", icon: "delete" }] },
+      }}
+    >
+      <Popconfirm title="Remove?">
+        <Button>Remove</Button>
+      </Popconfirm>
+    </Gate>,
+  );
+  expect(
+    screen
+      .getByRole("button", { name: /Remove$/ })
+      .querySelector("svg path")
+      .getAttribute("d"),
+  ).toBe(DeleteOutline.icon.children[0].attrs.d);
+});
+
+it("renders the supplied fallback when access is denied", () => {
+  render(
+    <Gate
+      perms="add"
+      global={{ permissions: { button: [] } }}
+      noAuth={<span>Unavailable</span>}
+    >
+      <Button>Add</Button>
+    </Gate>,
+  );
+  expect(screen.getByText("Unavailable")).toBeTruthy();
+  expect(screen.queryByRole("button", { name: /Add$/ })).toBeNull();
+});
+
+it("passes the granted permission metadata to an explicit renderer", () => {
+  const permission = { perms: "add", icon: "plus", id: "permission-1" };
+  const content = jest.fn((grant) => (
+    <button type="button" data-icon={grant.icon}>
+      Add
+    </button>
+  ));
+  render(
+    <Gate perms="add" global={{ permissions: { button: [permission] } }}>
+      {content}
+    </Gate>,
+  );
+  expect(content).toHaveBeenCalledWith(permission);
+  expect(
+    screen.getByRole("button", { name: "Add" }).getAttribute("data-icon"),
+  ).toBe("plus");
+});
+
+it("does not invoke a renderer without permission and removes it after revocation", () => {
+  const content = jest.fn(() => <button type="button">Add</button>);
+  const { rerender } = render(
+    <Gate perms="add" global={{ permissions: { button: [] } }}>
+      {content}
+    </Gate>,
+  );
+  expect(content).not.toHaveBeenCalled();
+  rerender(
+    <Gate perms="add" global={{ permissions: { button: [{ perms: "add" }] } }}>
+      {content}
+    </Gate>,
+  );
+  expect(screen.getByRole("button", { name: "Add" })).toBeTruthy();
+  const calls = content.mock.calls.length;
+  rerender(
+    <Gate perms="add" global={{ permissions: { button: [] } }}>
+      {content}
+    </Gate>,
+  );
+  expect(content).toHaveBeenCalledTimes(calls);
+  expect(screen.queryByRole("button", { name: "Add" })).toBeNull();
+});

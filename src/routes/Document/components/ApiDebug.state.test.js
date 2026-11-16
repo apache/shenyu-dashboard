@@ -21,24 +21,6 @@ import { deleteMockRequest } from "../../../services/api";
 import ApiContext from "./ApiContext";
 import ApiDebug from "./ApiDebug";
 
-jest.mock("antd", () => {
-  const ReactModule = jest.requireActual("react");
-  const antd = jest.requireActual("antd");
-  antd.Input.Group = ReactModule.forwardRef((props, ref) =>
-    ReactModule.createElement(
-      "div",
-      {
-        ref,
-        "data-input-group": Boolean(props),
-      },
-      props.children,
-    ),
-  );
-  return {
-    ...antd,
-  };
-});
-
 jest.mock("../../../components/ui/feedback", () => ({
   message: { error: jest.fn(), success: jest.fn(), warn: jest.fn() },
 }));

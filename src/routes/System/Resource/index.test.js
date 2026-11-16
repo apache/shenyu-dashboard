@@ -34,7 +34,11 @@ jest.mock(
   "../../../utils/AuthButton",
   () =>
     ({ children, perms }) =>
-      mockDenied.has(perms) ? null : children,
+      mockDenied.has(perms)
+        ? null
+        : typeof children === "function"
+          ? children({ perms, icon: "plus" })
+          : children,
 );
 jest.mock("../../../components/ui/feedback", () => ({
   message: { warn: jest.fn(), destroy: jest.fn() },
@@ -344,4 +348,103 @@ it("keeps a newer checkbox selection while an earlier deletion finishes", () => 
     within(screen.getByText("Other action").closest("tr")).getByRole("checkbox")
       .checked,
   ).toBe(true);
+});
+
+it("sorts the button table locally by creation time", () => {
+  const { callbacks } = setup();
+  fireEvent.click(screen.getByText("Alpha", { exact: true }));
+  act(() =>
+    callbacks.alpha([
+      { ...row("New action"), dateCreated: "2026-11-14 12:00:00" },
+      { ...row("Old action"), dateCreated: "2026-01-01 12:00:00" },
+    ]),
+  );
+  fireEvent.click(screen.getByText("SHENYU.SYSTEM.CREATETIME").closest("th"));
+  const rows = screen.getAllByRole("row").slice(1);
+  expect(rows[0].textContent).toContain("Old action");
+  expect(rows[1].textContent).toContain("New action");
+});
+
+it("cancels bulk deletion without dispatching and confirms the exact selected IDs", () => {
+  const { callbacks, dispatch } = setup();
+  fireEvent.click(screen.getByText("Alpha", { exact: true }));
+  act(() => callbacks.alpha([row("First action"), row("Second action")]));
+  fireEvent.click(screen.getAllByRole("checkbox")[0]);
+  const remove = screen.getByRole("button", {
+    name: "SHENYU.SYSTEM.DELETEDATA",
+  });
+  fireEvent.click(remove);
+  fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.CALCEL" }));
+  expect(
+    dispatch.mock.calls.some(([action]) => action.type === "resource/delete"),
+  ).toBe(false);
+  fireEvent.click(remove);
+  fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.SURE" }));
+  expect(dispatch).toHaveBeenCalledWith(
+    expect.objectContaining({
+      type: "resource/delete",
+      payload: { list: ["First action", "Second action"] },
+    }),
+  );
+});
+
+it("applies the menu query on form submit rather than while typing", () => {
+  setup();
+  const input = screen.getByPlaceholderText(
+    "SHENYU.SYSTEM.RESOURCE.MENU.INPUT.NAME",
+  );
+  fireEvent.change(input, { target: { value: "beta" } });
+  expect(screen.getByText("Alpha", { exact: true })).toBeTruthy();
+  fireEvent.submit(input.closest("form"));
+  expect(screen.queryByText("Alpha", { exact: true })).toBeNull();
+  expect(screen.getByText("Beta", { exact: true })).toBeTruthy();
+});
+
+it("updates the table's empty state when the application language changes", () => {
+  const props = {
+    resource: { menuTree: tree() },
+    loading: false,
+    dispatch: jest.fn(),
+  };
+  const { rerender } = render(
+    <Resource {...props} global={{ language: "en-US" }} />,
+  );
+  expect(screen.getByText("No Result", { exact: true })).toBeTruthy();
+  rerender(<Resource {...props} global={{ language: "zh-CN" }} />);
+  expect(screen.getByText("暂无数据", { exact: true })).toBeTruthy();
+  expect(screen.queryByText("No Result", { exact: true })).toBeNull();
+});
+
+it("does not render denied toolbar controls", () => {
+  ["list", "addMenu", "addButton", "deleteButton"].forEach((action) =>
+    mockDenied.add(`system:resource:${action}`),
+  );
+  setup();
+  expect(
+    screen.queryByPlaceholderText("SHENYU.SYSTEM.RESOURCE.MENU.INPUT.NAME"),
+  ).toBeNull();
+  [
+    "SHENYU.BUTTON.RESOURCE.MENU.ADD",
+    "SHENYU.BUTTON.RESOURCE.BUTTON.ADD",
+    "SHENYU.SYSTEM.DELETEDATA",
+  ].forEach((name) =>
+    expect(screen.queryByRole("button", { name })).toBeNull(),
+  );
+});
+
+it("confirms a menu deletion without issuing another menu selection request", () => {
+  const { dispatch } = setup();
+  fireEvent.click(screen.getByText("Alpha", { exact: true }));
+  fireEvent.click(
+    screen.getByRole("button", { name: "SHENYU.BUTTON.RESOURCE.MENU.DELETE" }),
+  );
+  dispatch.mockClear();
+  fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.SURE" }));
+  expect(dispatch).toHaveBeenCalledTimes(1);
+  expect(dispatch).toHaveBeenCalledWith(
+    expect.objectContaining({
+      type: "resource/delete",
+      payload: { list: ["alpha"] },
+    }),
+  );
 });

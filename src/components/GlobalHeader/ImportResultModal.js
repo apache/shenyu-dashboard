@@ -16,8 +16,8 @@
  */
 
 import React, { Component } from "react";
-import { Modal, Form, Tooltip } from "antd";
-import { connect } from "react-redux";
+import Tooltip from "@douyinfe/semi-ui/lib/es/tooltip";
+import Modal from "../ui/Modal";
 import { getIntlContent } from "../../utils/IntlUtils";
 
 const keyMap = {
@@ -37,32 +37,19 @@ const keyMap = {
   dictImportFailMessage: "dictImportFailMessage",
 };
 
-@connect(({ global }) => ({
-  platform: global.platform,
-}))
 class ImportResultModal extends Component {
-  // eslint-disable-next-line react/no-unused-class-component-methods
-  handleSubmit = (e) => {
-    const { form, handleOk } = this.props;
-    e.preventDefault();
-    form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        let { file } = values;
-        handleOk({ file });
-      }
-    });
-  };
-
   handleRes = (json, key) => {
-    // return data;
     const data = json[key];
-    const maxLength = 50; // set the max show length
-    if (data && data.length > maxLength) {
-      return (
-        <Tooltip title={data}>{`${data.substring(0, maxLength)}...`}</Tooltip>
-      );
-    }
-    return <Tooltip title={data}>{data}</Tooltip>;
+    const maxLength = 50;
+    const display =
+      typeof data === "string" && data.length > maxLength
+        ? `${data.substring(0, maxLength)}...`
+        : data;
+    return (
+      <Tooltip content={data}>
+        <span>{display}</span>
+      </Tooltip>
+    );
   };
 
   formatKey = (key) => {
@@ -78,12 +65,14 @@ class ImportResultModal extends Component {
   };
 
   render() {
-    let { onOk, onCancel, json } = this.props;
+    const { onOk, onCancel, json = {} } = this.props;
 
     return (
       <Modal
         title={getIntlContent("SHENYU.COMMON.IMPORT.RESULT")}
         visible
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onOk={onOk}
         onCancel={onCancel}
       >
@@ -95,4 +84,4 @@ class ImportResultModal extends Component {
   }
 }
 
-export default Form.create()(ImportResultModal);
+export default ImportResultModal;

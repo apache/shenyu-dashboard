@@ -16,8 +16,11 @@
  */
 
 import React, { Component } from "react";
-import { Modal, TreeSelect, Dropdown, Menu, Button, Icon } from "antd";
+import TreeSelect from "@douyinfe/semi-ui/lib/es/treeSelect";
 import { connect } from "react-redux";
+import Modal from "../../../components/ui/Modal";
+import Select from "../../../components/ui/Select";
+import { message } from "../../../components/ui/feedback";
 import {
   getPluginDropDownListByNamespace,
   getAllSelectors,
@@ -38,32 +41,56 @@ class SelectorCopy extends Component {
       loading: false,
       currentNamespaceId: defaultNamespaceId,
     };
+    this.ruleRequestId = 0;
+    this.detailRequestId = 0;
   }
 
   componentDidMount() {
     this.getAllSelectors();
   }
 
+  componentWillUnmount() {
+    this.ruleRequestId += 1;
+    this.detailRequestId += 1;
+  }
+
   handleNamespacesValueChange = (value) => {
-    this.setState({ currentNamespaceId: value.key }, () => {
-      this.getAllSelectors();
-    });
+    this.detailRequestId += 1;
+    this.setState(
+      {
+        currentNamespaceId: value.key,
+        value: undefined,
+        selectorTree: [],
+        loading: false,
+      },
+      () => {
+        this.getAllSelectors();
+      },
+    );
   };
 
   getAllSelectors = async () => {
     const { currentNamespaceId } = this.state;
+    this.ruleRequestId += 1;
+    const requestId = this.ruleRequestId;
     const { code: pluginCode, data: pluginList = [] } =
       await getPluginDropDownListByNamespace({
         namespace: currentNamespaceId,
       });
+    if (requestId !== this.ruleRequestId) return;
     const {
       code: selectorCode,
-      data: { dataList: selectorList = [] },
+      data: { dataList: selectorList = [], page = {} } = {},
     } = await getAllSelectors({
       currentPage: 1,
       pageSize: 9999,
       namespaceId: currentNamespaceId,
     });
+    if (requestId !== this.ruleRequestId) return;
+    let incomplete =
+      pluginCode !== 200 ||
+      selectorCode !== 200 ||
+      Number(page.totalCount || 0) > selectorList.length;
     const pluginMap = {};
     const selectorTree = [];
     if (pluginCode === 200 && selectorCode === 200) {
@@ -84,40 +111,54 @@ class SelectorCopy extends Component {
             disabled: true,
             children: pluginMap[key],
           });
+        } else {
+          incomplete = true;
         }
       });
     }
+    if (incomplete)
+      message.warn(
+        "Some source selectors could not be loaded. Please refresh and try again.",
+      );
     this.setState({ selectorTree });
   };
 
   handleChangeSelect = (value) => {
-    this.setState({ value });
+    this.detailRequestId += 1;
+    this.setState({ value, loading: false });
   };
 
   handleCancel = () => {
+    this.detailRequestId += 1;
     const { onCancel } = this.props;
     // eslint-disable-next-line no-unused-expressions
     onCancel && onCancel();
     this.setState({
       value: undefined,
+      loading: false,
     });
   };
 
   handleOk = async () => {
-    const { onOk, currentNamespaceId } = this.props;
-    const { value } = this.state;
-    this.setState({
-      loading: true,
-    });
-    const { data = {} } = await findSelector({
-      id: value,
-      namespaceId: currentNamespaceId,
-    });
-    this.setState({
-      loading: false,
-    });
-    // eslint-disable-next-line no-unused-expressions
-    onOk && onOk(data);
+    const { onOk } = this.props;
+    const { value, currentNamespaceId, loading } = this.state;
+    if (!value || loading) return;
+    this.detailRequestId += 1;
+    const requestId = this.detailRequestId;
+    this.setState({ loading: true });
+    try {
+      const { code, data } = await findSelector({
+        id: value,
+        namespaceId: currentNamespaceId,
+      });
+      if (requestId !== this.detailRequestId) return;
+      if (code === 200 && data && onOk) onOk(data);
+    } catch (error) {
+      if (requestId === this.detailRequestId)
+        message.warn("Source details could not be loaded. Please try again.");
+    } finally {
+      if (requestId === this.detailRequestId) this.setState({ loading: false });
+    }
   };
 
   render() {
@@ -128,52 +169,38 @@ class SelectorCopy extends Component {
         visible={visible}
         centered
         title={getIntlContent("SHENYU.COMMON.SOURCE")}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onCancel={this.handleCancel}
         onOk={this.handleOk}
         confirmLoading={loading}
+        okButtonProps={{ disabled: !value || loading }}
       >
-        <Dropdown
-          placement="bottomCenter"
-          overlay={
-            <Menu onClick={this.handleNamespacesValueChange}>
-              {namespaces.map((namespace) => {
-                let isCurrentNamespace =
-                  currentNamespaceId === namespace.namespaceId;
-                return (
-                  <Menu.Item
-                    key={namespace.namespaceId}
-                    disabled={isCurrentNamespace}
-                  >
-                    <span>{namespace.name}</span>
-                  </Menu.Item>
-                );
-              })}
-            </Menu>
-          }
+        <Select
+          aria-label={getIntlContent("SHENYU.SYSTEM.NAMESPACE")}
+          style={{ marginBottom: 20 }}
+          value={currentNamespaceId}
+          onChange={(key) => this.handleNamespacesValueChange({ key })}
         >
-          <Button style={{ marginBottom: 20 }}>
-            <a
-              className="ant-dropdown-link"
-              style={{ fontWeight: "bold" }}
-              onClick={(e) => e.preventDefault()}
+          {namespaces.map((namespace) => (
+            <Select.Option
+              key={namespace.namespaceId}
+              value={namespace.namespaceId}
             >
-              {`${getIntlContent("SHENYU.SYSTEM.NAMESPACE")} / ${
-                namespaces.find(
-                  (namespace) => currentNamespaceId === namespace.namespaceId,
-                )?.name
-              } `}
-            </a>
-            <Icon type="down" />
-          </Button>
-        </Dropdown>
+              {namespace.name}
+            </Select.Option>
+          ))}
+        </Select>
         <TreeSelect
           style={{ width: "100%" }}
-          showSearch
+          filterTreeNode
+          motion={false}
           value={value}
           onChange={this.handleChangeSelect}
           placeholder={getIntlContent("SHENYU.SELECTOR.SOURCE.PLACEHOLDER")}
           treeData={selectorTree}
-          treeDefaultExpandAll
+          expandAll
+          keyMaps={{ label: "title", key: "value", value: "value" }}
           treeNodeFilterProp="title"
         />
       </Modal>

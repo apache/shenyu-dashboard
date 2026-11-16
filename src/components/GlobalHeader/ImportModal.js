@@ -15,95 +15,57 @@
  * limitations under the License.
  */
 
-import React, { Component, forwardRef } from "react";
-import { Modal, Form, Button, Dropdown, Menu, Icon } from "antd";
+import React, {
+  Component,
+  forwardRef,
+  useRef,
+  useImperativeHandle,
+} from "react";
+import Button from "@douyinfe/semi-ui/lib/es/button";
 import { connect } from "react-redux";
+import Modal from "../ui/Modal";
+import Form from "../ui/Form";
+import Select from "../ui/Select";
 import { getIntlContent } from "../../utils/IntlUtils";
 import { defaultNamespaceId } from "../_utils/utils";
 
 const FormItem = Form.Item;
-const ChooseFile = forwardRef(({ onChange, file }, ref) => {
+const ChooseFile = forwardRef(({ onChange, file, id }, ref) => {
+  const inputRef = useRef(null);
+  useImperativeHandle(ref, () => inputRef.current);
   const handleFileInput = (e) => {
     onChange(e.target.files[0]);
   };
   return (
     <>
       <Button
+        htmlType="button"
+        type="primary"
+        theme="light"
         onClick={() => {
-          document.getElementById("file").click();
+          inputRef.current.click();
         }}
       >
         {getIntlContent("SHENYU.COMMON.UPLOAD")}
       </Button>{" "}
       {file?.name}
       <input
-        ref={ref}
+        ref={inputRef}
         type="file"
         onChange={handleFileInput}
         style={{ display: "none" }}
-        id="file"
+        id={id}
+        aria-label={getIntlContent("SHENYU.COMMON.UPLOAD")}
       />
     </>
   );
 });
-
-const NamespaceSelector = forwardRef(
-  // eslint-disable-next-line no-unused-vars
-  ({ onChange, currentNamespaceId, namespaces }, ref) => {
-    const handleNamespaceChange = (value) => {
-      onChange(value.key);
-    };
-    return (
-      <Dropdown
-        overlay={
-          <Menu onClick={handleNamespaceChange}>
-            {namespaces.map((namespace) => {
-              let isCurrentNamespace =
-                currentNamespaceId === namespace.namespaceId;
-              return (
-                <Menu.Item
-                  key={namespace.namespaceId}
-                  disabled={isCurrentNamespace}
-                >
-                  <span>{namespace.name}</span>
-                </Menu.Item>
-              );
-            })}
-          </Menu>
-        }
-      >
-        <Button>
-          <a
-            className="ant-dropdown-link"
-            style={{ fontWeight: "bold" }}
-            onClick={(e) => e.preventDefault()}
-          >
-            {`${getIntlContent("SHENYU.SYSTEM.NAMESPACE")} / ${
-              namespaces.find(
-                (namespace) => currentNamespaceId === namespace.namespaceId,
-              )?.name
-            } `}
-          </a>
-          <Icon type="down" />
-        </Button>
-      </Dropdown>
-    );
-  },
-);
 
 @connect(({ global }) => ({
   platform: global.platform,
   namespaces: global.namespaces,
 }))
 class ImportModal extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      currentNamespaceId: defaultNamespaceId,
-    };
-  }
-
   handleSubmit = (e) => {
     const { form, handleOk } = this.props;
     e.preventDefault();
@@ -115,13 +77,8 @@ class ImportModal extends Component {
     });
   };
 
-  handleNamespacesValueChange = (value) => {
-    this.setState({ currentNamespaceId: value });
-  };
-
   render() {
-    let { handleCancel, form, config, file, namespaces } = this.props;
-    let { currentNamespaceId } = this.state;
+    const { handleCancel, form, file, namespaces } = this.props;
     const { getFieldDecorator } = form;
     const formItemLayout = {
       labelCol: {
@@ -131,9 +88,6 @@ class ImportModal extends Component {
         sm: { span: 17 },
       },
     };
-    if (config) {
-      config = JSON.parse(config);
-    }
 
     return (
       <Modal
@@ -157,14 +111,21 @@ class ImportModal extends Component {
                   required: true,
                 },
               ],
-              initialValue: currentNamespaceId,
-              valuePropName: "namespace",
+              initialValue: defaultNamespaceId,
             })(
-              <NamespaceSelector
-                onChange={this.handleNamespacesValueChange}
-                currentNamespaceId={currentNamespaceId}
-                namespaces={namespaces}
-              />,
+              <Select
+                showSearch
+                placeholder={getIntlContent("SHENYU.SYSTEM.NAMESPACE")}
+              >
+                {namespaces.map((namespace) => (
+                  <Select.Option
+                    key={namespace.namespaceId}
+                    value={namespace.namespaceId}
+                  >
+                    {namespace.name}
+                  </Select.Option>
+                ))}
+              </Select>,
             )}
           </FormItem>
           <FormItem

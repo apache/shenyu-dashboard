@@ -1,0 +1,146 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React from "react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import Header from "./index";
+
+jest.mock("react-redux", () => ({ connect: () => (Component) => Component }));
+jest.mock("../../runtime/router", () => ({
+  withRouter: (Component) => Component,
+}));
+jest.mock("../../services/api", () => ({
+  checkUserPassword: jest.fn().mockResolvedValue({ code: 200 }),
+}));
+jest.mock("../_utils/utils", () => ({ defaultNamespaceId: "default" }));
+jest.mock("../../utils/IntlUtils", () => ({
+  getIntlContent: (key) => key,
+  getCurrentLocale: jest.fn(),
+}));
+jest.mock("../../utils/emit", () => ({ emit: { emit: jest.fn() } }));
+jest.mock("../../utils/AuthRoute", () => ({ resetAuthMenuCache: jest.fn() }));
+function mount() {
+  sessionStorage.removeItem("token");
+  const ref = React.createRef(),
+    dispatch = jest.fn(),
+    changeLocalName = jest.fn();
+  render(
+    <Header
+      wrappedComponentRef={ref}
+      dispatch={dispatch}
+      permissions={{ button: [] }}
+      namespaces={[]}
+      currentNamespaceId="default"
+      location={{ pathname: "/home" }}
+      changeLocalName={changeLocalName}
+      onLogout={jest.fn()}
+    />,
+  );
+  return { ref, dispatch, changeLocalName };
+}
+it("switches namespace with matching plugin/permission refresh", () => {
+  const h = mount();
+  act(() => h.ref.current.handleNamespacesValueChange({ key: "next" }));
+  expect(h.dispatch.mock.calls.map(([a]) => a.type)).toEqual([
+    "global/saveCurrentNamespaceId",
+    "global/fetchPlugins",
+    "global/fetchPermission",
+  ]);
+  expect(h.dispatch.mock.calls[2][0].payload.namespaceId).toBe("next");
+});
+it("keeps password validation and confirmation rules", async () => {
+  const h = mount();
+  act(() => h.ref.current.setState({ visible: true }));
+  const form = h.ref.current.props.form;
+  const validate = () =>
+    new Promise((resolve) => {
+      form.validateFields((err, values) => resolve({ err, values }));
+    });
+  act(() =>
+    form.setFieldsValue({
+      oldPassword: "old-fixture",
+      password: "short",
+      confirmPassword: "short",
+    }),
+  );
+  let result;
+  await act(async () => {
+    result = await validate();
+  });
+  expect(result.err).toBeTruthy();
+  act(() =>
+    form.setFieldsValue({
+      password: "Synthetic-Only1!",
+      confirmPassword: "different",
+    }),
+  );
+  await act(async () => {
+    result = await validate();
+  });
+  expect(result.err.confirmPassword).toBeTruthy();
+  act(() => form.setFieldsValue({ confirmPassword: "Synthetic-Only1!" }));
+  await act(async () => {
+    result = await validate();
+  });
+  expect(result.err).toBeFalsy();
+  expect(result.values.oldPassword).toBe("old-fixture");
+});
+
+it("uses the canonical English locale from the native language menu", async () => {
+  const h = mount();
+  expect(
+    screen.getByRole("button", { name: "Language" }).querySelector("svg"),
+  ).not.toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Language" }));
+  fireEvent.click(await screen.findByText("English"));
+  expect(h.changeLocalName).toHaveBeenCalledWith("en-US");
+  expect(sessionStorage.getItem("locale")).toBe("en-US");
+});
+it("submits a validated password change and logs out only after success", async () => {
+  sessionStorage.setItem("userId", "fixture-id");
+  sessionStorage.setItem("userName", "fixture-user");
+  const h = mount();
+  act(() => {
+    h.ref.current.setState({ visible: true });
+  });
+  act(() =>
+    h.ref.current.props.form.setFieldsValue({
+      oldPassword: "old-fixture",
+      password: "Synthetic-Only1!",
+      confirmPassword: "Synthetic-Only1!",
+    }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.SURE" }));
+  await waitFor(() => expect(h.dispatch).toHaveBeenCalled());
+  const action = h.dispatch.mock.calls[0][0];
+  expect(action.type).toBe("manage/updatePassword");
+  expect(action.payload).toEqual({
+    id: "fixture-id",
+    userName: "fixture-user",
+    oldPassword: "old-fixture",
+    password: "Synthetic-Only1!",
+  });
+  expect(h.ref.current.props.onLogout).not.toHaveBeenCalled();
+  act(() => action.callback());
+  expect(h.ref.current.props.onLogout).toHaveBeenCalledTimes(1);
+});

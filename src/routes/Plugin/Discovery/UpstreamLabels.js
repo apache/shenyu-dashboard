@@ -16,23 +16,22 @@
  */
 
 import React, { Component } from "react";
-import {
-  Alert,
-  Button,
-  Empty,
-  Form,
-  Input,
-  Popover,
-  Tag,
-  Typography,
-} from "antd";
+import Banner from "@douyinfe/semi-ui/lib/es/banner";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Empty from "@douyinfe/semi-ui/lib/es/empty";
+import Popover from "@douyinfe/semi-ui/lib/es/popover";
+import Tag from "@douyinfe/semi-ui/lib/es/tag";
+import Typography from "@douyinfe/semi-ui/lib/es/typography";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import {
   getUpstreamLabels,
   parseUpstreamProps,
   validateLabelRows,
 } from "../../../utils/upstreamLabels";
-import styles from "./UpstreamLabels.less";
+import styles from "./UpstreamLabels.module.less";
 
 const text = (key) => getIntlContent(`SHENYU.UPSTREAM.LABELS.${key}`);
 
@@ -56,13 +55,15 @@ export function UpstreamLabelSummary({ record }) {
       {keys.slice(0, 2).map(renderTag)}
       {keys.length > 2 && (
         <Popover
-          title={text("TITLE")}
           trigger="click"
           content={
-            <div className={styles.allLabels}>{keys.map(renderTag)}</div>
+            <div className={styles.allLabels}>
+              <strong>{text("TITLE")}</strong>
+              {keys.map(renderTag)}
+            </div>
           }
         >
-          <Button type="link" size="small" aria-label={text("VIEW_ALL")}>
+          <Button theme="borderless" size="small" aria-label={text("VIEW_ALL")}>
             +{keys.length - 2}
           </Button>
         </Popover>
@@ -139,7 +140,7 @@ export default class UpstreamLabels extends Component {
           <strong>{text("EDIT")}</strong>
         </div>
         {invalid ? (
-          <Alert type="error" showIcon message={text("INVALID")} />
+          <Banner type="danger" title={text("INVALID")} closeIcon={null} />
         ) : (
           <>
             <div className={styles.header}>
@@ -148,12 +149,7 @@ export default class UpstreamLabels extends Component {
               <span />
             </div>
             <div className={styles.rows}>
-              {rows.length === 0 && (
-                <Empty
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description={text("EMPTY_HINT")}
-                />
-              )}
+              {rows.length === 0 && <Empty description={text("EMPTY_HINT")} />}
               {rows.map((row, index) => (
                 <div className={styles.row} key={row.id}>
                   <Form.Item
@@ -182,8 +178,8 @@ export default class UpstreamLabels extends Component {
                     />
                   </Form.Item>
                   <Button
-                    icon="delete"
-                    type="link"
+                    icon={<ResourceIcon type="delete" />}
+                    theme="borderless"
                     aria-label={`${text("REMOVE")} ${index + 1}`}
                     title={text("REMOVE")}
                     onClick={() =>
@@ -200,8 +196,8 @@ export default class UpstreamLabels extends Component {
         )}
         <div className={styles.actions}>
           <Button
-            type="dashed"
-            icon="plus"
+            theme="outline"
+            icon={<ResourceIcon type="plus" />}
             disabled={invalid}
             onClick={() =>
               this.setState({

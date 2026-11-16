@@ -16,8 +16,7 @@
  */
 
 import React from "react";
-import { ConfigProvider, BackTop } from "antd";
-import enUS from "antd/lib/locale-provider/en_US";
+import BackTop from "@douyinfe/semi-ui/lib/es/backtop";
 import { routerRedux, Route, Switch } from "./runtime/router";
 import DashboardLocale from "./components/ui/DashboardLocale";
 import AuthRoute from "./utils/AuthRoute";
@@ -30,19 +29,17 @@ function RouterConfig({ history, routerData }) {
 
   return (
     <DashboardLocale>
-      <ConfigProvider locale={enUS}>
-        <ConnectedRouter history={history}>
-          <Switch>
-            <Route path="/user" component={UserLayout} />
-            <AuthRoute
-              path="/"
-              component={BasicLayout}
-              redirectPath="/user/login"
-            />
-          </Switch>
-        </ConnectedRouter>
-        <BackTop />
-      </ConfigProvider>
+      <ConnectedRouter history={history}>
+        <Switch>
+          <Route path="/user" component={UserLayout} />
+          <AuthRoute
+            path="/"
+            component={BasicLayout}
+            redirectPath="/user/login"
+          />
+        </Switch>
+      </ConnectedRouter>
+      <BackTop />
     </DashboardLocale>
   );
 }

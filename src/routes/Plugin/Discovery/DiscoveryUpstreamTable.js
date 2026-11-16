@@ -15,386 +15,310 @@
  * limitations under the License.
  */
 
-/* eslint-disable max-classes-per-file */
 import React, { Component } from "react";
-import {
-  Button,
-  Form,
-  Input,
-  InputNumber,
-  Popconfirm,
-  Select,
-  Switch,
-  Table,
-} from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Input from "../../../components/ui/Input";
+import InputNumber from "../../../components/ui/InputNumber";
+import Select from "../../../components/ui/Select";
+import Switch from "../../../components/ui/Switch";
 import { getIntlContent } from "../../../utils/IntlUtils";
-
 import UpstreamLabels, { UpstreamLabelSummary } from "./UpstreamLabels";
 
-const EditableContext = React.createContext();
-const { Option } = Select;
+const fields = [
+  "protocol",
+  "url",
+  "status",
+  "weight",
+  "startupTime",
+  "warmupTime",
+  "gray",
+];
+const numericFields = ["weight", "startupTime", "warmupTime"];
 
-class EditableCell extends Component {
-  getInput = () => {
-    if (this.props.inputType === "number") {
-      return <InputNumber />;
-    } else if (this.props.inputType === "dropdown") {
-      // return <Select />;
-      return (
-        <Select>
-          <Option value={0}>{getIntlContent("SHENYU.COMMON.OPEN")}</Option>
-          <Option value={1}>{getIntlContent("SHENYU.COMMON.CLOSE")}</Option>
-        </Select>
-      );
-    } else if (this.props.inputType === "switch") {
-      return <Switch />;
-    }
-    return <Input />;
-  };
-
-  renderCell = ({ getFieldDecorator }) => {
-    const {
-      editing,
-      dataIndex,
-      title,
-      inputType,
-      record,
-      index,
-      children,
-      ...restProps
-    } = this.props;
-    return (
-      <td {...restProps}>
-        {editing ? (
-          <Form.Item style={{ margin: 0 }}>
-            {dataIndex === "gray"
-              ? getFieldDecorator(dataIndex, {
-                  rules: [
-                    {
-                      required: true,
-                      message: `Please Input ${title}!`,
-                    },
-                  ],
-                  valuePropName: "checked",
-                  initialValue:
-                    record[dataIndex] === "true" || record[dataIndex] === true,
-                })(this.getInput())
-              : getFieldDecorator(dataIndex, {
-                  rules: [
-                    {
-                      required: true,
-                      message: `Please Input ${title}!`,
-                    },
-                  ],
-                  initialValue:
-                    dataIndex === "status"
-                      ? Number(record[dataIndex])
-                      : record[dataIndex],
-                })(this.getInput())}
-          </Form.Item>
-        ) : (
-          children
-        )}
-      </td>
-    );
-  };
-
-  render() {
-    return (
-      <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer>
-    );
-  }
-}
-
-class EditableTable extends Component {
-  tableRef = React.createRef();
-
+export class EditableTable extends Component {
   labelsRef = React.createRef();
 
   constructor(props) {
     super(props);
-    this.state = {
-      editingKey: "",
-      editorWidth: undefined,
-      isLocal: this.props.isLocal,
-    };
-    this.columns = [
-      {
-        title: "protocol",
-        dataIndex: "protocol",
-        editable: true,
-        width: 110,
-        align: "center",
-      },
-      {
-        title: "url",
-        dataIndex: "url",
-        editable: this.state.isLocal,
-        width: 200,
-        align: "center",
-      },
-      {
-        title: "status",
-        dataIndex: "status",
-        editable: true,
-        width: 90,
-        align: "center",
-        render: (text) => {
-          const statusMap = {
-            0: getIntlContent("SHENYU.COMMON.OPEN"),
-            1: getIntlContent("SHENYU.COMMON.CLOSE"),
-            false: getIntlContent("SHENYU.COMMON.OPEN"),
-            true: getIntlContent("SHENYU.COMMON.CLOSE"),
-          };
-          return statusMap[text] || getIntlContent("SHENYU.COMMON.CLOSE");
-        },
-      },
-      {
-        title: "weight",
-        dataIndex: "weight",
-        width: 100,
-        editable: true,
-        align: "center",
-      },
-      {
-        title: "startupTime",
-        dataIndex: "startupTime",
-        width: 130,
-        editable: this.state.isLocal,
-        align: "center",
-      },
-      {
-        title: "warmupTime",
-        dataIndex: "warmupTime",
-        width: 130,
-        editable: true,
-        align: "center",
-      },
-      {
-        title: "gray",
-        dataIndex: "gray",
-        width: 80,
-        editable: true,
-        align: "center",
-        render: (text, record) => {
-          return (
-            <Switch
-              disabled
-              checked={record.gray === "true" || record.gray === true}
-            />
-          );
-        },
-      },
-      {
-        title: getIntlContent("SHENYU.UPSTREAM.LABELS.TITLE"),
-        key: "labels",
-        width: 280,
-        render: (value, record) => <UpstreamLabelSummary record={record} />,
-      },
-      {
-        title: getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.OPERATION"),
-        dataIndex: "operation",
-        width: 160,
-        align: "center",
-        render: (text, record) => {
-          const { editingKey } = this.state;
-          const editable = this.isEditing(record);
-          return (
-            <span>
-              {editable ? (
-                <span>
-                  <Button
-                    type="link"
-                    onClick={() => this.save(this.props.form, record.key)}
-                  >
-                    {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.SAVE")}
-                  </Button>
-                  <Button type="link" onClick={this.cancel}>
-                    {getIntlContent(
-                      "SHENYU.DISCOVERY.SELECTOR.UPSTREAM.CANCEL",
-                    )}
-                  </Button>
-                </span>
-              ) : (
-                <span>
-                  <Button
-                    type="link"
-                    disabled={editingKey !== ""}
-                    onClick={() => this.edit(record.key)}
-                  >
-                    {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.EDIT")}
-                  </Button>{" "}
-                  {this.props.dataSource.length >= 1 && this.state.isLocal ? (
-                    <Popconfirm
-                      title={getIntlContent(
-                        "SHENYU.DISCOVERY.SELECTOR.UPSTREAM.DELETE.CONFIRM",
-                      )}
-                      onConfirm={() => this.handleDelete(record.key)}
-                      okText={getIntlContent("SHENYU.COMMON.SURE")}
-                      cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-                    >
-                      <Button
-                        type="link"
-                        disabled={this.state.editingKey !== ""}
-                      >
-                        {getIntlContent("SHENYU.BUTTON.SYSTEM.DELETE")}
-                      </Button>
-                    </Popconfirm>
-                  ) : null}
-                </span>
-              )}
-            </span>
-          );
-        },
-      },
-    ];
+    this.state = { editingKey: "", draft: {}, errors: {} };
   }
 
-  componentDidMount() {
-    this.resizeEditor();
-    window.addEventListener("resize", this.resizeEditor);
+  componentDidUpdate() {
+    const { editingKey } = this.state;
+    if (
+      editingKey !== "" &&
+      !this.props.dataSource.some((row) => row.key === editingKey)
+    )
+      this.cancel();
   }
-
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.resizeEditor);
-  }
-
-  resizeEditor = () => {
-    if (this.tableRef.current)
-      this.setState({ editorWidth: this.tableRef.current.offsetWidth - 34 });
-  };
-
-  renderLabels = (record) =>
-    this.isEditing(record) ? (
-      <UpstreamLabels
-        ref={this.labelsRef}
-        record={record}
-        width={this.state.editorWidth}
-      />
-    ) : null;
-
-  isEditing = (record) => record.key === this.state.editingKey;
 
   cancel = () => {
-    this.setState({ editingKey: "" });
-    this.props.form.resetFields();
-    if (this.props.onEditingChange) this.props.onEditingChange(false);
+    this.setState({ editingKey: "", draft: {}, errors: {} });
+    this.props.onEditingChange?.(false);
   };
 
-  handleDelete = (key) => {
-    const { dataSource } = this.props;
-    const newData = dataSource.filter((item) => item.key !== key);
-    this.props.onTableChange(newData);
+  editable = (field) =>
+    this.props.isLocal || !["url", "startupTime"].includes(field);
+
+  edit = (row) => {
+    this.props.onEditingChange?.(true);
+    this.setState({
+      editingKey: row.key,
+      draft: {
+        ...row,
+        status: Number(row.status),
+        gray: row.gray === "true" || row.gray === true,
+      },
+      errors: {},
+    });
   };
+
+  change = (field, value) =>
+    this.setState((previous) => ({
+      draft: { ...previous.draft, [field]: value },
+      errors: { ...previous.errors, [field]: undefined },
+    }));
+
+  handleDelete = (key) =>
+    this.props.onTableChange(
+      this.props.dataSource.filter((row) => row.key !== key),
+    );
 
   handleAdd = () => {
-    const { dataSource, recordCount } = this.props;
-    const newRecordCount = recordCount + 1;
-    const newData = {
-      key: newRecordCount,
-      protocol: "http://",
-      url: "localhost:",
-      status: 0,
-      weight: 50,
-      startupTime: 0,
-      warmupTime: 10,
-      gray: false,
-    };
-    this.props.onTableChange([...dataSource, newData]);
-    this.props.onCountChange(newRecordCount);
+    const { dataSource, recordCount, onTableChange, onCountChange } =
+      this.props;
+    let key = (Number(recordCount) || 0) + 1;
+    const keys = new Set(dataSource.map((row) => String(row.key)));
+    while (keys.has(String(key))) key += 1;
+    onTableChange([
+      ...dataSource,
+      {
+        key,
+        protocol: "http://",
+        url: "localhost:",
+        status: 0,
+        weight: 50,
+        startupTime: 0,
+        warmupTime: 10,
+        gray: false,
+      },
+    ]);
+    onCountChange(key);
   };
 
-  save(form, key) {
-    const labels = this.labelsRef.current && this.labelsRef.current.validate();
-    form.validateFields((error, row) => {
-      if (error || !labels) return;
-      const newData = this.props.dataSource.map((item) =>
-        item.key === key ? { ...item, ...row, ...labels } : item,
-      );
-      this.props.onTableChange(newData);
-      this.cancel();
+  save = () => {
+    const { editingKey, draft } = this.state;
+    const errors = {};
+    fields.filter(this.editable).forEach((field) => {
+      if (
+        draft[field] === undefined ||
+        draft[field] === null ||
+        draft[field] === ""
+      )
+        errors[field] = `Please Input ${field}!`;
     });
-  }
+    if (Object.keys(errors).length) {
+      this.setState({ errors });
+      return;
+    }
+    const labels = this.labelsRef.current?.validate();
+    if (!labels) return;
+    const patch = { ...labels };
+    fields.filter(this.editable).forEach((field) => {
+      patch[field] = draft[field];
+    });
+    this.props.onTableChange(
+      this.props.dataSource.map((row) =>
+        row.key === editingKey ? { ...row, ...patch } : row,
+      ),
+    );
+    this.cancel();
+  };
 
-  edit(key) {
-    this.props.form.resetFields();
-    this.resizeEditor();
-    this.setState({ editingKey: key });
-    if (this.props.onEditingChange) this.props.onEditingChange(true);
-  }
+  renderInput = (field) => {
+    const { draft, errors } = this.state;
+    const props = {
+      "aria-label": field,
+      "aria-invalid": Boolean(errors[field]),
+      value: draft[field],
+      onChange: (value) => this.change(field, value),
+      style: { width: "100%" },
+    };
+    let input;
+    if (field === "gray")
+      input = (
+        <Switch
+          aria-label={field}
+          checked={draft.gray}
+          onChange={(value) => this.change(field, value)}
+        />
+      );
+    else if (field === "status")
+      input = (
+        <Select {...props}>
+          <Select.Option value={0}>
+            {getIntlContent("SHENYU.COMMON.OPEN")}
+          </Select.Option>
+          <Select.Option value={1}>
+            {getIntlContent("SHENYU.COMMON.CLOSE")}
+          </Select.Option>
+        </Select>
+      );
+    else if (numericFields.includes(field)) input = <InputNumber {...props} />;
+    else
+      input = (
+        <Input
+          {...props}
+          onChange={(event) => this.change(field, event.target.value)}
+        />
+      );
+    return (
+      <div>
+        {input}
+        {errors[field] && (
+          <div role="alert" style={{ color: "var(--semi-color-danger)" }}>
+            {errors[field]}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  renderLabels = (record) => (
+    <UpstreamLabels key={record.key} ref={this.labelsRef} record={record} />
+  );
 
   render() {
-    const components = {
-      body: {
-        cell: EditableCell,
+    const { dataSource, isLocal } = this.props;
+    const { editingKey } = this.state;
+    const columns = fields.map((field) => ({
+      title: field,
+      dataIndex: field,
+      width: field === "url" ? 220 : 120,
+      render: (value, row) => {
+        if (row.key === editingKey && this.editable(field))
+          return this.renderInput(field);
+        if (field === "status")
+          return getIntlContent(
+            Number(value) === 0 ? "SHENYU.COMMON.OPEN" : "SHENYU.COMMON.CLOSE",
+          );
+        if (field === "gray")
+          return (
+            <Switch
+              aria-label="gray"
+              disabled={Number(row.status) === 1 || editingKey !== ""}
+              checked={value === "true" || value === true}
+              onChange={(gray) =>
+                this.props.onTableChange(
+                  dataSource.map((item) =>
+                    item.key === row.key ? { ...item, gray } : item,
+                  ),
+                )
+              }
+            />
+          );
+        return value;
       },
-    };
-
-    const columns = this.columns.map((col) => {
-      if (!col.editable) {
-        return col;
-      }
-
-      let inputType = "text";
-      if (
-        col.dataIndex === "weight" ||
-        col.dataIndex === "startupTime" ||
-        col.dataIndex === "warmupTime"
-      ) {
-        inputType = "number";
-      } else if (col.dataIndex === "status") {
-        inputType = "dropdown";
-      } else if (col.dataIndex === "gray") {
-        inputType = "switch";
-      }
-      return {
-        ...col,
-        onCell: (record) => ({
-          record,
-          inputType,
-          dataIndex: col.dataIndex,
-          title: col.title,
-          editing: this.isEditing(record),
-        }),
-      };
+    }));
+    columns.push({
+      title: getIntlContent("SHENYU.UPSTREAM.LABELS.TITLE"),
+      key: "labels",
+      width: 280,
+      render: (_, record) => <UpstreamLabelSummary record={record} />,
     });
-
+    columns.push({
+      title: getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.OPERATION"),
+      dataIndex: "operation",
+      width: 180,
+      render: (_, row) => {
+        if (row.key === editingKey)
+          return (
+            <div>
+              <Button theme="borderless" onClick={this.save}>
+                {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.SAVE")}
+              </Button>
+              <Popconfirm
+                motion={false}
+                title={getIntlContent(
+                  "SHENYU.DISCOVERY.SELECTOR.UPSTREAM.CANCEL.CONFIRM",
+                )}
+                onConfirm={this.cancel}
+                okText={getIntlContent("SHENYU.COMMON.SURE")}
+                cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+              >
+                <Button theme="borderless">
+                  {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.CANCEL")}
+                </Button>
+              </Popconfirm>
+            </div>
+          );
+        return (
+          <div>
+            <Button
+              theme="borderless"
+              disabled={editingKey !== ""}
+              onClick={() => this.edit(row)}
+            >
+              {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.EDIT")}
+            </Button>
+            {isLocal && (
+              <Popconfirm
+                motion={false}
+                title={getIntlContent(
+                  "SHENYU.DISCOVERY.SELECTOR.UPSTREAM.DELETE.CONFIRM",
+                )}
+                onConfirm={() => this.handleDelete(row.key)}
+                okText={getIntlContent("SHENYU.COMMON.SURE")}
+                cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
+              >
+                <Button
+                  theme="borderless"
+                  type="danger"
+                  disabled={editingKey !== ""}
+                >
+                  {getIntlContent("SHENYU.BUTTON.SYSTEM.DELETE")}
+                </Button>
+              </Popconfirm>
+            )}
+          </div>
+        );
+      },
+    });
     return (
-      <div ref={this.tableRef}>
-        {this.state.isLocal && (
+      <div>
+        {isLocal && (
           <Button
-            disabled={this.state.editingKey !== ""}
             onClick={this.handleAdd}
-            type="primary"
+            disabled={editingKey !== ""}
             style={{ marginBottom: 16 }}
           >
             {getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.ADD")}
           </Button>
         )}
-        <EditableContext.Provider value={this.props.form}>
-          <Table
-            components={components}
-            bordered
-            scroll={{ x: 1280 }}
-            expandedRowKeys={
-              this.state.editingKey === "" ? [] : [this.state.editingKey]
-            }
-            expandIconAsCell={false}
-            expandIconColumnIndex={-1}
-            expandIcon={() => null}
-            expandedRowRender={this.renderLabels}
-            dataSource={this.props.dataSource}
-            columns={columns}
-            rowClassName="editable-row"
-            pagination={{
-              onChange: this.cancel,
-            }}
-          />
-        </EditableContext.Provider>
+        <Table
+          rowKey="key"
+          dataSource={dataSource}
+          columns={columns}
+          expandedRowKeys={editingKey === "" ? [] : [editingKey]}
+          expandedRowRender={this.renderLabels}
+          rowExpandable={(record) => record.key === editingKey}
+          expandIcon={null}
+          scroll={{ x: 1400 }}
+          pagination={{ pageSize: 10 }}
+          onChange={({ extra }) => {
+            if (extra.changeType === "pagination") this.cancel();
+          }}
+        />
       </div>
     );
   }
 }
 
-const EditableFormTable = Form.create()(EditableTable);
-export default EditableFormTable;
+export default function DiscoveryUpstreamTable({
+  wrappedComponentRef,
+  ...props
+}) {
+  return <EditableTable {...props} ref={wrappedComponentRef} />;
+}

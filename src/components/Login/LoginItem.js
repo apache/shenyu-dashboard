@@ -17,10 +17,13 @@
 
 /* eslint-disable react/static-property-placement */
 import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Form, Button, Row, Col } from "antd";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
 import omit from "omit.js";
-import styles from "./index.less";
+import Form from "../ui/Form";
+import LoginContext from "./LoginContext";
+import styles from "./index.module.less";
 import map from "./map";
 
 const FormItem = Form.Item;
@@ -28,10 +31,7 @@ const FormItem = Form.Item;
 function generator({ defaultProps, defaultRules, type }) {
   return (WrappedComponent) => {
     return class BasicComponent extends Component {
-      static contextTypes = {
-        form: PropTypes.object,
-        updateActive: PropTypes.func,
-      };
+      static contextType = LoginContext;
 
       constructor(props) {
         super(props);
@@ -41,15 +41,15 @@ function generator({ defaultProps, defaultRules, type }) {
       }
 
       componentDidMount() {
-        const { updateActive } = this.context;
-        const { name } = this.props;
-        if (updateActive) {
-          updateActive(name);
-        }
+        this.unregister = this.context.registerField(
+          this.props.name,
+          this.context.tab,
+        );
       }
 
       componentWillUnmount() {
         clearInterval(this.interval);
+        this.unregister();
       }
 
       onGetCaptcha = () => {
@@ -77,10 +77,7 @@ function generator({ defaultProps, defaultRules, type }) {
           this.props;
         const { count } = this.state;
         options.rules = rules || defaultRules;
-        if (onChange) {
-          options.onChange = onChange;
-        }
-        if (defaultValue) {
+        if (defaultValue !== undefined) {
           options.initialValue = defaultValue;
         }
         otherProps = restProps || otherProps;
@@ -93,11 +90,17 @@ function generator({ defaultProps, defaultRules, type }) {
                   {getFieldDecorator(
                     name,
                     options,
-                  )(<WrappedComponent {...defaultProps} {...inputProps} />)}
+                  )(
+                    <WrappedComponent
+                      {...defaultProps}
+                      {...inputProps}
+                      onChange={onChange}
+                    />,
+                  )}
                 </Col>
                 <Col span={8}>
                   <Button
-                    disabled={count}
+                    disabled={count > 0}
                     className={styles.getCaptcha}
                     size="large"
                     onClick={this.onGetCaptcha}
@@ -114,7 +117,13 @@ function generator({ defaultProps, defaultRules, type }) {
             {getFieldDecorator(
               name,
               options,
-            )(<WrappedComponent {...defaultProps} {...otherProps} />)}
+            )(
+              <WrappedComponent
+                {...defaultProps}
+                {...otherProps}
+                onChange={onChange}
+              />,
+            )}
           </FormItem>
         );
       }

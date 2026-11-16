@@ -59,6 +59,7 @@ function createRule(ruleConditions) {
       typeof update === "function" ? update(component.state) : update;
     component.state = { ...component.state, ...next };
   };
+  component.setState({ pluginHandleList: [] });
   return { component, handleOk };
 }
 
