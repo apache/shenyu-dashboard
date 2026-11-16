@@ -17,39 +17,113 @@
 
 const path = require("path");
 
+const adminChunks = [
+  "layout-main",
+  "route-mcp",
+  "route-home",
+  "route-discovery",
+  "route-plugin",
+  "route-api-keys",
+  "route-role",
+  "route-user",
+  "route-resource",
+  "route-alert",
+  "route-scale",
+  "route-namespace",
+  "route-metadata",
+  "route-plugin-config",
+  "route-instance",
+  "route-registry",
+  "route-namespace-plugin",
+  "route-plugin-handle",
+  "route-appauth",
+  "route-dict",
+];
+
 export default {
   es5ImcompatibleVersions: true,
-  extraBabelIncludes:[
-    "node_modules",
-  ],
+  extraBabelIncludes: ["node_modules"],
   entry: "./src/index.js",
   extraBabelPlugins: [
-    ["import", { libraryName: "antd", libraryDirectory: "es", style: true }]
+    ["import", { libraryName: "antd", libraryDirectory: "es", style: true }],
   ],
   env: {
     development: {
-      extraBabelPlugins: ["dva-hmr"]
-    }
+      extraBabelPlugins: ["dva-hmr"],
+    },
   },
   alias: {
-    components: path.resolve(__dirname, "src/components/")
+    components: path.resolve(__dirname, "src/components/"),
   },
   ignoreMomentLocale: true,
   theme: "./src/theme.js",
   html: {
-    template: "./src/index.ejs"
+    template: "./src/index.ejs",
   },
   lessLoaderOptions: {
-    javascriptEnabled: true
+    javascriptEnabled: true,
   },
-  disableDynamicImport: true,
+  // Keep public routes and unrelated editor dependencies out of shared downloads.
+  commons: [
+    {
+      name: "index",
+      chunks: adminChunks,
+      async: "route-shared",
+      minChunks(module, count) {
+        return (
+          count >= 4 &&
+          module
+            .getChunks()
+            .some(
+              (chunk) =>
+                chunk.name === "layout-main" || chunk.name === "route-metadata",
+            )
+        );
+      },
+    },
+    {
+      name: "index",
+      chunks: adminChunks,
+      async: "admin-shared",
+      minChunks: 4,
+    },
+    {
+      name: "index",
+      chunks: [
+        "metadata-modal",
+        "metadata-table",
+        "mcp-tools-modal",
+        "appauth-resources",
+      ],
+      async: "semi-shared",
+      minChunks: 4,
+    },
+    {
+      name: "index",
+      chunks: ["metadata-modal", "mcp-tools-modal", "appauth-resources"],
+      async: "editor-shared",
+      minChunks: 3,
+    },
+    {
+      name: "index",
+      chunks: ["metadata-modal", "mcp-tools-modal"],
+      async: "form-shared",
+      minChunks: 2,
+    },
+    {
+      name: "index",
+      chunks: ["metadata-table", "appauth-resources"],
+      async: "table-shared",
+      minChunks: 2,
+    },
+  ],
   publicPath: "",
   hash: true,
   proxy: {
     "/": {
       target: "http://localhost:9095",
       changeOrigin: true,
-      pathRewrite: { "^/": "" }
-    }
-  }
+      pathRewrite: { "^/": "" },
+    },
+  },
 };
