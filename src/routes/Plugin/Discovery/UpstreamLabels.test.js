@@ -16,19 +16,23 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
-import { Simulate } from "react-dom/test-utils";
+import {
+  fireEvent,
+  render as renderView,
+  waitFor,
+} from "@testing-library/react";
 import EditableFormTable from "./DiscoveryUpstreamTable";
 
 jest.mock("../../../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
 
 describe("unified upstream editing", () => {
   let container;
+  let view;
   let data;
   let onTableChange;
   let onEditingChange;
   const render = () => {
-    ReactDOM.render(
+    const content = (
       <EditableFormTable
         dataSource={data}
         isLocal
@@ -36,19 +40,21 @@ describe("unified upstream editing", () => {
         onCountChange={() => {}}
         onTableChange={onTableChange}
         onEditingChange={onEditingChange}
-      />,
-      container,
+      />
     );
+    if (view) view.rerender(content);
+    else view = renderView(content, { container });
   };
   const click = (suffix) =>
-    Simulate.click(
+    fireEvent.click(
       Array.from(container.querySelectorAll("button")).find((button) =>
         button.textContent.endsWith(suffix),
       ),
     );
   const change = (selector, value) =>
-    Simulate.change(container.querySelector(selector), { target: { value } });
+    fireEvent.change(container.querySelector(selector), { target: { value } });
   beforeEach(() => {
+    view = null;
     container = document.createElement("div");
     document.body.appendChild(container);
     data = [
@@ -73,7 +79,7 @@ describe("unified upstream editing", () => {
     render();
   });
   afterEach(() => {
-    ReactDOM.unmountComponentAtNode(container);
+    view.unmount();
     container.remove();
   });
   it("shows a separate readonly label column with two tags and overflow", () => {
@@ -82,9 +88,13 @@ describe("unified upstream editing", () => {
         (th) => th.textContent === "SHENYU.UPSTREAM.LABELS.TITLE",
       ),
     ).toBe(true);
-    expect(container.querySelectorAll(".ant-tag").length).toBe(2);
+    expect(container.querySelectorAll(".semi-tag").length).toBe(2);
     expect(container.textContent).toContain("+1");
-    expect(container.querySelectorAll("input").length).toBe(0);
+    expect(
+      container.querySelectorAll(
+        'input[aria-label="url"], input[aria-label^="SHENYU.UPSTREAM.LABELS."]',
+      ).length,
+    ).toBe(0);
     expect(
       container.querySelectorAll(
         'button[aria-label="SHENYU.UPSTREAM.LABELS.VIEW_ALL"]',
@@ -94,7 +104,7 @@ describe("unified upstream editing", () => {
   it("saves base fields and labels together while preserving unrelated props", () => {
     click("UPSTREAM.EDIT");
     expect(onEditingChange).toHaveBeenLastCalledWith(true);
-    change('input[id="url"]', "127.0.0.1:8081");
+    change('input[aria-label="url"]', "127.0.0.1:8081");
     change('input[aria-label="SHENYU.UPSTREAM.LABELS.VALUE 1"]', "canary");
     expect(onTableChange).not.toHaveBeenCalled();
     click("UPSTREAM.SAVE");
@@ -104,17 +114,29 @@ describe("unified upstream editing", () => {
       labels: { release: "canary", region: "cn", team: "gateway" },
       custom: { tls: true },
     });
-    expect(container.querySelectorAll("input").length).toBe(0);
+    expect(
+      container.querySelectorAll(
+        'input[aria-label="url"], input[aria-label^="SHENYU.UPSTREAM.LABELS."]',
+      ).length,
+    ).toBe(0);
     expect(onEditingChange).toHaveBeenLastCalledWith(false);
   });
-  it("discards both drafts on cancel and restores values on reopening", () => {
+  it("discards both drafts on cancel and restores values on reopening", async () => {
     click("UPSTREAM.EDIT");
-    change('input[id="url"]', "discard-me:8081");
+    change('input[aria-label="url"]', "discard-me:8081");
     change('input[aria-label="SHENYU.UPSTREAM.LABELS.VALUE 1"]', "canary");
     click("UPSTREAM.CANCEL");
+    fireEvent.click(
+      await waitFor(
+        () =>
+          Array.from(document.querySelectorAll("button")).find(
+            (item) => item.textContent === "SHENYU.COMMON.SURE",
+          ) || Promise.reject(new Error("Confirmation not ready")),
+      ),
+    );
     expect(onTableChange).not.toHaveBeenCalled();
     click("UPSTREAM.EDIT");
-    expect(container.querySelector('input[id="url"]').value).toBe(
+    expect(container.querySelector('input[aria-label="url"]').value).toBe(
       "127.0.0.1:8080",
     );
     expect(
@@ -125,7 +147,7 @@ describe("unified upstream editing", () => {
   });
   it("blocks the entire save on blank or duplicate label keys", () => {
     click("UPSTREAM.EDIT");
-    change('input[id="url"]', "127.0.0.1:8081");
+    change('input[aria-label="url"]', "127.0.0.1:8081");
     click("LABELS.ADD");
     click("UPSTREAM.SAVE");
     expect(onTableChange).not.toHaveBeenCalled();
@@ -141,7 +163,7 @@ describe("unified upstream editing", () => {
     while (
       container.querySelector('button[title="SHENYU.UPSTREAM.LABELS.REMOVE"]')
     ) {
-      Simulate.click(
+      fireEvent.click(
         container.querySelector(
           'button[title="SHENYU.UPSTREAM.LABELS.REMOVE"]',
         ),

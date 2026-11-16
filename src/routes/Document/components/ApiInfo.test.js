@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import ApiContext from "./ApiContext";
 import ApiInfo from "./ApiInfo";
 
@@ -65,4 +65,36 @@ it("falls back to document responses for error codes", () => {
 
   expect(screen.getByText("500")).not.toBeNull();
   expect(screen.getByText("server error")).not.toBeNull();
+});
+
+it("expands nested request and response schema references", () => {
+  renderInfo({
+    id: "api-1",
+    httpMethod: 0,
+    tags: [],
+    document: "{}",
+    requestParameters: [
+      {
+        id: "request",
+        name: "request parent",
+        refs: [{ id: "request-child", name: "request child" }],
+      },
+    ],
+    responseParameters: [
+      {
+        id: "response",
+        name: "response parent",
+        refs: [{ id: "response-child", name: "response child" }],
+      },
+    ],
+  });
+
+  ["request", "response"].forEach((kind) => {
+    expect(screen.queryByText(`${kind} child`)).toBeNull();
+    const row = screen.getByText(`${kind} parent`).closest("tr");
+    fireEvent.click(
+      within(row).getByRole("button", { name: "Expand this row" }),
+    );
+    expect(screen.getByText(`${kind} child`)).not.toBeNull();
+  });
 });

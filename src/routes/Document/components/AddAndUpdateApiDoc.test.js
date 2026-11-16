@@ -16,9 +16,11 @@
  */
 
 import React from "react";
-import { render, waitFor } from "@testing-library/react";
+import { act, render, waitFor } from "@testing-library/react";
 import AddAndUpdateApiDoc from "./AddAndUpdateApiDoc";
 import { addApi, updateApi } from "../../../services/api";
+
+jest.mock("../../../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
 
 jest.mock("../../../services/api", () => ({
   addApi: jest.fn(),
@@ -65,8 +67,8 @@ it("creates an API via addApi when submitting without an id", async () => {
   addApi.mockResolvedValue({ code: 200, message: "ok" });
 
   const { form, instance } = renderModal();
-  form.setFieldsValue({ ...requiredFields });
-  instance.handleSubmit();
+  act(() => form.setFieldsValue({ ...requiredFields }));
+  await act(async () => instance.handleSubmit());
 
   await waitFor(() => expect(addApi).toHaveBeenCalledTimes(1));
   expect(addApi.mock.calls[0][0]).toMatchObject({
@@ -81,8 +83,8 @@ it("updates an API via updateApi when an id is present", async () => {
   updateApi.mockResolvedValue({ code: 200, message: "ok" });
 
   const { form, instance } = renderModal();
-  form.setFieldsValue({ ...requiredFields, id: "api-1" });
-  instance.handleSubmit();
+  act(() => form.setFieldsValue({ ...requiredFields, id: "api-1" }));
+  await act(async () => instance.handleSubmit());
 
   await waitFor(() => expect(updateApi).toHaveBeenCalledTimes(1));
   expect(updateApi.mock.calls[0][0]).toMatchObject({ id: "api-1" });
@@ -98,11 +100,11 @@ it("renders without crashing when document or ext is not valid JSON", () => {
 
 it("locks the api source selector once an API id exists", async () => {
   const { form } = renderModal();
-  expect(document.querySelectorAll(".ant-select-disabled")).toHaveLength(0);
+  expect(document.querySelectorAll(".semi-select-disabled")).toHaveLength(0);
 
-  form.setFieldsValue({ id: "api-1" });
+  act(() => form.setFieldsValue({ id: "api-1" }));
 
   await waitFor(() =>
-    expect(document.querySelectorAll(".ant-select-disabled")).toHaveLength(1),
+    expect(document.querySelectorAll(".semi-select-disabled")).toHaveLength(1),
   );
 });

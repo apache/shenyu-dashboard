@@ -16,17 +16,16 @@
  */
 
 import React, { Component } from "react";
-import {
-  Alert,
-  Button,
-  Form,
-  Input,
-  InputNumber,
-  Popconfirm,
-  Select,
-  Switch,
-  Tag,
-} from "antd";
+import Banner from "@douyinfe/semi-ui/lib/es/banner";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
+import Tag from "@douyinfe/semi-ui/lib/es/tag";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import InputNumber from "../../../components/ui/InputNumber";
+import ResourceIcon from "../../../components/ui/ResourceIcon";
+import Select from "../../../components/ui/Select";
+import Switch from "../../../components/ui/Switch";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import {
   createCanaryDraft,
@@ -35,7 +34,7 @@ import {
   serializeCanaryDraft,
   validateCanaryDraft,
 } from "../../../utils/canary";
-import styles from "./CanaryRuleHandle.less";
+import styles from "./CanaryRuleHandle.module.less";
 
 const text = (key) => getIntlContent(`SHENYU.CANARY.${key}`);
 const { Option } = Select;
@@ -146,8 +145,8 @@ export default class CanaryRuleHandle extends Component {
               }
             />
             <Button
-              type="link"
-              icon="delete"
+              theme="borderless"
+              icon={<ResourceIcon type="delete" />}
               aria-label={`${label} ${text("REMOVE_LABEL")} ${index + 1}`}
               onClick={() =>
                 this.update({ [name]: rows.filter((_, i) => i !== index) })
@@ -158,8 +157,8 @@ export default class CanaryRuleHandle extends Component {
         ))}
         {this.error(group)}
         <Button
-          type="dashed"
-          icon="plus"
+          theme="outline"
+          icon={<ResourceIcon type="plus" />}
           onClick={() =>
             this.update({ [name]: [...rows, { key: "", value: "" }] })
           }
@@ -259,8 +258,8 @@ export default class CanaryRuleHandle extends Component {
               }
             />
             <Button
-              type="link"
-              icon="delete"
+              theme="borderless"
+              icon={<ResourceIcon type="delete" />}
               aria-label={`${text("REMOVE_CONDITION")} ${index + 1}`}
               onClick={() =>
                 this.update({
@@ -272,8 +271,8 @@ export default class CanaryRuleHandle extends Component {
           </div>
         ))}
         <Button
-          type="dashed"
-          icon="plus"
+          theme="outline"
+          icon={<ResourceIcon type="plus" />}
           onClick={() =>
             this.update({
               conditions: [
@@ -306,8 +305,8 @@ export default class CanaryRuleHandle extends Component {
         <div className={styles.editor}>
           {!draft && !invalid ? (
             <Button
-              icon="plus"
-              type="dashed"
+              icon={<ResourceIcon type="plus" />}
+              theme="outline"
               onClick={() =>
                 this.setState({
                   draft: createCanaryDraft(),
@@ -323,8 +322,8 @@ export default class CanaryRuleHandle extends Component {
             <>
               <div className={styles.heading}>
                 <Button
-                  type="link"
-                  icon={expanded ? "down" : "right"}
+                  theme="borderless"
+                  icon={<ResourceIcon type={expanded ? "down" : "right"} />}
                   aria-expanded={expanded}
                   aria-label={text("CONFIG")}
                   onClick={() => this.setState({ expanded: !expanded })}
@@ -351,6 +350,7 @@ export default class CanaryRuleHandle extends Component {
                     </span>
                   )}
                   <Popconfirm
+                    motion={false}
                     title={text("REMOVE_CONFIRM")}
                     okText={getIntlContent("SHENYU.COMMON.SURE")}
                     cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
@@ -363,12 +363,16 @@ export default class CanaryRuleHandle extends Component {
                       })
                     }
                   >
-                    <Button type="link">{text("REMOVE_CONFIG")}</Button>
+                    <Button theme="borderless">{text("REMOVE_CONFIG")}</Button>
                   </Popconfirm>
                 </div>
               </div>
               {invalid && (
-                <Alert type="error" showIcon message={text("INVALID")} />
+                <Banner
+                  type="danger"
+                  title={text("INVALID")}
+                  closeIcon={null}
+                />
               )}
               {expanded && draft && (
                 <div className={styles.content}>

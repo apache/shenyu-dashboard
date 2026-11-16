@@ -39,6 +39,7 @@ const numericFields = ["weight", "startupTime", "warmupTime"];
 
 export class EditableTable extends Component {
   labelsRef = React.createRef();
+
   constructor(props) {
     super(props);
     this.state = { editingKey: "", draft: {}, errors: {} };
@@ -185,6 +186,10 @@ export class EditableTable extends Component {
     );
   };
 
+  renderLabels = (record) => (
+    <UpstreamLabels key={record.key} ref={this.labelsRef} record={record} />
+  );
+
   render() {
     const { dataSource, isLocal } = this.props;
     const { editingKey } = this.state;
@@ -297,9 +302,9 @@ export class EditableTable extends Component {
           dataSource={dataSource}
           columns={columns}
           expandedRowKeys={editingKey === "" ? [] : [editingKey]}
-          expandedRowRender={(record) => (
-            <UpstreamLabels key={record.key} ref={this.labelsRef} record={record} />
-          )}
+          expandedRowRender={this.renderLabels}
+          rowExpandable={(record) => record.key === editingKey}
+          expandIcon={null}
           scroll={{ x: 1400 }}
           pagination={{ pageSize: 10 }}
           onChange={({ extra }) => {

@@ -17,9 +17,11 @@
 
 /* eslint-disable no-unused-expressions */
 /* eslint-disable react/static-property-placement */
-import { Modal, Form, Input } from "antd";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import Modal from "../../../components/ui/Modal";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
 import { message } from "../../../components/ui/feedback";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { addTag, updateTag } from "../../../services/api";
@@ -87,9 +89,12 @@ class AddAndUpdateTag extends Component {
     return (
       <Modal
         visible={visible}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onCancel={onCancel}
         onOk={this.handleSubmit}
-        forceRender
+        keepDOM
+        lazyRender={false}
         title={getIntlContent("SHENYU.DOCUMENT.TAG")}
       >
         <Form className="login-form" {...formItemLayout}>

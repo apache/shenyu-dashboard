@@ -16,35 +16,34 @@
  */
 
 import React from "react";
-import { act, render, waitFor } from "@testing-library/react";
-import { Tree } from "antd";
-import { getRootTag, getParentTagId, getApi } from "../../../services/api";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import {
+  getRootTag,
+  getParentTagId,
+  getApi,
+  addTag,
+} from "../../../services/api";
 import SearchApi from "./SearchApi";
 
-jest.mock("antd", () => ({
-  Tree: jest.fn(() => null),
-  Empty: () => null,
-  Typography: { Text: () => null },
-  Button: () => null,
-  Row: () => null,
-  Col: () => null,
-  Spin: ({ children }) => children,
-  Tooltip: () => null,
-}));
 jest.mock("../../../components/ui/feedback", () => ({
-  message: { error: jest.fn() },
+  message: { error: jest.fn(), success: jest.fn() },
 }));
 jest.mock("../../../services/api", () => ({
   getRootTag: jest.fn(),
   getParentTagId: jest.fn(),
   getApi: jest.fn(),
+  addTag: jest.fn(),
 }));
 jest.mock("../../../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
-jest.mock("./AddAndUpdateTag", () => () => null);
 jest.mock("./AddAndUpdateApiDoc", () => () => null);
 jest.mock("./ImportSwaggerModal", () => () => null);
-
-const treeProps = () => Tree.mock.calls[Tree.mock.calls.length - 1][0];
 
 it("expands nested modules with generated tag keys while retaining direct APIs", async () => {
   getRootTag.mockResolvedValue({
@@ -63,31 +62,77 @@ it("expands nested modules with generated tag keys while retaining direct APIs",
     data: { dataList: [{ id: `${id}-api`, apiPath: `/${id}`, httpMethod: 0 }] },
   }));
 
-  render(<SearchApi onSelect={jest.fn()} afterUpdate={jest.fn()} />);
-  await waitFor(() => expect(Tree).toHaveBeenCalled());
+  const onSelect = jest.fn();
+  const afterUpdate = jest.fn();
+  const ref = React.createRef();
+  render(<SearchApi ref={ref} onSelect={onSelect} afterUpdate={afterUpdate} />);
+  await screen.findByText("Root");
 
-  const expand = async (node) => {
-    await act(async () => {
-      await treeProps().onExpand([node.key], {
-        expanded: true,
-        node: { props: { ...node, eventKey: node.key } },
-      });
-    });
+  const expand = async (name) => {
+    const node = screen.getByText(name).closest('[role="treeitem"]');
+    fireEvent.click(within(node).getByRole("button"));
   };
 
-  await expand(treeProps().treeData[0]);
-  const child = treeProps().treeData[0].children[0];
-  expect(child.key).toBe("0-tag-0");
-
-  await expand(child);
-  const grandchild = treeProps().treeData[0].children[0].children[0];
-  expect(grandchild.key).toBe("0-tag-0-tag-0");
-
-  await expand(grandchild);
-  const root = treeProps().treeData[0];
-  expect(root.children[1].id).toBe("root-api");
-  expect(root.children[0].children[1].id).toBe("child-api");
-  expect(root.children[0].children[0].children[0].id).toBe("grandchild-api");
+  await expand("Root");
+  await waitFor(() => expect(getParentTagId).toHaveBeenCalledWith("root"));
+  await screen.findByText("Child");
+  expect(screen.getByText("/root")).not.toBeNull();
+  await expand("Child");
+  await screen.findByText("Grandchild");
+  expect(screen.getByText("/child")).not.toBeNull();
+  await expand("Grandchild");
+  await screen.findByText("/grandchild");
   expect(getParentTagId.mock.calls).toEqual([["root"], ["child"]]);
   expect(getApi.mock.calls).toEqual([["root"], ["child"], ["grandchild"]]);
+
+  fireEvent.click(screen.getByText("/grandchild"));
+  expect(onSelect).toHaveBeenLastCalledWith(["0-tag-0-tag-0-api-0"], {
+    node: {
+      props: expect.objectContaining({ id: "grandchild-api", isLeaf: true }),
+    },
+  });
+
+  act(() =>
+    ref.current.updateTree(
+      { id: "grandchild-api", apiPath: "/updated", httpMethod: 2 },
+      "api",
+    ),
+  );
+  await screen.findByText("/updated");
+  expect(screen.queryByText("/grandchild")).toBeNull();
+  await waitFor(() =>
+    expect(afterUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "grandchild-api" }),
+      "api",
+    ),
+  );
+});
+
+it("opens the retained tag form and creates a root module", async () => {
+  getRootTag.mockResolvedValue({ code: 200, data: [] });
+  addTag.mockResolvedValue({ code: 200, message: "created" });
+  render(<SearchApi onSelect={jest.fn()} afterUpdate={jest.fn()} />);
+  await waitFor(() => expect(getRootTag).toHaveBeenCalled());
+  fireEvent.click(
+    screen.getByText("SHENYU.DOCUMENT.APIDOC.SEARCH.ADD_ROOT_MODULE"),
+  );
+  fireEvent.change(await screen.findByLabelText("SHENYU.DOCUMENT.TAG.NAME"), {
+    target: { value: "New project" },
+  });
+  fireEvent.change(screen.getByLabelText("SHENYU.DOCUMENT.TAG.DESC"), {
+    target: { value: "Description" },
+  });
+  const dialog = screen.getByRole("dialog");
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "SHENYU.COMMON.SURE" }),
+  );
+  await waitFor(() =>
+    expect(addTag).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "New project",
+        tagDesc: "Description",
+        parentTagId: "0",
+      }),
+    ),
+  );
 });

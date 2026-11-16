@@ -2,7 +2,7 @@
 .editor {
   line-height: 1.5;
 
-  :global(.ant-select) {
+  :global(.semi-select) {
     width: 100%;
     min-width: 0;
   }
@@ -14,7 +14,7 @@
   flex-wrap: wrap;
   gap: 8px;
   min-height: 40px;
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid var(--semi-color-border);
 
   > button {
     padding-left: 0;
@@ -55,13 +55,13 @@
 }
 
 .labelHeader {
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--semi-color-text-2);
   font-size: 12px;
 }
 
 .error,
 .required {
-  color: #f5222d;
+  color: var(--semi-color-danger);
 }
 
 .error {
@@ -72,7 +72,7 @@
 .conditionRow {
   > button {
     padding: 0;
-    color: #ff4d4f;
+    color: var(--semi-color-danger);
   }
 
   > .error {
@@ -91,7 +91,7 @@
   gap: 12px;
   margin-bottom: 12px;
 
-  :global(.ant-select) {
+  :global(.semi-select) {
     width: 160px;
   }
 }
@@ -123,7 +123,7 @@
 
 .empty {
   margin-bottom: 12px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--semi-color-text-2);
 }
 
 @media (max-width: 640px) {

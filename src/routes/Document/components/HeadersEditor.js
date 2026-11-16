@@ -15,8 +15,12 @@
  * limitations under the License.
  */
 
-import { Col, Input, Row, Button, Icon } from "antd";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Button from "@douyinfe/semi-ui/lib/es/button";
 import React, { Fragment, useEffect, useRef, useState } from "react";
+import Input from "../../../components/ui/Input";
+import Icon from "../../../components/ui/ResourceIcon";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 export const parseRows = (str) => {
@@ -120,7 +124,7 @@ function HeadersEditor(props) {
           </Col>
           <Col span={2} style={{ textAlign: "center" }}>
             <Button
-              type="link"
+              theme="borderless"
               aria-label={getIntlContent("SHENYU.COMMON.DELETE")}
               onClick={() => onDeleteItem(item.index)}
               style={{ padding: 0, height: "auto", color: "#f5222d" }}
@@ -132,7 +136,7 @@ function HeadersEditor(props) {
       ))}
 
       <Col span={24}>
-        <Button block type="dashed" onClick={onAddItem}>
+        <Button block theme="outline" onClick={onAddItem}>
           <Icon type="plus" /> {buttonText}
         </Button>
       </Col>

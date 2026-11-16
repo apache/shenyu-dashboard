@@ -18,10 +18,14 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable radix */
 /* eslint-disable react/static-property-placement */
-import { Modal, Form, Input, Select, Radio } from "antd";
+import Radio from "@douyinfe/semi-ui/lib/es/radio";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import ReactJson from "@microlink/react-json-view";
+import Modal from "../../../components/ui/Modal";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import Select from "../../../components/ui/Select";
 import { message } from "../../../components/ui/feedback";
 import { Method, RPCTYPE, API_SOURCE_TYPE, STATE_TYPE } from "./globalData";
 import { getIntlContent } from "../../../utils/IntlUtils";
@@ -136,9 +140,12 @@ class AddAndUpdateApiDoc extends Component {
     return (
       <Modal
         visible={visible}
+        okText={getIntlContent("SHENYU.COMMON.SURE")}
+        cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
         onCancel={onCancel}
         onOk={this.handleSubmit}
-        forceRender
+        keepDOM
+        lazyRender={false}
         width="100%"
         title={getIntlContent("SHENYU.DOCUMENT.APIDOC.TITLE")}
       >
@@ -301,16 +308,16 @@ class AddAndUpdateApiDoc extends Component {
               ],
               initialValue: state,
             })(
-              <Radio.Group buttonStyle="solid">
+              <Radio.Group type="button">
                 {STATE_TYPE.map((e, i) => {
                   return (
-                    <Radio.Button
+                    <Radio
                       key={`${e} ${i}`}
                       value={i}
                       disabled={!getFieldValue("id") && e === "offline"}
                     >
                       {e}
-                    </Radio.Button>
+                    </Radio>
                   );
                 })}
               </Radio.Group>,

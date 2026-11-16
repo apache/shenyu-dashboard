@@ -16,14 +16,14 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
-import { Simulate } from "react-dom/test-utils";
+import { act, fireEvent, render as renderView } from "@testing-library/react";
 import CanaryRuleHandle from "./CanaryRuleHandle";
 
 jest.mock("../../../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
 
 describe("Canary editor", () => {
   let container;
+  let view;
   let editor;
   const original = {
     canary: {
@@ -43,7 +43,7 @@ describe("Canary editor", () => {
     },
   };
   const render = (handle = original) => {
-    ReactDOM.render(
+    view = renderView(
       <CanaryRuleHandle
         ref={(ref) => {
           editor = ref;
@@ -54,7 +54,7 @@ describe("Canary editor", () => {
           operator: [{ dictValue: "=", dictName: "=" }],
         }}
       />,
-      container,
+      { container },
     );
   };
   const button = (suffix) =>
@@ -62,7 +62,7 @@ describe("Canary editor", () => {
       item.textContent.endsWith(suffix),
     );
   const change = (suffix, value) =>
-    Simulate.change(
+    fireEvent.change(
       container.querySelector(`input[aria-label="SHENYU.CANARY.${suffix}"]`),
       { target: { value } },
     );
@@ -71,25 +71,28 @@ describe("Canary editor", () => {
     document.body.appendChild(container);
   });
   afterEach(() => {
-    ReactDOM.unmountComponentAtNode(container);
+    view.unmount();
     container.remove();
   });
   it("leaves legacy rules untouched until configuration is explicitly added", () => {
     render({ retry: 2 });
     expect(container.querySelectorAll("input").length).toBe(0);
     expect(editor.getData()).toEqual({ valid: true, canary: undefined });
-    Simulate.click(button("ADD_CONFIG"));
-    expect(editor.getData().valid).toBe(false);
+    fireEvent.click(button("ADD_CONFIG"));
+    act(() => expect(editor.getData().valid).toBe(false));
     expect(container.textContent).toContain("LABELS_REQUIRED");
   });
   it("edits labels and switch locally, preserving conditions on collapse and reopen", () => {
     render();
-    Simulate.click(button("CONFIG"));
+    fireEvent.click(button("CONFIG"));
     change("CANARY_LABELS SHENYU.CANARY.VALUE 1", "beta");
-    Simulate.click(container.querySelector('button[role="switch"]'));
-    Simulate.click(button("CONFIG"));
-    Simulate.click(button("CONFIG"));
-    const result = editor.getData();
+    fireEvent.click(container.querySelector('[role="switch"]'));
+    fireEvent.click(button("CONFIG"));
+    fireEvent.click(button("CONFIG"));
+    let result;
+    act(() => {
+      result = editor.getData();
+    });
     expect(result.valid).toBe(true);
     expect(result.canary.enabled).toBe(false);
     expect(result.canary.canaryLabels).toEqual({ release: "beta" });
@@ -98,13 +101,13 @@ describe("Canary editor", () => {
   });
   it("opens the panel on validation errors and permits removing every condition", () => {
     render();
-    Simulate.click(button("CONFIG"));
+    fireEvent.click(button("CONFIG"));
     change("STICKY_PARAM", "");
-    Simulate.click(button("CONFIG"));
-    expect(editor.getData().valid).toBe(false);
+    fireEvent.click(button("CONFIG"));
+    act(() => expect(editor.getData().valid).toBe(false));
     expect(container.textContent).toContain("PARAM_REQUIRED");
     change("STICKY_PARAM", "x-user-id");
-    Simulate.click(
+    fireEvent.click(
       container.querySelector(
         'button[aria-label="SHENYU.CANARY.REMOVE_CONDITION 1"]',
       ),
@@ -114,12 +117,14 @@ describe("Canary editor", () => {
   });
   it("discarding the modal discards the draft, and persisted values refill on reopening", () => {
     render();
-    Simulate.click(button("CONFIG"));
+    fireEvent.click(button("CONFIG"));
     change("CANARY_LABELS SHENYU.CANARY.VALUE 1", "draft");
-    ReactDOM.unmountComponentAtNode(container);
+    view.unmount();
+    container = document.createElement("div");
+    document.body.appendChild(container);
     render();
     expect(editor.getData()).toEqual({ valid: true, canary: undefined });
-    Simulate.click(button("CONFIG"));
+    fireEvent.click(button("CONFIG"));
     expect(
       container.querySelector(
         'input[aria-label="SHENYU.CANARY.CANARY_LABELS SHENYU.CANARY.VALUE 1"]',

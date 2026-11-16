@@ -144,6 +144,7 @@ it("updates chart data, resizes and disposes mounted charts", () => {
     expect.objectContaining({
       series: [{ name: "bootstrap", type: "line", data: [1, 2] }],
     }),
+    { replaceMerge: ["series"] },
   );
   fireEvent(window, new Event("resize"));
   charts.forEach((chart) => expect(chart.resize).toHaveBeenCalledTimes(1));

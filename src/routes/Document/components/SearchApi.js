@@ -17,7 +17,14 @@
 
 /* eslint-disable no-unused-expressions */
 
-import { Tree, Empty, Typography, Button, Row, Col, Spin, Tooltip } from "antd";
+import Tree from "@douyinfe/semi-ui/lib/es/tree";
+import Empty from "@douyinfe/semi-ui/lib/es/empty";
+import Typography from "@douyinfe/semi-ui/lib/es/typography";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import Spin from "@douyinfe/semi-ui/lib/es/spin";
+import Tooltip from "@douyinfe/semi-ui/lib/es/tooltip";
 import React, { useEffect, useImperativeHandle, useState } from "react";
 import { message } from "../../../components/ui/feedback";
 import { getRootTag, getParentTagId, getApi } from "../../../services/api";
@@ -33,7 +40,7 @@ const { Text } = Typography;
 const SearchApi = React.forwardRef((props, ref) => {
   const { onSelect, afterUpdate } = props;
   const [loading, setLoading] = useState(false);
-  const [treeData, setTreeData] = useState({});
+  const [treeData, setTreeData] = useState([]);
   const [expandedKeys, setExpandedKeys] = useState([]);
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [document, setDocument] = useState("{}");
@@ -73,14 +80,9 @@ const SearchApi = React.forwardRef((props, ref) => {
     }
   };
 
-  const onExpand = async (keys, { expanded, node }) => {
-    setExpandedKeys(keys);
-    if (expanded === false) {
-      return;
-    }
+  const loadNode = async (node) => {
     setLoading(true);
-    const { id, hasChildren, eventKey } = node.props;
-    const newTreeData = [...treeData];
+    const { id, hasChildren, key: eventKey } = node;
     let showAddTag = true;
     let tagChildren = [];
     let apiChildren = [];
@@ -108,11 +110,6 @@ const SearchApi = React.forwardRef((props, ref) => {
     if (!hasChildren && apiChildren.length) {
       showAddTag = false;
     }
-    const curNode = findNodeById(newTreeData, id);
-    if (!curNode) {
-      return;
-    }
-
     const childTags = tagChildren.map((item, index) => ({
       ...item,
       title: item.name,
@@ -124,7 +121,7 @@ const SearchApi = React.forwardRef((props, ref) => {
       title: (
         <>
           <Text code>{Method[item.httpMethod]}</Text>
-          <Tooltip placement="topLeft" arrowPointAtCenter title={item.apiPath}>
+          <Tooltip position="topLeft" content={item.apiPath}>
             {item.apiPath}
           </Tooltip>
         </>
@@ -132,57 +129,69 @@ const SearchApi = React.forwardRef((props, ref) => {
       key: `${eventKey}-api-${index}`,
       isLeaf: true,
     }));
-    curNode.children = [...childTags, ...childApis];
-    curNode.children.push({
-      selectable: false,
-      title: (
-        <Row gutter={2}>
-          {showAddTag && (
-            <Col span={10}>
+    const children = [
+      ...childTags,
+      ...childApis,
+      {
+        selectable: false,
+        title: (
+          <Row gutter={2}>
+            {showAddTag && (
+              <Col span={10}>
+                <Button
+                  type="primary"
+                  theme="outline"
+                  size="small"
+                  onClick={() =>
+                    addOrUpdateTag({
+                      parentTagId: id,
+                    })
+                  }
+                >
+                  {getIntlContent("SHENYU.DOCUMENT.APIDOC.SEARCH.ADD_MODULE")}
+                </Button>
+              </Col>
+            )}
+            <Col span={showAddTag ? 6 : 12}>
               <Button
                 type="primary"
-                ghost
+                theme="outline"
                 size="small"
                 onClick={() =>
-                  addOrUpdateTag({
-                    parentTagId: id,
+                  addOrUpdateApi({
+                    tagIds: [id],
                   })
                 }
               >
-                {getIntlContent("SHENYU.DOCUMENT.APIDOC.SEARCH.ADD_MODULE")}
+                + Api
               </Button>
             </Col>
-          )}
-          <Col span={showAddTag ? 6 : 12}>
-            <Button
-              type="primary"
-              ghost
-              size="small"
-              onClick={() =>
-                addOrUpdateApi({
-                  tagIds: [id],
-                })
-              }
-            >
-              + Api
-            </Button>
-          </Col>
-          <Col span={showAddTag ? 8 : 12}>
-            <Button
-              type="primary"
-              ghost
-              size="small"
-              onClick={() => handleImportSwagger(id)}
-            >
-              {getIntlContent("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER")}
-            </Button>
-          </Col>
-        </Row>
-      ),
-      key: `${eventKey}-operator`,
-      isLeaf: true,
+            <Col span={showAddTag ? 8 : 12}>
+              <Button
+                type="primary"
+                theme="outline"
+                size="small"
+                onClick={() => handleImportSwagger(id)}
+              >
+                {getIntlContent("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER")}
+              </Button>
+            </Col>
+          </Row>
+        ),
+        key: `${eventKey}-operator`,
+        isLeaf: true,
+      },
+    ];
+    setTreeData((nodes) => {
+      const attachChildren = (items) =>
+        items.map((item) => {
+          if (item.id === id) return { ...item, children };
+          return item.children
+            ? { ...item, children: attachChildren(item.children) }
+            : item;
+        });
+      return attachChildren(nodes);
     });
-    setTreeData(newTreeData);
   };
 
   const [openTag, setOpenTag] = useState(false);
@@ -240,7 +249,7 @@ const SearchApi = React.forwardRef((props, ref) => {
       title = (
         <>
           <Text code>{Method[data.httpMethod]}</Text>
-          <Tooltip placement="topLeft" arrowPointAtCenter title={data.apiPath}>
+          <Tooltip position="topLeft" content={data.apiPath}>
             {data.apiPath}
           </Tooltip>
         </>
@@ -295,11 +304,17 @@ const SearchApi = React.forwardRef((props, ref) => {
       {treeData?.length ? (
         <Spin spinning={loading}>
           <Tree
-            onSelect={(keys, e) => selectNode(keys, e.node.props)}
+            onSelect={(key, selected, node) => {
+              if (node.selectable !== false) selectNode([key], node);
+            }}
+            keyMaps={{ label: "title" }}
+            motion={false}
             treeData={treeData}
-            onExpand={onExpand}
+            onExpand={setExpandedKeys}
+            loadData={loadNode}
+            loadedKeys={[]}
             expandedKeys={expandedKeys}
-            selectedKeys={selectedKeys}
+            value={selectedKeys[0]}
           />
         </Spin>
       ) : (
@@ -307,7 +322,7 @@ const SearchApi = React.forwardRef((props, ref) => {
       )}
       <Button
         block
-        type="dashed"
+        theme="outline"
         onClick={() => addOrUpdateTag({ parentTagId: "0" })}
       >
         {getIntlContent("SHENYU.DOCUMENT.APIDOC.SEARCH.ADD_ROOT_MODULE")}

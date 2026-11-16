@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-import {
-  Typography,
-  Table,
-  Tabs,
-  Icon,
-  Row,
-  Col,
-  Button,
-  Popconfirm,
-} from "antd";
+import Typography from "@douyinfe/semi-ui/lib/es/typography";
+import Table from "@douyinfe/semi-ui/lib/es/table";
+import Tabs from "@douyinfe/semi-ui/lib/es/tabs";
+import Row from "@douyinfe/semi-ui/lib/es/grid/row";
+import Col from "@douyinfe/semi-ui/lib/es/grid/col";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
 import React, { useContext } from "react";
+import Icon from "../../../components/ui/ResourceIcon";
 import ApiDebug from "./ApiDebug";
 import ApiContext from "./ApiContext";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { Method } from "./globalData";
 import { getLastTagName } from "../../../utils/utils";
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
 function ApiInfo(props) {
   let {
@@ -175,11 +173,11 @@ function ApiInfo(props) {
             {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.INTERFACE.DOCUMENT")}
           </>
         }
-        key="1"
+        itemKey="1"
       >
         <Row gutter={24}>
           <Col span={12}>
-            <Title level={2}>{getLastTagName(apiDetail.tags)}</Title>
+            <Title heading={2}>{getLastTagName(apiDetail.tags)}</Title>
           </Col>
           <Col span={12} style={{ textAlign: "right" }}>
             <Button onClick={handleUpdate}>
@@ -188,65 +186,65 @@ function ApiInfo(props) {
             &nbsp;&nbsp;
             <Popconfirm
               title={getIntlContent("SHENYU.COMMON.DELETE")}
-              placement="bottom"
+              position="bottom"
               onCancel={(e) => {
-                e.stopPropagation();
+                e?.stopPropagation();
               }}
               onConfirm={(e) => {
-                e.stopPropagation();
+                e?.stopPropagation();
                 handleDelete(e);
               }}
               okText={getIntlContent("SHENYU.COMMON.SURE")}
               cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
             >
-              <Button ghost type="danger">
+              <Button theme="outline" type="danger">
                 {getIntlContent("SHENYU.BUTTON.SYSTEM.DELETE")}
               </Button>
             </Popconfirm>
           </Col>
         </Row>
 
-        <Paragraph>
-          <Title level={4}>
+        <div style={{ marginBottom: 16 }}>
+          <Title heading={4}>
             {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.INTERFACE.ADDRESS")}
           </Title>
           <Text code>{Method?.[apiDetail.httpMethod]}</Text>
           <Text code>{apiDetail.apiPath}</Text>
           <Text code>{apiDetail.version}</Text>
-        </Paragraph>
-        <Paragraph>
-          <Title level={4}>
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <Title heading={4}>
             {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.DESCRIPTION")}
           </Title>
           <Text type="secondary">{apiDetail.apiDesc || "-"}</Text>
-        </Paragraph>
-        <Paragraph>
+        </div>
+        <div style={{ marginBottom: 16 }}>
           <Row gutter={24}>
             <Col span={8}>
-              <Title level={4}>
+              <Title heading={4}>
                 {getIntlContent("SHENYU.DOCUMENT.APIDOC.APIOWNER")}
               </Title>
               <Text code>{apiDetail.apiOwner}</Text>
             </Col>
             <Col span={8}>
-              <Title level={4}>
+              <Title heading={4}>
                 {getIntlContent("SHENYU.DOCUMENT.APIDOC.CONSUME")}
               </Title>
               <Text code>{apiDetail.consume}</Text>
             </Col>
             <Col span={8}>
-              <Title level={4}>
+              <Title heading={4}>
                 {getIntlContent("SHENYU.DOCUMENT.APIDOC.PRODUCE")}
               </Title>
               <Text code>{apiDetail.produce}</Text>
             </Col>
           </Row>
-        </Paragraph>
+        </div>
 
-        <Title level={4}>
+        <Title heading={4}>
           {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS")}
         </Title>
-        <Paragraph>
+        <div style={{ marginBottom: 16 }}>
           <Table
             size="small"
             rowKey="envLabel"
@@ -255,51 +253,51 @@ function ApiInfo(props) {
             pagination={false}
             columns={envPropsColumns}
           />
-        </Paragraph>
-        <Title level={2}>
+        </div>
+        <Title heading={2}>
           {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.PARAMETERS")}
         </Title>
-        <Title level={4}>
+        <Title heading={4}>
           {getIntlContent(
             "SHENYU.DOCUMENT.APIDOC.INFO.SERVICE.REQUEST.HEADERS",
           )}
         </Title>
-        <Paragraph>
+        <div style={{ marginBottom: 16 }}>
           <Table
             size="small"
             rowKey="id"
             bordered
             dataSource={requestHeaders}
             pagination={false}
-            childrenColumnName="refs"
+            childrenRecordName="refs"
             columns={columns}
           />
-        </Paragraph>
-        <Title level={4}>
+        </div>
+        <Title heading={4}>
           {getIntlContent(
             "SHENYU.DOCUMENT.APIDOC.INFO.SERVICE.REQUEST.PARAMETERS",
           )}
         </Title>
-        <Paragraph>
+        <div style={{ marginBottom: 16 }}>
           <Table
             size="small"
             rowKey="id"
             bordered
             dataSource={requestParameters || []}
             pagination={false}
-            childrenColumnName="refs"
+            childrenRecordName="refs"
             columns={columns}
           />
-        </Paragraph>
-        <Title level={2}>
+        </div>
+        <Title heading={2}>
           {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.RESPONSE.PARAMETERS")}
         </Title>
-        <Title level={4}>
+        <Title heading={4}>
           {getIntlContent(
             "SHENYU.DOCUMENT.APIDOC.INFO.COMMON.RESPONSE.PARAMETERS",
           )}
         </Title>
-        <Paragraph>
+        <div style={{ marginBottom: 16 }}>
           <Table
             size="small"
             rowKey="id"
@@ -310,27 +308,27 @@ function ApiInfo(props) {
               (col) => !["required", "maxLength"].includes(col.dataIndex),
             )}
           />
-        </Paragraph>
-        <Title level={4}>
+        </div>
+        <Title heading={4}>
           {getIntlContent(
             "SHENYU.DOCUMENT.APIDOC.INFO.BUSINESS.RESPONSE.PARAMETERS",
           )}
         </Title>
-        <Paragraph>
+        <div style={{ marginBottom: 16 }}>
           <Table
             size="small"
             rowKey="id"
             bordered
             dataSource={responseParameters}
             pagination={false}
-            childrenColumnName="refs"
+            childrenRecordName="refs"
             columns={columns}
           />
-        </Paragraph>
-        <Title level={4}>
+        </div>
+        <Title heading={4}>
           {getIntlContent("SHENYU.DOCUMENT.APIDOC.ERROR.CODE.DETAILS")}
         </Title>
-        <Paragraph>
+        <div style={{ marginBottom: 16 }}>
           <Table
             size="small"
             rowKey="code"
@@ -339,7 +337,7 @@ function ApiInfo(props) {
             pagination={false}
             columns={errorCodeColumns}
           />
-        </Paragraph>
+        </div>
       </Tabs.TabPane>
       <Tabs.TabPane
         tab={
@@ -348,7 +346,7 @@ function ApiInfo(props) {
             {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.INTERFACE.DEBUG")}
           </>
         }
-        key="2"
+        itemKey="2"
       >
         {/* remount per API so pending work never crosses selections */}
         <ApiDebug key={apiDetail.id} />

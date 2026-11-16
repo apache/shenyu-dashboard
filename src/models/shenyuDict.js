@@ -153,7 +153,6 @@ export default {
         }
       }
     },
-
   },
   reducers: {
     saveShenYuDicts(state, { payload }) {

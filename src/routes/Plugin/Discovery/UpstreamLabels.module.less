@@ -4,8 +4,8 @@
   left: 0;
   max-width: 100%;
   padding: 16px 20px;
-  background: #f5faff;
-  border-left: 3px solid #1890ff;
+  background: var(--semi-color-primary-light-default);
+  border-left: 3px solid var(--semi-color-primary);
 }
 
 .heading {
@@ -29,7 +29,7 @@
   overflow-y: auto;
 }
 
-.row :global(.ant-form-item) {
+.row :global(.semi-form-field) {
   margin-bottom: 16px;
 }
 
@@ -50,7 +50,7 @@
   gap: 4px;
   text-align: left;
 
-  :global(.ant-tag) {
+  :global(.semi-tag) {
     max-width: 240px;
     margin: 0;
     overflow: hidden;
@@ -67,7 +67,7 @@
   max-height: 260px;
   overflow: auto;
 
-  :global(.ant-tag) {
+  :global(.semi-tag) {
     white-space: normal;
     overflow-wrap: anywhere;
   }
