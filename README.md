@@ -9,7 +9,8 @@ Apache ShenYu Dashboard is frontend of a management background for [Apache ShenY
 
 ## Prerequisite
 
-- Node.js 22 LTS or newer (24 recommended; CI builds on both). Run `nvm use`
+- Node.js 22.22.2+ in the 22 LTS line, 24.15.0+ in the 24 LTS line (recommended),
+  or 26+ (CI builds on 22 and 24). Run `nvm use`
   if you manage Node.js with nvm; the version is recorded in `.nvmrc`.
 
 ## How to Build
@@ -102,7 +103,7 @@ editor pilot, compatibility constraints, validation and later migration scope.
 
 ## Build tooling
 
-Vite 7 replaces Roadhog/Webpack. Use Node >=22.12 (24 recommended), `npm run build`
+Vite 7 replaces Roadhog/Webpack. Use a Node version from the prerequisites above, `npm run build`
 for production and `npm run preview` for a local static preview (no API proxy).
 `npm run analyze` adds source maps; it is not a bundle-size benchmark.
 `npm run site` builds and publishes the dashboard to gh-pages when explicitly run.
