@@ -16,7 +16,6 @@
  */
 
 import React, { Component } from "react";
-import { message } from "antd";
 import { Form } from "@douyinfe/semi-ui/lib/es/form";
 import Modal from "@douyinfe/semi-ui/lib/es/modal";
 import Button from "@douyinfe/semi-ui/lib/es/button";
@@ -30,8 +29,9 @@ import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
 import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
 import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import "@douyinfe/semi-ui/lib/es/_base/base.css";
-import { connect } from "dva";
-import ReactJson from "react-json-view";
+import { connect } from "react-redux";
+import ReactJson from "@microlink/react-json-view";
+import { message } from "../../../components/ui/feedback";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { clipboardCopy } from "../../../utils/utils";

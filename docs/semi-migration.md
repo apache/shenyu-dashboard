@@ -78,6 +78,8 @@ with explicit loaders and excludes test modules from the production graph.
 and makes session-expiry dispatch an explicit startup dependency.
 [Admin asset compatibility](admin-async-assets.md) places async bundles under
 Admin's existing anonymous static-resource path, verified with real H2 Admin.
+The [runtime core bridge](runtime-core-bridge.md) replaces the old Dva renderer
+and router bindings while retaining React16 until AntD peer constraints are removed.
 
 Replace the legacy Dva renderer/router integration and incompatible React peers,
 then move through React 18.3 to React 19. Preserve reusable model/reducer/effect logic
@@ -90,6 +92,9 @@ graph. React 19 requires its documented entry adapter; that adapter only supplie
 Semi's internal `createRoot` and does not upgrade Dva.
 
 ## Stage 4: complete the UI and distribution transition
+
+[System forms](semi-system-forms.md) begin the remaining-page migration with
+Namespace, Registry and User dialogs and real H2 Admin checks.
 
 Migrate remaining complete forms/routes, component locale and design tokens;
 remove Ant Design 3 and its old Icon/Less overrides only after their last consumer

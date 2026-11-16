@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import { message } from "antd";
-import fetch from "dva/fetch";
+import { message } from "../components/ui/feedback";
+import fetch from "../utils/fetch";
 
-jest.mock("antd", () => ({
+jest.mock("../components/ui/feedback", () => ({
   message: {
     error: jest.fn(),
     success: jest.fn(),
@@ -29,7 +29,7 @@ jest.mock("antd", () => ({
   },
 }));
 
-jest.mock("dva/fetch", () => jest.fn());
+jest.mock("../utils/fetch", () => jest.fn());
 jest.mock("../utils/request", () => ({
   __esModule: true,
   default: jest.fn(),
