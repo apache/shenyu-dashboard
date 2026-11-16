@@ -201,6 +201,14 @@ export default {
         });
       }
     },
+    *reload(params, { put }) {
+      const { fetchValue } = params;
+      const { pluginId, field, currentPage, pageSize } = fetchValue;
+      yield put({
+        type: "fetch",
+        payload: { pluginId, field, currentPage, pageSize },
+      });
+    },
   },
   reducers: {
     savePluginHandles(state, { payload }) {
@@ -211,12 +219,6 @@ export default {
       };
     },
 
-    *reload(params, { put }) {
-      const { fetchValue } = params;
-      const { pluginId, currentPage, pageSize } = fetchValue;
-      const payload = { pluginId, currentPage, pageSize };
-      yield put({ type: "fetch", payload });
-    },
     savePluginDropDownList(state, { payload }) {
       return {
         ...state,
