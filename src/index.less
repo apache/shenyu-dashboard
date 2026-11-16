@@ -54,20 +54,16 @@ ol {
   list-style: none;
 }
 
-:global(.ant-table) {
-  background: #fff;
-}
-
 :global(.table-selected) {
-  background: lighten(@primary-color, 25%);
+  background: lighten(#1890ff, 25%);
 }
 
 :global(.edit) {
   cursor: pointer;
-  color: @primary-color;
+  color: #1890ff;
 
   &:hover {
-    color: @primary-color;
+    color: #1890ff;
   }
 }
 
@@ -79,15 +75,6 @@ ol {
   }
 }
 
-:global(.ant-table table) {
-  padding: 0 !important;
-}
-
-:global {
-  .ant-table-small > .ant-table-content > .ant-table-body {
-    margin: 0 !important;
-  }
-}
 
 :global(.table-header) {
   white-space: nowrap;
@@ -125,16 +112,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-// temp fix for https://github.com/ant-design/ant-design/commit/a1fafb5b727b62cb0be29ce6e9eca8f579d4f8b7
 :global {
-  .ant-spin-nested-loading {
-    overflow: auto;
-  }
-
-  .ant-spin-container {
-    overflow: visible !important;
-  }
-
   .global-spin {
     width: 100%;
     margin: 40px 0 !important;
@@ -154,25 +132,4 @@ body {
     height: 100%;
     cursor: col-resize;
   }
-}
-
-:global {
-  .ant-modal {
-    max-width: calc(100vw - 32px);
-  }
-}
-
-:global(.ant-table-thead) {
-  background: #eff1f4;
-}
-
-:global(.ant-popover) {
-  word-wrap: break-word;
-  white-space: normal;
-  max-width: 500px;
-  overflow: auto;
-}
-
-:global(.ant-table-body) {
-  overflow-x: auto !important;
 }

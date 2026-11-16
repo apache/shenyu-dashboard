@@ -81,7 +81,6 @@ export default class CommonRuleHandle extends Component {
         required={true}
         label={getIntlContent("SHENYU.COMMON.DEAL.CUSTOM")}
         {...formItemLayout}
-        className={styles.rootFormItem}
       >
         <FormItem style={{ display: "none" }}>
           {getFieldDecorator("handleType", {

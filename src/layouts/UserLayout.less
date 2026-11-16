@@ -15,15 +15,13 @@
  * limitations under the License.
  */
 
-@import '~antd/lib/style/themes/default.less';
-
 .container {
   display: flex;
   flex-direction: column;
   height: 100vh;
   overflow: auto;
   // background-image: url();
-  background: #ffffff;
+  background: #fff;
 }
 
 .content {
@@ -31,7 +29,7 @@
   flex: 1;
 }
 
-@media (min-width: @screen-md-min) {
+@media (min-width: 768px) {
   .container {
     // background url https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg
     background-image: url('../assets/bg.jpg');
@@ -66,7 +64,7 @@
 
 .title {
   font-size: 33px;
-  color: @heading-color;
+  color: rgba(0, 0, 0, 0.85);
   font-family: 'Myriad Pro', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   font-weight: 600;
   position: relative;
@@ -74,8 +72,8 @@
 }
 
 .desc {
-  font-size: @font-size-base;
-  color: #ffffff;
+  font-size: 14px;
+  color: #fff;
   margin-top: 12px;
   margin-bottom: 40px;
 }

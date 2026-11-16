@@ -23,7 +23,6 @@ import Button from "@douyinfe/semi-ui/lib/es/button";
 import Form from "../../../components/ui/Form";
 import Select from "../../../components/ui/Select";
 import Input from "../../../components/ui/Input";
-import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;
@@ -431,7 +430,6 @@ export default class RequestRuleHandle extends Component {
         label={getIntlContent("SHENYU.COMMON.DEAL.COMPONENT")}
         labelCol={{ span: 4 }}
         wrapperCol={{ span: 20 }}
-        className={styles.rootFormItem}
       >
         <Tabs
           lazyRender={false}

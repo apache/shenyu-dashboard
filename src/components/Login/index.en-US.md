@@ -30,7 +30,7 @@ Property | Description | Type | Default
 name | name of the control, also the key of the submitted data | String | -
 rules | validation rules, same with [option.rules](getFieldDecorator(id, options)) in Form getFieldDecorator(id, options) | object[] | -
 
-Apart from the above properties, Login.Username also support all properties of antd.Input, together with the default values of basic settings, such as _placeholder_, _size_ and _prefix_. All of these default values can be over-written.
+Apart from the above properties, Login.Username also support all properties of the shared Semi Input wrapper, together with the default values of basic settings, such as _placeholder_, _size_ and _prefix_. All of these default values can be over-written.
 
 ### Login.Password, Login.Mobile are the same as Login.UserName
 
@@ -44,4 +44,4 @@ Apart from the above properties, _Login.Captcha_ support the same properties wit
 
 ### Login.Submit
 
-Support all properties of _antd.Button_.
+Support all properties of _Semi Button_.

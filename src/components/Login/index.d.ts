@@ -16,7 +16,7 @@
  */
 
 import * as React from 'react';
-import Button from 'antd/lib/button';
+import Button from '@douyinfe/semi-ui/lib/es/button';
 export interface LoginProps {
   defaultActiveKey?: string;
   onTabChange?: (key: string) => void;

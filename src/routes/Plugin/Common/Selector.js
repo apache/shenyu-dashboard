@@ -699,11 +699,7 @@ class AddModal extends Component {
 
     if (Array.isArray(pluginHandleList) && pluginHandleList.length) {
       return (
-        <Item
-          label={getIntlContent("SHENYU.COMMON.DEAL")}
-          {...formItemLayout}
-          className={styles.rootFormItem}
-        >
+        <Item label={getIntlContent("SHENYU.COMMON.DEAL")} {...formItemLayout}>
           <div
             className={styles.handleWrap}
             style={{

@@ -44,14 +44,10 @@ export default {
   es5ImcompatibleVersions: true,
   extraBabelIncludes: ["node_modules"],
   entry: "./src/index.js",
-  extraBabelPlugins: [
-    ["import", { libraryName: "antd", libraryDirectory: "es", style: true }],
-  ],
   alias: {
     components: path.resolve(__dirname, "src/components/"),
   },
   ignoreMomentLocale: true,
-  theme: "./src/theme.js",
   html: {
     template: "./src/index.ejs",
   },
