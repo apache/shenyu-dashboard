@@ -16,8 +16,9 @@
  */
 
 import React, { Component } from "react";
-import { Modal, TreeSelect, Dropdown, Menu, Button, Icon, message } from "antd";
-import { connect } from "dva";
+import { Modal, TreeSelect, Dropdown, Menu, Button, Icon } from "antd";
+import { connect } from "react-redux";
+import { message } from "../../../components/ui/feedback";
 import {
   getPluginDropDownListByNamespace,
   getAllSelectors,

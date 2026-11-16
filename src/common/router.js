@@ -16,12 +16,40 @@
  */
 
 import React, { createElement } from "react";
-import { Spin } from "antd";
+import { Button, Spin } from "antd";
 import pathToRegexp from "path-to-regexp";
 import Loadable from "react-loadable";
 import { getMenuData } from "./menu";
+import { getIntlContent } from "../utils/IntlUtils";
 
 let routerDataCache;
+
+// Literal, lazy requires preserve registration timing without a directory context.
+/* eslint-disable global-require */
+const modelLoaders = {
+  user: () => require("../models/user").default,
+  login: () => require("../models/login").default,
+  mcpServer: () => require("../models/mcpServer").default,
+  discovery: () => require("../models/discovery").default,
+  common: () => require("../models/common").default,
+  role: () => require("../models/role").default,
+  manage: () => require("../models/manage").default,
+  dataPermission: () => require("../models/dataPermission").default,
+  resource: () => require("../models/resource").default,
+  alert: () => require("../models/alert").default,
+  scale: () => require("../models/scale").default,
+  namespace: () => require("../models/namespace").default,
+  metadata: () => require("../models/metadata").default,
+  plugin: () => require("../models/plugin").default,
+  instance: () => require("../models/instance").default,
+  registry: () => require("../models/registry").default,
+  namespacePlugin: () => require("../models/namespacePlugin").default,
+  pluginHandle: () => require("../models/pluginHandle").default,
+  auth: () => require("../models/auth").default,
+  shenyuDict: () => require("../models/shenyuDict").default,
+  error: () => require("../models/error").default,
+};
+/* eslint-enable global-require */
 
 const modelNotExisted = (app, model) =>
   // eslint-disable-next-line
@@ -29,30 +57,39 @@ const modelNotExisted = (app, model) =>
     return namespace === model.substring(model.lastIndexOf("/") + 1);
   });
 
-// wrapper of dynamic
-const dynamicWrapper = (app, models, component) => {
+function RouteLoading({ error, retry }) {
+  if (error) {
+    return (
+      <div role="alert">
+        <p>{getIntlContent("SHENYU.COMMON.PAGE.LOAD.FAILED")}</p>
+        <Button onClick={retry}>
+          {getIntlContent("SHENYU.COMMON.PAGE.RETRY")}
+        </Button>
+      </div>
+    );
+  }
+  return (
+    <div
+      role="status"
+      aria-label={getIntlContent("SHENYU.COMMON.PAGE.LOADING")}
+    >
+      <Spin size="large" className="global-spin" />
+    </div>
+  );
+}
+
+// Register models before asynchronously loading a route.
+export const dynamicWrapper = (app, models, component) => {
   // register models
   models.forEach((model) => {
     if (modelNotExisted(app, model)) {
-      // eslint-disable-next-line
-      app.model(require(`../models/${model}`).default);
+      if (!Object.prototype.hasOwnProperty.call(modelLoaders, model)) {
+        throw new Error(`Unknown route model: ${model}`);
+      }
+      app.model(modelLoaders[model]());
     }
   });
 
-  // () => require('module')
-  // transformed by babel-plugin-dynamic-import-node-sync
-  if (component.toString().indexOf(".then(") < 0) {
-    return (props) => {
-      if (!routerDataCache) {
-        routerDataCache = getRouterData(app);
-      }
-      return createElement(component().default, {
-        ...props,
-        routerData: routerDataCache,
-      });
-    };
-  }
-  // () => import('module')
   return Loadable({
     loader: () => {
       if (!routerDataCache) {
@@ -67,9 +104,7 @@ const dynamicWrapper = (app, models, component) => {
           });
       });
     },
-    loading: () => {
-      return <Spin size="large" className="global-spin" />;
-    },
+    loading: RouteLoading,
   });
 };
 
@@ -92,174 +127,247 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(
         app,
         ["user", "login"],
-        () => import("../layouts/BasicLayout"),
+        () =>
+          import(
+            /* webpackChunkName: "layout-main" */ "../layouts/BasicLayout"
+          ),
       ),
     },
     "/plug/Mcp/mcpServer": {
       component: dynamicWrapper(
         app,
         ["mcpServer"],
-        () => import("../routes/Plugin/McpServer"),
+        () =>
+          import(
+            /* webpackChunkName: "route-mcp" */ "../routes/Plugin/McpServer"
+          ),
       ),
     },
     "/home": {
-      component: dynamicWrapper(app, [], () => import("../routes/Home")),
+      component: dynamicWrapper(
+        app,
+        [],
+        () => import(/* webpackChunkName: "route-home" */ "../routes/Home"),
+      ),
     },
     "/plug/Proxy/tcp": {
       component: dynamicWrapper(
         app,
         ["discovery"],
-        () => import("../routes/Plugin/Discovery"),
+        () =>
+          import(
+            /* webpackChunkName: "route-discovery" */ "../routes/Plugin/Discovery"
+          ),
       ),
     },
     "/plug/:index/:id": {
       component: dynamicWrapper(
         app,
         ["common"],
-        () => import("../routes/Plugin/Common"),
+        () =>
+          import(
+            /* webpackChunkName: "route-plugin" */ "../routes/Plugin/Common"
+          ),
       ),
     },
     "/plugin/ai-proxy/apikeys": {
       component: dynamicWrapper(
         app,
         [],
-        () => import("../routes/Plugin/AiProxy/ApiKeys"),
+        () =>
+          import(
+            /* webpackChunkName: "route-api-keys" */ "../routes/Plugin/AiProxy/ApiKeys"
+          ),
       ),
     },
     "/system/role": {
       component: dynamicWrapper(
         app,
         ["role"],
-        () => import("../routes/System/Role"),
+        () =>
+          import(/* webpackChunkName: "route-role" */ "../routes/System/Role"),
       ),
     },
     "/system/manage": {
       component: dynamicWrapper(
         app,
         ["manage", "dataPermission"],
-        () => import("../routes/System/User"),
+        () =>
+          import(/* webpackChunkName: "route-user" */ "../routes/System/User"),
       ),
     },
     "/system/resource": {
       component: dynamicWrapper(
         app,
         ["resource"],
-        () => import("../routes/System/Resource"),
+        () =>
+          import(
+            /* webpackChunkName: "route-resource" */ "../routes/System/Resource"
+          ),
       ),
     },
     "/system/alert": {
       component: dynamicWrapper(
         app,
         ["alert"],
-        () => import("../routes/System/Alert"),
+        () =>
+          import(
+            /* webpackChunkName: "route-alert" */ "../routes/System/Alert"
+          ),
       ),
     },
     "/system/scale": {
       component: dynamicWrapper(
         app,
         ["scale"],
-        () => import("../routes/System/Scale"),
+        () =>
+          import(
+            /* webpackChunkName: "route-scale" */ "../routes/System/Scale"
+          ),
       ),
     },
     "/config/namespace": {
       component: dynamicWrapper(
         app,
         ["namespace"],
-        () => import("../routes/System/Namespace"),
+        () =>
+          import(
+            /* webpackChunkName: "route-namespace" */ "../routes/System/Namespace"
+          ),
       ),
     },
     "/config/metadata": {
       component: dynamicWrapper(
         app,
         ["metadata"],
-        () => import("../routes/System/Metadata"),
+        () =>
+          import(
+            /* webpackChunkName: "route-metadata" */ "../routes/System/Metadata"
+          ),
       ),
     },
     "/config/plugin": {
       component: dynamicWrapper(
         app,
         ["plugin"],
-        () => import("../routes/System/Plugin"),
+        () =>
+          import(
+            /* webpackChunkName: "route-plugin-config" */ "../routes/System/Plugin"
+          ),
       ),
     },
     "/config/instance": {
       component: dynamicWrapper(
         app,
         ["instance"],
-        () => import("../routes/System/Instance"),
+        () =>
+          import(
+            /* webpackChunkName: "route-instance" */ "../routes/System/Instance"
+          ),
       ),
     },
     "/config/registry": {
       component: dynamicWrapper(
         app,
         ["registry"],
-        () => import("../routes/System/Registry"),
+        () =>
+          import(
+            /* webpackChunkName: "route-registry" */ "../routes/System/Registry"
+          ),
       ),
     },
     "/config/namespacePlugin": {
       component: dynamicWrapper(
         app,
         ["namespacePlugin"],
-        () => import("../routes/System/NamespacePlugin"),
+        () =>
+          import(
+            /* webpackChunkName: "route-namespace-plugin" */ "../routes/System/NamespacePlugin"
+          ),
       ),
     },
     "/config/pluginhandle": {
       component: dynamicWrapper(
         app,
         ["pluginHandle"],
-        () => import("../routes/System/PluginHandle"),
+        () =>
+          import(
+            /* webpackChunkName: "route-plugin-handle" */ "../routes/System/PluginHandle"
+          ),
       ),
     },
     "/config/auth": {
       component: dynamicWrapper(
         app,
         ["auth"],
-        () => import("../routes/System/AppAuth"),
+        () =>
+          import(
+            /* webpackChunkName: "route-appauth" */ "../routes/System/AppAuth"
+          ),
       ),
     },
     "/config/dict": {
       component: dynamicWrapper(
         app,
         ["shenyuDict"],
-        () => import("../routes/System/Dict"),
+        () =>
+          import(/* webpackChunkName: "route-dict" */ "../routes/System/Dict"),
       ),
     },
     "/exception/403": {
       component: dynamicWrapper(
         app,
         [],
-        () => import("../routes/Exception/403"),
+        () =>
+          import(
+            /* webpackChunkName: "route-forbidden" */ "../routes/Exception/403"
+          ),
       ),
     },
     "/exception/404": {
       component: dynamicWrapper(
         app,
         [],
-        () => import("../routes/Exception/404"),
+        () =>
+          import(
+            /* webpackChunkName: "route-not-found" */ "../routes/Exception/404"
+          ),
       ),
     },
     "/exception/500": {
       component: dynamicWrapper(
         app,
         [],
-        () => import("../routes/Exception/500"),
+        () =>
+          import(
+            /* webpackChunkName: "route-error" */ "../routes/Exception/500"
+          ),
       ),
     },
     "/exception/trigger": {
       component: dynamicWrapper(
         app,
         ["error"],
-        () => import("../routes/Exception/triggerException"),
+        () =>
+          import(
+            /* webpackChunkName: "route-trigger-error" */ "../routes/Exception/triggerException"
+          ),
       ),
     },
     "/user": {
-      component: dynamicWrapper(app, [], () => import("../layouts/UserLayout")),
+      component: dynamicWrapper(
+        app,
+        [],
+        () =>
+          import(/* webpackChunkName: "layout-user" */ "../layouts/UserLayout"),
+      ),
     },
     "/user/login": {
       component: dynamicWrapper(
         app,
         ["login"],
-        () => import("../routes/User/Login"),
+        () =>
+          import(/* webpackChunkName: "route-login" */ "../routes/User/Login"),
       ),
     },
   };

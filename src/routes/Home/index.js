@@ -31,8 +31,8 @@ import {
   Alert,
   Modal,
 } from "antd";
-import { connect } from "dva";
-import { routerRedux } from "dva/router";
+import { connect } from "react-redux";
+import { routerRedux } from "../../runtime/router";
 import styles from "./home.less";
 import { getIntlContent } from "../../utils/IntlUtils";
 import {

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import React from "react";
-import { Input } from "antd";
+import Input from "components/ui/Input";
 import { UserAddModal } from "./AddModal";
 
 jest.mock("../../../utils/IntlUtils", () => ({
