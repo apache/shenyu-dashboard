@@ -35,6 +35,7 @@ import { Link } from "../../../runtime/router";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { sortByNumber } from "../../../utils/sorter";
+import { formatJsonObject } from "../../../utils/jsonObject";
 import { refreshAuthMenus } from "../../../utils/AuthRoute";
 import {
   getUpdateModal,
@@ -308,12 +309,7 @@ export default class NamespacePlugin extends Component {
                 <Tag color="teal">{record.sort}</Tag>
               </div>
             );
-            let t = text;
-            try {
-              t = JSON.stringify(JSON.parse(text || "{}"), null, 4);
-            } catch {
-              /* Keep malformed configuration readable. */
-            }
+            const t = formatJsonObject(text);
             const content = (
               <div>
                 <span

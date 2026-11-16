@@ -29,6 +29,7 @@ import Modal from "../../components/ui/Modal";
 import { routerRedux } from "../../runtime/router";
 import styles from "./home.module.less";
 import { getIntlContent } from "../../utils/IntlUtils";
+import { formatJsonObject } from "../../utils/jsonObject";
 import {
   activePluginSnapshotByNamespace,
   getNewEventRecodLogList,
@@ -36,14 +37,6 @@ import {
 
 const { Step } = Steps;
 const colors = ["pink", "red", "green", "cyan", "purple", "blue", "orange"];
-
-function formatConfig(config) {
-  try {
-    return JSON.stringify(JSON.parse(config || "{}"), null, 4);
-  } catch {
-    return config;
-  }
-}
 
 @connect(({ global }) => ({ global }))
 export default class Home extends Component {
@@ -203,7 +196,7 @@ export default class Home extends Component {
                               <strong>{plugin.selectorCount}</strong>
                             </p>
                             <pre>
-                              <code>{formatConfig(plugin.config)}</code>
+                              <code>{formatJsonObject(plugin.config)}</code>
                             </pre>
                           </div>
                         }
