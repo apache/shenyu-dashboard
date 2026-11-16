@@ -15,6 +15,12 @@
  * limitations under the License.
  */
 
+import { TextEncoder, TextDecoder } from "util";
+
+// React 18's browser server-renderer entry needs encoding APIs absent from jsdom.
+if (!global.TextEncoder) global.TextEncoder = TextEncoder;
+if (!global.TextDecoder) global.TextDecoder = TextDecoder;
+
 // jsdom does not implement media queries; responsive geometry is checked in browsers.
 if (!window.matchMedia) {
   Object.defineProperty(window, "matchMedia", {

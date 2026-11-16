@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 
 export default function renderApp(element, container) {
-  ReactDOM.render(element, container);
-  return () => ReactDOM.unmountComponentAtNode(container);
+  const root = createRoot(container);
+  root.render(element);
+  return () => root.unmount();
 }
