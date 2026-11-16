@@ -194,3 +194,47 @@ it("does not silently submit an old time after invalid text is entered", async (
   );
   expect(handleOk).not.toHaveBeenCalled();
 });
+
+it.each([
+  ["SHENYU.SYSTEM.SCALE.BEGIN_TIME.INPUT", "keyDown"],
+  ["SHENYU.SYSTEM.SCALE.BEGIN_TIME.INPUT", "keyPress"],
+  ["SHENYU.SYSTEM.SCALE.END_TIME.INPUT", "keyPress"],
+  ["SHENYU.SYSTEM.SCALE.END_TIME.INPUT", "keyDown"],
+])(
+  "blocks invalid Enter input in %s and accepts a corrected value",
+  async (placeholder, eventType) => {
+    const handleOk = jest.fn();
+    render(
+      <Policy
+        id="2"
+        num={2}
+        sort={0}
+        beginTime={begin}
+        endTime={end}
+        handleOk={handleOk}
+      />,
+    );
+    const input = screen.getByPlaceholderText(placeholder);
+    fireEvent.change(input, { target: { value: "2026-02-31 10:00:00" } });
+    fireEvent[eventType](input, {
+      key: "Enter",
+      code: "Enter",
+      charCode: 13,
+      keyCode: 13,
+    });
+    fireEvent.blur(input);
+    fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.SURE" }));
+    await waitFor(() =>
+      expect(
+        document.querySelector(".semi-form-field-error-message"),
+      ).not.toBeNull(),
+    );
+    expect(handleOk).not.toHaveBeenCalled();
+    fireEvent.change(input, { target: { value: "2026-07-01 11:22:33" } });
+    fireEvent.blur(input);
+    fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.SURE" }));
+    await waitFor(() => expect(handleOk).toHaveBeenCalledTimes(1));
+    const field = placeholder.includes("BEGIN") ? "beginTime" : "endTime";
+    expect(handleOk.mock.calls[0][0][field]).toBe("2026-07-01T11:22:33Z");
+  },
+);
