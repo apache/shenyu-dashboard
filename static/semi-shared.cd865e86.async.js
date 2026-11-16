@@ -1,1 +1,0 @@
-webpackJsonp([2],{wntx:function(n,c){}});
