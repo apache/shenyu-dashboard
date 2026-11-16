@@ -42,8 +42,6 @@ jest.mock("../../../services/api", () => ({
   addTag: jest.fn(),
 }));
 jest.mock("../../../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
-jest.mock("./AddAndUpdateApiDoc", () => () => null);
-jest.mock("./ImportSwaggerModal", () => () => null);
 
 it("expands nested modules with generated tag keys while retaining direct APIs", async () => {
   getRootTag.mockResolvedValue({
@@ -122,7 +120,9 @@ it("opens the retained tag form and creates a root module", async () => {
   fireEvent.change(screen.getByLabelText("SHENYU.DOCUMENT.TAG.DESC"), {
     target: { value: "Description" },
   });
-  const dialog = screen.getByRole("dialog");
+  const dialog = screen
+    .getByText("SHENYU.DOCUMENT.TAG")
+    .closest('[role="dialog"]');
   fireEvent.click(
     within(dialog).getByRole("button", { name: "SHENYU.COMMON.SURE" }),
   );
@@ -136,3 +136,59 @@ it("opens the retained tag form and creates a root module", async () => {
     ),
   );
 });
+
+it.each([
+  ["root", "0", "Renamed root"],
+  ["child", "0-tag-0", "Renamed child"],
+])(
+  "uses the current %s tag name in Swagger import after a rename",
+  async (id, key, name) => {
+    getRootTag.mockResolvedValue({
+      code: 200,
+      data: [{ id: "root", name: "Root", hasChildren: true }],
+    });
+    getParentTagId.mockResolvedValue({
+      code: 200,
+      data: [{ id: "child", name: "Child", hasChildren: false }],
+    });
+    getApi.mockResolvedValue({ code: 200, data: { dataList: [] } });
+    const ref = React.createRef();
+    const { container } = render(
+      <SearchApi ref={ref} onSelect={jest.fn()} afterUpdate={jest.fn()} />,
+    );
+
+    const root = (await screen.findByText("Root")).closest('[role="treeitem"]');
+    fireEvent.click(within(root).getByRole("button"));
+    await screen.findByText("Child");
+    if (id === "child") {
+      fireEvent.click(
+        within(
+          screen.getByText("Child").closest('[role="treeitem"]'),
+        ).getByRole("button"),
+      );
+      await waitFor(() => expect(getApi).toHaveBeenCalledWith("child"));
+    }
+
+    await waitFor(() =>
+      expect(
+        container.querySelector(`[data-key="${key}-operator"]`),
+      ).not.toBeNull(),
+    );
+    act(() => ref.current.updateTree({ id, name }, "tag"));
+    await screen.findByText(name);
+    const operator = container.querySelector(`[data-key="${key}-operator"]`);
+    fireEvent.click(
+      within(operator).getByRole("button", {
+        name: "SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER",
+      }),
+    );
+    const dialog = screen
+      .getByText("SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.TITLE")
+      .closest('[role="dialog"]');
+    expect(
+      within(dialog).getByLabelText(
+        "SHENYU.DOCUMENT.APIDOC.IMPORT.SWAGGER.PROJECT.NAME",
+      ).value,
+    ).toBe(name);
+  },
+);

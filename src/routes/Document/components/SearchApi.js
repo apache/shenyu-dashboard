@@ -25,7 +25,7 @@ import Row from "@douyinfe/semi-ui/lib/es/grid/row";
 import Col from "@douyinfe/semi-ui/lib/es/grid/col";
 import Spin from "@douyinfe/semi-ui/lib/es/spin";
 import Tooltip from "@douyinfe/semi-ui/lib/es/tooltip";
-import React, { useEffect, useImperativeHandle, useState } from "react";
+import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
 import { message } from "../../../components/ui/feedback";
 import { getRootTag, getParentTagId, getApi } from "../../../services/api";
 import { Method } from "./globalData";
@@ -41,6 +41,10 @@ const SearchApi = React.forwardRef((props, ref) => {
   const { onSelect, afterUpdate } = props;
   const [loading, setLoading] = useState(false);
   const [treeData, setTreeData] = useState([]);
+  const treeDataRef = useRef(treeData);
+  useEffect(() => {
+    treeDataRef.current = treeData;
+  }, [treeData]);
   const [expandedKeys, setExpandedKeys] = useState([]);
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [document, setDocument] = useState("{}");
@@ -255,7 +259,12 @@ const SearchApi = React.forwardRef((props, ref) => {
         </>
       );
     }
-    const result = updateTreeNodes(treeData, data.id, title);
+    const result = updateTreeNodes(
+      treeData,
+      data.id,
+      title,
+      refType === "tag" ? data.name : undefined,
+    );
     if (!result.updated) {
       return;
     }
@@ -271,8 +280,11 @@ const SearchApi = React.forwardRef((props, ref) => {
   // Handle Import Swagger button click
   const handleImportSwagger = (tagId) => {
     // Resolve the project name from the clicked tag, falling back to the root node
-    const node = tagId ? findNodeById(treeData, tagId) : null;
-    const projectName = node?.name || treeData?.[0]?.name || "default_project";
+    // Operator buttons are stored in treeData and outlive the render that created them.
+    const currentTree = treeDataRef.current;
+    const node = tagId ? findNodeById(currentTree, tagId) : null;
+    const projectName =
+      node?.name || currentTree?.[0]?.name || "default_project";
     setCurrentProjectName(projectName);
     setSwaggerModalVisible(true);
   };

@@ -23,7 +23,7 @@ export const updateTreeNodes = (nodes, id, title, name) => {
       return name ? { ...node, title, name } : { ...node, title };
     }
     if (node.children) {
-      const result = updateTreeNodes(node.children, id, title);
+      const result = updateTreeNodes(node.children, id, title, name);
       if (result.updated) {
         updated = true;
         return { ...node, children: result.nodes };
