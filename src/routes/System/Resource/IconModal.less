@@ -16,28 +16,33 @@
  */
 
 .iconCard {
-    height: 700px;
-    overflow-y: scroll;
-    .iconList {
-        display: flex;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-        .iconContent {
-            display:flex;
-            justify-content: center;
-            height: 70px;
-            width: 100px;
-            align-items: center;
-            flex-direction: column;
-            margin: 5px;
-            cursor: pointer;
-            border-radius: 4px;
-            -webkit-transition: color .3s ease-in-out,background-color .3s ease-in-out;
-            transition: color .3s ease-in-out,background-color .3s ease-in-out;
-        }
-        .iconContent:hover{
-            color: white;
-            background-color: #1890ff;
-        }
+  max-height: 55vh;
+  overflow-y: auto;
+
+  .iconList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .iconContent {
+    width: 100%;
+    height: auto;
+    min-height: 88px;
+    padding: 8px;
+
+    /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+    :global(.semi-button-content) {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      white-space: normal;
     }
+
+    &:focus-visible {
+      outline: 2px solid var(--semi-color-primary);
+      outline-offset: 2px;
+    }
+  }
 }

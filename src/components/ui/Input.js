@@ -32,11 +32,12 @@ function inputEvent(value, event, props) {
 }
 
 const Input = React.forwardRef(
-  ({ allowClear, onChange, onPressEnter, ...props }, ref) => (
+  ({ allowClear, onChange, onPressEnter, readOnly, ...props }, ref) => (
     <SemiInput
       {...props}
       className={[styles.input, props.className].filter(Boolean).join(" ")}
       ref={ref}
+      readonly={readOnly}
       showClear={allowClear}
       onEnterPress={onPressEnter}
       onChange={(value, event) =>
@@ -51,11 +52,15 @@ Input.Password = React.forwardRef((props, ref) => (
 ));
 Input.Password.displayName = "Password";
 Input.TextArea = React.forwardRef(
-  ({ allowClear, autoSize, onChange, onPressEnter, ...props }, ref) => (
+  (
+    { allowClear, autoSize, onChange, onPressEnter, readOnly, ...props },
+    ref,
+  ) => (
     <SemiTextArea
       {...props}
       className={[styles.input, props.className].filter(Boolean).join(" ")}
       ref={ref}
+      readonly={readOnly}
       showClear={allowClear}
       autosize={autoSize}
       onEnterPress={onPressEnter}

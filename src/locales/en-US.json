@@ -203,6 +203,8 @@
   "SHENYU.SYSTEM.RESOURCE.PARENT.INPUT": "Please Choose Parent Resource",
   "SHENYU.SYSTEM.ROUTER.INPUT": "Please Enter Router",
   "SHENYU.SYSTEM.ICON.INPUT": "Please Choose Icon",
+  "SHENYU.SYSTEM.ICON.CLEAR": "Clear icon",
+  "SHENYU.SYSTEM.ICON.EMPTY": "No matching icons",
   "SHENYU.SYSTEM.RESOURCE.PERMS.INPUT": "Please Enter Permissions",
   "SHENYU.SYSTEM.ICON": "Icon",
   "SHENYU.SYSTEM.ICON.SEARCH": "Search icon here",

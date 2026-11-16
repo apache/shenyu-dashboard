@@ -16,11 +16,15 @@
  */
 
 import React, { Component, Fragment } from "react";
-import { Modal, Card, Icon, Button, Input } from "antd";
+import Card from "@douyinfe/semi-ui/lib/es/card";
+import Button from "@douyinfe/semi-ui/lib/es/button";
+import Modal from "../../../components/ui/Modal";
+import Input from "../../../components/ui/Input";
+import ResourceIcon from "./ResourceIcon";
 import styles from "./IconModal.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
-const iconMap = {
+export const iconMap = {
   "SHENYU.SYSTEM.ICON.DIRECTIONAL": [
     "step-backward",
     "step-forward",
@@ -431,6 +435,12 @@ export default class IconModal extends Component {
   render() {
     const { handleCancel, onChooseIcon } = this.props;
     const { filterText } = this.state;
+    const groups = Object.entries(iconMap)
+      .map(([name, icons]) => ({
+        name,
+        icons: icons.filter((icon) => this.filterSearch(icon, filterText)),
+      }))
+      .filter((group) => group.icons.length);
     return (
       <Modal
         width={1250}
@@ -439,41 +449,44 @@ export default class IconModal extends Component {
         visible
         onCancel={handleCancel}
         footer={[
-          <Button key="back" onClick={handleCancel}>
+          <Button key="back" htmlType="button" onClick={handleCancel}>
             {getIntlContent("SHENYU.COMMON.CALCEL")}
           </Button>,
         ]}
       >
-        <Input.Search
+        <Input
+          aria-label={getIntlContent("SHENYU.SYSTEM.ICON.SEARCH")}
           allowClear
           placeholder={getIntlContent("SHENYU.SYSTEM.ICON.SEARCH")}
           style={{ marginBottom: 20 }}
           onChange={this.handleSearchTextChange}
         />
         <Card className={styles.iconCard}>
-          {Object.keys(iconMap).map((groupName, index) => {
-            return (
-              <Fragment key={index}>
-                <h4>{getIntlContent(groupName) || groupName}</h4>
-                <div className={styles.iconList}>
-                  {iconMap[groupName].map((icon) => {
-                    return this.filterSearch(icon, filterText) ? (
-                      <div
-                        key={icon}
-                        onClick={() => {
-                          onChooseIcon(icon);
-                        }}
-                        className={styles.iconContent}
-                      >
-                        <Icon style={{ fontSize: 20 }} type={icon} />
-                        <span>{icon}</span>
-                      </div>
-                    ) : null;
-                  })}
-                </div>
-              </Fragment>
-            );
-          })}
+          {groups.map(({ name, icons }) => (
+            <Fragment key={name}>
+              <h4>{getIntlContent(name) || name}</h4>
+              <div className={styles.iconList}>
+                {icons.map((icon) => (
+                  <Button
+                    key={icon}
+                    htmlType="button"
+                    theme="borderless"
+                    type="tertiary"
+                    onClick={() => onChooseIcon(icon)}
+                    className={styles.iconContent}
+                  >
+                    <ResourceIcon style={{ fontSize: 20 }} type={icon} />
+                    <span>{icon}</span>
+                  </Button>
+                ))}
+              </div>
+            </Fragment>
+          ))}
+          {!groups.length && (
+            <div role="status">
+              {getIntlContent("SHENYU.SYSTEM.ICON.EMPTY")}
+            </div>
+          )}
         </Card>
       </Modal>
     );
