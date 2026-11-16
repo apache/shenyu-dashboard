@@ -189,26 +189,41 @@ it.each(["addPlugin", "updatePlugin"])(
   },
 );
 
-it("aggregates every page when querying a tag's APIs", async () => {
-  fetch.mockImplementation(async () => ({
-    status: 200,
-    json: async () => {
-      const isFirstPage = fetch.mock.calls.length === 1;
+it.each([0, 1, 2, 3])(
+  "aggregates APIs using one-based pagination with %i total pages",
+  async (totalPage) => {
+    fetch.mockImplementation(async (url) => {
+      const requestedPage = Number(
+        new URL(url, "http://localhost").searchParams.get("currentPage"),
+      );
+      // PageParameter coerces page zero to page one on the server.
+      const currentPage = Math.max(1, requestedPage);
       return {
-        code: 200,
-        data: {
-          dataList: [{ id: isFirstPage ? "api-1" : "api-2" }],
-          page: { totalPage: 2 },
-        },
+        status: 200,
+        json: async () => ({
+          code: 200,
+          data: {
+            dataList: totalPage ? [{ id: `api-${currentPage}` }] : [],
+            page: { totalPage },
+          },
+        }),
       };
-    },
-  }));
+    });
 
-  const res = await api.getApi("tag-1");
+    const res = await api.getApi("tag-1");
 
-  expect(res.code).toBe(200);
-  expect(res.data.dataList.map((item) => item.id)).toEqual(["api-1", "api-2"]);
-  expect(fetch).toHaveBeenCalledTimes(2);
-  const secondUrl = new URL(fetch.mock.calls[1][0], "http://localhost");
-  expect(secondUrl.searchParams.get("currentPage")).toBe("1");
-});
+    expect(res.code).toBe(200);
+    expect(res.data.dataList.map((item) => item.id)).toEqual(
+      Array.from({ length: totalPage }, (_, index) => `api-${index + 1}`),
+    );
+    expect(
+      fetch.mock.calls.map(([url]) =>
+        Number(
+          new URL(url, "http://localhost").searchParams.get("currentPage"),
+        ),
+      ),
+    ).toEqual(
+      Array.from({ length: Math.max(1, totalPage) }, (_, index) => index + 1),
+    );
+  },
+);

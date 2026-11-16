@@ -998,7 +998,7 @@ export function updateTag(params) {
 }
 
 /* queryApi: fetch every page so trees and tag views stay complete */
-export async function getApi(tagId, currentPage = 0, accumulated = []) {
+export async function getApi(tagId, currentPage = 1, accumulated = []) {
   const { code, message, data } = await request(
     `${baseUrl}/api?tagId=${tagId}&currentPage=${currentPage}&pageSize=100`,
     { method: `GET` },
@@ -1007,7 +1007,7 @@ export async function getApi(tagId, currentPage = 0, accumulated = []) {
     return { code, message, data: { dataList: accumulated } };
   }
   const dataList = accumulated.concat(data.dataList || []);
-  if (currentPage + 1 >= (data.page?.totalPage ?? 1)) {
+  if (currentPage >= (data.page?.totalPage ?? 1)) {
     return { code, message, data: { ...data, dataList } };
   }
   return getApi(tagId, currentPage + 1, dataList);

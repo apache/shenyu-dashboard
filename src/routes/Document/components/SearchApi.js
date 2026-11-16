@@ -93,10 +93,6 @@ const SearchApi = React.forwardRef((props, ref) => {
     let showAddTag = true;
     let tagChildren = [];
     let apiChildren = [];
-    const eventKeys = eventKey
-      .split("-")
-      .map((v, i, arr) => arr.slice(0, i + 1).join("-"));
-
     try {
       // non-leaf tags can carry direct APIs alongside child modules
       const requests = hasChildren
@@ -121,14 +117,10 @@ const SearchApi = React.forwardRef((props, ref) => {
     if (!hasChildren && apiChildren.length) {
       showAddTag = false;
     }
-    const curNode = eventKeys.reduce((pre, cur, curIndex, curArray) => {
-      const el = pre.find((item) => item.key === cur);
-      if (curIndex === curArray.length - 1) {
-        return el;
-      } else {
-        return el.children || [];
-      }
-    }, newTreeData);
+    const curNode = findNodeById(newTreeData, id);
+    if (!curNode) {
+      return;
+    }
 
     const childTags = tagChildren.map((item, index) => ({
       ...item,
