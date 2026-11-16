@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { message } from "antd";
+import { message } from "../components/ui/feedback";
 import { getIntlContent } from "../utils/IntlUtils";
 import {
   getAllScalePolicies,

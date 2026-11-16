@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-import { message } from "antd";
-import { create } from "dva-core";
+import { message } from "../components/ui/feedback";
 import { mcpSwaggerImport } from "../services/api";
 import model from "./mcpServer";
 
-jest.mock("antd", () => ({
+jest.mock("../components/ui/feedback", () => ({
   message: {
     success: jest.fn(),
     warn: jest.fn(),

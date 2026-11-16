@@ -16,16 +16,8 @@
  */
 
 import React, { Component } from "react";
-import {
-  Modal,
-  Button,
-  Form,
-  Input,
-  Switch,
-  message,
-  Table,
-  Popconfirm,
-} from "antd";
+import { Modal, Button, Form, Input, Switch, Table, Popconfirm } from "antd";
+import { message } from "../../../components/ui/feedback";
 import styles from "./index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 

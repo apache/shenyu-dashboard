@@ -20,7 +20,7 @@ import ReactDOM from "react-dom";
 import { Simulate } from "react-dom/test-utils";
 import Rule from "./Rule";
 
-jest.mock("dva", () => ({ connect: () => (component) => component }));
+jest.mock("react-redux", () => ({ connect: () => (component) => component }));
 jest.mock("../../../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
 jest.mock("./RuleCopy", () => () => null);
 

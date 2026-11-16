@@ -15,23 +15,37 @@
  * limitations under the License.
  */
 
-import createDvaLoading from "dva-loading";
-
-// Action types used by dva-loading's reducer (not exported by the package).
 const SHOW = "@@DVA_LOADING/SHOW";
 const HIDE = "@@DVA_LOADING/HIDE";
+const initialState = { global: false, models: {}, effects: {} };
 
-// dva-loading 2.x dispatches HIDE only after the effect returns, so an effect
-// that throws (e.g. a rejected request) or is cancelled leaves its loading
-// flags set forever. Keep its reducer and only/except filtering, but always
-// dispatch HIDE from a finally block.
 export default function createLoading(opts = {}) {
-  const loading = createDvaLoading(opts);
+  const { only = [], except = [], namespace = "loading" } = opts;
+  if (only.length && except.length) {
+    throw new Error("Configure either only or except, not both");
+  }
+  const reducer = (state = initialState, action = {}) => {
+    if (action.type !== SHOW && action.type !== HIDE) return state;
+    const { namespace: model, actionType } = action.payload;
+    const active = action.type === SHOW;
+    const effects = { ...state.effects, [actionType]: active };
+    const models = {
+      ...state.models,
+      [model]:
+        active ||
+        Object.keys(effects).some(
+          (type) => type.split("/")[0] === model && effects[type],
+        ),
+    };
+    return { global: Object.values(models).some(Boolean), models, effects };
+  };
 
   function onEffect(effect, sagaEffects, model, actionType) {
-    if (loading.onEffect(effect, sagaEffects, model, actionType) === effect) {
+    if (
+      (only.length && !only.includes(actionType)) ||
+      except.includes(actionType)
+    )
       return effect;
-    }
     const { put } = sagaEffects;
     const payload = { namespace: model.namespace, actionType };
     return function* loadingEffect(...args) {
@@ -43,6 +57,5 @@ export default function createLoading(opts = {}) {
       }
     };
   }
-
-  return { ...loading, onEffect };
+  return { extraReducers: { [namespace]: reducer }, onEffect };
 }

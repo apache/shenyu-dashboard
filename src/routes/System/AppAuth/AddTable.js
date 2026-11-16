@@ -25,8 +25,8 @@ import {
   Button,
   Popconfirm,
   Switch,
-  message,
 } from "antd";
+import { message } from "../../../components/ui/feedback";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;

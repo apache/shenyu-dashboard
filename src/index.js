@@ -16,9 +16,12 @@
  */
 
 import "./polyfill";
-import dva from "dva";
-
+import React from "react";
+import { Provider } from "react-redux";
 import { createHashHistory as createHistory } from "history";
+import renderApp from "./runtime/render";
+import createApp from "./runtime/createApp";
+
 // user BrowserHistory
 // import createHistory from 'history/createBrowserHistory';
 import createLoading from "./utils/loading";
@@ -28,6 +31,7 @@ import { initIntl } from "./utils/IntlUtils";
 // import './rollbar';
 import "./index.less";
 import { emit } from "./utils/emit";
+import { setRequestDispatch } from "./utils/request";
 
 const middlewares = [];
 // if (process.env.NODE_ENV === `development`) {
@@ -50,8 +54,9 @@ if (
 emit.on("change_language", (lang) => initIntl(lang));
 
 // 1. Initialize
-const app = dva({
-  history: createHistory(),
+const history = createHistory();
+const app = createApp({
+  history,
   onAction: middlewares,
 });
 
@@ -61,10 +66,21 @@ app.use(createLoading());
 // 3. Register global model
 app.model(require("./models/global").default);
 
-// 4. Router
-app.router(require("./router").default);
+// 4. Register route models before store startup and rendering.
+const { getRouterData } = require("./common/router");
+// eslint-disable-line global-require
+const routerData = getRouterData(app);
+const RouterConfig = require("./router").default; // eslint-disable-line global-require
 
 // 5. Start
-app.start("#root");
+setRequestDispatch((action) => app._store.dispatch(action)); // eslint-disable-line no-underscore-dangle
+app.start();
+const store = app._store; // eslint-disable-line no-underscore-dangle
+renderApp(
+  <Provider store={store}>
+    <RouterConfig history={history} routerData={routerData} />
+  </Provider>,
+  document.getElementById("root"),
+);
 
-export default app._store; // eslint-disable-line
+export default store;

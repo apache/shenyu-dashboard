@@ -28,7 +28,7 @@ import {
   Tag,
   Typography,
 } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import dayjs from "dayjs";
 import * as echarts from "echarts";
 import { resizableComponents } from "../../../utils/resizable";
