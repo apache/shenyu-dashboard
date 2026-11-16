@@ -39,42 +39,53 @@ const PolicyTimePicker = React.forwardRef(
       ...props
     },
     ref,
-  ) => (
-    <LocaleProvider locale={language === "zh-CN" ? zhCN : enUS}>
-      <div
-        style={{ width: "100%" }}
-        onBlurCapture={(event) => {
-          // Semi leaves the previous value intact after invalid manual input.
-          // Its public onBlur reports panel closure without a DOM event.
-          if (
-            event.target.tagName === "INPUT" &&
-            event.currentTarget.contains(event.target) &&
-            !parsePolicyTime(event.target.value) &&
-            onChange
-          ) {
-            onChange(undefined);
-          }
-        }}
-      >
-        <DatePicker
-          {...props}
-          ref={ref}
-          type="dateTime"
-          format="yyyy-MM-dd HH:mm:ss"
-          value={value?.isValid() ? value.toDate() : undefined}
-          onChangeWithDateFirst
-          onChange={(date) =>
-            onChange && onChange(date ? moment(date) : undefined)
-          }
-          onBlur={onBlur}
-          showClear={false}
-          needConfirm
-          style={{ width: "100%", ...props.style }}
-        />
-      </div>
-    </LocaleProvider>
-  ),
+  ) => {
+    const invalidateInput = (event) => {
+      if (
+        event.target.tagName !== "INPUT" ||
+        !event.currentTarget.contains(event.target) ||
+        parsePolicyTime(event.target.value)
+      )
+        return false;
+      if (onChange) onChange(undefined);
+      return true;
+    };
+    const handleEnter = (event) => {
+      if (event.key === "Enter" && invalidateInput(event)) {
+        // Stop Semi restoring the old date before blur, and block native submit.
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
+    return (
+      <LocaleProvider locale={language === "zh-CN" ? zhCN : enUS}>
+        <div
+          style={{ width: "100%" }}
+          onBlurCapture={invalidateInput}
+          onKeyDownCapture={handleEnter}
+          onKeyPressCapture={handleEnter}
+        >
+          <DatePicker
+            {...props}
+            ref={ref}
+            type="dateTime"
+            format="yyyy-MM-dd HH:mm:ss"
+            value={value?.isValid() ? value.toDate() : undefined}
+            onChangeWithDateFirst
+            onChange={(date) =>
+              onChange && onChange(date ? moment(date) : undefined)
+            }
+            onBlur={onBlur}
+            showClear={false}
+            needConfirm
+            style={{ width: "100%", ...props.style }}
+          />
+        </div>
+      </LocaleProvider>
+    );
+  },
 );
+
 PolicyTimePicker.displayName = "PolicyTimePicker";
 
 export default connect(
