@@ -36,7 +36,7 @@ export default {
     plugins: [],
     currentRouter: {},
     permissions: {},
-    language: "",
+    language: window.sessionStorage.getItem("locale") || "en-US",
     namespaces: [],
     currentNamespaceId:
       window.sessionStorage.getItem("currentNamespaceId") || defaultNamespaceId,
