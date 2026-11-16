@@ -13,8 +13,10 @@ removed, including the no-op plugin `rootFormItem` class and its callers. PageHe
 button/tab selectors now address the already migrated Semi components. Login's
 public type declaration and API notes no longer refer to AntD controls.
 
-The lockfile loses 97 package entries (3,853 to 3,756), without adding packages or
-changing any retained package version/integrity value. Existing mirror tarball
+The initial AntD removal eliminated 97 package entries (3,853 to 3,756), without
+changing retained package versions/integrity. A CI follow-up regenerates the lock
+with npm 10: it adds seven optional-peer/placement entries and hoists 16 duplicate
+Babel runtime placements, leaving 3,747 entries. Retained versions remain unchanged. Existing mirror tarball
 URLs are normalized to the official npm registry: a clean install initially
 failed under npm 12's remote-download restriction on mirror URLs. The official
 URLs retain the existing integrity checks and allow a clean `npm ci` to complete.
@@ -44,3 +46,8 @@ Validation:
 React remains 16.14 and the build remains Roadhog/Webpack 3. Removing AntD clears
 one upgrade dependency; it does not establish React 18 or Vite compatibility, nor
 quantify a runtime performance or bundle-size gain.
+
+CI follow-up: npm 12's lockfile omitted optional dependencies that npm 10 requires
+for `jest-circus`/`babel-jest` (including babel-plugin-macros). The original PR CI
+failed at `npm ci` before tests. Regenerating with npm 10.9.4 and a clean install
+resolves this cross-npm lock consistency issue; no peer-conflict bypass is used.
