@@ -23,7 +23,7 @@ import classnames from "classnames";
 import Form from "../../../components/ui/Form";
 import Input from "../../../components/ui/Input";
 import Select from "../../../components/ui/Select";
-import styles from "../index.less";
+import styles from "../index.module.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { checkRulePattern } from "../../../utils/regExpRule";
 

@@ -30,7 +30,7 @@ import Switch from "../../../components/ui/Switch";
 import ResourceIcon from "../../../components/ui/ResourceIcon";
 import { message } from "../../../components/ui/feedback";
 import { getIntlContent } from "../../../utils/IntlUtils";
-import discoveryStyles from "./discovery.less";
+import discoveryStyles from "./discovery.module.less";
 import DiscoveryConfigModal from "./DiscoveryConfigModal";
 import ConnectedProxySelectorModal from "./ProxySelectorModal";
 import { DiscoveryCard } from "./DiscoveryCard";

@@ -15,7 +15,16 @@ Apache ShenYu Dashboard is frontend of a management background for [Apache ShenY
 
 ### Configuration
 
-Modify the api url for different environment, eg: `http://192.168.1.100:8000`
+The Vite development server runs at `http://127.0.0.1:8000` and proxies API
+requests to `http://localhost:9095`. Override the backend with
+`SHENYU_ADMIN_URL=http://127.0.0.1:19095 npm start`. `npm run start:no-proxy`
+disables the backend proxy; the obsolete Roadhog mock file (whose `mock/` inputs
+were absent) is no longer loaded. It is not an offline mock backend.
+
+Production assets use relative URLs under `static/`, with hash routing. The
+`httpPath` element keeps Admin's Thymeleaf `${domain}` binding; standalone serving
+falls back to same-origin relative APIs. Deploy the entire `dist/` directory,
+including `index.html` and `static/`, without rewriting chunk names.
 
 
 ### Develop Environment
@@ -90,3 +99,15 @@ environment are follow-up work tracked in
 
 See the [Semi Design migration stages](docs/semi-migration.md) for the metadata
 editor pilot, compatibility constraints, validation and later migration scope.
+
+## Build tooling
+
+Vite 7 replaces Roadhog/Webpack. Use Node >=22.12 (24 recommended), `npm run build`
+for production and `npm run preview` for a local static preview (no API proxy).
+`npm run analyze` adds source maps; it is not a bundle-size benchmark.
+`npm run site` builds and publishes the dashboard to gh-pages when explicitly run.
+The previous unused Roadhog API-doc generator is removed.
+
+Bound Less styles use `.module.less`; `src/index.less` remains a global stylesheet. Babel handles legacy decorators before JSX transformation.
+Jest remains independent with explicit Babel presets. The build emits a manifest
+at `dist/.vite/manifest.json` for inspecting lazy chunks and deployment assets.

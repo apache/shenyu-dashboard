@@ -18,7 +18,7 @@
 import React from "react";
 import classNames from "classnames";
 import ResourceIcon from "../ui/ResourceIcon";
-import styles from "./index.less";
+import styles from "./index.module.less";
 
 export default function Result({
   className,

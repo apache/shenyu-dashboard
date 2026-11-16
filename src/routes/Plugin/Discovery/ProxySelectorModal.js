@@ -30,7 +30,7 @@ import Modal from "../../../components/ui/Modal";
 import Select from "../../../components/ui/Select";
 import { message } from "../../../components/ui/feedback";
 import { getIntlContent } from "../../../utils/IntlUtils";
-import styles from "../index.less";
+import styles from "../index.module.less";
 import ProxySelectorCopy from "./ProxySelectorCopy.js";
 import { findKeyByValue } from "../../../utils/utils";
 import { checkRulePattern } from "../../../utils/regExpRule";

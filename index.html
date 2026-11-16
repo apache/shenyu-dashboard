@@ -27,8 +27,9 @@
 </head>
 
 <body>
-  <div id="httpPath" style="display: none" th:text="<%='$'%>{domain}">${process.env.NODE_ENV === 'production' ? '' : '.'}</div>
+  <div id="httpPath" style="display: none" th:text="${domain}">.</div>
   <div id="root"></div>
+  <script type="module" src="/src/index.js"></script>
 </body>
 
 </html>

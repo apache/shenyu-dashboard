@@ -23,7 +23,7 @@ import Col from "@douyinfe/semi-ui/lib/es/grid/col";
 import omit from "omit.js";
 import Form from "../ui/Form";
 import LoginContext from "./LoginContext";
-import styles from "./index.less";
+import styles from "./index.module.less";
 import map from "./map";
 
 const FormItem = Form.Item;

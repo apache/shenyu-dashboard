@@ -32,7 +32,7 @@ import "@douyinfe/semi-ui/lib/es/_base/base.css";
 import { connect } from "react-redux";
 import ReactJson from "@microlink/react-json-view";
 import { message } from "../../../components/ui/feedback";
-import styles from "../index.less";
+import styles from "../index.module.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { clipboardCopy } from "../../../utils/utils";
 

@@ -19,7 +19,7 @@ import React from "react";
 import classNames from "classnames";
 import supportImg from "../../assets/support-apache.png";
 import asfLogo from "../../assets/asf_logo.svg";
-import styles from "./index.less";
+import styles from "./index.module.less";
 
 const GlobalFooter = ({ className, links, copyright }) => {
   const imgStyle = classNames(styles.imgStyle, className);

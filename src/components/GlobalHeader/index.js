@@ -28,7 +28,7 @@ import ImportModal from "./ImportModal";
 import ExportModal from "./ExportModal";
 import ImportResultModal from "./ImportResultModal";
 import parseImportResult from "./parseImportResult";
-import styles from "./index.less";
+import styles from "./index.module.less";
 import { getCurrentLocale, getIntlContent } from "../../utils/IntlUtils";
 import { checkUserPassword } from "../../services/api";
 import { emit } from "../../utils/emit";

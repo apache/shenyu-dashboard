@@ -18,7 +18,7 @@
 import React from "react";
 import Input from "../ui/Input";
 import ResourceIcon from "../ui/ResourceIcon";
-import styles from "./index.less";
+import styles from "./index.module.less";
 import { getIntlContent } from "../../utils/IntlUtils";
 
 const map = {

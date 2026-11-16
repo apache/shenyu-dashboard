@@ -27,7 +27,7 @@ import Banner from "@douyinfe/semi-ui/lib/es/banner";
 import { connect } from "react-redux";
 import Modal from "../../components/ui/Modal";
 import { routerRedux } from "../../runtime/router";
-import styles from "./home.less";
+import styles from "./home.module.less";
 import { getIntlContent } from "../../utils/IntlUtils";
 import {
   activePluginSnapshotByNamespace,

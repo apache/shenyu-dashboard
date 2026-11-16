@@ -37,7 +37,7 @@ import Select from "../../../components/ui/Select";
 import Form from "../../../components/ui/Form";
 import Modal from "../../../components/ui/Modal";
 import { message } from "../../../components/ui/feedback";
-import styles from "../index.less";
+import styles from "../index.module.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import SelectorCopy from "./SelectorCopy";
 import {

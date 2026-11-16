@@ -22,7 +22,7 @@ import Breadcrumb from "@douyinfe/semi-ui/lib/es/breadcrumb";
 import Tabs from "@douyinfe/semi-ui/lib/es/tabs";
 import classNames from "classnames";
 import BreadcrumbContext from "./BreadcrumbContext";
-import styles from "./index.less";
+import styles from "./index.module.less";
 import { urlToList } from "../_utils/pathTools";
 
 const { TabPane } = Tabs;

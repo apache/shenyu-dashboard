@@ -24,7 +24,7 @@ import Form from "../../../components/ui/Form";
 import Input from "../../../components/ui/Input";
 import Switch from "../../../components/ui/Switch";
 import { message } from "../../../components/ui/feedback";
-import styles from "./index.less";
+import styles from "./index.module.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;

@@ -31,7 +31,7 @@ import ResourceIcon from "../../../components/ui/ResourceIcon";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { resetAuthMenuCache } from "../../../utils/AuthRoute";
-import styles from "./index.less";
+import styles from "./index.module.less";
 
 function resourceTitle(item) {
   const title = item.meta?.title || item.title || "";

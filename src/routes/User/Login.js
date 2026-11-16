@@ -21,7 +21,7 @@ import { connect } from "react-redux";
 import Banner from "@douyinfe/semi-ui/lib/es/banner";
 import UUID from "uuid";
 import Login from "components/Login";
-import styles from "./Login.less";
+import styles from "./Login.module.less";
 import { ensureSecret, getSecret } from "./loginSecret";
 
 const { UserName, Password, Submit, VerifyCode, LoginCode } = Login;

@@ -28,7 +28,7 @@ import Modal from "../../../components/ui/Modal";
 import Select from "../../../components/ui/Select";
 import Switch from "../../../components/ui/Switch";
 import { message } from "../../../components/ui/feedback";
-import styles from "../index.less";
+import styles from "../index.module.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import CommonRuleHandle from "./CommonRuleHandle";
 import ComposeRuleHandle from "./ComposeRuleHandle";

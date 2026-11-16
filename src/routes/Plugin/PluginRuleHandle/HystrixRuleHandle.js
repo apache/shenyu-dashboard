@@ -21,7 +21,7 @@ import { connect } from "react-redux";
 import Form from "../../../components/ui/Form";
 import Select from "../../../components/ui/Select";
 import Input from "../../../components/ui/Input";
-import styles from "../index.less";
+import styles from "../index.module.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const FormItem = Form.Item;

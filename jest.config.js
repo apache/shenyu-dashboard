@@ -31,10 +31,17 @@ module.exports = {
     "^.+\\.jsx?$": [
       "babel-jest",
       {
-        // Keep test transforms independent from Roadhog's browser configuration.
+        // Keep Jest transforms independent from the Vite build.
         babelrc: false,
         configFile: false,
-        presets: [["babel-preset-umi", { targets: { node: "20" } }]],
+        presets: [
+          ["@babel/preset-env", { targets: { node: "current" } }],
+          ["@babel/preset-react", { runtime: "classic" }],
+        ],
+        plugins: [
+          ["@babel/plugin-proposal-decorators", { legacy: true }],
+          ["@babel/plugin-transform-class-properties", { loose: true }],
+        ],
       },
     ],
   },

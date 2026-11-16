@@ -22,7 +22,7 @@ import Input from "../../../components/ui/Input";
 import ResourceIcon from "../../../components/ui/ResourceIcon";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
-import styles from "./index.less";
+import styles from "./index.module.less";
 
 class InlineSearch extends React.Component {
   handleSubmit = (e) => {

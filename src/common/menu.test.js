@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-const path = require('path');
+import { getMenuData } from "./menu";
+import { getIntlContent } from "../utils/IntlUtils";
 
-module.exports = {
-  plugins: [
-    [
-      'module-resolver',
-      {
-        alias: {
-          components: path.join(__dirname, './src/components'),
-        },
-      },
-    ],
-    [
-      'import',
-      {
-        libraryName: 'antd',
-        style: true, // or css
-      },
-    ],
-  ],
-};
+jest.mock("../utils/IntlUtils", () => ({ getIntlContent: jest.fn(() => "") }));
+
+it("translates menu labels when requested after locale initialization", () => {
+  getIntlContent.mockImplementation((key) => `translated:${key}`);
+  const menus = getMenuData();
+  expect(menus[0].name).toBe("translated:SHENYU.MENU.PLUGIN.LIST");
+  expect(menus[1].children[0].name).toBe(
+    "translated:SHENYU.MENU.SYSTEM.MANAGMENT.ROLE",
+  );
+  getIntlContent.mockImplementation((key) => `next:${key}`);
+  expect(getMenuData()[0].name).toBe("next:SHENYU.MENU.PLUGIN.LIST");
+});

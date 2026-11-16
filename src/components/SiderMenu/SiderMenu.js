@@ -23,7 +23,7 @@ import { Resizable } from "react-resizable";
 import Switch from "../ui/Switch";
 import ResourceIcon from "../ui/ResourceIcon";
 import { Link } from "../../runtime/router";
-import styles from "./index.less";
+import styles from "./index.module.less";
 import { urlToList } from "../_utils/pathTools";
 import { getCurrentLocale, getIntlContent } from "../../utils/IntlUtils";
 // import { emit } from '../../utils/emit'

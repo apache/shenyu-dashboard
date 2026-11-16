@@ -19,7 +19,7 @@ import React from "react";
 import classNames from "classnames";
 import Button from "@douyinfe/semi-ui/lib/es/button";
 import Form from "../ui/Form";
-import styles from "./index.less";
+import styles from "./index.module.less";
 
 const FormItem = Form.Item;
 

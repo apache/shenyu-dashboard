@@ -24,7 +24,7 @@ import LoginItem from "./LoginItem";
 import LoginTab from "./LoginTab";
 import LoginSubmit from "./LoginSubmit";
 import LoginCode from "./LoginCode";
-import styles from "./index.less";
+import styles from "./index.module.less";
 
 class Login extends Component {
   constructor(props) {

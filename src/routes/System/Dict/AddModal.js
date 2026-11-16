@@ -195,17 +195,15 @@ class AddModal extends Component {
             )}
           </FormItem>
           {/* status */}
-          {
-            <FormItem
-              {...formItemLayout}
-              label={getIntlContent("SHENYU.SYSTEM.STATUS")}
-            >
-              {getFieldDecorator("enabled", {
-                initialValue: enabled,
-                valuePropName: "checked",
-              })(<Switch disabled={!this.props.isShow} />)}
-            </FormItem>
-          }
+          <FormItem
+            {...formItemLayout}
+            label={getIntlContent("SHENYU.SYSTEM.STATUS")}
+          >
+            {getFieldDecorator("enabled", {
+              initialValue: enabled,
+              valuePropName: "checked",
+            })(<Switch disabled={!this.props.isShow} />)}
+          </FormItem>
         </Form>
       </Modal>
     );

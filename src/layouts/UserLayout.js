@@ -22,7 +22,7 @@ import { message } from "../components/ui/feedback";
 import { Link, Redirect, Switch, Route } from "../runtime/router";
 import DocumentTitle from "../components/DocumentTitle";
 import GlobalFooter from "../components/GlobalFooter";
-import styles from "./UserLayout.less";
+import styles from "./UserLayout.module.less";
 import TitleLogo from "../assets/TitleLogo.svg";
 import { getRoutes, getPageQuery, getQueryPath } from "../utils/utils";
 

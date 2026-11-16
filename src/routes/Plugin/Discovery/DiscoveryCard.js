@@ -24,7 +24,7 @@ import Popconfirm from "@douyinfe/semi-ui/lib/es/popconfirm";
 import ResourceIcon from "../../../components/ui/ResourceIcon";
 
 import { getIntlContent } from "../../../utils/IntlUtils";
-import discoveryStyles from "./discovery.less";
+import discoveryStyles from "./discovery.module.less";
 
 import { formatTimestamp } from "../../../utils/utils";
 import {

@@ -21,7 +21,7 @@ import Spin from "@douyinfe/semi-ui/lib/es/spin";
 import Card from "@douyinfe/semi-ui/lib/es/card";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import styles from "./style.less";
+import styles from "./style.module.less";
 
 @connect(({ loading }) => ({
   isloading: !!loading.effects["error/query"],
