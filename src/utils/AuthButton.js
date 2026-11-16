@@ -18,7 +18,7 @@
 import React, { Component } from "react";
 import { Button, Popconfirm } from "antd";
 import PropTypes from "prop-types";
-import { connect } from "dva";
+import { connect } from "react-redux";
 
 /**
  * check button's authority

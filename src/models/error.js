@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { routerRedux } from "dva/router";
+import { routerRedux } from "../runtime/router";
 import { query } from "../services/error";
 
 export default {

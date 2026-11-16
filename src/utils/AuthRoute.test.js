@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Redirect, Route } from "dva/router";
+import { Redirect, Route } from "../runtime/router";
 import AuthRoute, {
   checkMenuAuth,
   getAuthMenus,
@@ -210,6 +210,25 @@ function renderAuthRoute({ path, permissions, redirectPath }) {
   });
   return instance.render();
 }
+
+it("redirects an unauthenticated root before mounting protected layout children", () => {
+  window.sessionStorage.removeItem("token");
+  const dispatch = jest.fn();
+  const instance = new WrappedAuthRoute({
+    loading: false,
+    path: "/",
+    component: () => null,
+    global: { permissions: {} },
+    redirectPath: "/user/login",
+    location: { pathname: "/config/metadata" },
+    dispatch,
+  });
+  const rendered = instance.render();
+  expect(rendered.type).toBe(Redirect);
+  expect(rendered.props.to).toBe("/user/login");
+  instance.componentDidMount();
+  expect(dispatch).not.toHaveBeenCalled();
+});
 
 it("redirects to the redirect path when permissions are denied", () => {
   const redirectPath = "/exception/403";

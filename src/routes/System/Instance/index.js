@@ -28,7 +28,7 @@ import {
   Tag,
   Typography,
 } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import dayjs from "dayjs";
 import * as echarts from "echarts";
 import { resizableComponents } from "../../../utils/resizable";
@@ -257,7 +257,7 @@ export default class Instance extends Component {
         max: 4,
         minInterval: 1,
         interval: 1,
-        name: "数量",
+        name: getIntlContent("SHENYU.SYSTEM.INSTANCE.CHART.COUNT"),
         nameTextStyle: {
           color: "#333",
           fontSize: 12,

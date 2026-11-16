@@ -19,7 +19,6 @@ import React, { Component } from "react";
 import {
   Button,
   Input,
-  message,
   Popconfirm,
   Popover,
   Select,
@@ -28,8 +27,9 @@ import {
   Tag,
   Typography,
 } from "antd";
-import { connect } from "dva";
-import { Link } from "dva/router";
+import { connect } from "react-redux";
+import { message } from "../../../components/ui/feedback";
+import { Link } from "../../../runtime/router";
 import { resizableComponents } from "../../../utils/resizable";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";

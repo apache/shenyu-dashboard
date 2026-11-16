@@ -16,12 +16,13 @@
  */
 
 import React, { Component } from "react";
-import { Table, Button, message, Popconfirm, Switch } from "antd";
-import { connect } from "dva";
+import { Table, Button, Popconfirm, Switch } from "antd";
+import { connect } from "react-redux";
 import dayjs from "dayjs";
+import { message } from "../../../components/ui/feedback";
 import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
-import RelateMetadata from "./RelateMetadata";
+import RelateMetadata from "./RelateMetadataLoader";
 import AddTable from "./AddTable";
 import SearchContent from "./SearchContent";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
@@ -34,6 +35,8 @@ import AuthButton from "../../../utils/AuthButton";
   loading: loading.effects["auth/fetch"],
 }))
 export default class Auth extends Component {
+  resourceRequest = 0;
+
   components = resizableComponents;
 
   constructor(props) {
@@ -57,13 +60,20 @@ export default class Auth extends Component {
     this.initPluginColumns();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     const { language } = this.props;
     const { localeName } = this.state;
     if (language !== localeName) {
       this.initPluginColumns();
       this.changeLocale(language);
     }
+    if (prevProps.currentNamespaceId !== this.props.currentNamespaceId) {
+      this.closeModal();
+    }
+  }
+
+  componentWillUnmount() {
+    this.resourceRequest += 1;
   }
 
   handleResize =
@@ -83,34 +93,32 @@ export default class Auth extends Component {
     this.setState({ selectedRowKeys }, this.query);
   };
 
+  currentQueryPayload = (currentPage = this.state.currentPage) => {
+    const { currentNamespaceId } = this.props;
+    const { appKey, phone, pageSize } = this.state;
+    return {
+      appKey,
+      phone,
+      currentPage,
+      pageSize,
+      namespaceId: currentNamespaceId,
+    };
+  };
+
   query = () => {
-    const { dispatch, currentNamespaceId } = this.props;
-    const { appKey, phone, currentPage, pageSize } = this.state;
+    const { dispatch } = this.props;
     dispatch({
       type: "auth/fetch",
-      payload: {
-        appKey,
-        phone,
-        currentPage,
-        pageSize,
-        namespaceId: currentNamespaceId,
-      },
+      payload: this.currentQueryPayload(),
     });
   };
 
   // eslint-disable-next-line react/no-unused-class-component-methods
   getAllAuths = (page) => {
-    const { dispatch, currentNamespaceId } = this.props;
-    const { appKey, phone, pageSize } = this.state;
+    const { dispatch } = this.props;
     dispatch({
       type: "auth/fetch",
-      payload: {
-        appKey,
-        phone,
-        currentPage: page,
-        pageSize,
-        namespaceId: currentNamespaceId,
-      },
+      payload: this.currentQueryPayload(page),
     });
   };
 
@@ -122,14 +130,13 @@ export default class Auth extends Component {
     this.setState({ currentPage: 1, pageSize }, this.query);
   };
 
-  closeModal = (refresh) => {
-    if (refresh) {
-      this.setState({ popup: "" }, this.query);
-    }
+  closeModal = () => {
+    this.resourceRequest += 1;
     this.setState({ popup: "" });
   };
 
   editClick = (record) => {
+    this.resourceRequest += 1;
     const { dispatch, currentNamespaceId } = this.props;
     const { currentPage } = this.state;
     dispatch({
@@ -150,13 +157,9 @@ export default class Auth extends Component {
                     ...values,
                     namespaceId: currentNamespaceId,
                   },
-                  fetchValue: {
-                    currentPage,
-                    pageSize: 20,
-                    namespaceId: currentNamespaceId,
-                  },
+                  fetchValue: this.currentQueryPayload(currentPage),
                   callback: () => {
-                    this.closeModal(true);
+                    this.closeModal();
                   },
                 });
               }}
@@ -171,14 +174,21 @@ export default class Auth extends Component {
   };
 
   editClickMeta = (record) => {
+    this.resourceRequest += 1;
+    const requestId = this.resourceRequest;
+    const namespaceId = this.props.currentNamespaceId;
+    const isCurrent = () =>
+      requestId === this.resourceRequest &&
+      namespaceId === this.props.currentNamespaceId;
     const { currentPage } = this.state;
-    const { dispatch, currentNamespaceId } = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: "auth/fetchItemDel",
       payload: {
         id: record.id,
       },
       callback: (auth) => {
+        if (!isCurrent()) return;
         dispatch({
           type: "auth/fetchMeta",
           payload: {
@@ -186,11 +196,7 @@ export default class Auth extends Component {
             // pageSize: 10
           },
           callback: (datas) => {
-            // remove duplicate elements and add
-            const pathArr = auth.auth.map((e) => e.path);
-            datas.dataList = datas.dataList
-              .filter((item) => !pathArr.includes(item.path))
-              .concat(auth.auth);
+            if (!isCurrent()) return;
             this.setState({
               popup: (
                 <RelateMetadata
@@ -198,20 +204,18 @@ export default class Auth extends Component {
                   {...datas}
                   authName={`appKey:  ${record.appKey}`}
                   id={record.id}
+                  language={this.props.language}
                   handleCancel={() => {
                     this.closeModal();
                   }}
                   handleOk={(values) => {
+                    if (!isCurrent()) return;
                     dispatch({
                       type: "auth/updateDel",
-                      payload: values,
-                      fetchValue: {
-                        currentPage,
-                        pageSize: 20,
-                        namespaceId: currentNamespaceId,
-                      },
+                      payload: { ...values, id: record.id },
+                      fetchValue: this.currentQueryPayload(currentPage),
                       callback: () => {
-                        this.closeModal(true);
+                        if (isCurrent()) this.closeModal();
                       },
                     });
                   }}
@@ -232,7 +236,7 @@ export default class Auth extends Component {
   };
 
   deleteClick = () => {
-    const { dispatch, currentNamespaceId } = this.props;
+    const { dispatch } = this.props;
     const { selectedRowKeys } = this.state;
     if (selectedRowKeys && selectedRowKeys.length > 0) {
       dispatch({
@@ -240,11 +244,9 @@ export default class Auth extends Component {
         payload: {
           list: selectedRowKeys,
         },
-        fetchValue: {
-          namespaceId: currentNamespaceId,
-        },
+        fetchValue: this.currentQueryPayload(1),
         callback: () => {
-          this.setState({ selectedRowKeys: [], currentPage: 1 }, this.query);
+          this.setState({ selectedRowKeys: [], currentPage: 1 });
         },
       });
     } else {
@@ -256,7 +258,7 @@ export default class Auth extends Component {
   // 添加表格数据事件
 
   addClick = () => {
-    const { currentPage } = this.state;
+    this.resourceRequest += 1;
     const { dispatch, currentNamespaceId } = this.props;
     dispatch({
       type: "auth/fetchMetaGroup",
@@ -270,14 +272,10 @@ export default class Auth extends Component {
                 dispatch({
                   type: "auth/add",
                   payload: { ...values, namespaceId: currentNamespaceId },
-                  fetchValue: {
-                    currentPage,
-                    pageSize: 20,
-                    namespaceId: currentNamespaceId,
-                  },
+                  fetchValue: this.currentQueryPayload(1),
                   callback: () => {
                     this.setState({ selectedRowKeys: [], currentPage: 1 });
-                    this.closeModal(true);
+                    this.closeModal();
                   },
                 });
               }}
@@ -292,16 +290,14 @@ export default class Auth extends Component {
   };
 
   openSwitch = ({ list, enabled, callback }) => {
-    const { dispatch, currentNamespaceId } = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: "auth/updateOp",
       payload: {
         list,
         enabled,
       },
-      fetchValue: {
-        namespaceId: currentNamespaceId,
-      },
+      fetchValue: this.currentQueryPayload(),
       callback,
     });
   };
@@ -320,7 +316,7 @@ export default class Auth extends Component {
             list: selectedRowKeys,
             enabled: !user.open,
             callback: () => {
-              this.setState({ selectedRowKeys: [] }, this.query);
+              this.setState({ selectedRowKeys: [] });
             },
           });
         },
@@ -332,16 +328,14 @@ export default class Auth extends Component {
   };
 
   statusSwitch = ({ list, enabled, callback }) => {
-    const { dispatch, currentNamespaceId } = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: "auth/updateEn",
       payload: {
         list,
         enabled,
       },
-      fetchValue: {
-        namespaceId: currentNamespaceId,
-      },
+      fetchValue: this.currentQueryPayload(),
       callback,
     });
   };
@@ -360,7 +354,7 @@ export default class Auth extends Component {
             list: selectedRowKeys,
             enabled: !user.enabled,
             callback: () => {
-              this.setState({ selectedRowKeys: [] }, this.query);
+              this.setState({ selectedRowKeys: [] });
             },
           });
         },
@@ -453,7 +447,6 @@ export default class Auth extends Component {
                   this.openSwitch({
                     list: [row.id],
                     enabled: checked,
-                    callback: this.query,
                   });
                 }}
               />
@@ -490,7 +483,6 @@ export default class Auth extends Component {
                   this.statusSwitch({
                     list: [row.id],
                     enabled: checked,
-                    callback: this.query,
                   });
                 }}
               />
