@@ -121,7 +121,7 @@ export default {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.UPDATE.SUCCESS"),
         );
-        callback();
+        callback?.();
         yield put({ type: "reload", fetchValue });
       } else {
         message.warn(json.message);
@@ -153,6 +153,7 @@ export default {
         }
       }
     },
+
   },
   reducers: {
     saveShenYuDicts(state, { payload }) {

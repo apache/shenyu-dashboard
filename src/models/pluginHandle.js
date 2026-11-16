@@ -208,6 +208,7 @@ export default {
         });
       }
     },
+
   },
   reducers: {
     savePluginHandles(state, { payload }) {

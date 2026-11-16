@@ -135,14 +135,16 @@ export default class PluginHandle extends Component {
   };
 
   /**
-   * close model
-   * @param reset after is reset search condition
+   * close modal
+   * @param reset whether to reset search conditions and pagination
+   * @param refresh whether to query after closing; false when an effect reloads
    */
-  closeModal = (reset = false) => {
+  closeModal = (reset = false, refresh = true) => {
     this.setState(
       reset
         ? { popup: "", currentPage: 1, pluginId: "", field: "" }
         : { popup: "" },
+      refresh ? this.query : undefined,
     );
   };
 
@@ -224,7 +226,7 @@ export default class PluginHandle extends Component {
                     currentPage: 1,
                   }),
                   callback: () => {
-                    this.closeModal(true);
+                    this.closeModal(true, false);
                   },
                 });
               }}
@@ -288,7 +290,7 @@ export default class PluginHandle extends Component {
                 currentPage: 1,
               }),
               callback: () => {
-                this.closeModal(true);
+                this.closeModal(true, false);
               },
             });
           }}

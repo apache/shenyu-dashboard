@@ -60,7 +60,6 @@ export default {
     instanceList: [],
     total: 0,
     pieData: [],
-    lineList: [],
     lineData: [],
     analysisNamespaceId: undefined,
   },

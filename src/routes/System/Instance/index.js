@@ -259,7 +259,9 @@ export default class Instance extends Component {
       series: formattedSeries,
     };
 
-    this.lineChartInstance.setOption(option);
+    // Replace the series instead of merging them by index, so that lines of the
+    // previous namespace don't stay on the chart when the new one has fewer.
+    this.lineChartInstance.setOption(option, { replaceMerge: ["series"] });
   };
 
   onPaginationChange = (page, pageSize) => {
@@ -455,7 +457,7 @@ export default class Instance extends Component {
             } else if (state === 0) {
               return (
                 <Tag color="orange">
-                  {getIntlContent("SHENYU.INSTANCE.SELECT.STATE.UNKNOWN")}
+                  {getIntlContent("SHENYU.INSTANCE.SELECT.STATE.DELETED")}
                 </Tag>
               );
             } else if (state === 2) {
@@ -465,6 +467,11 @@ export default class Instance extends Component {
                 </Tag>
               );
             }
+            return (
+              <Tag>
+                {getIntlContent("SHENYU.INSTANCE.SELECT.STATE.UNKNOWN")}
+              </Tag>
+            );
           },
         },
       ],

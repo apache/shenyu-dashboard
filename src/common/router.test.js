@@ -90,6 +90,7 @@ it("retains hash route keys and menu permission metadata", () => {
     "/plug/:index/:id",
     "/config/auth",
     "/plug/Mcp/mcpServer",
+    "/document/apidoc",
   ].forEach((path) => {
     expect(routes[path].component).toBeDefined();
   });
