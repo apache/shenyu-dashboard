@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import { message } from "antd";
+import { message } from "../components/ui/feedback";
 import { mcpSwaggerImport } from "../services/api";
 import model from "./mcpServer";
 
-jest.mock("antd", () => ({
+jest.mock("../components/ui/feedback", () => ({
   message: {
     success: jest.fn(),
     warn: jest.fn(),
@@ -92,4 +92,8 @@ it("does not refresh or close the modal after a failed Swagger import", () => {
   expect(message.warn).toHaveBeenCalledWith(response.message);
   expect(message.success).not.toHaveBeenCalled();
   expect(callback).not.toHaveBeenCalled();
+});
+
+it("declares an initial state so the store can initialise the model", () => {
+  expect(model.state).toEqual({});
 });

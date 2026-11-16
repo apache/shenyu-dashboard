@@ -20,7 +20,6 @@ import {
   Button,
   Col,
   Input,
-  message,
   Popconfirm,
   Row,
   Switch,
@@ -28,7 +27,8 @@ import {
   Tag,
   Typography,
 } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
+import { message } from "../../../components/ui/feedback";
 import styles from "../index.less";
 import Selector from "./Selector";
 import Rule from "./Rule";
@@ -94,18 +94,20 @@ export default class Common extends Component {
         type: "common/resetData",
       });
 
-      if (prevProps.plugins && prevProps.plugins.length > 0) {
-        this.getAllSelectors(selectorPage, selectorPageSize, prevProps.plugins);
-      } else {
-        dispatch({
-          type: "global/fetchPlugins",
-          payload: {
-            callback: (pluginList) => {
-              this.getAllSelectors(selectorPage, selectorPageSize, pluginList);
+      this.setState({ selectorPage: 1 }, () => {
+        if (plugins && plugins.length > 0) {
+          this.getAllSelectors(1, selectorPageSize, plugins);
+        } else {
+          dispatch({
+            type: "global/fetchPlugins",
+            payload: {
+              callback: (pluginList) => {
+                this.getAllSelectors(1, selectorPageSize, pluginList);
+              },
             },
-          },
-        });
-      }
+          });
+        }
+      });
     }
     if (prevProps.currentNamespaceId !== currentNamespaceId) {
       if (plugins) {
@@ -198,8 +200,10 @@ export default class Common extends Component {
 
   searchSelector = () => {
     const { plugins } = this.props;
-    const { selectorPage, selectorPageSize } = this.state;
-    this.getAllSelectors(selectorPage, selectorPageSize, plugins);
+    const { selectorPageSize } = this.state;
+    this.setState({ selectorPage: 1 }, () => {
+      this.getAllSelectors(1, selectorPageSize, plugins);
+    });
   };
 
   isDiscovery = (pluginId) => {

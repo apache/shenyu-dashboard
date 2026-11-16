@@ -16,7 +16,7 @@
  */
 
 import { urlToList } from "../_utils/pathTools";
-import { getFlatMenuKeys, getMenuMatchKeys } from "./SiderMenu";
+import SiderMenu, { getFlatMenuKeys, getMenuMatchKeys } from "./SiderMenu";
 
 const menu = [
   {
@@ -85,5 +85,31 @@ describe("test menu match", () => {
     expect(
       getMenuMatchKeys(flatMenuKeys, urlToList("/userinfo/2144/info")),
     ).toEqual(["/userinfo", "/userinfo/:id", "/userinfo/:id/info"]);
+  });
+});
+
+describe("SiderMenu#getSelectedMenuKeys", () => {
+  it("matches a route added to menuData after construction", () => {
+    // menuData can be populated asynchronously (e.g. plugin or permission
+    // menus that load after the sider mounts), so the instance must derive
+    // its flattened keys from the current menuData rather than a value
+    // cached at construction time.
+    const instance = new SiderMenu({
+      menuData: menu,
+      location: { pathname: "/dashboard" },
+    });
+
+    instance.props = {
+      menuData: [
+        ...menu,
+        { path: "/plugin", children: [{ path: "/plugin/detail" }] },
+      ],
+      location: { pathname: "/plugin/detail" },
+    };
+
+    expect(instance.getSelectedMenuKeys()).toEqual([
+      "/plugin",
+      "/plugin/detail",
+    ]);
   });
 });

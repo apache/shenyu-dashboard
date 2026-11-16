@@ -17,8 +17,8 @@
 
 import React, { PureComponent } from "react";
 import { Button, Dropdown, Form, Icon, Input, Menu, Modal } from "antd";
-import { connect } from "dva";
-import { withRouter } from "dva/router";
+import { connect } from "react-redux";
+import { withRouter } from "../../runtime/router";
 import ImportModal from "./ImportModal";
 import ExportModal from "./ExportModal";
 import ImportResultModal from "./ImportResultModal";

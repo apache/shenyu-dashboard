@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { routerRedux } from "dva/router";
+import { routerRedux } from "../../runtime/router";
 import ConnectedHome from "./index";
 
 jest.mock("../../services/api", () => ({

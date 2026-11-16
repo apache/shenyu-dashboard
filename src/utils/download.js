@@ -15,7 +15,37 @@
  * limitations under the License.
  */
 
-import fetch from "dva/fetch";
+import { notification } from "../components/ui/feedback";
+import fetch from "./fetch";
+import { handleUnauthorized } from "./request";
+import { getIntlContent } from "./IntlUtils";
+
+async function checkStatus(response) {
+  if (response.ok) {
+    return response;
+  }
+
+  let errorResponse;
+  try {
+    errorResponse = await response.json();
+  } catch {
+    errorResponse = {};
+  }
+
+  const errorText =
+    (errorResponse && errorResponse.message) || response.statusText;
+  notification.error({
+    message: `${getIntlContent("SHENYU.REQUEST.ERROR")} ${response.status}: ${response.url}`,
+    description: errorText,
+  });
+  if (response.status === 401) {
+    handleUnauthorized();
+  }
+  const error = new Error(errorText);
+  error.name = response.status;
+  error.response = response;
+  throw error;
+}
 
 async function getDownloadErrorMessage(response) {
   const fallbackMessage =
@@ -59,7 +89,7 @@ export default async function download(url, options) {
     newOptions.headers = { ...newOptions.headers, "X-Access-Token": token };
   }
   try {
-    const response = await fetch(url, newOptions);
+    const response = await checkStatus(await fetch(url, newOptions));
     const disposition = response.headers.get("Content-Disposition");
     const isAttachment =
       response.ok &&
@@ -87,6 +117,8 @@ export default async function download(url, options) {
     a.click();
     document.body.removeChild(a);
   } catch (error) {
-    throw new Error(`下载文件失败：${error.message || error}`);
+    throw new Error(
+      `${getIntlContent("SHENYU.DOWNLOAD.FILE.FAILED")}: ${error.message || error}`,
+    );
   }
 }

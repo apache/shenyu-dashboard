@@ -8,7 +8,7 @@
 Apache ShenYu Dashboard is frontend of a management background for [Apache ShenYu](https://github.com/apache/shenyu). The API interface is in the [Apache Shenyu Admin](https://github.com/apache/shenyu/tree/master/shenyu-admin) module.
                                                                                                    
 ## Prerequisite
-- Node.js 20.x and npm 10.x (the test and build CI baseline). Run `nvm use`
+- Node.js 22 LTS or newer (24 recommended; CI builds on both). Run `nvm use`
   if you manage Node.js with nvm; the version is recorded in `.nvmrc`.
 
 ## How to Build
@@ -85,3 +85,8 @@ and outdated login behavior rather than current ShenYu workflows (see
 currently no business E2E suite. Browser tests with a disposable ShenYu Admin
 environment are follow-up work tracked in
 [issue #657](https://github.com/apache/shenyu-dashboard/issues/657).
+
+## UI migration
+
+See the [Semi Design migration stages](docs/semi-migration.md) for the metadata
+editor pilot, compatibility constraints, validation and later migration scope.

@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-import { message } from "antd";
+import { message } from "../components/ui/feedback";
 import { mcpSwaggerImport } from "../services/api";
 
 export default {
   namespace: "mcpServer",
+
+  state: {},
 
   effects: {
     *swaggerImport({ payload, fetchValue, callback }, { call, put }) {

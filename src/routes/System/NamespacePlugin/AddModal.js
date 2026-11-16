@@ -16,14 +16,21 @@
  */
 
 import React, { Component, Fragment } from "react";
-import { Divider, Form, Input, InputNumber, Modal, Select, Switch } from "antd";
-import { connect } from "dva";
-import ReactJson from "react-json-view";
+import Divider from "@douyinfe/semi-ui/lib/es/divider";
+import { connect } from "react-redux";
+import ReactJson from "@microlink/react-json-view";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import InputNumber from "../../../components/ui/InputNumber";
+import Modal from "../../../components/ui/Modal";
+import Select from "../../../components/ui/Select";
+import Switch from "../../../components/ui/Switch";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import {
   getConfigFieldValue,
   serializePluginConfig,
 } from "../../../utils/pluginConfig";
+import { checkRulePattern } from "../../../utils/regExpRule";
 
 const { Option } = Select;
 const FormItem = Form.Item;
@@ -172,10 +179,10 @@ class AddModal extends Component {
                     message: getIntlContent("SHENYU.COMMON.PLEASEINPUT"),
                   });
                 }
-                if (checkRule) {
+                const checkPattern = checkRulePattern(checkRule);
+                if (checkPattern) {
                   rules.push({
-                    // eslint-disable-next-line no-eval
-                    pattern: eval(checkRule),
+                    pattern: checkPattern,
                     message: `${getIntlContent(
                       "SHENYU.PLUGIN.RULE.INVALID",
                     )}:(${checkRule})`,

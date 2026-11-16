@@ -15,324 +15,706 @@
  * limitations under the License.
  */
 
-import { AddModal } from "./ToolsModal";
+import React from "react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import { message } from "../../../components/ui/feedback";
+import ToolsModal from "./ToolsModal";
+import { clipboardCopy } from "../../../utils/utils";
 
-jest.mock("react-json-view", () => () => null);
-jest.mock("../../../utils/IntlUtils", () => ({
-  getIntlContent: (key) => key,
-}));
+jest.mock("react-redux", () => ({ connect: () => (Component) => Component }));
+jest.mock("../../../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
+jest.mock("../../../utils/utils", () => ({ clipboardCopy: jest.fn() }));
+jest.mock("@microlink/react-json-view", () => ({ src, onEdit }) => (
+  <div>
+    <pre>{JSON.stringify(src)}</pre>
+    {onEdit && (
+      <button
+        type="button"
+        onClick={() =>
+          onEdit({
+            updated_src: {
+              requestTemplate: { url: "/changed", method: "POST" },
+            },
+          })
+        }
+      >
+        Change request configuration
+      </button>
+    )}
+  </div>
+));
 
-const ToolsModalComponent = AddModal.WrappedComponent || AddModal;
+// jsdom has no layout observer; Chromium checks use the browser's real observer.
+const originalResizeObserver = global.ResizeObserver;
+beforeAll(() => {
+  global.ResizeObserver = class {
+    observe = () => {};
 
-const createComponent = (props = {}) => {
-  const component = new ToolsModalComponent({
-    form: {
-      getFieldsValue: jest.fn(() => ({})),
-      validateFieldsAndScroll: jest.fn(),
-      setFieldsValue: jest.fn(),
-      getFieldDecorator: () => (node) => node,
-    },
-    handleOk: jest.fn(),
-    onCancel: jest.fn(),
-    ...props,
-  });
+    unobserve = () => {};
 
-  component.setState = (update, callback) => {
-    const next =
-      typeof update === "function"
-        ? update(component.state, component.props)
-        : update;
-    component.state = { ...component.state, ...next };
-    if (callback) callback();
+    disconnect = () => {};
   };
+});
+afterAll(() => {
+  global.ResizeObserver = originalResizeObserver;
+});
 
-  return component;
+const parameter = {
+  name: "orderId",
+  type: "string",
+  description: "Order ID",
+  required: true,
 };
+const requestConfig = {
+  requestTemplate: { url: "/orders/{orderId}", method: "GET" },
+  argsPosition: { orderId: "url.path" },
+};
+const ruleConditions = [
+  {
+    paramType: "uri",
+    operator: "pathPattern",
+    paramName: "/",
+    paramValue: "/**",
+  },
+];
 
-describe("ToolsModal JSON mode submit rule-level values", () => {
-  it("preserves existing tool rule values (sort, loged, matchMode, matchRestful, ruleConditions) when submitting in JSON mode", () => {
-    const handleOk = jest.fn();
-    const existingRuleConditions = [
-      {
-        paramType: "uri",
-        operator: "pathPattern",
-        paramName: "/",
-        paramValue: "/api/**",
-      },
-    ];
+function setup(overrides = {}) {
+  const props = {
+    name: "getOrder",
+    description: "Order tool",
+    handle: JSON.stringify({
+      parameters: [parameter],
+      requestConfig: JSON.stringify(requestConfig),
+    }),
+    onCancel: jest.fn(),
+    handleOk: jest.fn(),
+    ...overrides,
+  };
+  return { ...render(<ToolsModal {...props} />), props };
+}
 
-    const component = createComponent({
-      name: "existingTool",
-      description: "Existing tool description",
-      enabled: true,
-      sort: 5,
-      loged: false,
-      matchMode: "1",
-      matchRestful: true,
-      ruleConditions: existingRuleConditions,
-      handle: JSON.stringify({
-        parameters: [],
-        requestConfig: "{}",
-      }),
-      handleOk,
-    });
+function confirm() {
+  fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.SURE" }));
+}
+function jsonMode() {
+  fireEvent.click(
+    screen.getByRole("radio", { name: "SHENYU.MCP.TOOLS.ADD.MODE.JSON" }),
+  );
+}
+function jsonInput() {
+  return screen.getByPlaceholderText("SHENYU.MCP.TOOLS.ADD.JSON.PLACEHOLDER");
+}
+async function choose(index, text) {
+  const control = screen.getAllByRole("combobox")[index];
+  fireEvent.click(control);
+  const list = await waitFor(() => {
+    const element = document.getElementById(
+      control.getAttribute("aria-controls"),
+    );
+    expect(element).not.toBeNull();
+    return element;
+  });
+  fireEvent.click(
+    within(list)
+      .getAllByRole("option")
+      .find((option) => option.textContent.trim() === text),
+  );
+}
 
-    component.state.jsonText = JSON.stringify({
-      name: "existingTool",
-      description: "Updated description via JSON",
-      enabled: true,
+beforeEach(() => {
+  ["error", "warning", "success"].forEach((key) =>
+    jest.spyOn(message, key).mockImplementation(() => {}),
+  );
+});
+
+it("preserves the form DTO, requestConfig string and caller-controlled closing", async () => {
+  const { props } = setup();
+  confirm();
+  await waitFor(() => expect(props.handleOk).toHaveBeenCalledTimes(1));
+  expect(props.handleOk.mock.calls[0][0]).toEqual({
+    name: "getOrder",
+    description: "Order tool",
+    handle: JSON.stringify({
+      parameters: [parameter],
+      requestConfig: JSON.stringify(requestConfig),
+      description: "Order tool",
+    }),
+    sort: 1,
+    enabled: true,
+    logged: true,
+    matchMode: "0",
+    matchRestful: false,
+    ruleConditions,
+  });
+  expect(props.onCancel).not.toHaveBeenCalled();
+  expect(
+    screen.getByRole("button", { name: "SHENYU.COMMON.CALCEL" }),
+  ).not.toBeNull();
+});
+
+it("prefers the saved handle description and retains edited rule-level values", async () => {
+  const { props } = setup({
+    sort: 27,
+    logged: false,
+    enabled: false,
+    matchMode: "1",
+    matchRestful: true,
+    handle: JSON.stringify({
       parameters: [],
       requestConfig: "{}",
-    });
-
-    component.handleJsonSubmit();
-
-    expect(handleOk).toHaveBeenCalledTimes(1);
-    const payload = handleOk.mock.calls[0][0];
-    expect(payload.name).toBe("existingTool");
-    expect(payload.description).toBe("Updated description via JSON");
-    expect(payload.sort).toBe(5);
-    expect(payload.loged).toBe(false);
-    expect(payload.matchMode).toBe("1");
-    expect(payload.matchRestful).toBe(true);
-    expect(payload.ruleConditions).toEqual(existingRuleConditions);
+      description: "Saved handle description",
+    }),
   });
+  expect(
+    screen.getByPlaceholderText(
+      "SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.DESCRIPTION",
+    ).value,
+  ).toBe("Saved handle description");
+  fireEvent.change(screen.getByPlaceholderText("SHENYU.SELECTOR.INPUTORDER"), {
+    target: { value: "12" },
+  });
+  confirm();
+  await waitFor(() => expect(props.handleOk).toHaveBeenCalledTimes(1));
+  expect(props.handleOk.mock.calls[0][0]).toEqual(
+    expect.objectContaining({
+      sort: 12,
+      logged: false,
+      enabled: false,
+      matchMode: "1",
+      matchRestful: true,
+      description: "Saved handle description",
+    }),
+  );
+});
 
-  it("applies default rule values when creating a new tool without existing rule values", () => {
-    const handleOk = jest.fn();
-    const component = createComponent({
-      handleOk,
-    });
+it.each([
+  ["name", "SHENYU.COMMON.INPUTNAME"],
+  ["description", "SHENYU.COMMON.INPUTDESCRIPTION"],
+  ["sort", "SHENYU.SELECTOR.INPUTNUMBER"],
+  ["matchMode", "SHENYU.COMMON.INPUTMATCHTYPE"],
+])("blocks the missing required %s field", async (field, error) => {
+  const { props } = setup({ [field]: "" });
+  confirm();
+  if (field === "matchMode")
+    await waitFor(() => expect(screen.getAllByText(error)).toHaveLength(2));
+  else await screen.findByText(error);
+  expect(props.handleOk).not.toHaveBeenCalled();
+});
 
-    component.state.jsonText = JSON.stringify({
-      name: "newTool",
-      description: "Brand new tool",
-      enabled: true,
-      parameters: [],
-      requestConfig: "{}",
-    });
+it("keeps boolean switches and match mode as their existing DTO types", async () => {
+  const { props } = setup();
+  screen.getAllByRole("switch").forEach((control) => fireEvent.click(control));
+  await choose(0, "or");
+  confirm();
+  await waitFor(() => expect(props.handleOk).toHaveBeenCalledTimes(1));
+  expect(props.handleOk.mock.calls[0][0]).toEqual(
+    expect.objectContaining({
+      logged: false,
+      matchRestful: true,
+      enabled: false,
+      matchMode: "1",
+    }),
+  );
+});
 
-    component.handleJsonSubmit();
+it("adds and deletes top-level parameters without submitting a deleted row", async () => {
+  const { props } = setup();
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "SHENYU.COMMON.ADD SHENYU.COMMON.PARAMETER",
+    }),
+  );
+  fireEvent.change(
+    screen.getAllByPlaceholderText("SHENYU.COMMON.PARAMETER.NAME")[1],
+    { target: { value: "anotherId" } },
+  );
+  fireEvent.click(
+    screen.getAllByRole("button", { name: "SHENYU.COMMON.DELETE.NAME" })[0],
+  );
+  confirm();
+  await waitFor(() => expect(props.handleOk).toHaveBeenCalledTimes(1));
+  expect(JSON.parse(props.handleOk.mock.calls[0][0].handle).parameters).toEqual(
+    [{ ...parameter, name: "anotherId", description: "" }],
+  );
+});
 
-    expect(handleOk).toHaveBeenCalledTimes(1);
-    const payload = handleOk.mock.calls[0][0];
-    expect(payload.name).toBe("newTool");
-    expect(payload.sort).toBe(1);
-    expect(payload.loged).toBe(true);
-    expect(payload.matchMode).toBe("0");
-    expect(payload.matchRestful).toBe(false);
-    expect(payload.ruleConditions).toEqual([
+it("creates an array parameter with a fixed items name", async () => {
+  const { props } = setup();
+  await choose(1, "Array");
+  const items = screen.getByPlaceholderText(
+    "SHENYU.COMMON.PARAMETER.SUBTYPE.NAME",
+  );
+  expect(items.value).toBe("items");
+  expect(items.disabled).toBe(true);
+  confirm();
+  await waitFor(() => expect(props.handleOk).toHaveBeenCalledTimes(1));
+  expect(JSON.parse(props.handleOk.mock.calls[0][0].handle).parameters).toEqual(
+    [
       {
-        paramType: "uri",
-        operator: "pathPattern",
-        paramName: "/",
-        paramValue: "/**",
+        ...parameter,
+        type: "array",
+        parameters: [
+          { name: "items", type: "string", description: "", required: true },
+        ],
       },
-    ]);
-  });
+    ],
+  );
+});
 
-  it("preserves updated form rule values when switching from form mode to JSON mode", () => {
-    const handleOk = jest.fn();
-    const form = {
-      getFieldsValue: jest.fn(() => ({
-        name: "toolWithEditedForm",
-        description: "Edited form description",
-        enabled: true,
-        sort: "15",
-        loged: false,
-        matchMode: "1",
-        matchRestful: true,
-      })),
-    };
-
-    const component = createComponent({
-      name: "toolWithEditedForm",
-      sort: 1,
-      loged: true,
-      matchMode: "0",
-      matchRestful: false,
-      form,
-      handleOk,
-    });
-
-    // Simulate switching mode: syncFormToJson is called
-    component.syncFormToJson();
-
-    component.handleJsonSubmit();
-
-    expect(handleOk).toHaveBeenCalledTimes(1);
-    const payload = handleOk.mock.calls[0][0];
-    expect(payload.sort).toBe(15);
-    expect(payload.loged).toBe(false);
-    expect(payload.matchMode).toBe("1");
-    expect(payload.matchRestful).toBe(true);
-  });
-
-  it("respects rule values specified directly in the JSON editor", () => {
-    const handleOk = jest.fn();
-    const component = createComponent({
-      name: "toolFromJson",
-      sort: 1,
-      loged: true,
-      matchMode: "0",
-      matchRestful: false,
-      handleOk,
-    });
-
-    component.state.jsonText = JSON.stringify({
-      name: "toolFromJson",
-      description: "Tool with custom rule values in JSON",
-      sort: 99,
-      loged: false,
-      matchMode: "1",
-      matchRestful: true,
-    });
-
-    component.handleJsonSubmit();
-
-    expect(handleOk).toHaveBeenCalledTimes(1);
-    const payload = handleOk.mock.calls[0][0];
-    expect(payload.sort).toBe(99);
-    expect(payload.loged).toBe(false);
-    expect(payload.matchMode).toBe("1");
-    expect(payload.matchRestful).toBe(true);
-  });
-
-  it("synchronizes rule fields to form and state when switching between JSON mode and form mode (round-trip)", () => {
-    jest.useFakeTimers();
-    const handleOk = jest.fn();
-    let currentFormValues = {
-      name: "initialTool",
-      description: "initialDesc",
-      enabled: true,
-      sort: 1,
-      loged: true,
-      matchMode: "0",
-      matchRestful: false,
-    };
-
-    const form = {
-      getFieldsValue: jest.fn(() => currentFormValues),
-      setFieldsValue: jest.fn((newValues) => {
-        currentFormValues = { ...currentFormValues, ...newValues };
-      }),
-    };
-
-    const customConditions = [
-      {
-        paramType: "uri",
-        operator: "pathPattern",
-        paramName: "/",
-        paramValue: "/custom/**",
-      },
-    ];
-
-    const component = createComponent({
-      name: "initialTool",
-      sort: 1,
-      loged: true,
-      matchMode: "0",
-      matchRestful: false,
-      form,
-      handleOk,
-    });
-
-    // 1. User edits rule fields in JSON mode
-    const customJson = {
-      name: "toolAfterRoundTrip",
-      description: "Round trip description",
-      enabled: true,
-      sort: 42,
-      loged: false,
-      matchMode: "1",
-      matchRestful: true,
-      ruleConditions: customConditions,
-      parameters: [],
+it("edits nested fields of an array of objects and normalizes its items name", async () => {
+  const { props } = setup({
+    handle: JSON.stringify({
+      parameters: [
+        {
+          ...parameter,
+          type: "array",
+          parameters: [
+            {
+              name: "oldName",
+              type: "object",
+              description: "",
+              required: true,
+              parameters: [],
+            },
+          ],
+        },
+      ],
       requestConfig: "{}",
-    };
-    component.state.jsonText = JSON.stringify(customJson);
-
-    // 2. User switches from JSON mode to Form mode -> syncJsonToForm runs
-    component.syncJsonToForm();
-    jest.runAllTimers();
-
-    // Verify form was updated with JSON rule values
-    expect(form.setFieldsValue).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: "toolAfterRoundTrip",
-        sort: 42,
-        loged: false,
-        matchMode: "1",
-        matchRestful: true,
-      }),
-    );
-    expect(component.state.formRuleValues.sort).toBe(42);
-    expect(component.state.formRuleValues.loged).toBe(false);
-    expect(component.state.formRuleValues.matchMode).toBe("1");
-    expect(component.state.formRuleValues.matchRestful).toBe(true);
-    expect(component.state.formRuleValues.ruleConditions).toEqual(
-      customConditions,
-    );
-
-    // 3. User switches back from Form mode to JSON mode -> syncFormToJson runs
-    component.syncFormToJson();
-
-    // 4. Submit from JSON mode
-    component.handleJsonSubmit();
-
-    expect(handleOk).toHaveBeenCalledTimes(1);
-    const payload = handleOk.mock.calls[0][0];
-    expect(payload.name).toBe("toolAfterRoundTrip");
-    expect(payload.sort).toBe(42);
-    expect(payload.loged).toBe(false);
-    expect(payload.matchMode).toBe("1");
-    expect(payload.matchRestful).toBe(true);
-    expect(payload.ruleConditions).toEqual(customConditions);
-
-    jest.useRealTimers();
+    }),
   });
+  expect(
+    screen.getByPlaceholderText("SHENYU.COMMON.PARAMETER.SUBTYPE.NAME").value,
+  ).toBe("items");
+  fireEvent.click(
+    screen.getByRole("button", { name: "SHENYU.COMMON.PARAMETER.SUBTYPE.ADD" }),
+  );
+  fireEvent.change(
+    screen.getAllByPlaceholderText("SHENYU.COMMON.PARAMETER.SUBTYPE.NAME")[1],
+    { target: { value: "id" } },
+  );
+  confirm();
+  await waitFor(() => expect(props.handleOk).toHaveBeenCalledTimes(1));
+  expect(JSON.parse(props.handleOk.mock.calls[0][0].handle).parameters).toEqual(
+    [
+      {
+        ...parameter,
+        type: "array",
+        parameters: [
+          {
+            name: "items",
+            type: "object",
+            description: "",
+            required: true,
+            parameters: [
+              { name: "id", type: "string", description: "", required: true },
+            ],
+          },
+        ],
+      },
+    ],
+  );
+});
 
-  it("synchronizes rule fields in real time via syncJsonToFormRealtime", () => {
-    let currentFormValues = {
-      name: "tool",
-      sort: 1,
-      loged: true,
-      matchMode: "0",
-      matchRestful: false,
-    };
-    const form = {
-      getFieldsValue: jest.fn(() => currentFormValues),
-      setFieldsValue: jest.fn((newValues) => {
-        currentFormValues = { ...currentFormValues, ...newValues };
-      }),
-    };
+it("removes child parameters when an object changes to a primitive type", async () => {
+  const { props } = setup({
+    handle: JSON.stringify({
+      parameters: [
+        {
+          ...parameter,
+          type: "object",
+          parameters: [{ ...parameter, name: "child" }],
+        },
+      ],
+      requestConfig: "{}",
+    }),
+  });
+  await choose(1, "String");
+  confirm();
+  await waitFor(() => expect(props.handleOk).toHaveBeenCalledTimes(1));
+  expect(
+    JSON.parse(props.handleOk.mock.calls[0][0].handle).parameters[0].parameters,
+  ).toBeUndefined();
+});
 
-    const component = createComponent({
-      form,
-    });
+it("blocks an incomplete parameter row", async () => {
+  const { props } = setup({
+    handle: JSON.stringify({
+      parameters: [{ ...parameter, name: "" }],
+      requestConfig: "{}",
+    }),
+  });
+  confirm();
+  await waitFor(() => expect(message.error).toHaveBeenCalled());
+  expect(props.handleOk).not.toHaveBeenCalled();
+});
 
-    const jsonText = JSON.stringify({
-      name: "realtimeTool",
-      sort: 77,
-      loged: false,
-      matchMode: "1",
-      matchRestful: true,
-    });
+it("blocks a tree exceeding the existing nesting limit", async () => {
+  let nested = { ...parameter };
+  for (let i = 0; i < 8; i += 1)
+    nested = { ...parameter, type: "object", parameters: [nested] };
+  const { props } = setup({
+    handle: JSON.stringify({ parameters: [nested], requestConfig: "{}" }),
+  });
+  confirm();
+  await waitFor(() =>
+    expect(message.error).toHaveBeenCalledWith(
+      expect.stringContaining("SHENYU.MCP.TOOLS.PARAM.DEPTH.EXCEEDED"),
+    ),
+  );
+  expect(props.handleOk).not.toHaveBeenCalled();
+});
 
-    component.syncJsonToFormRealtime(jsonText);
+it("serializes request configuration updates from the JSON editor", async () => {
+  const { props } = setup();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Change request configuration" }),
+  );
+  confirm();
+  await waitFor(() => expect(props.handleOk).toHaveBeenCalledTimes(1));
+  expect(JSON.parse(props.handleOk.mock.calls[0][0].handle).requestConfig).toBe(
+    JSON.stringify({ requestTemplate: { url: "/changed", method: "POST" } }),
+  );
+});
 
-    expect(form.setFieldsValue).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: "realtimeTool",
-        sort: 77,
-        loged: false,
-        matchMode: "1",
-        matchRestful: true,
-      }),
-    );
-    expect(component.state.formRuleValues.sort).toBe(77);
-    expect(component.state.formRuleValues.loged).toBe(false);
-    expect(component.state.formRuleValues.matchMode).toBe("1");
-    expect(component.state.formRuleValues.matchRestful).toBe(true);
+it("synchronizes the current form into the flattened JSON mode", () => {
+  setup();
+  fireEvent.change(
+    screen.getByPlaceholderText("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"),
+    { target: { value: "renamedTool" } },
+  );
+  jsonMode();
+  expect(JSON.parse(jsonInput().value)).toEqual({
+    sort: 1,
+    logged: true,
+    matchMode: "0",
+    matchRestful: false,
+    ruleConditions,
+    name: "renamedTool",
+    description: "Order tool",
+    enabled: true,
+    parameters: [parameter],
+    requestConfig: JSON.stringify(requestConfig),
   });
 });
+
+it("preserves existing rule-level values in JSON mode", () => {
+  const { props } = setup({
+    sort: 27,
+    logged: false,
+    matchMode: "1",
+    matchRestful: true,
+  });
+  jsonMode();
+  const tool = {
+    name: "jsonTool",
+    description: "JSON description",
+    enabled: false,
+    parameters: [parameter],
+    requestConfig: JSON.stringify(requestConfig),
+  };
+  fireEvent.change(jsonInput(), { target: { value: JSON.stringify(tool) } });
+  confirm();
+  expect(props.handleOk).toHaveBeenCalledWith({
+    name: tool.name,
+    description: tool.description,
+    enabled: false,
+    handle: JSON.stringify({
+      parameters: tool.parameters,
+      requestConfig: tool.requestConfig,
+      description: tool.description,
+    }),
+    sort: 27,
+    logged: false,
+    matchMode: "1",
+    matchRestful: true,
+    ruleConditions,
+  });
+});
+
+it("keeps malformed JSON editable and blocks submission", () => {
+  const { props } = setup();
+  jsonMode();
+  fireEvent.change(jsonInput(), { target: { value: "{bad" } });
+  confirm();
+  expect(message.error).toHaveBeenCalledWith(
+    expect.stringContaining("SHENYU.MCP.JSON.EDIT.FORMAT.ERROR"),
+  );
+  expect(props.handleOk).not.toHaveBeenCalled();
+  expect(jsonInput().value).toBe("{bad");
+});
+
+it.each(["", "   "])("blocks an empty JSON tool name (%s)", (name) => {
+  const { props } = setup();
+  jsonMode();
+  fireEvent.change(jsonInput(), {
+    target: { value: JSON.stringify({ name }) },
+  });
+  confirm();
+  expect(message.error).toHaveBeenCalledWith(
+    "SHENYU.MCP.JSON.EDIT.TOOL.NAME.ERROR",
+  );
+  expect(props.handleOk).not.toHaveBeenCalled();
+});
+
+it("generates, formats, compresses and copies the JSON template", async () => {
+  clipboardCopy.mockResolvedValue();
+  setup();
+  jsonMode();
+  fireEvent.click(
+    screen.getByRole("button", { name: "SHENYU.MCP.TOOLS.ADD.JSON.TEMPLATE" }),
+  );
+  const template = JSON.parse(jsonInput().value);
+  expect(template.name).toBe("getOrderById");
+  expect(template.parameters[0].name).toBe("orderId");
+  fireEvent.click(
+    screen.getByRole("button", { name: "SHENYU.MCP.JSON.EDIT.COMPRESS" }),
+  );
+  expect(jsonInput().value).toBe(JSON.stringify(template));
+  fireEvent.click(
+    screen.getByRole("button", { name: "SHENYU.MCP.JSON.EDIT.FORMAT" }),
+  );
+  expect(jsonInput().value).toBe(JSON.stringify(template, null, 2));
+  fireEvent.click(
+    screen.getByRole("button", { name: "SHENYU.MCP.JSON.EDIT.COPY" }),
+  );
+  await waitFor(() =>
+    expect(clipboardCopy).toHaveBeenCalledWith(jsonInput().value),
+  );
+});
+
+it("returns JSON edits to the form before submission", async () => {
+  const { props } = setup();
+  jsonMode();
+  fireEvent.change(jsonInput(), {
+    target: {
+      value: JSON.stringify({
+        name: "fromJson",
+        description: "Changed",
+        enabled: false,
+        parameters: [{ ...parameter, name: "newId" }],
+        requestConfig: '{"timeout":1000}',
+      }),
+    },
+  });
+  fireEvent.click(
+    screen.getByRole("radio", { name: "SHENYU.MCP.TOOLS.ADD.MODE.FORM" }),
+  );
+  await waitFor(() =>
+    expect(
+      screen.getByPlaceholderText("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME")
+        .value,
+    ).toBe("fromJson"),
+  );
+  confirm();
+  await waitFor(() => expect(props.handleOk).toHaveBeenCalledTimes(1));
+  expect(JSON.parse(props.handleOk.mock.calls[0][0].handle)).toEqual({
+    description: "Changed",
+    parameters: [{ ...parameter, name: "newId" }],
+    requestConfig: '{"timeout":1000}',
+  });
+});
+
+it("cancels without submitting", () => {
+  const { props } = setup();
+  fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.CALCEL" }));
+  expect(props.onCancel).toHaveBeenCalledTimes(1);
+  expect(props.handleOk).not.toHaveBeenCalled();
+});
+
+it("keeps unsaved rule fields when JSON mode changes only the tool metadata", async () => {
+  const { props } = setup({ sort: 7 });
+  fireEvent.change(screen.getByPlaceholderText("SHENYU.SELECTOR.INPUTORDER"), {
+    target: { value: "41" },
+  });
+  fireEvent.click(screen.getAllByRole("switch")[0]);
+  await choose(0, "or");
+  jsonMode();
+  const json = JSON.parse(jsonInput().value);
+  json.name = "changedInJson";
+  fireEvent.change(jsonInput(), { target: { value: JSON.stringify(json) } });
+  fireEvent.click(
+    screen.getByRole("radio", { name: "SHENYU.MCP.TOOLS.ADD.MODE.FORM" }),
+  );
+  expect(screen.getByPlaceholderText("SHENYU.SELECTOR.INPUTORDER").value).toBe(
+    "41",
+  );
+  confirm();
+  await waitFor(() => expect(props.handleOk).toHaveBeenCalledTimes(1));
+  expect(props.handleOk.mock.calls[0][0]).toEqual(
+    expect.objectContaining({
+      name: "changedInJson",
+      sort: 41,
+      logged: false,
+      matchMode: "1",
+    }),
+  );
+});
+
+it("submits the form through its native submit event", async () => {
+  const { props } = setup();
+  fireEvent.submit(document.querySelector("form"));
+  await waitFor(() => expect(props.handleOk).toHaveBeenCalledTimes(1));
+});
+
+it("retains malformed JSON when the user requests form mode", () => {
+  const { props } = setup();
+  jsonMode();
+  fireEvent.change(jsonInput(), { target: { value: "{unfinished" } });
+  fireEvent.click(
+    screen.getByRole("radio", { name: "SHENYU.MCP.TOOLS.ADD.MODE.FORM" }),
+  );
+  expect(
+    screen.getByRole("radio", { name: "SHENYU.MCP.TOOLS.ADD.MODE.JSON" })
+      .checked,
+  ).toBe(true);
+  expect(jsonInput().value).toBe("{unfinished");
+  expect(props.handleOk).not.toHaveBeenCalled();
+});
+
+it("normalizes array items recursively inside an array's object element", async () => {
+  const nested = {
+    ...parameter,
+    type: "array",
+    parameters: [
+      {
+        name: "oldOuter",
+        type: "object",
+        parameters: [
+          {
+            name: "children",
+            type: "array",
+            parameters: [{ ...parameter, name: "oldInner" }],
+          },
+        ],
+      },
+    ],
+  };
+  const { props } = setup({
+    handle: JSON.stringify({ parameters: [nested], requestConfig: "{}" }),
+  });
+  confirm();
+  await waitFor(() => expect(props.handleOk).toHaveBeenCalledTimes(1));
+  const tree = JSON.parse(props.handleOk.mock.calls[0][0].handle).parameters;
+  expect(tree[0].parameters[0].name).toBe("items");
+  expect(tree[0].parameters[0].parameters[0].parameters[0].name).toBe("items");
+});
+
+it.each([
+  { parameters: {} },
+  { parameters: [null] },
+  { parameters: [{ name: "x", type: "object", parameters: {} }] },
+])(
+  "keeps malformed parameter structures in JSON mode for correction (%j)",
+  (structure) => {
+    const { props } = setup();
+    jsonMode();
+    const value = JSON.stringify({ name: "invalid", ...structure });
+    fireEvent.change(jsonInput(), { target: { value } });
+    fireEvent.click(
+      screen.getByRole("radio", { name: "SHENYU.MCP.TOOLS.ADD.MODE.FORM" }),
+    );
+    expect(
+      screen.getByRole("radio", { name: "SHENYU.MCP.TOOLS.ADD.MODE.JSON" })
+        .checked,
+    ).toBe(true);
+    expect(jsonInput().value).toBe(value);
+    confirm();
+    expect(props.handleOk).not.toHaveBeenCalled();
+  },
+);
+
+it("reopens structured request configuration without discarding parameters or defaults", async () => {
+  const savedParameter = { ...parameter, defaultValue: "fallback" };
+  const { props } = setup({
+    handle: JSON.stringify({ parameters: [savedParameter], requestConfig }),
+  });
+  confirm();
+  await waitFor(() => expect(props.handleOk).toHaveBeenCalledTimes(1));
+  expect(JSON.parse(props.handleOk.mock.calls[0][0].handle)).toEqual({
+    parameters: [savedParameter],
+    requestConfig: JSON.stringify(requestConfig),
+    description: "Order tool",
+  });
+});
+
+it("uses defaults for a new tool submitted in JSON mode", () => {
+  const { props } = setup();
+  jsonMode();
+  confirm();
+  expect(props.handleOk).toHaveBeenCalledWith(
+    expect.objectContaining({
+      sort: 1,
+      logged: true,
+      matchMode: "0",
+      matchRestful: false,
+      ruleConditions,
+    }),
+  );
+});
+
+it("preserves form edits and stored conditions when switching to JSON", () => {
+  const conditions = [{ ...ruleConditions[0], paramValue: "/api/**" }];
+  const { props } = setup({
+    sort: 27,
+    logged: false,
+    ruleConditions: conditions,
+  });
+  fireEvent.change(screen.getByPlaceholderText("SHENYU.SELECTOR.INPUTORDER"), {
+    target: { value: "15" },
+  });
+  jsonMode();
+  confirm();
+  expect(props.handleOk).toHaveBeenCalledWith(
+    expect.objectContaining({
+      sort: 15,
+      logged: false,
+      ruleConditions: conditions,
+    }),
+  );
+});
+
+it.each(["form", "json"])(
+  "preserves JSON rule overrides across a round trip and %s submission",
+  async (mode) => {
+    const { props } = setup({ sort: 27, logged: true });
+    jsonMode();
+    const rules = {
+      sort: 42,
+      logged: false,
+      matchMode: "1",
+      matchRestful: true,
+      ruleConditions: [{ ...ruleConditions[0], paramValue: "/custom/**" }],
+    };
+    fireEvent.change(jsonInput(), {
+      target: {
+        value: JSON.stringify({
+          name: "roundTrip",
+          description: "Changed",
+          parameters: [],
+          requestConfig: "{}",
+          ...rules,
+        }),
+      },
+    });
+    fireEvent.click(
+      screen.getByRole("radio", { name: "SHENYU.MCP.TOOLS.ADD.MODE.FORM" }),
+    );
+    expect(
+      screen.getByPlaceholderText("SHENYU.SELECTOR.INPUTORDER").value,
+    ).toBe("42");
+    if (mode === "json") jsonMode();
+    confirm();
+    await waitFor(() =>
+      expect(props.handleOk).toHaveBeenCalledWith(
+        expect.objectContaining(rules),
+      ),
+    );
+    expect(props.handleOk.mock.calls[0][0]).not.toHaveProperty("loged");
+  },
+);

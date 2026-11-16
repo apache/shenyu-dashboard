@@ -16,18 +16,9 @@
  */
 
 import React, { Component } from "react";
-import {
-  Button,
-  Col,
-  Icon,
-  Input,
-  message,
-  Popconfirm,
-  Row,
-  Table,
-  Tree,
-} from "antd";
-import { connect } from "dva";
+import { Button, Col, Icon, Input, Popconfirm, Row, Table, Tree } from "antd";
+import { connect } from "react-redux";
+import { message } from "../../../components/ui/feedback";
 import AddModal from "./AddModal";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
@@ -174,7 +165,7 @@ export default class Resource extends Component {
     } = this.props;
     const { currentMenu } = this.state;
     if (resourceType === 2 && !currentMenu) {
-      message.warn("请先选择左侧菜单");
+      message.warn(getIntlContent("SHENYU.SYSTEM.RESOURCE.SELECT.MENU.WARN"));
       return;
     }
 

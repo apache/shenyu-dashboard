@@ -22,14 +22,14 @@ import {
   DatePicker,
   Form,
   Input,
-  message,
   Modal,
   Row,
   Select,
   Switch,
   TimePicker,
 } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
+import { message } from "../../../components/ui/feedback";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import CommonRuleHandle from "./CommonRuleHandle";
@@ -63,7 +63,6 @@ class AddModal extends Component {
     };
 
     this.initRuleCondition(props);
-    this.initDics();
   }
 
   componentDidMount() {
@@ -76,6 +75,7 @@ class AddModal extends Component {
       currentNamespaceId,
     } = this.props;
     this.setState({ pluginHandleList: [] });
+    this.initDics();
     let type = 2;
     dispatch({
       type: "pluginHandle/fetchByPluginId",
@@ -134,7 +134,7 @@ class AddModal extends Component {
       payload: {
         type,
         callBack: (dics) => {
-          this.state[`${type}Dics`] = dics;
+          this.setState({ [`${type}Dics`]: dics });
         },
       },
     });
@@ -184,7 +184,7 @@ class AddModal extends Component {
       const {
         name,
         matchMode,
-        loged,
+        logged,
         enabled,
         matchRestful,
         handleType,
@@ -228,7 +228,7 @@ class AddModal extends Component {
             name,
             matchMode,
             handle,
-            loged,
+            logged,
             enabled,
             matchRestful,
             sort: Number(values.sort),
@@ -336,11 +336,11 @@ class AddModal extends Component {
       return;
     }
     const { form } = this.props;
-    const { ruleConditions, name, matchMode, loged, enabled, sort } = copyData;
+    const { ruleConditions, name, matchMode, logged, enabled, sort } = copyData;
     const formData = {
       name,
       matchMode: matchMode.toString(),
-      loged,
+      logged,
       enabled,
       sort,
     };
@@ -481,7 +481,7 @@ class AddModal extends Component {
       form,
       name = "",
       matchMode = "",
-      loged = true,
+      logged = true,
       enabled = true,
       matchRestful = false,
       sort = "",
@@ -738,8 +738,8 @@ class AddModal extends Component {
                 {...formCheckLayout}
                 label={getIntlContent("SHENYU.SELECTOR.PRINTLOG")}
               >
-                {getFieldDecorator("loged", {
-                  initialValue: loged,
+                {getFieldDecorator("logged", {
+                  initialValue: logged,
                   valuePropName: "checked",
                   rules: [{ required: true }],
                 })(<Switch />)}

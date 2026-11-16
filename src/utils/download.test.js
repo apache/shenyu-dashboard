@@ -15,10 +15,17 @@
  * limitations under the License.
  */
 
-import fetch from "dva/fetch";
+import { notification } from "../components/ui/feedback";
+import fetch from "./fetch";
+import { handleUnauthorized } from "./request";
 import download from "./download";
 
-jest.mock("dva/fetch", () => jest.fn());
+jest.mock("./fetch", () => jest.fn());
+jest.mock("../components/ui/feedback", () => ({
+  notification: { error: jest.fn() },
+}));
+jest.mock("./request", () => ({ handleUnauthorized: jest.fn() }));
+jest.mock("./IntlUtils", () => ({ getIntlContent: (key) => key }));
 
 const createHeaders = (headers = {}) => ({
   get: jest.fn((name) => headers[name.toLowerCase()] || null),
@@ -44,7 +51,10 @@ describe("download", () => {
   let clickSpy;
 
   beforeEach(() => {
+    fetch.mockReset();
     window.sessionStorage.clear();
+    notification.error.mockReset();
+    handleUnauthorized.mockReset();
     Object.defineProperty(window.URL, "createObjectURL", {
       configurable: true,
       value: jest.fn(() => "blob:config"),
@@ -89,6 +99,26 @@ describe("download", () => {
 
     expect(response.blob).not.toHaveBeenCalled();
     expect(clickSpy).not.toHaveBeenCalled();
+  });
+
+  it("clears session and permissions for an unauthorized response", async () => {
+    const response = createResponse({
+      ok: false,
+      status: 401,
+      statusText: "Unauthorized",
+      json: { code: 401, message: "Authentication failed", data: null },
+    });
+    fetch.mockResolvedValue(response);
+
+    await expect(download("/configs/export")).rejects.toThrow(
+      "Authentication failed",
+    );
+
+    expect(handleUnauthorized).toHaveBeenCalledTimes(1);
+    expect(notification.error).toHaveBeenCalledWith({
+      message: "SHENYU.REQUEST.ERROR 401: undefined",
+      description: "Authentication failed",
+    });
   });
 
   it.each([601, 500])(

@@ -16,8 +16,9 @@
  */
 
 import React, { Component } from "react";
-import { Button, Input, message, Popconfirm, Table } from "antd";
-import { connect } from "dva";
+import { Button, Input, Popconfirm, Table } from "antd";
+import { connect } from "react-redux";
+import { message } from "../../../components/ui/feedback";
 import { resizableComponents } from "../../../utils/resizable";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
@@ -184,9 +185,7 @@ export default class Namespace extends Component {
         payload: {
           list: deleteKeys,
         },
-        fetchValue: this.currentQueryPayload({
-          pageSize: 12,
-        }),
+        fetchValue: this.currentQueryPayload(),
         callback: () => {
           this.setState({ selectedRowKeys: [] });
           refreshAuthMenus({ dispatch });
