@@ -16,8 +16,11 @@
  */
 
 import React, { Component } from "react";
-import { Modal, Form, Input, Switch, DatePicker } from "antd";
-import moment from "moment";
+import Modal from "../../../components/ui/Modal";
+import Form from "../../../components/ui/Form";
+import Input from "../../../components/ui/Input";
+import Switch from "../../../components/ui/Switch";
+import PolicyTimePicker, { parsePolicyTime } from "./PolicyTimePicker";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { PolicyType } from "./globalData";
 
@@ -175,20 +178,12 @@ class AddModal extends Component {
             >
               {getFieldDecorator("beginTime", {
                 rules: [{ required: true }],
-                initialValue: moment(beginTime, "YYYY-MM-DD HH:mm:ss"),
+                initialValue: parsePolicyTime(beginTime),
               })(
-                <DatePicker
-                  showTime
+                <PolicyTimePicker
                   placeholder={getIntlContent(
                     "SHENYU.SYSTEM.SCALE.BEGIN_TIME.INPUT",
                   )}
-                  onChange={(_, v) => {
-                    form.setFieldsValue({
-                      beginTime: moment(v, "YYYY-MM-DD HH:mm:ss"),
-                    });
-                  }}
-                  format="YYYY-MM-DD HH:mm:ss"
-                  allowClear={false}
                 />,
               )}
             </FormItem>
@@ -200,20 +195,12 @@ class AddModal extends Component {
             >
               {getFieldDecorator("endTime", {
                 rules: [{ required: true }],
-                initialValue: moment(endTime, "YYYY-MM-DD HH:mm:ss"),
+                initialValue: parsePolicyTime(endTime),
               })(
-                <DatePicker
-                  showTime
+                <PolicyTimePicker
                   placeholder={getIntlContent(
                     "SHENYU.SYSTEM.SCALE.END_TIME.INPUT",
                   )}
-                  onChange={(_, v) => {
-                    form.setFieldsValue({
-                      endTime: moment(v, "YYYY-MM-DD HH:mm:ss"),
-                    });
-                  }}
-                  format="YYYY-MM-DD HH:mm:ss"
-                  allowClear={false}
                 />,
               )}
             </FormItem>
