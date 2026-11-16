@@ -3,11 +3,12 @@
 ![build](https://github.com/apache/shenyu-dashboard/workflows/build/badge.svg)
 [![Contribute with Gitpod](https://img.shields.io/badge/Contribute%20with-Gitpod-908a85?logo=gitpod&color=green)](https://gitpod.io/#https://github.com/apache/shenyu-dashboard)
 
-
 ## Overview
+
 Apache ShenYu Dashboard is frontend of a management background for [Apache ShenYu](https://github.com/apache/shenyu). The API interface is in the [Apache Shenyu Admin](https://github.com/apache/shenyu/tree/master/shenyu-admin) module.
-                                                                                                   
+
 ## Prerequisite
+
 - Node.js 22 LTS or newer (24 recommended; CI builds on both). Run `nvm use`
   if you manage Node.js with nvm; the version is recorded in `.nvmrc`.
 
@@ -25,7 +26,6 @@ Production assets use relative URLs under `static/`, with hash routing. The
 `httpPath` element keeps Admin's Thymeleaf `${domain}` binding; standalone serving
 falls back to same-origin relative APIs. Deploy the entire `dist/` directory,
 including `index.html` and `static/`, without rewriting chunk names.
-
 
 ### Develop Environment
 
@@ -71,9 +71,9 @@ npm run test:watch
 
 Tests use Jest and jsdom; no ShenYu Admin backend, development server, browser
 installation, or credentials are required. Test files live next to their source
-as `*.test.js` or `*.spec.js`. The test Babel configuration reuses the project's
-syntax preset independently of Roadhog's browser build configuration. New render
-tests can use React Testing Library 12, which supports the current React 16 stack.
+as `*.test.js` or `*.spec.js`. Jest 29 uses explicit Babel env and React presets independently of Vite's
+browser build configuration. Render tests use React Testing Library 16 with
+the current React 18 stack.
 
 The build workflow runs `npm run test:coverage` on pull requests. A failing test
 returns a nonzero exit code and fails the job. Coverage includes untested JavaScript
