@@ -92,9 +92,9 @@
     "pro-download": "^1.0.1",
     "react-loadable": "^5.4.0",
     "regenerator-runtime": "^0.12.0",
-    "stylelint": "^9.10.1",
-    "stylelint-config-prettier": "^3.0.4",
-    "stylelint-config-standard": "^18.0.0",
+    "stylelint": "^18.0.0",
+    "stylelint-config-prettier": "^9.0.5",
+    "stylelint-config-standard": "^41.0.0",
     "vite": "7.3.8",
     "@babel/eslint-parser": "7.28.5"
   },
