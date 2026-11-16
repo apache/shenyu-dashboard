@@ -21,6 +21,38 @@ import {
   findInstanceAnalysis,
 } from "../services/api";
 
+// Whether `namespaceId` is no longer the selected namespace because the user
+// has switched to another one. Checked before starting a request and again
+// before applying its response, so stale data never replaces the newer data.
+function* isFromPreviousNamespace(namespaceId, select) {
+  if (namespaceId === undefined) {
+    return false;
+  }
+  const currentNamespaceId = yield select(
+    ({ global }) => global.currentNamespaceId,
+  );
+  return namespaceId !== currentNamespaceId;
+}
+
+// Number of the latest request started by each effect. A response is applied
+// only if it belongs to the latest request, so an older response that arrives
+// late (e.g. after switching A -> B -> A, or after a newer refresh) is dropped.
+const latestRequest = { fetch: 0, fetchAnalysis: 0 };
+
+function startRequest(type) {
+  latestRequest[type] += 1;
+  return latestRequest[type];
+}
+
+// Whether the response of `request` must not be applied: a newer request of
+// the same type has started, or its namespace is no longer the selected one.
+function* isOutdated(type, request, namespaceId, select) {
+  if (request !== latestRequest[type]) {
+    return true;
+  }
+  return yield* isFromPreviousNamespace(namespaceId, select);
+}
+
 export default {
   namespace: "instance",
 
@@ -28,13 +60,22 @@ export default {
     instanceList: [],
     total: 0,
     pieData: [],
-    lineList: [],
+    lineData: [],
+    analysisNamespaceId: undefined,
   },
 
   effects: {
-    *fetch(params, { call, put }) {
+    *fetch(params, { call, put, select }) {
       const { payload } = params;
+      // The user has already switched away, so don't load.
+      if (yield* isFromPreviousNamespace(payload.namespaceId, select)) {
+        return;
+      }
+      const request = startRequest("fetch");
       const json = yield call(getInstancesByNamespace, payload);
+      if (yield* isOutdated("fetch", request, payload.namespaceId, select)) {
+        return;
+      }
       if (json.code === 200) {
         let { page, dataList } = json.data;
         dataList = dataList.map((item) => {
@@ -50,15 +91,36 @@ export default {
         });
       }
     },
-    *fetchAnalysis(params, { call, put }) {
+    *fetchAnalysis(params, { call, put, select }) {
       const { payload } = params;
+      const { namespaceId } = payload;
+      // The user has already switched away, so neither clear nor load.
+      if (yield* isFromPreviousNamespace(namespaceId, select)) {
+        return;
+      }
+      const request = startRequest("fetchAnalysis");
+      const shownNamespaceId = yield select(
+        ({ instance }) => instance.analysisNamespaceId,
+      );
+      if (shownNamespaceId !== namespaceId) {
+        // Don't keep showing the charts of the previous namespace while this
+        // one loads, or if it fails.
+        yield put({
+          type: "saveInstancesAnalysis",
+          payload: { namespaceId, pieData: [], lineData: [] },
+        });
+      }
       const json = yield call(findInstanceAnalysis, payload);
+      if (yield* isOutdated("fetchAnalysis", request, namespaceId, select)) {
+        return;
+      }
 
       if (json.code === 200) {
         let { pieData, lineData } = json.data;
         yield put({
           type: "saveInstancesAnalysis",
           payload: {
+            namespaceId,
             pieData,
             lineData,
           },
@@ -99,6 +161,7 @@ export default {
     saveInstancesAnalysis(state, { payload }) {
       return {
         ...state,
+        analysisNamespaceId: payload.namespaceId,
         pieData: payload.pieData,
         lineData: payload.lineData,
       };
