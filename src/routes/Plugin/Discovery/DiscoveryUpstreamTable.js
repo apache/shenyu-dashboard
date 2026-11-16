@@ -24,6 +24,7 @@ import InputNumber from "../../../components/ui/InputNumber";
 import Select from "../../../components/ui/Select";
 import Switch from "../../../components/ui/Switch";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import UpstreamLabels, { UpstreamLabelSummary } from "./UpstreamLabels";
 
 const fields = [
   "protocol",
@@ -37,6 +38,7 @@ const fields = [
 const numericFields = ["weight", "startupTime", "warmupTime"];
 
 export class EditableTable extends Component {
+  labelsRef = React.createRef();
   constructor(props) {
     super(props);
     this.state = { editingKey: "", draft: {}, errors: {} };
@@ -51,12 +53,16 @@ export class EditableTable extends Component {
       this.cancel();
   }
 
-  cancel = () => this.setState({ editingKey: "", draft: {}, errors: {} });
+  cancel = () => {
+    this.setState({ editingKey: "", draft: {}, errors: {} });
+    this.props.onEditingChange?.(false);
+  };
 
   editable = (field) =>
     this.props.isLocal || !["url", "startupTime"].includes(field);
 
-  edit = (row) =>
+  edit = (row) => {
+    this.props.onEditingChange?.(true);
     this.setState({
       editingKey: row.key,
       draft: {
@@ -66,6 +72,7 @@ export class EditableTable extends Component {
       },
       errors: {},
     });
+  };
 
   change = (field, value) =>
     this.setState((previous) => ({
@@ -115,7 +122,9 @@ export class EditableTable extends Component {
       this.setState({ errors });
       return;
     }
-    const patch = {};
+    const labels = this.labelsRef.current?.validate();
+    if (!labels) return;
+    const patch = { ...labels };
     fields.filter(this.editable).forEach((field) => {
       patch[field] = draft[field];
     });
@@ -209,6 +218,12 @@ export class EditableTable extends Component {
       },
     }));
     columns.push({
+      title: getIntlContent("SHENYU.UPSTREAM.LABELS.TITLE"),
+      key: "labels",
+      width: 280,
+      render: (_, record) => <UpstreamLabelSummary record={record} />,
+    });
+    columns.push({
       title: getIntlContent("SHENYU.DISCOVERY.SELECTOR.UPSTREAM.OPERATION"),
       dataIndex: "operation",
       width: 180,
@@ -281,7 +296,11 @@ export class EditableTable extends Component {
           rowKey="key"
           dataSource={dataSource}
           columns={columns}
-          scroll={{ x: 1120 }}
+          expandedRowKeys={editingKey === "" ? [] : [editingKey]}
+          expandedRowRender={(record) => (
+            <UpstreamLabels key={record.key} ref={this.labelsRef} record={record} />
+          )}
+          scroll={{ x: 1400 }}
           pagination={{ pageSize: 10 }}
           onChange={({ extra }) => {
             if (extra.changeType === "pagination") this.cancel();

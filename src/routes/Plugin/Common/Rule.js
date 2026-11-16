@@ -33,6 +33,8 @@ import { getIntlContent } from "../../../utils/IntlUtils";
 import CommonRuleHandle from "./CommonRuleHandle";
 import ComposeRuleHandle from "./ComposeRuleHandle";
 import PluginRuleHandle from "../PluginRuleHandle";
+import CanaryRuleHandle from "../PluginRuleHandle/CanaryRuleHandle";
+import { mergeDivideHandle } from "../../../utils/canary";
 import RuleCopy from "./RuleCopy";
 import {
   formatDate,
@@ -220,6 +222,27 @@ class AddModal extends Component {
               ...JSON.parse(handle ?? "{}"),
               ...JSON.parse(customHandle),
             });
+          }
+
+          if (
+            this.props.pluginName === "divide" &&
+            !multiRuleHandle &&
+            handleType === "1"
+          ) {
+            const canaryResult = this.canaryComponentRef
+              ? this.canaryComponentRef.getData()
+              : { valid: true };
+            if (!canaryResult.valid) return;
+            try {
+              handle = mergeDivideHandle(
+                this.props.handle,
+                handle,
+                canaryResult.canary,
+              );
+            } catch (error) {
+              message.error(getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID"));
+              return;
+            }
           }
 
           handleOk({
@@ -688,6 +711,21 @@ class AddModal extends Component {
               multiRuleHandle={multiRuleHandle}
             />
           )}
+          {pluginName === "divide" &&
+            !multiRuleHandle &&
+            pluginHandleList &&
+            pluginHandleList.length > 0 && (
+              <CanaryRuleHandle
+                ref={(ref) => {
+                  this.canaryComponentRef = ref;
+                }}
+                handle={handle}
+                dictionaries={{
+                  paramType: paramTypeDics,
+                  operator: operatorDics,
+                }}
+              />
+            )}
           <FormItem
             label={getIntlContent("SHENYU.SELECTOR.EXEORDER")}
             {...formItemLayout}

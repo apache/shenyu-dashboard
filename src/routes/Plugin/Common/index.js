@@ -32,6 +32,7 @@ import Switch from "../../../components/ui/Switch";
 import ResourceIcon from "../../../components/ui/ResourceIcon";
 import panelStyles from "./index.module.less";
 import { message } from "../../../components/ui/feedback";
+import { serializeUpstreamProps } from "../../../utils/upstreamLabels";
 import Selector from "./Selector";
 import Rule from "./Rule";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
@@ -475,10 +476,7 @@ export default class Common extends Component {
       status: parseInt(item.status, 10),
       weight: item.weight,
       startupTime: item.startupTime,
-      props: JSON.stringify({
-        warmupTime: item.warmupTime,
-        gray: `${item.gray}`,
-      }),
+      props: serializeUpstreamProps(item),
       namespaceId: currentNamespaceId,
     }));
   };
@@ -527,10 +525,7 @@ export default class Common extends Component {
       url: item.url,
       status: parseInt(item.status, 10),
       weight: item.weight,
-      props: JSON.stringify({
-        warmupTime: item.warmupTime,
-        gray: `${item.gray}`,
-      }),
+      props: serializeUpstreamProps(item),
       discoveryHandlerId,
       namespaceId: currentNamespaceId,
     }));
