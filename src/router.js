@@ -16,10 +16,9 @@
  */
 
 import React from "react";
-import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
-import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
 import BackTop from "@douyinfe/semi-ui/lib/es/backtop";
 import { routerRedux, Route, Switch } from "./runtime/router";
+import DashboardLocale from "./components/ui/DashboardLocale";
 import AuthRoute from "./utils/AuthRoute";
 
 const { ConnectedRouter } = routerRedux;
@@ -29,7 +28,7 @@ function RouterConfig({ history, routerData }) {
   const BasicLayout = routerData["/"].component;
 
   return (
-    <LocaleProvider locale={enUS}>
+    <DashboardLocale>
       <ConnectedRouter history={history}>
         <Switch>
           <Route path="/user" component={UserLayout} />
@@ -41,7 +40,7 @@ function RouterConfig({ history, routerData }) {
         </Switch>
       </ConnectedRouter>
       <BackTop />
-    </LocaleProvider>
+    </DashboardLocale>
   );
 }
 
