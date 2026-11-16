@@ -22,7 +22,7 @@ import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
 import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
 import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import "@douyinfe/semi-ui/lib/es/_base/base.css";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 @connect(({ global }) => ({

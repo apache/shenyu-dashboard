@@ -23,14 +23,14 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
-import { message } from "antd";
+import { message } from "../../../components/ui/feedback";
 import ToolsModal from "./ToolsModal";
 import { clipboardCopy } from "../../../utils/utils";
 
-jest.mock("dva", () => ({ connect: () => (Component) => Component }));
+jest.mock("react-redux", () => ({ connect: () => (Component) => Component }));
 jest.mock("../../../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
 jest.mock("../../../utils/utils", () => ({ clipboardCopy: jest.fn() }));
-jest.mock("react-json-view", () => ({ src, onEdit }) => (
+jest.mock("@microlink/react-json-view", () => ({ src, onEdit }) => (
   <div>
     <pre>{JSON.stringify(src)}</pre>
     {onEdit && (

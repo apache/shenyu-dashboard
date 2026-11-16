@@ -20,7 +20,6 @@ import {
   Button,
   DatePicker,
   Input,
-  message,
   Popconfirm,
   Row,
   Select,
@@ -28,8 +27,9 @@ import {
   Table,
   Typography,
 } from "antd";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import moment from "moment";
+import { message } from "../../../components/ui/feedback";
 import PolicyModal from "./PolicyModal";
 import RuleModal from "./RuleModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";

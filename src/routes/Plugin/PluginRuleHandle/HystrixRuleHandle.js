@@ -18,7 +18,7 @@
 import React, { Component, Fragment } from "react";
 import { Form, Select, Input } from "antd";
 import classnames from "classnames";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import styles from "../index.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 

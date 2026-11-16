@@ -17,7 +17,7 @@
 
 import React, { Component } from "react";
 import CryptoJS from "crypto-js";
-import { connect } from "dva";
+import { connect } from "react-redux";
 import { Alert } from "antd";
 import UUID from "uuid";
 import Login from "components/Login";
