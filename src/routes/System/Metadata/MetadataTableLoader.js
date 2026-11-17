@@ -37,4 +37,7 @@ export function TableLoading({ error, retry }) {
   );
 }
 
-export default Loadable({ loader: loadMetadataTable, loading: TableLoading });
+export default Loadable({
+  loader: () => loadMetadataTable().then((module) => module.default),
+  loading: TableLoading,
+});

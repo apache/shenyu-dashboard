@@ -33,7 +33,7 @@ it("announces that the table is loading", () => {
 it("recovers a failed module download and forwards the controlled table props", async () => {
   const Table = jest.fn(() => <div>Loaded metadata table</div>);
   loadMetadataTable.mockRejectedValueOnce(new Error("Chunk unavailable"));
-  loadMetadataTable.mockResolvedValueOnce({ __esModule: true, default: Table });
+  loadMetadataTable.mockResolvedValueOnce({ default: Table });
   const props = { currentPage: 3, pageSize: 20, total: 88 };
   render(<MetadataTableLoader {...props} />);
   await screen.findByRole("alert");
