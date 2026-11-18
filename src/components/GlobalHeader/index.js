@@ -18,6 +18,7 @@
 import React, { PureComponent } from "react";
 import Button from "@douyinfe/semi-ui/lib/es/button";
 import Dropdown from "@douyinfe/semi-ui/lib/es/dropdown";
+import Select from "@douyinfe/semi-ui/lib/es/select";
 import { connect } from "react-redux";
 import Form from "../ui/Form";
 import Input from "../ui/Input";
@@ -326,66 +327,43 @@ class GlobalHeader extends PureComponent {
     return (
       <div className={styles.header}>
         <div className={styles.brand}>
-          <Button
-            theme="borderless"
-            aria-label="Toggle navigation"
-            icon={
-              <ResourceIcon
-                type={this.props.collapsed ? "menu-unfold" : "menu-fold"}
-              />
-            }
-            onClick={() => this.props.onCollapse?.(!this.props.collapsed)}
-          />
-          <span className={styles.text}>
-            Apache ShenYu Gateway Management System
-          </span>
+          <a href="#/home" className={styles.brandLink}>
+            {this.props.logo && (
+              <img src={this.props.logo} alt="" className={styles.brandMark} />
+            )}
+            <span className={styles.text}>Apache ShenYu</span>
+          </a>
         </div>
         <div className={styles.controls}>
           {showNamespaces && (
-            <div className={styles.item}>
-              <Dropdown
-                trigger="click"
-                position="bottom"
-                render={
-                  <Dropdown.Menu>
-                    {namespaces.map((namespace) => {
-                      let isCurrentNamespace =
-                        currentNamespaceId === namespace.namespaceId;
-                      return (
-                        <Dropdown.Item
-                          key={namespace.namespaceId}
-                          onClick={() =>
-                            this.handleNamespacesValueChange({
-                              key: namespace.namespaceId,
-                            })
-                          }
-                          disabled={isCurrentNamespace}
-                        >
-                          <span>{namespace.name}</span>
-                        </Dropdown.Item>
-                      );
-                    })}
-                  </Dropdown.Menu>
-                }
+            <div className={styles.namespaceControl}>
+              <span
+                id="shenyu-namespace-label"
+                className={styles.namespaceLabel}
               >
-                <Button>
-                  <span
-                    className={styles.namespaceName}
-                    style={{ fontWeight: "bold" }}
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    {`${getIntlContent("SHENYU.SYSTEM.NAMESPACE")} / ${namespaces.find((namespace) => currentNamespaceId === namespace.namespaceId)?.name} `}
-                  </span>
-                  <ResourceIcon type="down" />
-                </Button>
-              </Dropdown>
+                {getIntlContent("SHENYU.SYSTEM.NAMESPACE")}
+              </span>
+              <Select
+                aria-labelledby="shenyu-namespace-label"
+                className={styles.namespaceSelect}
+                value={currentNamespaceId}
+                ellipsisTrigger
+                optionList={namespaces.map((namespace) => ({
+                  value: namespace.namespaceId,
+                  label: `${namespace.name || namespace.namespaceId} (${namespace.namespaceId})`,
+                  disabled: currentNamespaceId === namespace.namespaceId,
+                }))}
+                onChange={(namespaceId) =>
+                  this.handleNamespacesValueChange({ key: namespaceId })
+                }
+              />
             </div>
           )}
           {(this.checkAuth("system:manager:importConfig") ||
             this.checkAuth("system:manager:exportConfig")) && (
             <div className={styles.item}>
               <Dropdown trigger="click" render={importMenu}>
-                <Button>
+                <Button theme="borderless" type="tertiary">
                   <ResourceIcon type="import" />{" "}
                   {getIntlContent("SHENYU.COMMON.IMPORT_EXPORT")}
                 </Button>
@@ -398,7 +376,7 @@ class GlobalHeader extends PureComponent {
               position="bottom"
               render={this.state.help}
             >
-              <Button aria-label="Help">
+              <Button theme="borderless" type="tertiary" aria-label="Help">
                 <ResourceIcon type="question-circle" />
               </Button>
             </Dropdown>
@@ -409,15 +387,19 @@ class GlobalHeader extends PureComponent {
               position="bottom"
               render={this.state.menu}
             >
-              <Button aria-label="Language">
+              <Button theme="borderless" type="tertiary" aria-label="Language">
                 <TranslationOutlinedSvg />
               </Button>
             </Dropdown>
           </div>
           <div className={`${styles.item} ${styles.right}`}>
             <Dropdown trigger="click" render={menu}>
-              <Button icon={<ResourceIcon type="user" />}>
-                <span>{userName}</span>
+              <Button
+                theme="borderless"
+                type="tertiary"
+                icon={<ResourceIcon type="user" />}
+              >
+                <span className={styles.userName}>{userName}</span>
               </Button>
             </Dropdown>
           </div>

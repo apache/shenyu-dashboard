@@ -46,15 +46,25 @@ const getCodeMessage = (status) => {
   return codeMessage[status];
 };
 
+const notifySessionExpired = () =>
+  notification.error({
+    message: getIntlContent("SHENYU.MESSAGE.SESSION.INVALID"),
+    description: getIntlContent("SHENYU.MESSAGE.SESSION.RELOGIN"),
+  });
+
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
     return response;
   }
   const errortext = getCodeMessage(response.status) || response.statusText;
-  notification.error({
-    message: `${getIntlContent("SHENYU.REQUEST.ERROR")} ${response.status}: ${response.url}`,
-    description: errortext,
-  });
+  if (response.status === 401) {
+    notifySessionExpired();
+  } else {
+    notification.error({
+      message: `${getIntlContent("SHENYU.REQUEST.ERROR")} ${response.status}`,
+      description: errortext,
+    });
+  }
   const error = new Error(errortext);
   error.name = response.status;
   error.response = response;
@@ -67,10 +77,7 @@ function checkStatus(response) {
  */
 const checkResponseCode = (response) => {
   if (response.code === 401) {
-    notification.error({
-      message: getIntlContent("SHENYU.MESSAGE.SESSION.INVALID"),
-      description: getIntlContent("SHENYU.MESSAGE.SESSION.RELOGIN"),
-    });
+    notifySessionExpired();
     const error = new Error(response.message);
     error.name = response.code;
     error.response = response;
