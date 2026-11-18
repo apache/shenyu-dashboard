@@ -60,7 +60,7 @@ jest.mock("../../utils/IntlUtils", () => ({
 }));
 jest.mock("../../utils/emit", () => ({ emit: { emit: jest.fn() } }));
 jest.mock("../../utils/AuthRoute", () => ({ resetAuthMenuCache: jest.fn() }));
-function mount() {
+function mount(extraProps = {}) {
   sessionStorage.removeItem("token");
   const ref = React.createRef(),
     dispatch = jest.fn(),
@@ -75,6 +75,7 @@ function mount() {
       location={{ pathname: "/home" }}
       changeLocalName={changeLocalName}
       onLogout={jest.fn()}
+      {...extraProps}
     />,
   );
   return { ref, dispatch, changeLocalName };
@@ -88,6 +89,34 @@ it("switches namespace with matching plugin/permission refresh", () => {
     "global/fetchPermission",
   ]);
   expect(h.dispatch.mock.calls[2][0].payload.namespaceId).toBe("next");
+});
+
+it("labels the native namespace select and switches by ID rather than its display label", async () => {
+  const h = mount({
+    namespaces: [
+      { namespaceId: "default", name: "Default" },
+      { namespaceId: "next-id", name: "Alternative" },
+    ],
+  });
+  const select = screen.getByRole("combobox", {
+    name: "SHENYU.SYSTEM.NAMESPACE",
+  });
+  expect(screen.getByText("Default (default)")).toBeTruthy();
+  fireEvent.click(select);
+  const option = await screen.findByRole("option", {
+    name: /Alternative \(next-id\)$/,
+  });
+  fireEvent.click(option);
+  fireEvent.animationEnd(option.closest("[x-placement]"));
+  await waitFor(() =>
+    expect(h.dispatch.mock.calls.map(([action]) => action.type)).toEqual([
+      "global/saveCurrentNamespaceId",
+      "global/fetchPlugins",
+      "global/fetchPermission",
+    ]),
+  );
+  expect(h.dispatch.mock.calls[0][0].payload).toBe("next-id");
+  expect(h.dispatch.mock.calls[2][0].payload.namespaceId).toBe("next-id");
 });
 it("keeps password validation and confirmation rules", async () => {
   const h = mount();

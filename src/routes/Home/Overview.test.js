@@ -22,6 +22,7 @@ import {
   fireEvent,
   waitFor,
   act,
+  within,
 } from "@testing-library/react";
 import HomeConnected from "./index";
 import { routerRedux } from "../../runtime/router";
@@ -60,6 +61,88 @@ beforeEach(() => {
     .mockResolvedValue({ code: 200, data: [log] });
 });
 afterEach(() => window.sessionStorage.clear());
+const summary = (key) =>
+  within(screen.getByRole("group", { name: `SHENYU.HOME.${key}` }));
+
+it("distinguishes loading summaries from a successful empty response", async () => {
+  let resolveSnapshot, resolveLogs;
+  activePluginSnapshotByNamespace.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        resolveSnapshot = resolve;
+      }),
+  );
+  getNewEventRecodLogList.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        resolveLogs = resolve;
+      }),
+  );
+  render(<Home dispatch={jest.fn()} global={{ currentNamespaceId: "ns-A" }} />);
+  ["ACTIVE_PLUGINS", "ACTIVE_SELECTORS", "RECENT_EVENTS"].forEach((key) => {
+    expect(summary(key).getByText("SHENYU.HOME.LOADING")).toBeTruthy();
+    expect(summary(key).queryByText("0")).toBeNull();
+  });
+  await act(async () => {
+    resolveSnapshot({ code: 200, data: [] });
+    resolveLogs({ code: 200, data: [] });
+  });
+  ["ACTIVE_PLUGINS", "ACTIVE_SELECTORS", "RECENT_EVENTS"].forEach((key) => {
+    expect(summary(key).getByText("0")).toBeTruthy();
+    expect(summary(key).queryByText("SHENYU.HOME.LOADING")).toBeNull();
+  });
+});
+
+it("derives summaries from the loaded snapshot and recent records", async () => {
+  activePluginSnapshotByNamespace.mockResolvedValue({
+    code: 200,
+    data: [plugin("divide"), { ...plugin("dubbo"), selectorCount: 3 }],
+  });
+  getNewEventRecodLogList.mockResolvedValue({
+    code: 200,
+    data: [log, { ...log, id: "other" }],
+  });
+  window.sessionStorage.setItem("userName", "dashboard-user");
+  render(
+    <Home
+      dispatch={jest.fn()}
+      global={{
+        currentNamespaceId: "ns-A",
+        namespaces: [{ namespaceId: "ns-A", name: "Team A" }],
+      }}
+    />,
+  );
+  expect(await summary("ACTIVE_PLUGINS").findByText("2")).toBeTruthy();
+  expect(summary("ACTIVE_SELECTORS").getByText("5")).toBeTruthy();
+  expect(summary("RECENT_EVENTS").getByText("2")).toBeTruthy();
+  expect(screen.getByText("dashboard-user")).toBeTruthy();
+  expect(screen.getByText("Team A")).toBeTruthy();
+});
+
+it("keeps failed summaries unavailable while independently successful data remains visible", async () => {
+  activePluginSnapshotByNamespace.mockRejectedValue(new Error("offline"));
+  render(<Home dispatch={jest.fn()} global={{ currentNamespaceId: "ns-A" }} />);
+  expect(
+    await summary("ACTIVE_PLUGINS").findByText("SHENYU.HOME.UNAVAILABLE"),
+  ).toBeTruthy();
+  expect(
+    summary("ACTIVE_SELECTORS").getByText("SHENYU.HOME.UNAVAILABLE"),
+  ).toBeTruthy();
+  expect(summary("ACTIVE_PLUGINS").queryByText("0")).toBeNull();
+  expect(summary("RECENT_EVENTS").getByText("1")).toBeTruthy();
+});
+
+it("does not turn missing selector counts into a successful zero", async () => {
+  activePluginSnapshotByNamespace.mockResolvedValue({
+    code: 200,
+    data: [{ name: "divide", role: "Proxy", handleCount: 0 }],
+  });
+  render(<Home dispatch={jest.fn()} global={{ currentNamespaceId: "ns-A" }} />);
+  expect(await summary("ACTIVE_PLUGINS").findByText("1")).toBeTruthy();
+  expect(
+    summary("ACTIVE_SELECTORS").getByText("SHENYU.HOME.UNAVAILABLE"),
+  ).toBeTruthy();
+});
 it("loads the current namespace and displays the plugin/log overview", async () => {
   const dispatch = jest.fn();
   render(<Home dispatch={dispatch} global={{ currentNamespaceId: "ns-A" }} />);
@@ -89,6 +172,9 @@ it("refreshes namespace snapshots and ignores the older response", async () => {
   const props = { dispatch: jest.fn(), global: { currentNamespaceId: "ns-A" } };
   const view = render(<Home {...props} />);
   view.rerender(<Home {...props} global={{ currentNamespaceId: "ns-B" }} />);
+  expect(
+    summary("ACTIVE_PLUGINS").getByText("SHENYU.HOME.LOADING"),
+  ).toBeTruthy();
   await waitFor(() =>
     expect(activePluginSnapshotByNamespace).toHaveBeenCalledTimes(2),
   );
@@ -96,6 +182,8 @@ it("refreshes namespace snapshots and ignores the older response", async () => {
   await act(async () => replies[0]({ code: 200, data: [plugin("divide")] }));
   expect(screen.getByText("dubbo", { exact: true })).toBeTruthy();
   expect(screen.queryByText("divide", { exact: true })).toBeNull();
+  expect(summary("ACTIVE_PLUGINS").getByText("1")).toBeTruthy();
+  expect(summary("ACTIVE_SELECTORS").getByText("2")).toBeTruthy();
 });
 it("opens and closes event details through a native button", async () => {
   render(<Home dispatch={jest.fn()} global={{ currentNamespaceId: "ns-A" }} />);
@@ -128,6 +216,10 @@ it("shows independent request failures instead of a successful empty overview", 
     await screen.findByText("Unable to load active plugins."),
   ).toBeTruthy();
   expect(await screen.findByText("Unable to load event logs.")).toBeTruthy();
+  expect(
+    summary("RECENT_EVENTS").getByText("SHENYU.HOME.UNAVAILABLE"),
+  ).toBeTruthy();
+  expect(summary("RECENT_EVENTS").queryByText("0")).toBeNull();
 });
 it("ignores delayed requests after unmount without replacing setState", async () => {
   let resolveSnapshot, resolveLogs;

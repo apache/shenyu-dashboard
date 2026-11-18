@@ -142,6 +142,10 @@ it.each(["http", "application"])(
       [{ type: "global/resetPermission" }],
     ]);
     expect(notification.error).toHaveBeenCalledTimes(1);
+    expect(notification.error).toHaveBeenCalledWith({
+      message: "SHENYU.MESSAGE.SESSION.INVALID",
+      description: "SHENYU.MESSAGE.SESSION.RELOGIN",
+    });
   },
 );
 
@@ -149,6 +153,8 @@ it.each([403, 404, 500, 503])(
   "rejects HTTP %s without logging the user out",
   async (status) => {
     const failed = response(status);
+    failed.url =
+      "http://gateway/permission/getUserPermissionByNamespace?namespaceId=long-id";
     fetch.mockResolvedValue(failed);
     await expect(request("/rule")).rejects.toMatchObject({
       name: status,
@@ -156,6 +162,10 @@ it.each([403, 404, 500, 503])(
     });
     expect(failed.json).not.toHaveBeenCalled();
     expect(notification.error).toHaveBeenCalledTimes(1);
+    expect(notification.error).toHaveBeenCalledWith({
+      message: `SHENYU.REQUEST.ERROR ${status}`,
+      description: `SHENYU.REQUEST.STATUS.${status}`,
+    });
     expect(dispatch).not.toHaveBeenCalled();
   },
 );

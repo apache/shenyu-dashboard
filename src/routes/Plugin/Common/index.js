@@ -1205,44 +1205,26 @@ export default class Common extends Component {
     return (
       <LocaleProvider locale={this.props.language === "zh-CN" ? zhCN : enUS}>
         <div className="plug-content-wrap">
-          <Row
-            style={{
-              marginBottom: "5px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div
-              style={{ display: "flex", alignItems: "end", flex: 1, margin: 0 }}
-            >
-              <Title
-                level={2}
-                style={{ textTransform: "capitalize", margin: "0 20px 0 0" }}
-              >
+          <div className={panelStyles.pluginHeader}>
+            <div className={panelStyles.pluginIdentity}>
+              <Title heading={2} className={panelStyles.pluginName}>
                 {name}
               </Title>
-              <Title
-                level={3}
-                type="secondary"
-                style={{ margin: "0 20px 0 0" }}
-              >
-                {role}
-              </Title>
-              <Tag color={tag.color}>{tag.text}</Tag>
+              {role && role.toLowerCase() !== (name || "").toLowerCase() && (
+                <Title heading={3} type="secondary">
+                  {role}
+                </Title>
+              )}
             </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "end",
-                gap: 10,
-                minHeight: 32,
-              }}
-            >
-              <Switch
-                checked={this.state.isPluginEnabled ?? false}
-                onChange={this.togglePluginStatus}
-              />
+            <div className={panelStyles.pluginActions}>
+              <div className={panelStyles.pluginStatus}>
+                <Switch
+                  aria-label={name}
+                  checked={this.state.isPluginEnabled ?? false}
+                  onChange={this.togglePluginStatus}
+                />
+                <Tag color={tag.color}>{tag.text}</Tag>
+              </div>
               <AuthButton perms="system:plugin:edit">
                 {({ icon }) => (
                   <Button
@@ -1255,7 +1237,7 @@ export default class Common extends Component {
                 )}
               </AuthButton>
             </div>
-          </Row>
+          </div>
           {name === "aiProxy" && this.state.showApiKeyManage ? (
             (() => {
               const selectedId =

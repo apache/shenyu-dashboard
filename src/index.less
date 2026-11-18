@@ -30,11 +30,11 @@ body,
 }
 
 .open {
-  color: #14c974;
+  color: var(--semi-color-success);
 }
 
 .close {
-  color: #ff586d;
+  color: var(--semi-color-danger);
 }
 
 .optionParts {
@@ -47,21 +47,25 @@ body,
   min-height: 100%;
 }
 
+.content-wrap {
+  background: var(--semi-color-fill-0);
+}
+
 ul,
 ol {
   list-style: none;
 }
 
 .table-selected {
-  background: lighten(#1890ff, 25%);
+  background: var(--semi-color-primary-light-default);
 }
 
 .edit {
   cursor: pointer;
-  color: #1890ff;
+  color: var(--semi-color-link);
 
   &:hover {
-    color: #1890ff;
+    color: var(--semi-color-link-hover);
   }
 }
 
@@ -80,10 +84,10 @@ ol {
   justify-content: space-between;
   line-height: 40px;
   padding: 0 10px;
-  border-radius: 5px;
-  box-shadow: 1px 2px 2px rgba(191, 189, 189, 0.5);
+  border: 1px solid var(--semi-color-border);
+  border-radius: var(--semi-border-radius-medium);
   height: 40px;
-  background: #fff;
+  background: var(--semi-color-bg-2);
 
   h3 {
     margin: 0;
@@ -103,7 +107,7 @@ body {
   font-size: 14px;
   line-height: 1.5;
   color: var(--semi-color-text-0);
-  background: #f0f2f5;
+  background: var(--semi-color-bg-0);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

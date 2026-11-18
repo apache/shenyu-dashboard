@@ -18,7 +18,6 @@
 import React, { Component } from "react";
 import Button from "@douyinfe/semi-ui/lib/es/button";
 import Steps from "@douyinfe/semi-ui/lib/es/steps";
-import Divider from "@douyinfe/semi-ui/lib/es/divider";
 import Card from "@douyinfe/semi-ui/lib/es/card";
 import Timeline from "@douyinfe/semi-ui/lib/es/timeline";
 import Popover from "@douyinfe/semi-ui/lib/es/popover";
@@ -26,6 +25,7 @@ import Tag from "@douyinfe/semi-ui/lib/es/tag";
 import Banner from "@douyinfe/semi-ui/lib/es/banner";
 import { connect } from "react-redux";
 import Modal from "../../components/ui/Modal";
+import ResourceIcon from "../../components/ui/ResourceIcon";
 import { routerRedux } from "../../runtime/router";
 import styles from "./home.module.less";
 import { getIntlContent } from "../../utils/IntlUtils";
@@ -49,6 +49,8 @@ export default class Home extends Component {
       activeLog: [],
       snapshotError: false,
       logError: false,
+      snapshotLoading: true,
+      logLoading: true,
       selectedLog: null,
     };
   }
@@ -65,10 +67,11 @@ export default class Home extends Component {
             activeLog:
               res?.code === 200 && Array.isArray(res.data) ? res.data : [],
             logError: res?.code !== 200 || !Array.isArray(res.data),
+            logLoading: false,
           });
       })
       .catch(() => {
-        if (this.mounted) this.setState({ logError: true });
+        if (this.mounted) this.setState({ logError: true, logLoading: false });
       });
   }
 
@@ -91,7 +94,11 @@ export default class Home extends Component {
       window.sessionStorage.getItem("currentNamespaceId");
     this.snapshotRequestId += 1;
     const requestId = this.snapshotRequestId;
-    this.setState({ activePluginSnapshot: [], snapshotError: false });
+    this.setState({
+      activePluginSnapshot: [],
+      snapshotError: false,
+      snapshotLoading: true,
+    });
     activePluginSnapshotByNamespace({ namespaceId })
       .then((res) => {
         if (this.mounted && requestId === this.snapshotRequestId)
@@ -99,11 +106,12 @@ export default class Home extends Component {
             activePluginSnapshot:
               res?.code === 200 && Array.isArray(res.data) ? res.data : [],
             snapshotError: res?.code !== 200 || !Array.isArray(res.data),
+            snapshotLoading: false,
           });
       })
       .catch(() => {
         if (this.mounted && requestId === this.snapshotRequestId)
-          this.setState({ snapshotError: true });
+          this.setState({ snapshotError: true, snapshotLoading: false });
       });
   };
 
@@ -134,23 +142,113 @@ export default class Home extends Component {
       activeLog,
       snapshotError,
       logError,
+      snapshotLoading,
+      logLoading,
       selectedLog,
     } = this.state;
+    const global = this.props.global || {};
+    const namespaceId =
+      global.currentNamespaceId ||
+      window.sessionStorage.getItem("currentNamespaceId");
+    const namespace = global.namespaces?.find(
+      (item) => item.namespaceId === namespaceId,
+    );
+    const userName = window.sessionStorage.getItem("userName");
+    const selectorCount = activePluginSnapshot.every(
+      (plugin) =>
+        Number.isInteger(plugin.selectorCount) && plugin.selectorCount >= 0,
+    )
+      ? activePluginSnapshot.reduce(
+          (total, plugin) => total + plugin.selectorCount,
+          0,
+        )
+      : null;
+    const metricValue = (value, loading, error) =>
+      loading
+        ? getIntlContent("SHENYU.HOME.LOADING")
+        : error || value === null
+          ? getIntlContent("SHENYU.HOME.UNAVAILABLE")
+          : value;
+    const summaries = [
+      {
+        key: "ACTIVE_PLUGINS",
+        icon: "appstore",
+        description: "PLUGINS_SCOPE",
+        value: metricValue(
+          activePluginSnapshot.length,
+          snapshotLoading,
+          snapshotError,
+        ),
+      },
+      {
+        key: "ACTIVE_SELECTORS",
+        icon: "branches",
+        description: "SELECTORS_SCOPE",
+        value: metricValue(selectorCount, snapshotLoading, snapshotError),
+      },
+      {
+        key: "RECENT_EVENTS",
+        icon: "history",
+        description: "EVENTS_SCOPE",
+        value: metricValue(activeLog.length, logLoading, logError),
+      },
+    ];
     return (
-      <div>
+      <div className={styles.home}>
         <div className={styles.content}>
-          <span>{getIntlContent("SHENYU.HOME.WELCOME")}</span>
+          <p className={styles.breadcrumb}>
+            Apache ShenYu <span aria-hidden="true">/</span>{" "}
+            {getIntlContent("SHENYU.HOME.WORKBENCH")}
+          </p>
         </div>
         <div className={styles.processContent}>
-          <Steps type="basic" current={1}>
-            <Step title="User Request" />
-            <Step
-              title="Shenyu-Gateway BootStrap Proxy"
-              description="plugin list · Admin manager."
-            />
-            <Step title="Server Waiting" description="do server processing" />
-          </Steps>
-          <Divider />
+          <dl className={styles.summaries}>
+            {summaries.map((summary) => (
+              <div
+                key={summary.key}
+                className={styles.summary}
+                role="group"
+                aria-label={getIntlContent(`SHENYU.HOME.${summary.key}`)}
+              >
+                <dt>
+                  <span className={styles.badge}>
+                    <ResourceIcon type={summary.icon} />
+                  </span>
+                  {getIntlContent(`SHENYU.HOME.${summary.key}`)}
+                </dt>
+                <dd>
+                  <strong>{summary.value}</strong>
+                  <span>
+                    {getIntlContent(`SHENYU.HOME.${summary.description}`)}
+                  </span>
+                </dd>
+              </div>
+            ))}
+          </dl>
+          {(userName || namespaceId) && (
+            <section className={styles.workspace}>
+              <div className={styles.identity}>
+                <span className={styles.avatar}>
+                  <ResourceIcon type="user" />
+                </span>
+                <h2>{getIntlContent("SHENYU.HOME.CONTEXT")}</h2>
+              </div>
+              <dl className={styles.details}>
+                {userName && (
+                  <div>
+                    <dt>{getIntlContent("SHENYU.HOME.CURRENT_ACCOUNT")}</dt>
+                    <dd>{userName}</dd>
+                  </div>
+                )}
+                {namespaceId && (
+                  <div>
+                    <dt>{getIntlContent("SHENYU.HOME.CURRENT_NAMESPACE")}</dt>
+                    <dd>{namespace?.name || namespaceId}</dd>
+                  </div>
+                )}
+              </dl>
+            </section>
+          )}
           <div className={styles.cards}>
             <Card title="Activity plugin list" className={styles.card}>
               {snapshotError && (
@@ -256,13 +354,14 @@ export default class Home extends Component {
                         <Button
                           className={styles.logButton}
                           theme="borderless"
+                          type="tertiary"
                           htmlType="button"
                           onClick={(event) =>
                             this.showEventLogDetail(event, log)
                           }
                         >
                           {this.getEventLogTitle(log)}
-                          <span>Detail</span>
+                          <span className={styles.logAction}>Detail</span>
                         </Button>
                       }
                     />
