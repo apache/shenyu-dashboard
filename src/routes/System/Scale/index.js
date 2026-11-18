@@ -536,7 +536,7 @@ export default class Scale extends Component {
               style={{ display: "flex", alignItems: "end", flex: 1, margin: 0 }}
             >
               <Title
-                level={2}
+                heading={2}
                 style={{ textTransform: "capitalize", margin: "0 20px 0 0" }}
               >
                 {getIntlContent("SHENYU.SYSTEM.SCALE.TITLE")}

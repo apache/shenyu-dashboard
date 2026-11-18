@@ -392,7 +392,7 @@ class McpConfigModal extends Component {
         <Divider />
 
         <div style={{ marginBottom: "16px" }}>
-          <Title level={5}>
+          <Title heading={5}>
             {getIntlContent("SHENYU.MCP.CONFIG.SERVICE.TRANSPORT")}:{" "}
             {isSSE ? "SSE" : "Streamable HTTP"}
           </Title>
@@ -432,7 +432,7 @@ class McpConfigModal extends Component {
               marginBottom: "8px",
             }}
           >
-            <Title level={5}>
+            <Title heading={5}>
               {getIntlContent("SHENYU.MCP.CONFIG.JSON.TITLE")}
             </Title>
             <Button
@@ -459,7 +459,7 @@ class McpConfigModal extends Component {
 
         {Object.keys(config.mcpServers || {}).length > 0 && (
           <div style={{ marginTop: "16px" }}>
-            <Title level={5}>
+            <Title heading={5}>
               {getIntlContent("SHENYU.MCP.CONFIG.EXPLANATION.TITLE")}
             </Title>
             <ul style={{ fontSize: "12px", color: "#666" }}>

@@ -561,13 +561,13 @@ export default class DiscoveryProxy extends Component {
               style={{ display: "flex", alignItems: "end", flex: 1, margin: 0 }}
             >
               <Title
-                level={2}
+                heading={2}
                 style={{ textTransform: "capitalize", margin: "0 20px 0 0" }}
               >
                 TCP
               </Title>
               <Title
-                level={3}
+                heading={3}
                 type="secondary"
                 style={{ margin: "0 20px 0 0" }}
               >
