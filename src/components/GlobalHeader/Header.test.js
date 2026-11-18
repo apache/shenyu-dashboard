@@ -24,6 +24,27 @@ import {
   waitFor,
 } from "@testing-library/react";
 import Header from "./index";
+import { encryptCredentials } from "../../utils/passwordEncryption";
+import { message } from "../ui/feedback";
+
+jest.mock("../../utils/passwordEncryption", () => ({
+  encryptCredentials: jest.fn(),
+}));
+jest.mock("../ui/feedback", () => ({
+  message: { error: jest.fn(), warn: jest.fn(), success: jest.fn() },
+}));
+
+const envelope = {
+  version: 1,
+  keyId: "fixture-key",
+  wrappedKey: "wrapped",
+  iv: "iv",
+  ciphertext: "ciphertext",
+};
+beforeEach(() => {
+  encryptCredentials.mockReset().mockResolvedValue(envelope);
+  message.error.mockClear();
+});
 
 jest.mock("react-redux", () => ({ connect: () => (Component) => Component }));
 jest.mock("../../runtime/router", () => ({
@@ -165,11 +186,81 @@ it("submits a validated password change and logs out only after success", async 
   expect(action.type).toBe("manage/updatePassword");
   expect(action.payload).toEqual({
     id: "fixture-id",
-    userName: "fixture-user",
-    oldPassword: "old-fixture",
-    password: "Synthetic-Only1!",
+    envelope,
   });
+  expect(encryptCredentials).toHaveBeenCalledWith(
+    {
+      userName: "fixture-user",
+      password: "Synthetic-Only1!",
+      oldPassword: "old-fixture",
+    },
+    "change-password",
+    "fixture-id",
+  );
+  expect(JSON.stringify(action)).not.toContain("Synthetic-Only1!");
+  expect(JSON.stringify(action)).not.toContain("old-fixture");
   expect(h.ref.current.props.onLogout).not.toHaveBeenCalled();
   act(() => action.callback());
   expect(h.ref.current.props.onLogout).toHaveBeenCalledTimes(1);
+});
+
+it("does not submit a pending encrypted password change after cancellation", async () => {
+  let resolve;
+  encryptCredentials.mockReturnValueOnce(
+    new Promise((done) => {
+      resolve = done;
+    }),
+  );
+  const h = mount();
+  act(() => {
+    h.ref.current.setState({ visible: true });
+    h.ref.current.props.form.setFieldsValue({
+      oldPassword: "old-fixture",
+      password: "Synthetic-Only1!",
+      confirmPassword: "Synthetic-Only1!",
+    });
+  });
+  fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.SURE" }));
+  await waitFor(() => expect(encryptCredentials).toHaveBeenCalledTimes(1));
+  fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.CALCEL" }));
+  await act(async () => {
+    resolve(envelope);
+  });
+  expect(h.dispatch).not.toHaveBeenCalled();
+  expect(h.ref.current.props.onLogout).not.toHaveBeenCalled();
+});
+
+it("does not log out a newer session when an older password update completes", async () => {
+  const h = mount();
+  act(() => {
+    h.ref.current.setState({ visible: true });
+    h.ref.current.props.form.setFieldsValue({
+      oldPassword: "old-fixture",
+      password: "Synthetic-Only1!",
+      confirmPassword: "Synthetic-Only1!",
+    });
+  });
+  fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.SURE" }));
+  await waitFor(() => expect(h.dispatch).toHaveBeenCalled());
+  window.sessionStorage.setItem("token", "replacement-session-token");
+  window.sessionStorage.setItem("userId", "replacement-user");
+  act(() => h.dispatch.mock.calls[0][0].callback());
+  expect(h.ref.current.props.onLogout).not.toHaveBeenCalled();
+});
+
+it("keeps the password dialog open without sending plaintext when encryption fails", async () => {
+  encryptCredentials.mockRejectedValueOnce(new Error("unavailable"));
+  const h = mount();
+  act(() => {
+    h.ref.current.setState({ visible: true });
+    h.ref.current.props.form.setFieldsValue({
+      oldPassword: "old-fixture",
+      password: "Synthetic-Only1!",
+      confirmPassword: "Synthetic-Only1!",
+    });
+  });
+  fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.SURE" }));
+  await waitFor(() => expect(message.error).toHaveBeenCalled());
+  expect(h.dispatch).not.toHaveBeenCalled();
+  expect(h.ref.current.state.visible).toBe(true);
 });

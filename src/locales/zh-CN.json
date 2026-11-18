@@ -1,4 +1,7 @@
 {
+  "SHENYU.PASSWORD.ENCRYPTION.UNSUPPORTED": "当前浏览器不支持安全密码加密，请使用新版浏览器。",
+  "SHENYU.PASSWORD.ENCRYPTION.UNAVAILABLE": "当前服务暂不支持安全密码提交，请稍后重试。",
+  "SHENYU.PASSWORD.ENCRYPTION.FAILED": "安全提交失败，请重试。",
   "SHENYU.HOME.WORKBENCH": "工作台",
   "SHENYU.HOME.ACTIVE_PLUGINS": "已启用插件",
   "SHENYU.HOME.PLUGINS_SCOPE": "当前命名空间",

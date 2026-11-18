@@ -1,4 +1,7 @@
 {
+  "SHENYU.PASSWORD.ENCRYPTION.UNSUPPORTED": "This browser does not support secure password encryption. Please use a current browser.",
+  "SHENYU.PASSWORD.ENCRYPTION.UNAVAILABLE": "Secure password submission is unavailable on this server. Please try again later.",
+  "SHENYU.PASSWORD.ENCRYPTION.FAILED": "Secure password submission failed. Please try again.",
   "SHENYU.HOME.WORKBENCH": "Workbench",
   "SHENYU.HOME.ACTIVE_PLUGINS": "Active plugins",
   "SHENYU.HOME.PLUGINS_SCOPE": "In the current namespace",
