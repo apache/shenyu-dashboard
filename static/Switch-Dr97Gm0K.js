@@ -1,1 +1,0 @@
-import{j as c}from"./index-DQMKrSf0.js";import{S as o}from"./index-CgThMAyN.js";function x({checkedChildren:t,unCheckedChildren:e,...r}){return c.jsx(o,{...r,checkedText:t,uncheckedText:e})}export{x as S};
