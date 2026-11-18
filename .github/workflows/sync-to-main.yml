@@ -25,7 +25,7 @@ jobs:
           cache-dependency-path: 'package-lock.json'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build project
         run: npm run build
@@ -41,6 +41,10 @@ jobs:
       - name: Check for changes and sync
         id: sync_step
         run: |
+          test "$(gh api user --jq .login)" = "cloudbase-ai" || {
+            echo "GH_PAT must authenticate as cloudbase-ai"
+            exit 1
+          }
           mkdir -p shenyu-main/shenyu-admin/src/main/resources/static
 
           # check difference
@@ -53,23 +57,13 @@ jobs:
 
             # create pull request git config
             cd shenyu-main
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
+            git config --local user.email "22498243+cloudbase-ai@users.noreply.github.com"
+            git config --local user.name "cloudbase-ai"
 
             # check and close existing open sync PRs before creating a new one
-            EXISTING_PRS=$(gh pr list --repo apache/shenyu --state open --search "chore: sync dashboard build artifacts in:title" --json number --jq '.[].number')
+            EXISTING_PRS=$(gh pr list --repo apache/shenyu --state open --author cloudbase-ai --search "chore: sync dashboard build artifacts in:title" --json number --jq '.[].number')
             CLOSED_PRS=""
-            if [ -n "$EXISTING_PRS" ]; then
-              echo "Found open sync PR(s) that have not been merged: $EXISTING_PRS"
-              for pr_num in $EXISTING_PRS; do
-                echo "Closing outdated sync PR #$pr_num..."
-                if gh pr close "$pr_num" --repo apache/shenyu --comment "Superseded by newer dashboard build artifacts sync." --delete-branch; then
-                  CLOSED_PRS="${CLOSED_PRS}#${pr_num} "
-                else
-                  CLOSED_PRS="${CLOSED_PRS}#${pr_num}(close-failed) "
-                fi
-              done
-            fi
+
 
             # create new branch to sync code
             BRANCH_NAME="sync-dashboard-$(date +%Y%m%d-%H%M%S)"
@@ -77,7 +71,7 @@ jobs:
 
             # commit changes
             git add shenyu-admin/src/main/resources/static/
-            git commit -m "admin(dashboard): sync dashboard build from apache/shenyu-dashboard@${{ github.sha }}
+            git commit -s -m "admin(dashboard): sync dashboard build from apache/shenyu-dashboard@${{ github.sha }}
 
             Auto-sync dashboard build artifacts from shenyu-dashboard repository.
 
@@ -85,7 +79,8 @@ jobs:
             Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
             # push
-            git push origin "$BRANCH_NAME"
+            git -c credential.helper= -c 'credential.helper=!gh auth git-credential' \
+              push https://github.com/cloudbase-ai/shenyu.git "HEAD:refs/heads/$BRANCH_NAME"
 
             # create pull request
             PR_URL=$(gh pr create \
@@ -99,10 +94,22 @@ jobs:
           - Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
           This PR contains the latest build artifacts from the dashboard repository." \
-              --head "$BRANCH_NAME" \
+              --head "cloudbase-ai:$BRANCH_NAME" \
               --base master)
 
             echo "✅ Pull request created successfully: $PR_URL"
+
+            if [ -n "$EXISTING_PRS" ]; then
+              echo "Found open sync PR(s) that have not been merged: $EXISTING_PRS"
+              for pr_num in $EXISTING_PRS; do
+                echo "Closing outdated sync PR #$pr_num..."
+                if gh pr close "$pr_num" --repo apache/shenyu --comment "Superseded by newer dashboard build artifacts sync." --delete-branch; then
+                  CLOSED_PRS="${CLOSED_PRS}#${pr_num} "
+                else
+                  CLOSED_PRS="${CLOSED_PRS}#${pr_num}(close-failed) "
+                fi
+              done
+            fi
             echo "SYNC_STATUS=created" >> $GITHUB_ENV
             echo "PR_URL=$PR_URL" >> $GITHUB_ENV
             echo "CLOSED_PRS=${CLOSED_PRS:-None}" >> $GITHUB_ENV
