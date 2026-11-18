@@ -326,19 +326,12 @@ class GlobalHeader extends PureComponent {
     return (
       <div className={styles.header}>
         <div className={styles.brand}>
-          <Button
-            theme="borderless"
-            aria-label="Toggle navigation"
-            icon={
-              <ResourceIcon
-                type={this.props.collapsed ? "menu-unfold" : "menu-fold"}
-              />
-            }
-            onClick={() => this.props.onCollapse?.(!this.props.collapsed)}
-          />
-          <span className={styles.text}>
-            Apache ShenYu Gateway Management System
-          </span>
+          <a href="#/home" className={styles.brandLink}>
+            {this.props.logo && (
+              <img src={this.props.logo} alt="" className={styles.brandMark} />
+            )}
+            <span className={styles.text}>Apache ShenYu</span>
+          </a>
         </div>
         <div className={styles.controls}>
           {showNamespaces && (
@@ -385,7 +378,7 @@ class GlobalHeader extends PureComponent {
             this.checkAuth("system:manager:exportConfig")) && (
             <div className={styles.item}>
               <Dropdown trigger="click" render={importMenu}>
-                <Button>
+                <Button theme="borderless" type="tertiary">
                   <ResourceIcon type="import" />{" "}
                   {getIntlContent("SHENYU.COMMON.IMPORT_EXPORT")}
                 </Button>
@@ -398,7 +391,7 @@ class GlobalHeader extends PureComponent {
               position="bottom"
               render={this.state.help}
             >
-              <Button aria-label="Help">
+              <Button theme="borderless" type="tertiary" aria-label="Help">
                 <ResourceIcon type="question-circle" />
               </Button>
             </Dropdown>
@@ -409,15 +402,19 @@ class GlobalHeader extends PureComponent {
               position="bottom"
               render={this.state.menu}
             >
-              <Button aria-label="Language">
+              <Button theme="borderless" type="tertiary" aria-label="Language">
                 <TranslationOutlinedSvg />
               </Button>
             </Dropdown>
           </div>
           <div className={`${styles.item} ${styles.right}`}>
             <Dropdown trigger="click" render={menu}>
-              <Button icon={<ResourceIcon type="user" />}>
-                <span>{userName}</span>
+              <Button
+                theme="borderless"
+                type="tertiary"
+                icon={<ResourceIcon type="user" />}
+              >
+                <span className={styles.userName}>{userName}</span>
               </Button>
             </Dropdown>
           </div>
