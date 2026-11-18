@@ -47,6 +47,28 @@ const menu = [
 
 const flatMenuKeys = getFlatMenuKeys(menu);
 
+it("shows the authorized workbench route as the selected home entry", () => {
+  const dispatch = jest.fn();
+  render(
+    <MemoryRouter initialEntries={["/home"]}>
+      <SiderMenu
+        dispatch={dispatch}
+        menuData={[]}
+        location={{ pathname: "/home" }}
+      />
+    </MemoryRouter>,
+  );
+  const home = screen.getByRole("link", { name: "Workbench" });
+  expect(home.querySelector(".semi-navigation-item-selected")).not.toBeNull();
+  fireEvent.click(home);
+  expect(dispatch).toHaveBeenCalledWith({
+    type: "global/saveCurrentRoutr",
+    payload: {
+      currentRouter: expect.objectContaining({ path: "/home" }),
+    },
+  });
+});
+
 describe("test convert nested menu to flat menu", () => {
   it("simple menu", () => {
     expect(flatMenuKeys).toEqual([
@@ -125,6 +147,55 @@ it("opens the active parents when menu data arrives without a route change", () 
     openKeys: [],
   });
   expect(next?.openKeys).toContain("/dashboard");
+});
+
+it("keeps other expanded branches when selecting a different route", () => {
+  const next = SiderMenu.getDerivedStateFromProps(
+    { menuData: menu, location: { pathname: "/userinfo/42/info" } },
+    {
+      prevPathname: "/dashboard/name",
+      menuData: menu,
+      openKeys: ["/dashboard"],
+    },
+  );
+  expect(next.openKeys).toEqual(
+    expect.arrayContaining(["/dashboard", "/userinfo", "/userinfo/:id"]),
+  );
+});
+
+it("allows independent top-level menus to stay open", () => {
+  const instance = new SiderMenu({
+    menuData: menu,
+    location: { pathname: "/home" },
+  });
+  instance.setState = jest.fn();
+  const openKeys = Object.freeze(["/dashboard", "/userinfo"]);
+  instance.handleOpenChange({ openKeys });
+  expect(instance.setState).toHaveBeenCalledWith({ openKeys: [...openKeys] });
+});
+
+it("preserves a manually closed branch when equivalent menu data refreshes", () => {
+  const next = SiderMenu.getDerivedStateFromProps(
+    { menuData: [...menu], location: { pathname: "/dashboard/name" } },
+    {
+      prevPathname: "/dashboard/name",
+      menuData: menu,
+      openKeys: ["/userinfo"],
+    },
+  );
+  expect(next.openKeys).toEqual(["/userinfo"]);
+});
+
+it("discards removed menu keys while keeping surviving expanded menus", () => {
+  const next = SiderMenu.getDerivedStateFromProps(
+    { menuData: [menu[1]], location: { pathname: "/home" } },
+    {
+      prevPathname: "/home",
+      menuData: menu,
+      openKeys: ["/dashboard", "/userinfo"],
+    },
+  );
+  expect(next.openKeys).toEqual(["/userinfo"]);
 });
 
 it("renders late menu links without mutating input and dispatches route selection", () => {
