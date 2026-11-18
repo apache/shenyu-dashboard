@@ -34,6 +34,8 @@ import { checkUserPassword } from "../../services/api";
 import { emit } from "../../utils/emit";
 import { resetAuthMenuCache } from "../../utils/AuthRoute";
 import { defaultNamespaceId } from "../_utils/utils";
+import { encryptCredentials } from "../../utils/passwordEncryption";
+import { message } from "../ui/feedback";
 
 const TranslationOutlinedSvg = () => (
   <svg
@@ -57,10 +59,16 @@ const TranslationOutlinedSvg = () => (
   permissions: global.permissions,
   namespaces: global.namespaces,
   currentNamespaceId: global.currentNamespaceId,
-  loading: loading.effects["manage/update"],
+  loading: loading.effects["manage/updatePassword"],
 }))
 @Form.create({})
 class GlobalHeader extends PureComponent {
+  passwordMounted = false;
+
+  passwordSubmissionPending = false;
+
+  passwordRequestId = 0;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -113,10 +121,12 @@ class GlobalHeader extends PureComponent {
       visible: false,
       display: "none",
       popup: "",
+      encryptingPassword: false,
     };
   }
 
   componentDidMount() {
+    this.passwordMounted = true;
     const token = window.sessionStorage.getItem("token");
     if (token) {
       checkUserPassword().then((res) => {
@@ -129,8 +139,93 @@ class GlobalHeader extends PureComponent {
   }
 
   componentWillUnmount() {
+    this.passwordMounted = false;
+    this.passwordRequestId += 1;
+    this.passwordSubmissionPending = false;
     this.setState = () => false;
   }
+
+  cancelPasswordChange = () => {
+    this.passwordRequestId += 1;
+    this.passwordSubmissionPending = false;
+    this.setState({
+      visible: false,
+      display: "none",
+      encryptingPassword: false,
+    });
+    this.props.form.resetFields();
+  };
+
+  submitPasswordChange = () => {
+    if (
+      this.passwordSubmissionPending ||
+      this.props.loading ||
+      !this.passwordMounted
+    )
+      return;
+    this.passwordSubmissionPending = true;
+    this.passwordRequestId += 1;
+    const requestId = this.passwordRequestId;
+    const { form, dispatch, onLogout } = this.props;
+    form.validateFields(async (errors, values) => {
+      if (errors) {
+        if (requestId === this.passwordRequestId)
+          this.passwordSubmissionPending = false;
+        return;
+      }
+      if (!this.passwordMounted || requestId !== this.passwordRequestId) return;
+      this.setState({ encryptingPassword: true });
+      const id = window.sessionStorage.getItem("userId");
+      const token = window.sessionStorage.getItem("token");
+      try {
+        const envelope = await encryptCredentials(
+          {
+            userName: window.sessionStorage.getItem("userName"),
+            password: values.password,
+            oldPassword: values.oldPassword,
+          },
+          "change-password",
+          id,
+        );
+        if (
+          !this.passwordMounted ||
+          requestId !== this.passwordRequestId ||
+          token !== window.sessionStorage.getItem("token")
+        )
+          return;
+        await dispatch({
+          type: "manage/updatePassword",
+          payload: { id, envelope },
+          callback: () => {
+            if (
+              token !== window.sessionStorage.getItem("token") ||
+              id !== window.sessionStorage.getItem("userId")
+            )
+              return;
+            if (this.passwordMounted) {
+              this.setState({ visible: false, display: "none" });
+              form.resetFields();
+            }
+            onLogout();
+          },
+        });
+      } catch (error) {
+        if (this.passwordMounted && requestId === this.passwordRequestId) {
+          message.error(
+            getIntlContent(
+              error?.messageKey || "SHENYU.PASSWORD.ENCRYPTION.FAILED",
+            ),
+          );
+        }
+      } finally {
+        if (requestId === this.passwordRequestId) {
+          this.passwordSubmissionPending = false;
+          if (this.passwordMounted)
+            this.setState({ encryptingPassword: false });
+        }
+      }
+    });
+  };
 
   fetchNamespaces = () => {
     const { dispatch } = this.props;
@@ -273,8 +368,7 @@ class GlobalHeader extends PureComponent {
   render() {
     const {
       onLogout,
-      form: { getFieldDecorator, resetFields, validateFields, getFieldValue },
-      dispatch,
+      form: { getFieldDecorator, getFieldValue },
       loading,
       namespaces,
       currentNamespaceId,
@@ -430,32 +524,10 @@ class GlobalHeader extends PureComponent {
           okText={getIntlContent("SHENYU.COMMON.SURE")}
           cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
           okButtonProps={{
-            loading,
+            loading: loading || this.state.encryptingPassword,
           }}
-          onCancel={() => {
-            this.setState({ visible: false, display: "none" });
-            resetFields();
-          }}
-          onOk={() => {
-            validateFields((errors, values) => {
-              if (!errors) {
-                dispatch({
-                  type: "manage/updatePassword",
-                  payload: {
-                    id: window.sessionStorage.getItem("userId"),
-                    userName: window.sessionStorage.getItem("userName"),
-                    password: values.password,
-                    oldPassword: values.oldPassword,
-                  },
-                  callback: () => {
-                    this.setState({ visible: false, display: "none" });
-                    resetFields();
-                    onLogout();
-                  },
-                });
-              }
-            });
-          }}
+          onCancel={this.cancelPasswordChange}
+          onOk={this.submitPasswordChange}
         >
           <div
             className={styles.warning}

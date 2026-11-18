@@ -63,14 +63,13 @@ export async function checkUserPassword() {
 
 /* update password */
 export async function updatePassword(params) {
-  return request(`${baseUrl}/dashboardUser/modify-password/${params.id}`, {
-    method: `PUT`,
-    body: {
-      userName: params.userName,
-      password: params.password,
-      oldPassword: params.oldPassword,
+  return request(
+    `${baseUrl}/dashboardUser/modify-password/${encodeURIComponent(params.id)}`,
+    {
+      method: `PUT`,
+      body: credentialEnvelope(params.envelope),
     },
-  });
+  );
 }
 
 /* get all metadata */
@@ -553,16 +552,25 @@ export async function queryPlatform() {
 export async function queryLogin(params = {}) {
   return request(`${baseUrl}/platform/login`, {
     method: `POST`,
-    body: {
-      userName: params.userName,
-      password: params.password,
-      clientId: params.clientId,
-    },
+    body: credentialEnvelope(params.envelope),
   });
 }
 
 export async function querySecretInfo() {
-  return fetch(`${baseUrl}/platform/secretInfo`).catch(() => {});
+  return fetch(`${baseUrl}/platform/secretInfo`, { cache: "no-store" });
+}
+
+function credentialEnvelope(envelope) {
+  if (
+    envelope?.version !== 1 ||
+    ["keyId", "wrappedKey", "iv", "ciphertext"].some(
+      (field) => typeof envelope[field] !== "string" || !envelope[field],
+    )
+  ) {
+    throw new Error("Encrypted credentials required");
+  }
+  const { version, keyId, wrappedKey, iv, ciphertext } = envelope;
+  return { version, keyId, wrappedKey, iv, ciphertext };
 }
 
 // export configs

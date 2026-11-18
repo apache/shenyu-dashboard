@@ -43,6 +43,7 @@ function verifyAsset(file) {
   );
   assert(fs.existsSync(path.join(directory, file)), `Missing asset: ${file}`);
 }
+verifyAsset("static/licenses/node-forge-LICENSE.txt");
 const initialCss = entries
   .filter((entry) => entry.isEntry)
   .flatMap((entry) => entry.css || [])

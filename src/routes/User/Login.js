@@ -16,13 +16,14 @@
  */
 
 import React, { Component } from "react";
-import CryptoJS from "crypto-js";
 import { connect } from "react-redux";
 import Banner from "@douyinfe/semi-ui/lib/es/banner";
 import UUID from "uuid";
 import Login from "components/Login";
 import styles from "./Login.module.less";
-import { ensureSecret, getSecret } from "./loginSecret";
+import { encryptCredentials } from "../../utils/passwordEncryption";
+import { getIntlContent } from "../../utils/IntlUtils";
+import { message } from "../../components/ui/feedback";
 
 const { UserName, Password, Submit, VerifyCode, LoginCode } = Login;
 @connect(({ login, loading }) => ({
@@ -30,56 +31,72 @@ const { UserName, Password, Submit, VerifyCode, LoginCode } = Login;
   submitting: loading.effects["login/login"],
 }))
 export default class LoginPage extends Component {
+  mounted = false;
+
+  submittingCredentials = false;
+
   constructor(props) {
     super(props);
     this.state = {
       VCode: undefined,
       codeError: true,
       needCode: false,
+      encrypting: false,
     };
     this.ChildRef = React.createRef();
   }
 
   componentDidMount() {
+    this.mounted = true;
     this.ChildRef.current?.handleChange();
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   handleSubmit = async (err, values) => {
     const { dispatch } = this.props;
     const { needCode } = this.state;
-    if (!err) {
+    if (
+      !err &&
+      this.mounted &&
+      !this.submittingCredentials &&
+      !this.props.submitting
+    ) {
       if (needCode && values.verifyCode !== this.state.VCode) {
         this.setState({ codeError: false });
         this.ChildRef.current.handleChange();
         return;
       }
-      if (!(await ensureSecret())) {
-        return;
-      }
-      const { key: secretKey, iv: secretIv } = getSecret();
-      if (secretKey && secretIv) {
-        const keyByte = CryptoJS.enc.Utf8.parse(secretKey);
-        const ivByte = CryptoJS.enc.Utf8.parse(secretIv);
-        const encryptedPassword = CryptoJS.AES.encrypt(
-          values.password,
-          keyByte,
+      this.submittingCredentials = true;
+      this.setState({ encrypting: true });
+      try {
+        const envelope = await encryptCredentials(
           {
-            iv: ivByte,
-            mode: CryptoJS.mode.CBC,
-            padding: CryptoJS.pad.Pkcs7,
+            userName: values.userName,
+            password: values.password,
+            clientId: UUID.v4().replaceAll("-", ""),
           },
+          "login",
         );
-        values.password = encryptedPassword.toString();
+        if (!this.mounted) return;
+        await dispatch({
+          type: "login/login",
+          payload: { envelope, callback: this.handleLoginResponse },
+        });
+      } catch (error) {
+        if (this.mounted) {
+          message.error(
+            getIntlContent(
+              error?.messageKey || "SHENYU.PASSWORD.ENCRYPTION.FAILED",
+            ),
+          );
+        }
+      } finally {
+        this.submittingCredentials = false;
+        if (this.mounted) this.setState({ encrypting: false });
       }
-
-      dispatch({
-        type: "login/login",
-        payload: {
-          ...values,
-          clientId: UUID.v4().replaceAll("-", ""),
-          callback: this.handleLoginResponse,
-        },
-      });
     }
   };
 
@@ -142,7 +159,7 @@ export default class LoginPage extends Component {
               </div>
             )}
           </div>
-          <Submit loading={submitting}>Login</Submit>
+          <Submit loading={submitting || this.state.encrypting}>Login</Submit>
         </Login>
       </div>
     );
