@@ -18,6 +18,7 @@
 import React, { PureComponent } from "react";
 import Button from "@douyinfe/semi-ui/lib/es/button";
 import Dropdown from "@douyinfe/semi-ui/lib/es/dropdown";
+import Select from "@douyinfe/semi-ui/lib/es/select";
 import { connect } from "react-redux";
 import Form from "../ui/Form";
 import Input from "../ui/Input";
@@ -342,43 +343,27 @@ class GlobalHeader extends PureComponent {
         </div>
         <div className={styles.controls}>
           {showNamespaces && (
-            <div className={styles.item}>
-              <Dropdown
-                trigger="click"
-                position="bottom"
-                render={
-                  <Dropdown.Menu>
-                    {namespaces.map((namespace) => {
-                      let isCurrentNamespace =
-                        currentNamespaceId === namespace.namespaceId;
-                      return (
-                        <Dropdown.Item
-                          key={namespace.namespaceId}
-                          onClick={() =>
-                            this.handleNamespacesValueChange({
-                              key: namespace.namespaceId,
-                            })
-                          }
-                          disabled={isCurrentNamespace}
-                        >
-                          <span>{namespace.name}</span>
-                        </Dropdown.Item>
-                      );
-                    })}
-                  </Dropdown.Menu>
-                }
+            <div className={styles.namespaceControl}>
+              <span
+                id="shenyu-namespace-label"
+                className={styles.namespaceLabel}
               >
-                <Button>
-                  <span
-                    className={styles.namespaceName}
-                    style={{ fontWeight: "bold" }}
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    {`${getIntlContent("SHENYU.SYSTEM.NAMESPACE")} / ${namespaces.find((namespace) => currentNamespaceId === namespace.namespaceId)?.name} `}
-                  </span>
-                  <ResourceIcon type="down" />
-                </Button>
-              </Dropdown>
+                {getIntlContent("SHENYU.SYSTEM.NAMESPACE")}
+              </span>
+              <Select
+                aria-labelledby="shenyu-namespace-label"
+                className={styles.namespaceSelect}
+                value={currentNamespaceId}
+                ellipsisTrigger
+                optionList={namespaces.map((namespace) => ({
+                  value: namespace.namespaceId,
+                  label: `${namespace.name || namespace.namespaceId} (${namespace.namespaceId})`,
+                  disabled: currentNamespaceId === namespace.namespaceId,
+                }))}
+                onChange={(namespaceId) =>
+                  this.handleNamespacesValueChange({ key: namespaceId })
+                }
+              />
             </div>
           )}
           {(this.checkAuth("system:manager:importConfig") ||

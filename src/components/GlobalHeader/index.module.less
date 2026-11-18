@@ -56,11 +56,24 @@
   cursor: pointer;
 }
 
-.namespaceName {
-  overflow: hidden;
-  text-overflow: ellipsis;
+.namespaceControl {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  max-width: 100%;
+  margin-inline-end: 12px;
+}
+
+.namespaceLabel {
   white-space: nowrap;
-  max-width: 260px;
+  color: var(--semi-color-text-1);
+}
+
+.namespaceSelect {
+  width: 240px;
+  min-width: 0;
+  flex: 0 1 240px;
 }
 
 .warning {
