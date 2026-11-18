@@ -1497,18 +1497,22 @@ export default class McpServer extends Component {
               style={{ display: "flex", alignItems: "end", flex: 1, margin: 0 }}
             >
               <Title
-                level={2}
+                heading={2}
                 style={{ textTransform: "capitalize", margin: "0 20px 0 0" }}
               >
                 {this.state.pluginName}
               </Title>
-              <Title
-                level={3}
-                type="secondary"
-                style={{ margin: "0 20px 0 0" }}
-              >
-                {this.state.pluginRole}
-              </Title>
+              {this.state.pluginRole &&
+                this.state.pluginRole.toLowerCase() !==
+                  (this.state.pluginName || "").toLowerCase() && (
+                  <Title
+                    heading={3}
+                    type="secondary"
+                    style={{ margin: "0 20px 0 0" }}
+                  >
+                    {this.state.pluginRole}
+                  </Title>
+                )}
               <Tag color={tag.color}>{tag.text}</Tag>
             </div>
             <div
