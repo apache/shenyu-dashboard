@@ -250,28 +250,26 @@ class BasicLayout extends React.PureComponent {
 
     const layout = (
       <Layout style={{ minHeight: "100vh" }}>
-        <SiderMenu
-          logo={logo}
-          TitleLogo={TitleLogo}
-          dispatch={dispatch}
-          menuData={processedMenus}
-          collapsed={collapsed}
-          location={location}
-          onCollapse={this.handleMenuCollapse}
-        />
-        <Layout style={{ minWidth: 0, flex: 1 }}>
-          <Header style={{ padding: 0, height: "auto" }}>
-            <GlobalHeader
-              logo={logo}
-              collapsed={collapsed}
-              onCollapse={this.handleMenuCollapse}
-              onLogout={this.handleLogout}
-              changeLocalName={this.changeLocalName}
-            />
-          </Header>
+        <Header style={{ padding: 0, height: "auto" }}>
+          <GlobalHeader
+            logo={logo}
+            onLogout={this.handleLogout}
+            changeLocalName={this.changeLocalName}
+          />
+        </Header>
+        <Layout style={{ minHeight: 0, flex: 1 }}>
+          <SiderMenu
+            logo={logo}
+            TitleLogo={TitleLogo}
+            dispatch={dispatch}
+            menuData={processedMenus}
+            collapsed={collapsed}
+            location={location}
+            onCollapse={this.handleMenuCollapse}
+          />
           <Content
             className="content-wrap"
-            style={{ height: "100%", position: "relative" }}
+            style={{ minWidth: 0, position: "relative" }}
           >
             <Switch>
               {redirectData.map((item) => (
