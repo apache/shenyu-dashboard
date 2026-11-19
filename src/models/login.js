@@ -20,6 +20,7 @@ import { routerRedux } from "../runtime/router";
 // import { stringify } from "qs";
 import { queryLogin } from "../services/api";
 import { defaultNamespaceId } from "../components/_utils/utils";
+import { resetAuthMenuCache } from "../utils/AuthRoute";
 
 export default {
   namespace: "login",
@@ -29,8 +30,9 @@ export default {
   },
 
   effects: {
-    *login({ payload }, { call, put, select }) {
+    *login({ payload }, { call, put }) {
       const { callback } = payload;
+      const token = window.sessionStorage.getItem("token");
       let response;
       let requestError;
       try {
@@ -39,11 +41,15 @@ export default {
         requestError = error;
         response = error.response?.data ?? error.response;
       }
-      yield call(callback, response);
-      const namespaces = yield select((state) => state.global.namespaces);
+      if (token !== window.sessionStorage.getItem("token")) {
+        return;
+      }
+      if (callback) {
+        yield call(callback, response);
+      }
 
       // Login successfully
-      if (response?.data) {
+      if (response?.code === 200 && response.data?.token) {
         yield put({
           type: "changeLoginStatus",
           payload: {
@@ -54,16 +60,17 @@ export default {
         window.sessionStorage.setItem("token", response.data.token);
         window.sessionStorage.setItem("userName", response.data.userName);
         window.sessionStorage.setItem("userId", response.data.id);
-        if (!namespaces?.length) {
-          yield put({
-            type: "global/fetchNamespaces",
-          });
-        }
-        // Reset namespace to default on login
+        yield put({ type: "global/resetSession" });
+        yield put({ type: "resource/resetSession" });
+        resetAuthMenuCache();
+        // Always initialize navigation for the new session, even when an old
+        // permission request is still loading in the same application.
         yield put({
           type: "global/saveCurrentNamespaceId",
           payload: defaultNamespaceId,
         });
+        yield put({ type: "global/fetchNamespaces" });
+        yield put({ type: "global/fetchPermission" });
         /* const urlParams = new URL(window.location.href);
          const params = getPageQuery();
          let { redirect } = params;
@@ -93,6 +100,13 @@ export default {
       }
     },
     *logout(_, { put }) {
+      window.sessionStorage.removeItem("token");
+      window.sessionStorage.removeItem("userName");
+      window.sessionStorage.removeItem("userId");
+      window.sessionStorage.removeItem("currentNamespaceId");
+      yield put({ type: "global/resetSession" });
+      yield put({ type: "resource/resetSession" });
+      resetAuthMenuCache();
       yield put({
         type: "changeLoginStatus",
         payload: {
@@ -100,10 +114,6 @@ export default {
           currentAuthority: "",
         },
       });
-      window.sessionStorage.removeItem("token");
-      window.sessionStorage.removeItem("userName");
-      window.sessionStorage.removeItem("userId");
-      window.sessionStorage.removeItem("currentNamespaceId");
       yield put(
         routerRedux.push({
           pathname: "/user/login",

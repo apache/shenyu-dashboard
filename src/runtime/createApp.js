@@ -20,8 +20,31 @@ import { routerRedux } from "./router";
 
 export default function createApp({ history, onAction = [] }) {
   return create(
-    { onAction: [routerRedux.routerMiddleware(history), ...onAction] },
     {
+      onAction: [routerRedux.routerMiddleware(history), ...onAction],
+      // DVA's default handler throws before rejecting the dispatch promise,
+      // which cancels every effect watcher in the failed model.
+      onError(error, dispatch, { key } = {}) {
+        // Authentication failures already have a notification. Report other
+        // failures by effect name only; error payloads may contain credentials.
+        if (error.name !== 401) {
+          console.error("Dashboard effect failed", key || "subscription"); // eslint-disable-line no-console
+        }
+      },
+    },
+    {
+      setupMiddlewares(middlewares) {
+        // Observe fire-and-forget dispatch failures without replacing the
+        // original promise: callers that await it must still receive rejection.
+        const observeRejection = () => (next) => (action) => {
+          const result = next(action);
+          if (result && typeof result.catch === "function") {
+            result.catch(() => {});
+          }
+          return result;
+        };
+        return [observeRejection, ...middlewares];
+      },
       setupApp(app) {
         app._history = history; // eslint-disable-line no-underscore-dangle
       },

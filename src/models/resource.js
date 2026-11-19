@@ -113,7 +113,11 @@ export default {
       }
     },
     *fetchMenuTree(_, { call, put }) {
+      const token = window.sessionStorage.getItem("token");
       const json = yield call(getMenuTree);
+      if (token !== window.sessionStorage.getItem("token")) {
+        return;
+      }
       if (json.code === 200) {
         const menuTree = json.data;
         yield put({
@@ -136,6 +140,15 @@ export default {
   },
 
   reducers: {
+    resetSession(state) {
+      return {
+        ...state,
+        resourceList: [],
+        menuTree: [],
+        authMenu: [],
+        total: 0,
+      };
+    },
     saveResources(state, { payload }) {
       return {
         ...state,

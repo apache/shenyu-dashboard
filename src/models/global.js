@@ -53,7 +53,11 @@ export default {
       }
     },
     *fetchNamespaces(_, { call, put }) {
+      const token = window.sessionStorage.getItem("token");
       const json = yield call(getNamespaceList);
+      if (token !== window.sessionStorage.getItem("token")) {
+        return;
+      }
       if (json?.code === 200) {
         yield put({
           type: "saveNamespaces",
@@ -63,6 +67,7 @@ export default {
     },
     *fetchPlugins({ payload }, { call, put, select }) {
       const { callback } = payload ?? {};
+      const token = window.sessionStorage.getItem("token");
       const namespaceId = yield select(
         ({ global }) => global.currentNamespaceId,
       );
@@ -75,7 +80,10 @@ export default {
       const currentNamespaceId = yield select(
         ({ global }) => global.currentNamespaceId,
       );
-      if (currentNamespaceId !== namespaceId) {
+      if (
+        currentNamespaceId !== namespaceId ||
+        token !== window.sessionStorage.getItem("token")
+      ) {
         return;
       }
       if (json.code === 200) {
@@ -118,7 +126,7 @@ export default {
       }
     },
     *fetchPermission({ payload }, { call, put, select }) {
-      const { callback } = payload;
+      const { callback } = payload ?? {};
       let permissions = { menu: [], button: [] };
       const token = window.sessionStorage.getItem("token");
       const namespaceId = yield select(
@@ -130,7 +138,10 @@ export default {
         const currentNamespaceId = yield select(
           ({ global }) => global.currentNamespaceId,
         );
-        if (currentNamespaceId !== namespaceId) {
+        if (
+          currentNamespaceId !== namespaceId ||
+          token !== window.sessionStorage.getItem("token")
+        ) {
           return;
         }
         if (json.code === 200) {
@@ -150,7 +161,9 @@ export default {
         type: "savePermissions",
         payload: { permissions },
       });
-      callback(permissions);
+      if (callback) {
+        callback(permissions);
+      }
     },
     *refreshPermission({ payload }, { call, put, select }) {
       const { callback } = payload ?? {};
@@ -165,7 +178,10 @@ export default {
         const currentNamespaceId = yield select(
           ({ global }) => global.currentNamespaceId,
         );
-        if (currentNamespaceId !== namespaceId) {
+        if (
+          currentNamespaceId !== namespaceId ||
+          token !== window.sessionStorage.getItem("token")
+        ) {
           return;
         }
         if (json.code === 200) {
@@ -193,6 +209,16 @@ export default {
   },
 
   reducers: {
+    resetSession(state) {
+      return {
+        ...state,
+        plugins: [],
+        currentRouter: {},
+        permissions: { menu: [], button: [] },
+        namespaces: [],
+        currentNamespaceId: defaultNamespaceId,
+      };
+    },
     changeLanguage(state, { payload }) {
       return {
         ...state,

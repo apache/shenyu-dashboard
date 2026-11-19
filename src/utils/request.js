@@ -57,9 +57,7 @@ function checkStatus(response) {
     return response;
   }
   const errortext = getCodeMessage(response.status) || response.statusText;
-  if (response.status === 401) {
-    notifySessionExpired();
-  } else {
+  if (response.status !== 401) {
     notification.error({
       message: `${getIntlContent("SHENYU.REQUEST.ERROR")} ${response.status}`,
       description: errortext,
@@ -77,7 +75,6 @@ function checkStatus(response) {
  */
 const checkResponseCode = (response) => {
   if (response.code === 401) {
-    notifySessionExpired();
     const error = new Error(response.message);
     error.name = response.code;
     error.response = response;
@@ -90,9 +87,6 @@ const checkResponseCode = (response) => {
 export const handleUnauthorized = () => {
   requestDispatch({
     type: "login/logout",
-  });
-  requestDispatch({
-    type: "global/resetPermission",
   });
 };
 
@@ -130,7 +124,7 @@ export default function request(url, options) {
   }
 
   // add token
-  let token = window.sessionStorage.getItem("token");
+  const token = window.sessionStorage.getItem("token");
   if (token) {
     if (!newOptions.headers) {
       newOptions.headers = {};
@@ -153,7 +147,8 @@ export default function request(url, options) {
     })
     .catch((e) => {
       const status = e.name;
-      if (status === 401) {
+      if (status === 401 && token === window.sessionStorage.getItem("token")) {
+        notifySessionExpired();
         handleUnauthorized();
       }
       throw e;

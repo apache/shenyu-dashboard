@@ -219,10 +219,6 @@ class BasicLayout extends React.PureComponent {
     dispatch({
       type: "login/logout",
     });
-
-    dispatch({
-      type: "global/resetPermission",
-    });
   };
 
   changeLocalName = (value) => {
