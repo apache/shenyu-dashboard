@@ -20,11 +20,13 @@ import * as effects from "redux-saga/effects";
 import { message } from "../components/ui/feedback";
 import model from "./global";
 import {
+  getNamespaceList,
   getPluginsByNamespace,
   getUserPermissionByNamespace,
 } from "../services/api";
 
 jest.mock("../services/api", () => ({
+  getNamespaceList: jest.fn(),
   getPluginsByNamespace: jest.fn(),
   getUserPermissionByNamespace: jest.fn(),
 }));
@@ -69,6 +71,7 @@ beforeEach(() => {
     permissions: oldPermissions,
   };
   actions = [];
+  getNamespaceList.mockReset();
   getPluginsByNamespace.mockReset();
   getUserPermissionByNamespace.mockReset();
 });
@@ -253,4 +256,93 @@ it("returns explicit-namespace plugins to the caller without overwriting shared 
   expect(callback).toHaveBeenCalledWith(plugins);
   expect(state.plugins).toBe(sharedPlugins);
   expect(actions).toEqual([]);
+});
+
+it.each([
+  "fetchNamespaces",
+  "fetchPlugins",
+  "fetchPermission",
+  "refreshPermission",
+])(
+  "%s ignores a previous session response even in the same namespace",
+  async (effect) => {
+    let complete;
+    const api =
+      effect === "fetchNamespaces"
+        ? getNamespaceList
+        : effect === "fetchPlugins"
+          ? getPluginsByNamespace
+          : getUserPermissionByNamespace;
+    api.mockReturnValue(
+      new Promise((resolve) => {
+        complete = resolve;
+      }),
+    );
+    const callback = jest.fn();
+    const pending = runEffect(effect, { callback });
+    window.sessionStorage.setItem("token", "new-session");
+    const current = state;
+    complete({
+      code: 200,
+      data: {
+        dataList: [{ id: "expired-plugin" }],
+        menu: [{ url: "/expired" }],
+        currentAuth: [],
+      },
+    });
+    await pending;
+    expect(state).toBe(current);
+    expect(actions).toEqual([]);
+    expect(callback).not.toHaveBeenCalled();
+  },
+);
+
+it.each(["fetchPermission", "refreshPermission"])(
+  "%s ignores a previous session's denial without redirecting the new login",
+  async (effect) => {
+    let complete;
+    getUserPermissionByNamespace.mockReturnValue(
+      new Promise((resolve) => {
+        complete = resolve;
+      }),
+    );
+    const callback = jest.fn();
+    const pending = runEffect(effect, { callback });
+    window.sessionStorage.setItem("token", "new-session");
+    complete({ code: 403, message: "Denied" });
+    await pending;
+    expect(actions).toEqual([]);
+    expect(callback).not.toHaveBeenCalled();
+    expect(message.warn).not.toHaveBeenCalled();
+  },
+);
+
+it("loads permissions without requiring a callback", async () => {
+  getUserPermissionByNamespace.mockResolvedValue({
+    code: 200,
+    data: { menu: [{ url: "/new" }], currentAuth: [] },
+  });
+  await runEffect("fetchPermission");
+  expect(state.permissions.menu).toEqual([{ url: "/new" }]);
+});
+
+it("clears all session navigation data while retaining language and layout preferences", () => {
+  const previous = {
+    ...state,
+    namespaces: [{ id: "old", name: "Old" }],
+    currentRouter: { name: "Old page" },
+    language: "zh-CN",
+    collapsed: true,
+  };
+  const next = model.reducers.resetSession(previous);
+  expect(next).toMatchObject({
+    plugins: [],
+    permissions: { menu: [], button: [] },
+    namespaces: [],
+    currentRouter: {},
+    currentNamespaceId: "default-namespace",
+    language: "zh-CN",
+    collapsed: true,
+  });
+  expect(previous.permissions).toBe(oldPermissions);
 });

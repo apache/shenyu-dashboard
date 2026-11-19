@@ -129,7 +129,7 @@ it("does not parse JSON from an empty 204 response", async () => {
 });
 
 it.each(["http", "application"])(
-  "rejects %s 401 and resets login and permissions",
+  "rejects %s 401 and delegates session cleanup to logout",
   async (kind) => {
     const unauthorized =
       kind === "http"
@@ -137,10 +137,7 @@ it.each(["http", "application"])(
         : response(200, { code: 401, message: "Session expired" });
     fetch.mockResolvedValue(unauthorized);
     await expect(request("/rule")).rejects.toMatchObject({ name: 401 });
-    expect(dispatch.mock.calls).toEqual([
-      [{ type: "login/logout" }],
-      [{ type: "global/resetPermission" }],
-    ]);
+    expect(dispatch.mock.calls).toEqual([[{ type: "login/logout" }]]);
     expect(notification.error).toHaveBeenCalledTimes(1);
     expect(notification.error).toHaveBeenCalledWith({
       message: "SHENYU.MESSAGE.SESSION.INVALID",
@@ -208,8 +205,32 @@ it("uses the current dispatcher when an in-flight request becomes unauthorized",
   complete(response(401));
   await expect(pending).rejects.toMatchObject({ name: 401 });
   expect(dispatch).not.toHaveBeenCalled();
-  expect(nextDispatch.mock.calls).toEqual([
-    [{ type: "login/logout" }],
-    [{ type: "global/resetPermission" }],
-  ]);
+  expect(nextDispatch.mock.calls).toEqual([[{ type: "login/logout" }]]);
 });
+
+it.each(["http", "application"])(
+  "ignores an obsolete session's late %s 401 after re-login",
+  async (kind) => {
+    let complete;
+    window.sessionStorage.setItem("token", "expired-session");
+    fetch.mockReturnValue(
+      new Promise((resolve) => {
+        complete = resolve;
+      }),
+    );
+    const pending = request("/permission");
+    window.sessionStorage.setItem("token", "new-session");
+    complete(
+      kind === "http"
+        ? response(401)
+        : response(200, {
+            code: 401,
+            message: "Expired session",
+          }),
+    );
+    await expect(pending).rejects.toMatchObject({ name: 401 });
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(notification.error).not.toHaveBeenCalled();
+    expect(window.sessionStorage.getItem("token")).toBe("new-session");
+  },
+);
