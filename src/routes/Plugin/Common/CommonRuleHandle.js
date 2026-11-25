@@ -76,6 +76,8 @@ export default class CommonRuleHandle extends Component {
       form,
     } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
+    const initialHandleType = pluginHandleList.length ? "1" : "2";
+    const handleType = getFieldValue("handleType") ?? initialHandleType;
     return (
       <FormItem
         required={true}
@@ -84,13 +86,13 @@ export default class CommonRuleHandle extends Component {
       >
         <FormItem style={{ display: "none" }}>
           {getFieldDecorator("handleType", {
-            initialValue: pluginHandleList.length ? "1" : "2",
+            initialValue: initialHandleType,
           })(<Input allowClear />)}
         </FormItem>
         <div
           className={styles.handleWrap}
           style={{
-            display: getFieldValue("handleType") === "1" ? "flex" : "none",
+            display: handleType === "1" ? "flex" : "none",
             marginTop: 0,
           }}
         >
@@ -271,7 +273,7 @@ export default class CommonRuleHandle extends Component {
         </div>
         <FormItem
           style={{
-            display: getFieldValue("handleType") === "2" ? "block" : "none",
+            display: handleType === "2" ? "block" : "none",
           }}
         >
           {getFieldDecorator("handleJSON", {
@@ -279,7 +281,7 @@ export default class CommonRuleHandle extends Component {
               {
                 validator(rule, value, callback) {
                   validateHandleJSON(
-                    getFieldValue("handleType"),
+                    getFieldValue("handleType") ?? initialHandleType,
                     value,
                     callback,
                     getIntlContent("SHENYU.PLUGIN.RULE.JSON.INVALID"),
