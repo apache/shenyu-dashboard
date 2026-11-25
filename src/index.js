@@ -44,16 +44,13 @@ const middlewares = [];
 //   middlewares.push(logger);
 // }
 
-/** get session storage */
-if (
-  window.sessionStorage.getItem("locale") === undefined ||
-  window.sessionStorage.getItem("locale") === null
-) {
-  initIntl("en-US");
-  window.sessionStorage.setItem("locale", "en-US");
-} else {
-  initIntl(window.sessionStorage.getItem("locale"));
-}
+/** get session storage, falling back to the browser language */
+const browserLocale = window.navigator.language || "";
+const locale =
+  window.sessionStorage.getItem("locale") ||
+  (browserLocale.startsWith("zh") ? "zh-CN" : "en-US");
+initIntl(locale);
+window.sessionStorage.setItem("locale", locale);
 
 emit.on("change_language", (lang) => initIntl(lang));
 

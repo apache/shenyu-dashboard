@@ -75,3 +75,27 @@ it("registers models and request dispatch before startup and renders with the li
   expect(nextDispatch).toHaveBeenCalledWith({ type: "global/resetPermission" });
   container.remove();
 });
+
+it("uses the browser's Chinese locale when no locale is stored", () => {
+  const container = document.createElement("div");
+  container.id = "root";
+  document.body.appendChild(container);
+  window.sessionStorage.removeItem("locale");
+  Object.defineProperty(window.navigator, "language", {
+    value: "zh-CN",
+    configurable: true,
+  });
+  try {
+    jest.isolateModules(() => {
+      // eslint-disable-next-line global-require
+      require("./index");
+      // eslint-disable-next-line global-require
+      const { initIntl } = require("./utils/IntlUtils");
+      expect(initIntl).toHaveBeenCalledWith("zh-CN");
+    });
+  } finally {
+    delete window.navigator.language;
+    window.sessionStorage.removeItem("locale");
+    container.remove();
+  }
+});
