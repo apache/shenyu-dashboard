@@ -20,6 +20,7 @@ import {
   act,
   fireEvent,
   render as renderView,
+  screen,
   waitFor,
 } from "@testing-library/react";
 import Rule from "./Rule";
@@ -28,7 +29,7 @@ jest.mock("react-redux", () => ({ connect: () => (component) => component }));
 jest.mock("../../../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
 jest.mock("./RuleCopy", () => () => null);
 
-describe("Divide Rules form integration", () => {
+describe("Rules form integration", () => {
   let container;
   let view;
   let onSave;
@@ -178,5 +179,56 @@ describe("Divide Rules form integration", () => {
     expect(document.body.textContent).not.toContain("CANARY.ADD_CONFIG");
     act(() => complete());
     expect(document.body.textContent).toContain("CANARY.ADD_CONFIG");
+  });
+  it("shows WAF handler fields when the schema arrives without adding a condition", async () => {
+    let complete;
+    render({ permission: "reject", statusCode: "403" }, "waf", (request) => {
+      if (request.type === "pluginHandle/fetchByPluginId") {
+        complete = () =>
+          request.payload.callBack(
+            [
+              [
+                {
+                  field: "permission",
+                  label: "permission",
+                  dataType: 3,
+                  value: "reject",
+                  dictOptions: [{ dictValue: "reject", dictName: "Reject" }],
+                },
+                {
+                  field: "statusCode",
+                  label: "statusCode",
+                  dataType: 2,
+                  value: "403",
+                },
+              ],
+            ],
+            false,
+          );
+      } else {
+        dispatch(request);
+      }
+    });
+
+    expect(screen.queryByPlaceholderText("statusCode")).toBeNull();
+    act(() => complete());
+
+    const statusCode = screen.getByPlaceholderText("statusCode");
+    const handler = statusCode.closest(".handleWrap");
+    expect(handler).not.toBeNull();
+    expect(getComputedStyle(handler).display).toBe("flex");
+    expect(handler.textContent).toContain("Reject (permission)");
+    await act(async () => {
+      fireEvent.change(statusCode, { target: { value: "429" } });
+    });
+    await submit();
+
+    expect(onSave).toHaveBeenCalledTimes(1);
+    const saved = onSave.mock.calls[0][0];
+    expect(JSON.parse(saved.handle)).toEqual({
+      permission: "reject",
+      statusCode: "429",
+    });
+    expect(saved.ruleConditions).toHaveLength(1);
   });
 });
