@@ -44,13 +44,13 @@ const middlewares = [];
 //   middlewares.push(logger);
 // }
 
-/** get session storage, falling back to the browser language */
+/** get the stored locale, falling back to the browser language */
 const browserLocale = window.navigator.language || "";
 const locale =
-  window.sessionStorage.getItem("locale") ||
+  window.localStorage.getItem("locale") ||
   (browserLocale.startsWith("zh") ? "zh-CN" : "en-US");
 initIntl(locale);
-window.sessionStorage.setItem("locale", locale);
+window.localStorage.setItem("locale", locale);
 
 emit.on("change_language", (lang) => initIntl(lang));
 

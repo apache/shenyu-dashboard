@@ -85,8 +85,7 @@ export default class RelateMetadata extends Component {
   render() {
     const { id, authName, handleCancel, auth, dataList, language } = this.props;
     const { authPathDTOList, validationError } = this.state;
-    const locale =
-      language || window.sessionStorage.getItem("locale") || "en-US";
+    const locale = language || window.localStorage.getItem("locale") || "en-US";
     return (
       <LocaleProvider locale={locale.toLowerCase() === "en-us" ? enUS : zhCN}>
         <Modal

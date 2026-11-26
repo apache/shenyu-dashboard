@@ -62,8 +62,8 @@ export default class Plugin extends Component {
       role: "",
       enabled: null,
       popup: "",
-      localeName: window.sessionStorage.getItem("locale")
-        ? window.sessionStorage.getItem("locale")
+      localeName: window.localStorage.getItem("locale")
+        ? window.localStorage.getItem("locale")
         : "en-US",
       columns: [],
     };

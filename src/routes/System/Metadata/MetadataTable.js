@@ -31,7 +31,7 @@ export default function MetadataTable({
   onPageSizeChange,
   ...props
 }) {
-  const locale = language || window.sessionStorage.getItem("locale") || "en-US";
+  const locale = language || window.localStorage.getItem("locale") || "en-US";
   return (
     <LocaleProvider locale={locale.toLowerCase() === "en-us" ? enUS : zhCN}>
       <Table

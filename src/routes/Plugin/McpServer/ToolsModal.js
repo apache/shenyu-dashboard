@@ -894,8 +894,7 @@ class AddModal extends Component {
     // Use description from handle if available, otherwise use from props
     const finalDescription = handleDescription || description;
 
-    const locale =
-      language || window.sessionStorage.getItem("locale") || "en-US";
+    const locale = language || window.localStorage.getItem("locale") || "en-US";
     const initValues = {
       name,
       description: finalDescription,

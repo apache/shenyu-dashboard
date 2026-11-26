@@ -52,8 +52,8 @@ export default class Namespace extends Component {
       // eslint-disable-next-line react/no-unused-state
       enabled: null,
       popup: "",
-      localeName: window.sessionStorage.getItem("locale")
-        ? window.sessionStorage.getItem("locale")
+      localeName: window.localStorage.getItem("locale")
+        ? window.localStorage.getItem("locale")
         : "en-US",
       columns: [],
     };

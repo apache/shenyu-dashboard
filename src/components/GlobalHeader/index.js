@@ -115,8 +115,8 @@ class GlobalHeader extends PureComponent {
           </Dropdown.Item>
         </Dropdown.Menu>
       ),
-      localeName: window.sessionStorage.getItem("locale")
-        ? window.sessionStorage.getItem("locale")
+      localeName: window.localStorage.getItem("locale")
+        ? window.localStorage.getItem("locale")
         : "en-US",
       userName: window.sessionStorage.getItem("userName"),
       visible: false,
@@ -239,14 +239,14 @@ class GlobalHeader extends PureComponent {
     const { changeLocalName } = this.props;
     if (value.key === "0") {
       emit.emit("change_language", "en-US");
-      window.sessionStorage.setItem("locale", "en-US");
+      window.localStorage.setItem("locale", "en-US");
       this.setState({
         localeName: "en-US",
       });
       changeLocalName("en-US");
     } else {
       emit.emit("change_language", "zh-CN");
-      window.sessionStorage.setItem("locale", "zh-CN");
+      window.localStorage.setItem("locale", "zh-CN");
       this.setState({
         localeName: "zh-CN",
       });

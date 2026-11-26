@@ -371,7 +371,7 @@ export default class Resource extends Component {
       global = {},
     } = this.props;
     const language =
-      global.language || sessionStorage.getItem("locale") || "en-US";
+      global.language || localStorage.getItem("locale") || "en-US";
     const { selectedRowKeys, buttons, popup } = this.state;
     const buttonColumns = [
       {

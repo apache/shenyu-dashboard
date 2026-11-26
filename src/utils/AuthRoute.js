@@ -119,7 +119,7 @@ export function getAuthMenus(plugins, menuTree, permissions, beginCache) {
     authMenusCacheSource = { plugins, menuTree, permissionMenu };
   }
   if (beginCache && authMenusCache && Object.keys(authMenusCache).length > 0) {
-    let locale = window.sessionStorage.getItem("locale");
+    let locale = window.localStorage.getItem("locale");
     let authCacheMenus = authMenusCache[locale];
     if (authCacheMenus && authCacheMenus.length > 0) {
       return authCacheMenus;
@@ -221,7 +221,7 @@ export function getAuthMenus(plugins, menuTree, permissions, beginCache) {
   }
 
   if (beginCache) {
-    let locale = window.sessionStorage.getItem("locale");
+    let locale = window.localStorage.getItem("locale");
     authMenusCache[locale] = authMenus;
   }
 

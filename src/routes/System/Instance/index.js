@@ -60,8 +60,8 @@ export default class Instance extends Component {
       selectedRowKeys: [],
       instanceIp: "",
       instanceType: null,
-      localeName: window.sessionStorage.getItem("locale")
-        ? window.sessionStorage.getItem("locale")
+      localeName: window.localStorage.getItem("locale")
+        ? window.localStorage.getItem("locale")
         : "en-US",
       columns: [],
     };

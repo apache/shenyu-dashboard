@@ -50,8 +50,8 @@ export default class ShenYuDict extends Component {
       dictName: "",
       dictCode: "",
       popup: "",
-      localeName: window.sessionStorage.getItem("locale")
-        ? window.sessionStorage.getItem("locale")
+      localeName: window.localStorage.getItem("locale")
+        ? window.localStorage.getItem("locale")
         : "en-US",
       columns: [],
     };

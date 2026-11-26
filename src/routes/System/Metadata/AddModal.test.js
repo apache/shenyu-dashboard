@@ -235,12 +235,12 @@ it.each(["en-US", "en-Us"])(
 );
 
 it("uses the saved locale before a global language has been selected", async () => {
-  window.sessionStorage.setItem("locale", "zh-CN");
+  window.localStorage.setItem("locale", "zh-CN");
   try {
     setup({ platform: { rpcTypeEnums: [] } });
     fireEvent.click(screen.getByRole("combobox"));
     await screen.findByText("暂无数据");
   } finally {
-    window.sessionStorage.removeItem("locale");
+    window.localStorage.removeItem("locale");
   }
 });

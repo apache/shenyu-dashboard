@@ -62,8 +62,7 @@ class AddModal extends Component {
       parameterTypes = "",
       enabled = true,
     } = this.props;
-    const locale =
-      language || window.sessionStorage.getItem("locale") || "en-US";
+    const locale = language || window.localStorage.getItem("locale") || "en-US";
     const initValues = {
       appName,
       serviceName,

@@ -35,7 +35,7 @@ const PolicyTimePicker = React.forwardRef(
       value,
       onChange,
       onBlur,
-      language = sessionStorage.getItem("locale") || "en-US",
+      language = localStorage.getItem("locale") || "en-US",
       ...props
     },
     ref,

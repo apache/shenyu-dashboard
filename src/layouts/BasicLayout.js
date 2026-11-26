@@ -127,8 +127,8 @@ class BasicLayout extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      localeName: window.sessionStorage.getItem("locale")
-        ? window.sessionStorage.getItem("locale")
+      localeName: window.localStorage.getItem("locale")
+        ? window.localStorage.getItem("locale")
         : "en-US",
       pluginsLoaded: false,
     };

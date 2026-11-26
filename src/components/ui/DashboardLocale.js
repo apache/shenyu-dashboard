@@ -22,7 +22,7 @@ import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import { connect } from "react-redux";
 
 function DashboardLocale({ language, children }) {
-  const locale = language || sessionStorage.getItem("locale") || "en-US";
+  const locale = language || localStorage.getItem("locale") || "en-US";
   return (
     <LocaleProvider locale={locale === "zh-CN" ? zhCN : enUS}>
       {children}

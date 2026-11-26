@@ -39,7 +39,7 @@ function renderSelect(language = "") {
   return store;
 }
 
-afterEach(() => sessionStorage.removeItem("locale"));
+afterEach(() => localStorage.removeItem("locale"));
 
 it("updates empty Select text when the dashboard language changes", () => {
   const store = renderSelect("en-US");
@@ -49,7 +49,7 @@ it("updates empty Select text when the dashboard language changes", () => {
 });
 
 it("uses the saved language before the model initializes", () => {
-  sessionStorage.setItem("locale", "zh-CN");
+  localStorage.setItem("locale", "zh-CN");
   renderSelect();
   expect(screen.getByText("暂无数据")).toBeTruthy();
 });
