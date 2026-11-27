@@ -78,7 +78,7 @@ export class ProxySelectorCopyComponent extends Component {
   }
 
   getAllSelectors = async () => {
-    const { currentNamespaceId } = this.props;
+    const { currentNamespaceId, discoveryType } = this.props;
     const {
       data: { dataList: selectors = [] },
     } = await fetchProxySelector({
@@ -86,7 +86,11 @@ export class ProxySelectorCopyComponent extends Component {
       pageSize: 9999,
       namespaceId: currentNamespaceId,
     });
-    this.setState({ selectorList: selectors });
+    this.setState({
+      selectorList: selectors.filter(
+        (selector) => selector.discovery?.type === discoveryType,
+      ),
+    });
   };
 
   render() {

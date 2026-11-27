@@ -47,7 +47,7 @@ import {
   formatTimeString,
 } from "../../../utils/utils";
 import { checkRulePattern } from "../../../utils/regExpRule";
-import DiscoveryImportModal from "../Discovery/DiscoveryImportModal";
+import DiscoveryLookupModal from "../Discovery/DiscoveryLookupModal";
 import { getUpstreamLabels } from "../../../utils/upstreamLabels";
 import EditableFormTable from "../Discovery/DiscoveryUpstreamTable.js";
 import { buildHandle } from "./selectorHandle";
@@ -993,7 +993,7 @@ class AddModal extends Component {
   };
 
   handleDiscoveryValueChange = (value) => {
-    this.setState({ selectedDiscoveryValue: value });
+    this.setState({ selectedDiscoveryValue: value, importedDiscoveryId: "" });
   };
 
   renderOperatorOptions = (operators, paramType) => {
@@ -1726,15 +1726,17 @@ class AddModal extends Component {
                   key="2"
                 >
                   {this.renderDiscoveryConfig()}
-                  <DiscoveryImportModal
-                    pluginName={this.props.pluginName}
-                    disabled={!isAdd}
-                    visible={this.state.showDiscoveryImportModal}
-                    onOk={this.handleImportDiscoveryConfig}
-                    onCancel={() => {
-                      this.setState({ showDiscoveryImportModal: false });
-                    }}
-                  />
+                  {this.state.showDiscoveryImportModal && (
+                    <DiscoveryLookupModal
+                      pluginName={this.props.pluginName}
+                      initialType={this.state.selectedDiscoveryValue}
+                      title="SHENYU.DISCOVERY.SELECTOR.CONFIG.IMPORT.CONFIRM"
+                      onOk={this.handleImportDiscoveryConfig}
+                      onCancel={() => {
+                        this.setState({ showDiscoveryImportModal: false });
+                      }}
+                    />
+                  )}
                 </TabPane>
               </Tabs>
             ) : (

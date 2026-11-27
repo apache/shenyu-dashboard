@@ -185,3 +185,34 @@ it("carries the displayed child page size when reloading selectors", () => {
   component.getAllSelectors(1, 20, component.props.plugins);
   expect(dispatch.mock.calls[0][0].payload.rulePageSize).toBe(50);
 });
+
+it("opens each divide selector with the upstreams from its own detail response", () => {
+  const { component, dispatch } = makeSearchComponent();
+  for (const id of ["selector-a", "selector-b"]) {
+    dispatch.mockClear();
+    component.editSelector({ id });
+    const action = dispatch.mock.calls[0][0];
+    expect(action.type).toBe("common/fetchSeItem");
+    expect(action.payload).toEqual({ id, namespaceId: "namespace-1" });
+    const url = `${id}.example:8080`;
+    action.callback({
+      id,
+      discoveryVO: { discoveryType: "local" },
+      discoveryUpstreams: [{ id: `upstream-${id}`, url, props: "{}" }],
+    });
+    expect(component.state.popup.props.discoveryUpstreams).toEqual([
+      expect.objectContaining({ url }),
+    ]);
+    expect(dispatch).toHaveBeenCalledTimes(1);
+  }
+});
+
+it("closes the selector editor when the active namespace changes", () => {
+  const { component } = makeSearchComponent();
+  component.state.popup = "open";
+  component.componentDidUpdate({
+    ...component.props,
+    currentNamespaceId: "old-namespace",
+  });
+  expect(component.state.popup).toBe("");
+});

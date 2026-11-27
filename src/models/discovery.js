@@ -23,7 +23,6 @@ import {
   getDiscoveryTypeEnums,
   postDiscoveryInsertOrUpdate,
   updateProxySelector,
-  getDiscovery,
   refreshProxySelector,
   deleteDiscovery,
   bindingSelector,
@@ -37,7 +36,6 @@ export default {
   state: {
     typeEnums: [],
     proxySelectorList: [],
-    chosenType: "",
     totalPage: 0,
     currentPage: 1,
     pageSize: 6,
@@ -135,23 +133,6 @@ export default {
       }
     },
 
-    *fetchDiscovery(params, { call, put }) {
-      const { payload, callback } = params;
-      const json = yield call(getDiscovery, payload);
-      if (json.code === 200) {
-        const { data } = json;
-        if (callback) {
-          callback(data);
-        }
-        yield put({
-          type: "saveConfig",
-          payload: data,
-        });
-      } else {
-        message.warn(json.message);
-      }
-    },
-
     *refresh(params, { call }) {
       const { payload } = params;
       const json = yield call(refreshProxySelector, payload);
@@ -219,12 +200,6 @@ export default {
       };
     },
 
-    saveGlobalType(state, { payload }) {
-      return {
-        ...state,
-        chosenType: payload.chosenType,
-      };
-    },
     setCurrentPage(state, { payload }) {
       return {
         ...state,

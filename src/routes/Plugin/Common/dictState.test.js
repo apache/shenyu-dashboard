@@ -29,7 +29,7 @@ jest.mock("../../../utils/IntlUtils", () => ({
 jest.mock("./SelectorCopy", () => () => null);
 jest.mock("./RuleCopy", () => () => null);
 jest.mock("../Discovery/DiscoveryUpstreamTable.js", () => () => null);
-jest.mock("../Discovery/DiscoveryImportModal", () => (props) => {
+jest.mock("../Discovery/DiscoveryLookupModal", () => (props) => {
   importModalProps = props;
   return null;
 });
@@ -156,6 +156,10 @@ describe("Selector discovery import", () => {
     fireEvent.click(
       screen.getByText("SHENYU.DISCOVERY.SELECTOR.CONFIG.DISCOVERY"),
     );
+    expect(importModalProps).toBeUndefined();
+    fireEvent.click(
+      screen.getByText("SHENYU.DISCOVERY.SELECTOR.CONFIG.IMPORT"),
+    );
     expect(importModalProps && importModalProps.onOk).toBeInstanceOf(Function);
     const importConfig = (props) =>
       act(() =>
@@ -173,6 +177,10 @@ describe("Selector discovery import", () => {
       target: { value: "EDITED" },
     });
 
+    fireEvent.click(
+      screen.getByText("SHENYU.DISCOVERY.SELECTOR.CONFIG.IMPORT"),
+    );
+    expect(importModalProps.initialType).toBe("nacos");
     importConfig('{"namespace":"public","groupName":"SECOND"}');
     expect(screen.queryByText("sessionTimeout")).toBeNull();
     expect(screen.getByText("namespace")).toBeTruthy();
@@ -200,6 +208,9 @@ describe("Selector discovery import", () => {
     resolve("discoveryMode", []);
     fireEvent.click(
       screen.getByText("SHENYU.DISCOVERY.SELECTOR.CONFIG.DISCOVERY"),
+    );
+    fireEvent.click(
+      screen.getByText("SHENYU.DISCOVERY.SELECTOR.CONFIG.IMPORT"),
     );
     expect(importModalProps && importModalProps.onOk).toBeInstanceOf(Function);
     expect(() =>

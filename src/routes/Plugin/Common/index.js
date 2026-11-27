@@ -112,7 +112,7 @@ export default class Common extends Component {
         type: "common/resetData",
       });
 
-      this.setState({ selectorPage: 1 }, () => {
+      this.setState({ selectorPage: 1, popup: "" }, () => {
         if (plugins && plugins.length > 0) {
           this.getAllSelectors(1, selectorPageSize, plugins);
         } else {
@@ -135,6 +135,7 @@ export default class Common extends Component {
       });
     }
     if (prevProps.currentNamespaceId !== currentNamespaceId) {
+      this.closeModal();
       if (plugins) {
         this.getAllSelectors(selectorPage, selectorPageSize, plugins);
       }

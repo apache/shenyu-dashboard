@@ -32,6 +32,7 @@ import { message } from "../../../components/ui/feedback";
 import { serializeUpstreamProps } from "../../../utils/upstreamLabels";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import discoveryStyles from "./discovery.module.less";
+import DiscoveryLookupModal from "./DiscoveryLookupModal";
 import DiscoveryConfigModal from "./DiscoveryConfigModal";
 import ConnectedProxySelectorModal from "./ProxySelectorModal";
 import { DiscoveryCard } from "./DiscoveryCard";
@@ -50,6 +51,7 @@ export default class DiscoveryProxy extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      discoveryDics: [],
       searchKey: "",
       cardData: {
         discoveryType: "",
@@ -104,14 +106,15 @@ export default class DiscoveryProxy extends Component {
       payload: {
         type: "discoveryMode",
         callBack: (dics) => {
-          this.state.discoveryDics = dics;
+          this.setState({ discoveryDics: dics });
         },
       },
     });
   }
 
   componentDidUpdate(prevProps) {
-    const { plugins } = this.props;
+    const { plugins, currentNamespaceId } = this.props;
+    if (prevProps.currentNamespaceId !== currentNamespaceId) this.closeModal();
     if (plugins && plugins !== prevProps.plugins) {
       this.syncPluginEnabled(plugins);
     }
@@ -207,57 +210,55 @@ export default class DiscoveryProxy extends Component {
     });
   };
 
-  addConfiguration = () => {
-    const { dispatch, typeEnums, currentNamespaceId } = this.props;
+  openDiscoveryLookup = (title, onOk, canCreate) => {
+    const { pluginName } = this.state;
+    this.setState({
+      popup: (
+        <DiscoveryLookupModal
+          pluginName={pluginName}
+          title={title}
+          canCreate={canCreate}
+          onOk={onOk}
+          onCancel={this.closeModal}
+        />
+      ),
+    });
+  };
+
+  addConfiguration = (config, selectedType) => {
+    const { dispatch, currentNamespaceId } = this.props;
     const { discoveryDics, pluginName } = this.state;
-    dispatch({
-      type: "discovery/fetchDiscovery",
-      payload: {
-        pluginName,
-        level: "1",
-        namespaceId: currentNamespaceId,
-      },
-      callback: (discoveryConfigList) => {
-        let discoveryId = "";
-        let isSetConfig = false;
-        if (discoveryConfigList !== null) {
-          discoveryId = discoveryConfigList.id;
-          isSetConfig = true;
-        }
-        this.setState({
-          popup: (
-            <DiscoveryConfigModal
-              data={discoveryConfigList}
-              typeEnums={typeEnums}
-              isSetConfig={isSetConfig}
-              discoveryDicts={discoveryDics}
-              handleConfigDelete={this.handleConfigDelete}
-              handleOk={(values) => {
-                const { name, serverList, props, discoveryType } = values;
-                dispatch({
-                  type: "discovery/set",
-                  payload: {
-                    type: discoveryType,
-                    serverList,
-                    name,
-                    props,
-                    pluginName,
-                    level: 1,
-                    id: discoveryId,
-                    namespaceId: currentNamespaceId,
-                  },
-                  callback: () => {
-                    this.closeModal();
-                  },
-                });
-              }}
-              handleCancel={() => {
+    this.setState({
+      popup: (
+        <DiscoveryConfigModal
+          data={config || { type: selectedType }}
+          isSetConfig={Boolean(config)}
+          discoveryDicts={discoveryDics}
+          handleConfigDelete={this.handleConfigDelete}
+          handleOk={(values) => {
+            const { name, serverList, props, discoveryType } = values;
+            dispatch({
+              type: "discovery/set",
+              payload: {
+                type: discoveryType,
+                serverList,
+                name,
+                props,
+                pluginName,
+                level: 1,
+                id: config?.id || "",
+                namespaceId: currentNamespaceId,
+              },
+              callback: () => {
                 this.closeModal();
-              }}
-            />
-          ),
-        });
-      },
+              },
+            });
+          }}
+          handleCancel={() => {
+            this.closeModal();
+          }}
+        />
+      ),
     });
   };
 
@@ -290,103 +291,78 @@ export default class DiscoveryProxy extends Component {
     this.onPageChange(1, this.props.pageSize);
   };
 
-  addSelector = () => {
-    const {
-      dispatch,
-      currentPage,
-      pageSize,
-      plugins,
-      typeEnums,
-      currentNamespaceId,
-    } = this.props;
+  addSelector = (config, selectedType) => {
+    const { dispatch, currentPage, pageSize, plugins, currentNamespaceId } =
+      this.props;
     const { cardData, discoveryDics, pluginName } = this.state;
     const plugin = this.getPlugin(plugins, pluginName);
-    dispatch({
-      type: "discovery/fetchDiscovery",
-      payload: {
-        pluginName,
-        level: "1",
-        namespaceId: currentNamespaceId,
-      },
-      callback: (discoveryConfigList) => {
-        let discoveryType = "";
-        let id = null;
-        let isSetConfig = false;
-        if (discoveryConfigList !== null) {
-          discoveryType = discoveryConfigList.type;
-          id = discoveryConfigList.id;
-          isSetConfig = true;
-        }
-        this.setState({
-          popup: (
-            <ConnectedProxySelectorModal
-              pluginId={plugin.id}
-              recordCount={cardData.discoveryUpstreams.length}
-              typeEnums={typeEnums}
-              data={cardData}
-              discoveryUpstreams={cardData.discoveryUpstreams}
-              discoveryType={discoveryType}
-              isAdd={true}
-              isSetConfig={isSetConfig}
-              discoveryDicts={discoveryDics}
-              handleOk={(values) => {
-                const {
-                  name,
-                  forwardPort,
-                  props,
-                  listenerNode,
-                  handler,
-                  discoveryProps,
+    this.setState({
+      popup: (
+        <ConnectedProxySelectorModal
+          pluginId={plugin.id}
+          recordCount={cardData.discoveryUpstreams.length}
+          data={cardData}
+          discoveryUpstreams={cardData.discoveryUpstreams}
+          discoveryType={selectedType}
+          isAdd={true}
+          isSetConfig={Boolean(config)}
+          discoveryDicts={discoveryDics}
+          handleOk={(values) => {
+            const {
+              name,
+              forwardPort,
+              props,
+              listenerNode,
+              handler,
+              discoveryProps,
+              serverList,
+              selectedDiscoveryType,
+              upstreams,
+            } = values;
+            const upstreamsWithProps = upstreams.map((item) => ({
+              protocol: item.protocol,
+              url: item.url,
+              status: parseInt(item.status, 10),
+              weight: item.weight,
+              startupTime: item.startupTime,
+              props: serializeUpstreamProps(item),
+            }));
+            dispatch({
+              type: "discovery/add",
+              payload: {
+                name,
+                forwardPort,
+                type: pluginName,
+                props,
+                listenerNode,
+                handler,
+                pluginName,
+                discovery: {
+                  id: config?.id || null,
+                  level: "0", // 0 selector
+                  pluginName,
+                  discoveryType: selectedDiscoveryType,
                   serverList,
-                  selectedDiscoveryType,
-                  upstreams,
-                } = values;
-                const upstreamsWithProps = upstreams.map((item) => ({
-                  protocol: item.protocol,
-                  url: item.url,
-                  status: parseInt(item.status, 10),
-                  weight: item.weight,
-                  startupTime: item.startupTime,
-                  props: serializeUpstreamProps(item),
-                }));
-                dispatch({
-                  type: "discovery/add",
-                  payload: {
-                    name,
-                    forwardPort,
-                    type: pluginName,
-                    props,
-                    listenerNode,
-                    handler,
-                    pluginName,
-                    discovery: {
-                      id,
-                      level: "0", // 0 selector
-                      pluginName,
-                      discoveryType: selectedDiscoveryType,
-                      serverList,
-                      props: discoveryProps,
-                    },
-                    discoveryUpstreams: upstreamsWithProps,
-                    namespaceId: currentNamespaceId,
-                  },
-                  callback: () => {
-                    this.closeModal();
-                  },
-                  fetchValue: {
-                    currentPage,
-                    pageSize,
-                    namespaceId: currentNamespaceId,
-                  },
-                });
-              }}
-              handleCancel={() => {
+                  props: discoveryProps,
+                },
+                discoveryUpstreams: upstreamsWithProps,
+                namespaceId: currentNamespaceId,
+              },
+              callback: () => {
                 this.closeModal();
-              }}
-            />
-          ),
-        });
-      },
+              },
+              fetchValue: {
+                currentPage,
+                pageSize,
+                namespaceId: currentNamespaceId,
+              },
+            });
+          }}
+          handleCancel={() => {
+            this.closeModal();
+          }}
+        />
+      ),
     });
   };
 
@@ -394,11 +370,9 @@ export default class DiscoveryProxy extends Component {
     const {
       dispatch,
       proxySelectorList,
-      discoveryType,
       currentPage,
       pageSize,
       plugins,
-      typeEnums,
       currentNamespaceId,
     } = this.props;
     const { discoveryDics, pluginName } = this.state;
@@ -432,7 +406,6 @@ export default class DiscoveryProxy extends Component {
           recordCount={updateArray.length}
           discoveryUpstreams={updateArray}
           discoveryType={data.discovery.type}
-          typeEnums={typeEnums}
           isAdd={false}
           isSetConfig={isSetConfig}
           data={data}
@@ -469,7 +442,7 @@ export default class DiscoveryProxy extends Component {
                 handler,
                 pluginName,
                 discovery: {
-                  discoveryType,
+                  discoveryType: data.discovery.type,
                   serverList,
                   props: discoveryProps,
                 },
@@ -604,7 +577,13 @@ export default class DiscoveryProxy extends Component {
                   <Button
                     icon={icon ? <ResourceIcon type={icon} /> : undefined}
                     type="primary"
-                    onClick={this.addConfiguration}
+                    onClick={() =>
+                      this.openDiscoveryLookup(
+                        "SHENYU.PLUGIN.SELECTOR.LIST.CONFIGURATION",
+                        this.addConfiguration,
+                        (type) => type !== "local",
+                      )
+                    }
                   >
                     {getIntlContent(
                       "SHENYU.PLUGIN.SELECTOR.LIST.CONFIGURATION",
@@ -646,7 +625,13 @@ export default class DiscoveryProxy extends Component {
                   <Button
                     icon={icon ? <ResourceIcon type={icon} /> : undefined}
                     type="primary"
-                    onClick={this.addSelector}
+                    onClick={() =>
+                      this.openDiscoveryLookup(
+                        "SHENYU.PLUGIN.SELECTOR.LIST.ADD",
+                        this.addSelector,
+                        () => true,
+                      )
+                    }
                     style={{ marginRight: "20px" }}
                   >
                     {getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.ADD")}
