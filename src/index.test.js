@@ -80,7 +80,7 @@ it("uses the browser's Chinese locale when no locale is stored", () => {
   const container = document.createElement("div");
   container.id = "root";
   document.body.appendChild(container);
-  window.sessionStorage.removeItem("locale");
+  window.localStorage.removeItem("locale");
   Object.defineProperty(window.navigator, "language", {
     value: "zh-CN",
     configurable: true,
@@ -95,7 +95,52 @@ it("uses the browser's Chinese locale when no locale is stored", () => {
     });
   } finally {
     delete window.navigator.language;
-    window.sessionStorage.removeItem("locale");
+    window.localStorage.removeItem("locale");
+    container.remove();
+  }
+});
+
+it("keeps the stored locale choice over the browser language", () => {
+  const container = document.createElement("div");
+  container.id = "root";
+  document.body.appendChild(container);
+  window.localStorage.setItem("locale", "en-US");
+  Object.defineProperty(window.navigator, "language", {
+    value: "zh-CN",
+    configurable: true,
+  });
+  try {
+    jest.isolateModules(() => {
+      // eslint-disable-next-line global-require
+      require("./index");
+      // eslint-disable-next-line global-require
+      const { initIntl } = require("./utils/IntlUtils");
+      expect(initIntl).toHaveBeenCalledWith("en-US");
+    });
+  } finally {
+    delete window.navigator.language;
+    window.localStorage.removeItem("locale");
+    container.remove();
+  }
+});
+
+it("does not store the browser language at startup", () => {
+  const container = document.createElement("div");
+  container.id = "root";
+  document.body.appendChild(container);
+  window.localStorage.removeItem("locale");
+  Object.defineProperty(window.navigator, "language", {
+    value: "zh-CN",
+    configurable: true,
+  });
+  try {
+    jest.isolateModules(() => {
+      // eslint-disable-next-line global-require
+      require("./index");
+    });
+    expect(window.localStorage.getItem("locale")).toBeNull();
+  } finally {
+    delete window.navigator.language;
     container.remove();
   }
 });

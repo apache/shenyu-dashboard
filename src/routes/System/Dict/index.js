@@ -33,6 +33,7 @@ import styles from "./index.module.less";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
+import { getLocale } from "../../../utils/localePreference";
 
 @connect(({ shenyuDict, loading, global }) => ({
   shenyuDict,
@@ -50,9 +51,7 @@ export default class ShenYuDict extends Component {
       dictName: "",
       dictCode: "",
       popup: "",
-      localeName: window.sessionStorage.getItem("locale")
-        ? window.sessionStorage.getItem("locale")
-        : "en-US",
+      localeName: getLocale(),
       columns: [],
     };
   }

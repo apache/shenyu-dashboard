@@ -40,6 +40,7 @@ import { sortByNumber } from "../../../utils/sorter";
 import { formatJsonObject } from "../../../utils/jsonObject";
 import { refreshAuthMenus } from "../../../utils/AuthRoute";
 import { getUpdateModal, updatePluginsEnabled } from "../../../utils/plugin";
+import { getLocale } from "../../../utils/localePreference";
 
 const { Option } = Select;
 
@@ -62,9 +63,7 @@ export default class Plugin extends Component {
       role: "",
       enabled: null,
       popup: "",
-      localeName: window.sessionStorage.getItem("locale")
-        ? window.sessionStorage.getItem("locale")
-        : "en-US",
+      localeName: getLocale(),
       columns: [],
     };
   }

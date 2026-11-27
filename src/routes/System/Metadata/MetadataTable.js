@@ -21,6 +21,7 @@ import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
 import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
 import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import "@douyinfe/semi-ui/lib/es/_base/base.css";
+import { getLocale } from "../../../utils/localePreference";
 
 export default function MetadataTable({
   language,
@@ -31,7 +32,7 @@ export default function MetadataTable({
   onPageSizeChange,
   ...props
 }) {
-  const locale = language || window.sessionStorage.getItem("locale") || "en-US";
+  const locale = language || getLocale();
   return (
     <LocaleProvider locale={locale.toLowerCase() === "en-us" ? enUS : zhCN}>
       <Table

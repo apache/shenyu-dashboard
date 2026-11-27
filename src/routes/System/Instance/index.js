@@ -34,6 +34,7 @@ import styles from "./index.module.less";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { sortByDate, sortByNumber } from "../../../utils/sorter";
+import { getLocale } from "../../../utils/localePreference";
 
 const { Option } = Select;
 
@@ -60,9 +61,7 @@ export default class Instance extends Component {
       selectedRowKeys: [],
       instanceIp: "",
       instanceType: null,
-      localeName: window.sessionStorage.getItem("locale")
-        ? window.sessionStorage.getItem("locale")
-        : "en-US",
+      localeName: getLocale(),
       columns: [],
     };
   }

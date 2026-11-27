@@ -34,6 +34,7 @@ import AddTable from "./AddTable";
 import SearchContent from "./SearchContent";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
+import { getLocale } from "../../../utils/localePreference";
 
 @connect(({ auth, loading, global }) => ({
   auth,
@@ -53,9 +54,7 @@ export default class Auth extends Component {
       appKey: "",
       phone: "",
       popup: "",
-      localeName: window.sessionStorage.getItem("locale")
-        ? window.sessionStorage.getItem("locale")
-        : "en-US",
+      localeName: getLocale(),
       columns: [],
     };
   }

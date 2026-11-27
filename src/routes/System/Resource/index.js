@@ -32,6 +32,7 @@ import { getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { resetAuthMenuCache } from "../../../utils/AuthRoute";
 import styles from "./index.module.less";
+import { getLocale } from "../../../utils/localePreference";
 
 function resourceTitle(item) {
   const title = item.meta?.title || item.title || "";
@@ -370,8 +371,7 @@ export default class Resource extends Component {
       loading,
       global = {},
     } = this.props;
-    const language =
-      global.language || sessionStorage.getItem("locale") || "en-US";
+    const language = global.language || getLocale();
     const { selectedRowKeys, buttons, popup } = this.state;
     const buttonColumns = [
       {

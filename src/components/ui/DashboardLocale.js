@@ -20,9 +20,10 @@ import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
 import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
 import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import { connect } from "react-redux";
+import { getLocale } from "../../utils/localePreference";
 
 function DashboardLocale({ language, children }) {
-  const locale = language || sessionStorage.getItem("locale") || "en-US";
+  const locale = language || getLocale();
   return (
     <LocaleProvider locale={locale === "zh-CN" ? zhCN : enUS}>
       {children}

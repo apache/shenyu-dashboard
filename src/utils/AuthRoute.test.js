@@ -171,14 +171,14 @@ it("rebuilds cached sidebar entries when the resource menu tree changes", () => 
 it("keeps locale-specific caches consistent after their permission source changes", () => {
   const plugins = [];
   const tree = [];
-  window.sessionStorage.setItem("locale", "en-US");
+  window.localStorage.setItem("locale", "en-US");
   getAuthMenus(plugins, tree, sidebarPermissions, true);
-  window.sessionStorage.setItem("locale", "zh-CN");
+  window.localStorage.setItem("locale", "zh-CN");
   const emptyPermissions = { menu: [] };
   expect(getAuthMenus(plugins, tree, emptyPermissions, true)).toEqual([]);
-  window.sessionStorage.setItem("locale", "en-US");
+  window.localStorage.setItem("locale", "en-US");
   expect(getAuthMenus(plugins, tree, emptyPermissions, true)).toEqual([]);
-  window.sessionStorage.removeItem("locale");
+  window.localStorage.removeItem("locale");
 });
 
 it("removes parent menus when none of their children are authorized", () => {

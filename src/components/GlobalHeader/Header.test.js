@@ -164,7 +164,7 @@ it("uses the canonical English locale from the native language menu", async () =
   fireEvent.click(screen.getByRole("button", { name: "Language" }));
   fireEvent.click(await screen.findByText("English"));
   expect(h.changeLocalName).toHaveBeenCalledWith("en-US");
-  expect(sessionStorage.getItem("locale")).toBe("en-US");
+  expect(localStorage.getItem("locale")).toBe("en-US");
 });
 it("submits a validated password change and logs out only after success", async () => {
   sessionStorage.setItem("userId", "fixture-id");

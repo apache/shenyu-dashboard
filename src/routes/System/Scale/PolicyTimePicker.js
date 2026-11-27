@@ -22,6 +22,7 @@ import DatePicker from "@douyinfe/semi-ui/lib/es/datePicker";
 import LocaleProvider from "@douyinfe/semi-ui/lib/es/locale/localeProvider";
 import enUS from "@douyinfe/semi-ui/lib/es/locale/source/en_US";
 import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
+import { getLocale } from "../../../utils/localePreference";
 
 export function parsePolicyTime(value) {
   if (!value) return undefined;
@@ -30,16 +31,7 @@ export function parsePolicyTime(value) {
 }
 
 const PolicyTimePicker = React.forwardRef(
-  (
-    {
-      value,
-      onChange,
-      onBlur,
-      language = sessionStorage.getItem("locale") || "en-US",
-      ...props
-    },
-    ref,
-  ) => {
+  ({ value, onChange, onBlur, language = getLocale(), ...props }, ref) => {
     const invalidateInput = (event) => {
       if (
         event.target.tagName !== "INPUT" ||

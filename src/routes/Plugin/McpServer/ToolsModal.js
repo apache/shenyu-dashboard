@@ -35,6 +35,7 @@ import { message } from "../../../components/ui/feedback";
 import styles from "../index.module.less";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { clipboardCopy } from "../../../utils/utils";
+import { getLocale } from "../../../utils/localePreference";
 
 const FormItem = Form.Slot;
 const { Option } = Select;
@@ -894,8 +895,7 @@ class AddModal extends Component {
     // Use description from handle if available, otherwise use from props
     const finalDescription = handleDescription || description;
 
-    const locale =
-      language || window.sessionStorage.getItem("locale") || "en-US";
+    const locale = language || getLocale();
     const initValues = {
       name,
       description: finalDescription,

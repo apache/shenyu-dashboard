@@ -30,7 +30,7 @@ jest.mock("../../../components/_utils/utils", () => ({
   defaultNamespaceId: "default-namespace",
 }));
 
-afterEach(() => sessionStorage.removeItem("locale"));
+afterEach(() => localStorage.removeItem("locale"));
 
 it.each([
   ["zh-CN", "确定", "en-US", "Confirm"],
@@ -41,7 +41,7 @@ it.each([
 ])(
   "initializes the nested calendar from saved locale %s and updates an open calendar",
   async (savedLocale, initialConfirm, nextLanguage, nextConfirm) => {
-    if (savedLocale !== null) sessionStorage.setItem("locale", savedLocale);
+    if (savedLocale !== null) localStorage.setItem("locale", savedLocale);
     let model;
     jest.isolateModules(() => {
       // Import after setting storage, as on application startup.

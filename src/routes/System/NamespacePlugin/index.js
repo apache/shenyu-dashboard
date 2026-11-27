@@ -41,6 +41,7 @@ import {
   getUpdateModal,
   updateNamespacePluginsEnabled,
 } from "../../../utils/namespacePlugin";
+import { getLocale } from "../../../utils/localePreference";
 
 const { Option } = Select;
 
@@ -61,9 +62,7 @@ export default class NamespacePlugin extends Component {
       name: "",
       enabled: null,
       popup: "",
-      localeName: window.sessionStorage.getItem("locale")
-        ? window.sessionStorage.getItem("locale")
-        : "en-US",
+      localeName: getLocale(),
       columns: [],
     };
   }
