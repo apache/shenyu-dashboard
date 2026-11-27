@@ -22,6 +22,7 @@ import { Redirect, Route } from "../runtime/router";
 import { filterTree } from "./utils";
 import { getIntlContent } from "./IntlUtils";
 import { getMenuData } from "../common/menu";
+import { getLocale } from "./localePreference";
 
 // not check route url
 const notCheckRouteUrl = ["/", "/home"];
@@ -119,7 +120,7 @@ export function getAuthMenus(plugins, menuTree, permissions, beginCache) {
     authMenusCacheSource = { plugins, menuTree, permissionMenu };
   }
   if (beginCache && authMenusCache && Object.keys(authMenusCache).length > 0) {
-    let locale = window.localStorage.getItem("locale");
+    let locale = getLocale();
     let authCacheMenus = authMenusCache[locale];
     if (authCacheMenus && authCacheMenus.length > 0) {
       return authCacheMenus;
@@ -221,7 +222,7 @@ export function getAuthMenus(plugins, menuTree, permissions, beginCache) {
   }
 
   if (beginCache) {
-    let locale = window.localStorage.getItem("locale");
+    let locale = getLocale();
     authMenusCache[locale] = authMenus;
   }
 

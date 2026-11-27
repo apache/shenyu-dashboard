@@ -23,6 +23,7 @@ import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import "@douyinfe/semi-ui/lib/es/_base/base.css";
 import TableTransferComponent from "./TableTransfer";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import { getLocale } from "../../../utils/localePreference";
 
 const grantSignature = (rows) =>
   rows
@@ -85,7 +86,7 @@ export default class RelateMetadata extends Component {
   render() {
     const { id, authName, handleCancel, auth, dataList, language } = this.props;
     const { authPathDTOList, validationError } = this.state;
-    const locale = language || window.localStorage.getItem("locale") || "en-US";
+    const locale = language || getLocale();
     return (
       <LocaleProvider locale={locale.toLowerCase() === "en-us" ? enUS : zhCN}>
         <Modal

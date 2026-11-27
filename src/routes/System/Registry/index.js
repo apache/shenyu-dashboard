@@ -32,6 +32,7 @@ import { message } from "../../../components/ui/feedback";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
+import { getLocale } from "../../../utils/localePreference";
 
 @connect(({ registry, loading, global }) => ({
   registry,
@@ -48,9 +49,7 @@ export default class Registry extends Component {
       registryId: "",
       address: "",
       popup: "",
-      localeName: window.localStorage.getItem("locale")
-        ? window.localStorage.getItem("locale")
-        : "en-US",
+      localeName: getLocale(),
       columns: [],
     };
   }

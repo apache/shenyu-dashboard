@@ -33,6 +33,7 @@ import styles from "./index.module.less";
 import AddModal from "./AddModal";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
+import { getLocale } from "../../../utils/localePreference";
 
 const { Option } = Select;
 
@@ -67,9 +68,7 @@ export default class PluginHandle extends Component {
       popup: "",
       pluginId: "",
       field: "",
-      localeName: window.localStorage.getItem("locale")
-        ? window.localStorage.getItem("locale")
-        : "en-US",
+      localeName: getLocale(),
       columns: [],
     };
   }

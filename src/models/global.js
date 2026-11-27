@@ -26,6 +26,7 @@ import {
 } from "../services/api";
 import { getIntlContent } from "../utils/IntlUtils";
 import { defaultNamespaceId } from "../components/_utils/utils";
+import { getLocale } from "../utils/localePreference";
 
 export default {
   namespace: "global",
@@ -36,7 +37,7 @@ export default {
     plugins: [],
     currentRouter: {},
     permissions: {},
-    language: window.localStorage.getItem("locale") || "en-US",
+    language: getLocale(),
     namespaces: [],
     currentNamespaceId:
       window.sessionStorage.getItem("currentNamespaceId") || defaultNamespaceId,

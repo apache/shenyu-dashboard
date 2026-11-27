@@ -123,3 +123,25 @@ it("keeps the stored locale choice over the browser language", () => {
     container.remove();
   }
 });
+
+it("does not store the browser language at startup", () => {
+  const container = document.createElement("div");
+  container.id = "root";
+  document.body.appendChild(container);
+  window.localStorage.removeItem("locale");
+  Object.defineProperty(window.navigator, "language", {
+    value: "zh-CN",
+    configurable: true,
+  });
+  try {
+    jest.isolateModules(() => {
+      // eslint-disable-next-line global-require
+      require("./index");
+    });
+    expect(window.localStorage.getItem("locale")).toBeNull();
+  } finally {
+    delete window.navigator.language;
+    container.remove();
+  }
+});
+

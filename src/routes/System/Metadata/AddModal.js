@@ -24,6 +24,7 @@ import zhCN from "@douyinfe/semi-ui/lib/es/locale/source/zh_CN";
 import "@douyinfe/semi-ui/lib/es/_base/base.css";
 import { connect } from "react-redux";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import { getLocale } from "../../../utils/localePreference";
 
 @connect(({ global }) => ({
   platform: global.platform,
@@ -62,7 +63,7 @@ class AddModal extends Component {
       parameterTypes = "",
       enabled = true,
     } = this.props;
-    const locale = language || window.localStorage.getItem("locale") || "en-US";
+    const locale = language || getLocale();
     const initValues = {
       appName,
       serviceName,

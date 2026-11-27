@@ -36,6 +36,7 @@ import { initIntl } from "./utils/IntlUtils";
 import "./index.less";
 import { emit } from "./utils/emit";
 import { setRequestDispatch } from "./utils/request";
+import { getLocale } from "./utils/localePreference";
 
 const middlewares = [];
 // if (process.env.NODE_ENV === `development`) {
@@ -44,13 +45,8 @@ const middlewares = [];
 //   middlewares.push(logger);
 // }
 
-/** get the stored locale, falling back to the browser language */
-const browserLocale = window.navigator.language || "";
-const locale =
-  window.localStorage.getItem("locale") ||
-  (browserLocale.startsWith("zh") ? "zh-CN" : "en-US");
-initIntl(locale);
-window.localStorage.setItem("locale", locale);
+// Use the user's stored choice, else follow the browser language without storing it.
+initIntl(getLocale());
 
 emit.on("change_language", (lang) => initIntl(lang));
 

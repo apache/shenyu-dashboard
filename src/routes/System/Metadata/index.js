@@ -30,6 +30,7 @@ import MetadataTable from "./MetadataTableLoader";
 import AddModal from "./AddModalLoader";
 import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
+import { getLocale } from "../../../utils/localePreference";
 
 @connect(({ metadata, loading, global }) => ({
   metadata,
@@ -46,9 +47,7 @@ export default class Metadata extends Component {
       selectedRowKeys: [],
       path: "",
       popup: "",
-      localeName: window.localStorage.getItem("locale")
-        ? window.localStorage.getItem("locale")
-        : "en-US",
+      localeName: getLocale(),
       columns: [],
     };
   }

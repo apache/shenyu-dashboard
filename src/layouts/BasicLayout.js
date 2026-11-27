@@ -37,6 +37,7 @@ import AuthRoute, {
 import { getMenuData } from "../common/menu";
 import logo from "../assets/logo.svg";
 import TitleLogo from "../assets/TitleLogo.svg";
+import { getLocale } from "../utils/localePreference";
 
 message.config({
   top: 200,
@@ -127,9 +128,7 @@ class BasicLayout extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      localeName: window.localStorage.getItem("locale")
-        ? window.localStorage.getItem("locale")
-        : "en-US",
+      localeName: getLocale(),
       pluginsLoaded: false,
     };
   }

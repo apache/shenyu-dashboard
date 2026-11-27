@@ -37,6 +37,7 @@ import { resetAuthMenuCache } from "../../utils/AuthRoute";
 import { defaultNamespaceId } from "../_utils/utils";
 import { encryptCredentials } from "../../utils/passwordEncryption";
 import { message } from "../ui/feedback";
+import { getLocale, setStoredLocale } from "../../utils/localePreference";
 
 const TranslationOutlinedSvg = () => (
   <svg
@@ -115,9 +116,7 @@ class GlobalHeader extends PureComponent {
           </Dropdown.Item>
         </Dropdown.Menu>
       ),
-      localeName: window.localStorage.getItem("locale")
-        ? window.localStorage.getItem("locale")
-        : "en-US",
+      localeName: getLocale(),
       userName: window.sessionStorage.getItem("userName"),
       visible: false,
       display: "none",
@@ -239,14 +238,14 @@ class GlobalHeader extends PureComponent {
     const { changeLocalName } = this.props;
     if (value.key === "0") {
       emit.emit("change_language", "en-US");
-      window.localStorage.setItem("locale", "en-US");
+      setStoredLocale("en-US");
       this.setState({
         localeName: "en-US",
       });
       changeLocalName("en-US");
     } else {
       emit.emit("change_language", "zh-CN");
-      window.localStorage.setItem("locale", "zh-CN");
+      setStoredLocale("zh-CN");
       this.setState({
         localeName: "zh-CN",
       });

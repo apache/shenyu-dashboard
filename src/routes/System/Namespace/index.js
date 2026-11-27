@@ -32,6 +32,7 @@ import { getCurrentLocale, getIntlContent } from "../../../utils/IntlUtils";
 import AuthButton from "../../../utils/AuthButton";
 import { refreshAuthMenus } from "../../../utils/AuthRoute";
 import { defaultNamespaceId } from "../../../components/_utils/utils";
+import { getLocale } from "../../../utils/localePreference";
 
 @connect(({ namespace, loading, global }) => ({
   namespace,
@@ -52,9 +53,7 @@ export default class Namespace extends Component {
       // eslint-disable-next-line react/no-unused-state
       enabled: null,
       popup: "",
-      localeName: window.localStorage.getItem("locale")
-        ? window.localStorage.getItem("locale")
-        : "en-US",
+      localeName: getLocale(),
       columns: [],
     };
   }
