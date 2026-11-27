@@ -546,6 +546,8 @@
   "SHENYU.PLUGIN.SELECTOR.LIST.CONFIGURATION": "Discovery Configuration",
   "SHENYU.COMMON.RESPONSE.CONFIGURATION.SUCCESS": "Set Discovery Configuration Success",
   "SHENYU.DISCOVERY.CONFIGURATION.TYPE": "Type",
+  "SHENYU.DISCOVERY.CONFIGURATION.NO.MATCH": "No discovery configuration exists for this type.",
+  "SHENYU.DISCOVERY.CONFIGURATION.LOAD.ERROR": "Unable to load the selected discovery configuration.",
   "SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT": "Please select the discovery type",
   "SHENYU.DISCOVERY.CONFIGURATION.NAME": "Name",
   "SHENYU.DISCOVERY.CONFIGURATION.NAME.INPUT": "Please input the discovery name",

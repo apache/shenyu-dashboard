@@ -74,10 +74,7 @@ it("includes the active namespace when refreshing after add", () => {
     component.state = { ...component.state, ...update };
   };
 
-  component.addSelector();
-
-  const fetchAction = dispatch.mock.calls[0][0];
-  fetchAction.callback(null);
+  component.addSelector({ id: "registry-1", type: "nacos" }, "nacos");
   component.state.popup.props.handleOk({
     name: "selector",
     forwardPort: 9000,
@@ -86,11 +83,15 @@ it("includes the active namespace when refreshing after add", () => {
     handler: {},
     discoveryProps: "{}",
     serverList: "",
-    selectedDiscoveryType: "local",
+    selectedDiscoveryType: "nacos",
     upstreams: [],
   });
 
-  const addAction = dispatch.mock.calls[1][0];
+  const addAction = dispatch.mock.calls[0][0];
+  expect(addAction.payload.discovery).toMatchObject({
+    id: "registry-1",
+    discoveryType: "nacos",
+  });
   expect(addAction.fetchValue).toEqual({
     currentPage: 2,
     pageSize: 12,
@@ -116,5 +117,68 @@ it("starts a new proxy search on page one", () => {
       name: "needle",
       namespaceId: "ns",
     },
+  });
+});
+
+it.each([
+  [{ id: "registry", type: "nacos" }, "registry"],
+  [null, ""],
+])(
+  "saves only the configuration selected for the active namespace",
+  (config, id) => {
+    const dispatch = jest.fn();
+    const component = new DiscoveryProxy({
+      dispatch,
+      currentNamespaceId: "ns",
+    });
+    component.setState = (update) => {
+      component.state = { ...component.state, ...update };
+    };
+    component.addConfiguration(config, "nacos");
+    const editor = component.state.popup.props;
+    expect(editor.data.type).toBe("nacos");
+    expect(editor.isSetConfig).toBe(Boolean(config));
+    editor.handleOk({ name: "test", discoveryType: "nacos" });
+    expect(dispatch.mock.calls[0][0].payload).toMatchObject({
+      level: 1,
+      pluginName: "tcp",
+      namespaceId: "ns",
+      type: "nacos",
+      id,
+    });
+  },
+);
+
+it("opens a blank TCP add form after editing a selector in another namespace", () => {
+  const selector = {
+    id: "old-selector",
+    name: "old name",
+    forwardPort: 9000,
+    discovery: { type: "local", serverList: "" },
+    discoveryUpstreams: [
+      { id: "old-upstream", url: "old.example:8123", props: "{}" },
+    ],
+  };
+  const component = new DiscoveryProxy({
+    currentNamespaceId: "old",
+    plugins: [{ name: "tcp", id: "tcp-id" }],
+    proxySelectorList: [selector],
+    dispatch: jest.fn(),
+  });
+  component.setState = (update) => {
+    component.state = { ...component.state, ...update };
+  };
+  component.updateSelector(selector.id);
+  expect(component.state.popup.props.data.name).toBe("old name");
+  const prevProps = component.props;
+  component.props = { ...prevProps, currentNamespaceId: "new" };
+  component.componentDidUpdate(prevProps);
+  expect(component.state.popup).toBe("");
+  component.addSelector(null, "local");
+  expect(component.state.popup.props).toMatchObject({
+    isAdd: true,
+    data: { name: "", forwardPort: "" },
+    recordCount: 0,
+    discoveryUpstreams: [],
   });
 });

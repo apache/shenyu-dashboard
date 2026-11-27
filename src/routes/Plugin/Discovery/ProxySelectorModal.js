@@ -49,7 +49,6 @@ export class ProxySelectorModalComponent extends Component {
       recordCount: this.props.recordCount,
       editingUpstream: false,
       upstreams: this.props.discoveryUpstreams,
-      discoveryDicts: this.props.discoveryDicts,
       configPropsJson: {},
       pluginHandleList: [],
       visible: false,
@@ -61,7 +60,7 @@ export class ProxySelectorModalComponent extends Component {
   componentDidMount() {
     const { isAdd, isSetConfig, discoveryType, data, pluginId, dispatch } =
       this.props;
-    const { discoveryDicts } = this.state;
+    const { discoveryDicts } = this.props;
     const props = getDiscoveryProps(this.props.data?.props);
 
     if (!isAdd || isSetConfig) {
@@ -69,24 +68,12 @@ export class ProxySelectorModalComponent extends Component {
         configPropsJson:
           isSetConfig === true ? {} : JSON.parse(data.discovery.props),
       });
-      dispatch({
-        type: "discovery/saveGlobalType",
-        payload: {
-          chosenType: discoveryType,
-        },
-      });
     } else {
       let configProps = discoveryDicts.filter(
-        (item) => item.dictName === "zookeeper",
+        (item) => item.dictName === discoveryType,
       );
       let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
       this.setState({ configPropsJson: propsEntries });
-      dispatch({
-        type: "discovery/saveGlobalType",
-        payload: {
-          chosenType: "",
-        },
-      });
     }
 
     let type = 1;
@@ -184,7 +171,7 @@ export class ProxySelectorModalComponent extends Component {
   };
 
   handleCopyData = (copyData) => {
-    const { form, dispatch } = this.props;
+    const { form } = this.props;
     if (!copyData || !copyData.discovery) {
       message.warn(getIntlContent("SHENYU.COMMON.WARN.INPUT_SELECTOR"));
       return;
@@ -197,12 +184,6 @@ export class ProxySelectorModalComponent extends Component {
       selectedDiscoveryType: discovery.type,
       serverList: discovery.serverList,
     };
-    dispatch({
-      type: "discovery/saveGlobalType",
-      payload: {
-        chosenType: discovery.type,
-      },
-    });
     form.setFieldsValue(formData);
     this.setState({ visible: false });
   };
@@ -222,24 +203,9 @@ export class ProxySelectorModalComponent extends Component {
     });
   };
 
-  handleOptions() {
-    return this.props.typeEnums.map((value) => (
-      <Option key={value} value={value.toString()}>
-        {value}
-      </Option>
-    ));
-  }
-
   render() {
-    const {
-      discoveryType,
-      form,
-      handleCancel,
-      isSetConfig,
-      isAdd,
-      chosenType,
-      dispatch,
-    } = this.props;
+    const { discoveryType, form, handleCancel, isSetConfig, isAdd } =
+      this.props;
     const {
       recordCount,
       upstreams,
@@ -247,7 +213,6 @@ export class ProxySelectorModalComponent extends Component {
       visible,
       discoveryHandler,
       defaultValueList,
-      discoveryDicts,
       configPropsJson,
     } = this.state;
     const { getFieldDecorator } = form;
@@ -320,6 +285,7 @@ export class ProxySelectorModalComponent extends Component {
               </FormItem>
 
               <ProxySelectorCopy
+                discoveryType={discoveryType}
                 disabled={!isAdd}
                 visible={visible}
                 onOk={this.handleCopyData}
@@ -547,35 +513,10 @@ export class ProxySelectorModalComponent extends Component {
                   ],
                   initialValue:
                     discoveryType !== "" ? discoveryType : undefined,
-                })(
-                  <Select
-                    placeholder={getIntlContent(
-                      "SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT",
-                    )}
-                    disabled={isSetConfig || !isAdd}
-                    onChange={(value) => {
-                      dispatch({
-                        type: "discovery/saveGlobalType",
-                        payload: {
-                          chosenType: value,
-                        },
-                      });
-
-                      let configProps = discoveryDicts.filter(
-                        (item) => item.dictName === value,
-                      );
-                      let propsEntries = JSON.parse(
-                        configProps[0]?.dictValue || "{}",
-                      );
-                      this.setState({ configPropsJson: propsEntries });
-                    }}
-                  >
-                    {this.handleOptions()}
-                  </Select>,
-                )}
+                })(<Input disabled />)}
               </FormItem>
 
-              {chosenType !== "local" ? (
+              {discoveryType !== "local" ? (
                 <>
                   <FormItem
                     label={getIntlContent(

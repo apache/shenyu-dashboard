@@ -24,7 +24,6 @@ import { connect } from "react-redux";
 import Form from "../../../components/ui/Form";
 import Input from "../../../components/ui/Input";
 import Modal from "../../../components/ui/Modal";
-import Select from "../../../components/ui/Select";
 import { getIntlContent } from "../../../utils/IntlUtils";
 import { getDiscoveryProps } from "./optionalFields";
 
@@ -37,26 +36,18 @@ class DiscoveryConfigModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      discoveryDicts: this.props.discoveryDicts,
       configPropsJson: {},
     };
   }
 
   componentDidMount() {
-    const { isSetConfig, data, dispatch } = this.props;
-    const { discoveryDicts } = this.state;
+    const { isSetConfig, data, discoveryDicts } = this.props;
     if (!isSetConfig) {
       let configProps = discoveryDicts.filter(
-        (item) => item.dictName === "zookeeper",
+        (item) => item.dictName === data.type,
       );
       let propsEntries = JSON.parse(configProps[0]?.dictValue || "{}");
       this.setState({ configPropsJson: propsEntries });
-      dispatch({
-        type: "discovery/saveGlobalType",
-        payload: {
-          chosenType: null,
-        },
-      });
     } else {
       this.setState({
         configPropsJson: getDiscoveryProps(JSON.parse(data?.props || "{}")),
@@ -81,29 +72,12 @@ class DiscoveryConfigModal extends Component {
     });
   };
 
-  handleOptions() {
-    const { Option } = Select;
-    return this.props.typeEnums
-      .filter((value) => value !== "local")
-      .map((value) => (
-        <Option key={value} value={value.toString()}>
-          {value}
-        </Option>
-      ));
-  }
-
   render() {
-    const {
-      handleCancel,
-      form,
-      data,
-      isSetConfig,
-      handleConfigDelete,
-      dispatch,
-    } = this.props;
+    const { handleCancel, form, data, isSetConfig, handleConfigDelete } =
+      this.props;
     const { getFieldDecorator } = form;
     const { name, serverList, type: discoveryType, id } = data || {};
-    const { configPropsJson, discoveryDicts } = this.state;
+    const { configPropsJson } = this.state;
     const formItemLayout = {
       labelCol: {
         sm: { span: 4 },
@@ -170,31 +144,7 @@ class DiscoveryConfigModal extends Component {
                 },
               ],
               initialValue: discoveryType !== "" ? discoveryType : undefined,
-            })(
-              <Select
-                placeholder={getIntlContent(
-                  "SHENYU.DISCOVERY.CONFIGURATION.TYPE.INPUT",
-                )}
-                disabled={isSetConfig}
-                onChange={(value) => {
-                  dispatch({
-                    type: "discovery/saveGlobalType",
-                    payload: {
-                      chosenType: value,
-                    },
-                  });
-                  let configProps = discoveryDicts.filter(
-                    (item) => item.dictName === value,
-                  );
-                  let propsEntries = JSON.parse(
-                    configProps[0]?.dictValue || "{}",
-                  );
-                  this.setState({ configPropsJson: propsEntries });
-                }}
-              >
-                {this.handleOptions()}
-              </Select>,
-            )}
+            })(<Input disabled />)}
           </Form.Item>
           <FormItem
             label={getIntlContent("SHENYU.DISCOVERY.CONFIGURATION.NAME")}

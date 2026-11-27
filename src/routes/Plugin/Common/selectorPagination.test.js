@@ -185,3 +185,64 @@ it("carries the displayed child page size when reloading selectors", () => {
   component.getAllSelectors(1, 20, component.props.plugins);
   expect(dispatch.mock.calls[0][0].payload.rulePageSize).toBe(50);
 });
+
+it("opens each divide selector with the upstreams from its own detail response", () => {
+  const { component, dispatch } = makeSearchComponent();
+  for (const id of ["selector-a", "selector-b"]) {
+    dispatch.mockClear();
+    component.editSelector({ id });
+    const action = dispatch.mock.calls[0][0];
+    expect(action.type).toBe("common/fetchSeItem");
+    expect(action.payload).toEqual({ id, namespaceId: "namespace-1" });
+    const url = `${id}.example:8080`;
+    action.callback({
+      id,
+      discoveryVO: { discoveryType: "local" },
+      discoveryUpstreams: [{ id: `upstream-${id}`, url, props: "{}" }],
+    });
+    expect(component.state.popup.props.discoveryUpstreams).toEqual([
+      expect.objectContaining({ url }),
+    ]);
+    expect(dispatch).toHaveBeenCalledTimes(1);
+  }
+});
+
+it("closes the selector editor when the active namespace changes", () => {
+  const { component } = makeSearchComponent();
+  component.state.popup = "open";
+  component.componentDidUpdate({
+    ...component.props,
+    currentNamespaceId: "old-namespace",
+  });
+  expect(component.state.popup).toBe("");
+});
+
+it("keeps the latest selector open when edit responses arrive out of order", () => {
+  const { component, dispatch } = makeSearchComponent();
+  component.editSelector({ id: "first" });
+  component.editSelector({ id: "second" });
+  const [first, second] = dispatch.mock.calls.map(([action]) => action);
+  second.callback({ id: "second" });
+  first.callback({ id: "first" });
+  expect(component.state.popup.props.id).toBe("second");
+});
+
+it.each([
+  { match: { params: { id: "grpc" } } },
+  { currentNamespaceId: "namespace-2" },
+])(
+  "doesn't reopen a pending selector after leaving and returning to its scope (%j)",
+  (change) => {
+    const { component, dispatch } = makeSearchComponent();
+    component.editSelector({ id: "first" });
+    const { callback } = dispatch.mock.calls[0][0];
+    const initial = component.props;
+    const other = { ...initial, ...change };
+    component.props = other;
+    component.componentDidUpdate(initial);
+    component.props = initial;
+    component.componentDidUpdate(other);
+    callback({ id: "first" });
+    expect(component.state.popup).toBe("");
+  },
+);

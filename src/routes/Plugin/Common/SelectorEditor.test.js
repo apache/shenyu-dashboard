@@ -27,7 +27,7 @@ import Form from "../../../components/ui/Form";
 import ConnectedSelector from "./Selector";
 
 jest.mock("./SelectorCopy", () => () => null);
-jest.mock("../Discovery/DiscoveryImportModal", () => () => null);
+jest.mock("../Discovery/DiscoveryLookupModal", () => () => null);
 jest.mock("../../../utils/IntlUtils", () => ({ getIntlContent: (key) => key }));
 const Selector = Form.create()(ConnectedSelector.WrappedComponent);
 const upstream = {
