@@ -144,4 +144,3 @@ it("does not store the browser language at startup", () => {
     container.remove();
   }
 });
-
