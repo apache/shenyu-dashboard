@@ -134,3 +134,37 @@ it("parses and reviews repeated values through the Semi modal controls", () => {
     }),
   ]);
 });
+
+it("requires reparsing after the request sample changes", () => {
+  const onApply = jest.fn();
+  render(
+    <ImportConditionsModal visible onApply={onApply} onCancel={jest.fn()} />,
+  );
+  const sample = screen.getByLabelText("Request sample");
+  const parse = screen.getByRole("button", { name: "Parse" });
+  const apply = screen.getByRole("button", { name: "Apply selected" });
+
+  fireEvent.change(sample, {
+    target: { value: "curl 'https://api.example.com/old?id=1&id=2'" },
+  });
+  fireEvent.click(parse);
+  fireEvent.click(screen.getByText("Query id"));
+  expect(apply.disabled).toBe(false);
+  expect(screen.getByText("This sample is only partly supported")).toBeTruthy();
+
+  fireEvent.change(sample, {
+    target: { value: "curl -X POST https://api.example.com/new" },
+  });
+  fireEvent.click(apply);
+  expect(onApply).not.toHaveBeenCalled();
+  expect(apply.disabled).toBe(true);
+  expect(screen.queryByText("This sample is only partly supported")).toBeNull();
+  expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
+
+  fireEvent.click(parse);
+  fireEvent.click(apply);
+  expect(onApply).toHaveBeenCalledWith([
+    expect.objectContaining({ paramType: "uri", paramValue: "/new" }),
+    expect.objectContaining({ paramType: "req_method", paramValue: "POST" }),
+  ]);
+});

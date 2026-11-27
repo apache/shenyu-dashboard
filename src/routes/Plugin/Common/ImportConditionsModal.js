@@ -71,8 +71,8 @@ class ImportConditionsModal extends Component {
     this.props.onCancel();
   };
 
-  reset = () => {
-    this.setState({ text: "", drafts: [], selected: [], sample: null });
+  reset = (text = "") => {
+    this.setState({ text, drafts: [], selected: [], sample: null });
   };
 
   renderIssues = () => {
@@ -145,7 +145,7 @@ class ImportConditionsModal extends Component {
           aria-label="Request sample"
           rows={6}
           value={this.state.text}
-          onChange={(e) => this.setState({ text: e.target.value })}
+          onChange={(e) => this.reset(e.target.value)}
           placeholder="curl 'https://api.example.com/orders/123' -H 'X-Version: v2'"
         />
         <p>
