@@ -68,6 +68,7 @@ const { Title } = Typography;
 export default class Common extends Component {
   constructor(props) {
     super(props);
+    this.selectorEditRequestId = 0;
     this.state = {
       selectorPage: 1,
       selectorPageSize: 12,
@@ -107,12 +108,18 @@ export default class Common extends Component {
     const newId = this.props.match.params.id;
     const { selectorPage, selectorPageSize } = this.state;
     const { dispatch, plugins, currentNamespaceId } = this.props;
+    if (
+      newId !== preId ||
+      prevProps.currentNamespaceId !== currentNamespaceId
+    ) {
+      this.closeModal();
+    }
     if (newId !== preId) {
       dispatch({
         type: "common/resetData",
       });
 
-      this.setState({ selectorPage: 1, popup: "" }, () => {
+      this.setState({ selectorPage: 1 }, () => {
         if (plugins && plugins.length > 0) {
           this.getAllSelectors(1, selectorPageSize, plugins);
         } else {
@@ -135,7 +142,6 @@ export default class Common extends Component {
       });
     }
     if (prevProps.currentNamespaceId !== currentNamespaceId) {
-      this.closeModal();
       if (plugins) {
         this.getAllSelectors(selectorPage, selectorPageSize, plugins);
       }
@@ -144,6 +150,7 @@ export default class Common extends Component {
   /* eslint-enable no-unused-vars */
 
   componentWillUnmount() {
+    this.selectorEditRequestId += 1;
     const { dispatch } = this.props;
     dispatch({
       type: "common/resetData",
@@ -224,6 +231,7 @@ export default class Common extends Component {
   getRuleFilters = () => ({ name: this.state.ruleName });
 
   closeModal = () => {
+    this.selectorEditRequestId += 1;
     this.setState({ popup: "" });
   };
 
@@ -248,6 +256,7 @@ export default class Common extends Component {
   };
 
   addSelector = () => {
+    this.selectorEditRequestId += 1;
     const { selectorPage, selectorPageSize } = this.state;
     const { dispatch, plugins, currentNamespaceId } = this.props;
     let name = this.props.match.params ? this.props.match.params.id : "";
@@ -370,6 +379,7 @@ export default class Common extends Component {
   };
 
   addRule = () => {
+    this.selectorEditRequestId += 1;
     const { rulePage, rulePageSize, pluginId } = this.state;
     const { dispatch, currentSelector, plugins, currentNamespaceId } =
       this.props;
@@ -437,6 +447,7 @@ export default class Common extends Component {
   };
 
   editClick = () => {
+    this.selectorEditRequestId += 1;
     const { dispatch, plugins } = this.props;
     const pluginName = this.props.match.params
       ? this.props.match.params.id
@@ -540,6 +551,8 @@ export default class Common extends Component {
   };
 
   editSelector = (record) => {
+    this.selectorEditRequestId += 1;
+    const requestId = this.selectorEditRequestId;
     const { dispatch, plugins, currentNamespaceId } = this.props;
     const { selectorPage, selectorPageSize } = this.state;
     let name = this.props.match.params ? this.props.match.params.id : "";
@@ -556,6 +569,7 @@ export default class Common extends Component {
         namespaceId: currentNamespaceId,
       },
       callback: (selector) => {
+        if (requestId !== this.selectorEditRequestId) return;
         if (isDiscovery) {
           let discoveryConfig = {
             props:
@@ -606,6 +620,7 @@ export default class Common extends Component {
               <Selector
                 pluginName={name}
                 {...selector}
+                key={id}
                 multiSelectorHandle={multiSelectorHandle}
                 discoveryConfig={discoveryConfig}
                 discoveryUpstreams={updateArray}
@@ -675,6 +690,7 @@ export default class Common extends Component {
               <Selector
                 pluginName={name}
                 {...selector}
+                key={id}
                 multiSelectorHandle={multiSelectorHandle}
                 isDiscovery={false}
                 handleOk={(values) => {
@@ -830,6 +846,7 @@ export default class Common extends Component {
   };
 
   editRule = (record) => {
+    this.selectorEditRequestId += 1;
     const { dispatch, currentSelector, plugins, currentNamespaceId } =
       this.props;
     const { rulePage, rulePageSize, pluginId } = this.state;

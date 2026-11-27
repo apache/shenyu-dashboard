@@ -148,3 +148,37 @@ it.each([
     });
   },
 );
+
+it("opens a blank TCP add form after editing a selector in another namespace", () => {
+  const selector = {
+    id: "old-selector",
+    name: "old name",
+    forwardPort: 9000,
+    discovery: { type: "local", serverList: "" },
+    discoveryUpstreams: [
+      { id: "old-upstream", url: "old.example:8123", props: "{}" },
+    ],
+  };
+  const component = new DiscoveryProxy({
+    currentNamespaceId: "old",
+    plugins: [{ name: "tcp", id: "tcp-id" }],
+    proxySelectorList: [selector],
+    dispatch: jest.fn(),
+  });
+  component.setState = (update) => {
+    component.state = { ...component.state, ...update };
+  };
+  component.updateSelector(selector.id);
+  expect(component.state.popup.props.data.name).toBe("old name");
+  const prevProps = component.props;
+  component.props = { ...prevProps, currentNamespaceId: "new" };
+  component.componentDidUpdate(prevProps);
+  expect(component.state.popup).toBe("");
+  component.addSelector(null, "local");
+  expect(component.state.popup.props).toMatchObject({
+    isAdd: true,
+    data: { name: "", forwardPort: "" },
+    recordCount: 0,
+    discoveryUpstreams: [],
+  });
+});

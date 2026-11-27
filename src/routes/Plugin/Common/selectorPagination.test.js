@@ -216,3 +216,33 @@ it("closes the selector editor when the active namespace changes", () => {
   });
   expect(component.state.popup).toBe("");
 });
+
+it("keeps the latest selector open when edit responses arrive out of order", () => {
+  const { component, dispatch } = makeSearchComponent();
+  component.editSelector({ id: "first" });
+  component.editSelector({ id: "second" });
+  const [first, second] = dispatch.mock.calls.map(([action]) => action);
+  second.callback({ id: "second" });
+  first.callback({ id: "first" });
+  expect(component.state.popup.props.id).toBe("second");
+});
+
+it.each([
+  { match: { params: { id: "grpc" } } },
+  { currentNamespaceId: "namespace-2" },
+])(
+  "doesn't reopen a pending selector after leaving and returning to its scope (%j)",
+  (change) => {
+    const { component, dispatch } = makeSearchComponent();
+    component.editSelector({ id: "first" });
+    const { callback } = dispatch.mock.calls[0][0];
+    const initial = component.props;
+    const other = { ...initial, ...change };
+    component.props = other;
+    component.componentDidUpdate(initial);
+    component.props = initial;
+    component.componentDidUpdate(other);
+    callback({ id: "first" });
+    expect(component.state.popup).toBe("");
+  },
+);

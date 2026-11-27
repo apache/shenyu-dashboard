@@ -53,28 +53,6 @@ export default class DiscoveryProxy extends Component {
     this.state = {
       discoveryDics: [],
       searchKey: "",
-      cardData: {
-        discoveryType: "",
-        name: "",
-        forwardPort: "",
-        type: "tcp",
-        props: {},
-        listenerNode: "",
-        handler: {},
-        discovery: {
-          serverList: "",
-          props: {},
-        },
-        discoveryUpstreams: [
-          // {
-          //   protocol: '1',
-          //   url: '1',
-          //   status:'1',
-          //   weight: '1',
-          //   key: '1'
-          // }
-        ],
-      },
       isPluginEnabled: false,
       popup: "",
       pluginName: "tcp",
@@ -190,26 +168,6 @@ export default class DiscoveryProxy extends Component {
     this.setState({ popup: "" });
   };
 
-  closeUpdateModal = () => {
-    this.setState({ popup: "" });
-    this.setState({
-      cardData: {
-        discoveryType: "",
-        name: "",
-        forwardPort: "",
-        type: "tcp",
-        props: {},
-        listenerNode: "",
-        handler: {},
-        discovery: {
-          serverList: "",
-          props: {},
-        },
-        discoveryUpstreams: [],
-      },
-    });
-  };
-
   openDiscoveryLookup = (title, onOk, canCreate) => {
     const { pluginName } = this.state;
     this.setState({
@@ -294,15 +252,22 @@ export default class DiscoveryProxy extends Component {
   addSelector = (config, selectedType) => {
     const { dispatch, currentPage, pageSize, plugins, currentNamespaceId } =
       this.props;
-    const { cardData, discoveryDics, pluginName } = this.state;
+    const { discoveryDics, pluginName } = this.state;
     const plugin = this.getPlugin(plugins, pluginName);
     this.setState({
       popup: (
         <ConnectedProxySelectorModal
           pluginId={plugin.id}
-          recordCount={cardData.discoveryUpstreams.length}
-          data={cardData}
-          discoveryUpstreams={cardData.discoveryUpstreams}
+          recordCount={0}
+          data={{
+            name: "",
+            forwardPort: "",
+            listenerNode: "",
+            props: {},
+            handler: {},
+            discovery: { serverList: "", props: {} },
+          }}
+          discoveryUpstreams={[]}
           discoveryType={selectedType}
           isAdd={true}
           isSetConfig={Boolean(config)}
@@ -379,9 +344,6 @@ export default class DiscoveryProxy extends Component {
     const data = proxySelectorList.find((value) => value.id === id);
     const plugin = this.getPlugin(plugins, pluginName);
     let isSetConfig = false;
-    this.setState({
-      cardData: data,
-    });
     if (data.discovery.serverList === null && data.type !== "local") {
       isSetConfig = true;
     }
@@ -449,9 +411,7 @@ export default class DiscoveryProxy extends Component {
                 discoveryUpstreams: upstreamsWithProps,
                 namespaceId: currentNamespaceId,
               },
-              callback: () => {
-                this.closeUpdateModal();
-              },
+              callback: this.closeModal,
               fetchValue: {
                 currentPage,
                 pageSize,
@@ -459,9 +419,7 @@ export default class DiscoveryProxy extends Component {
               },
             });
           }}
-          handleCancel={() => {
-            this.closeUpdateModal();
-          }}
+          handleCancel={this.closeModal}
         />
       ),
     });
