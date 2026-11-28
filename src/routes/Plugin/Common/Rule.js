@@ -34,6 +34,9 @@ import CommonRuleHandle from "./CommonRuleHandle";
 import ComposeRuleHandle from "./ComposeRuleHandle";
 import PluginRuleHandle from "../PluginRuleHandle";
 import CanaryRuleHandle from "../PluginRuleHandle/CanaryRuleHandle";
+import ShadowRuleHandle, {
+  serializeShadowRuleHandle,
+} from "../PluginRuleHandle/ShadowRuleHandle";
 import { mergeDivideHandle } from "../../../utils/canary";
 import RuleCopy from "./RuleCopy";
 import ImportConditionsModal from "./ImportConditionsModal";
@@ -82,6 +85,7 @@ class AddModal extends Component {
       currentNamespaceId,
     } = this.props;
     this.initDics();
+    if (this.props.pluginName === "shadow") return;
     let type = 2;
     dispatch({
       type: "pluginHandle/fetchByPluginId",
@@ -183,9 +187,10 @@ class AddModal extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const { form, handleOk, multiRuleHandle } = this.props;
+    const { form, handleOk, multiRuleHandle, pluginName } = this.props;
     const { ruleConditions, pluginHandleList } = this.state;
-    if (!pluginHandleList) return;
+    const isShadow = pluginName === "shadow";
+    if (!isShadow && !pluginHandleList) return;
 
     form.validateFieldsAndScroll((err, values) => {
       const {
@@ -203,7 +208,11 @@ class AddModal extends Component {
           let handle;
 
           // commonRule
-          switch (handleType) {
+          switch (isShadow ? "shadow" : handleType) {
+            case "shadow":
+              handle = serializeShadowRuleHandle(this.props.handle, values);
+              if (handle === undefined) return;
+              break;
             case "1":
               handle = [];
               pluginHandleList.forEach((handleList, index) => {
@@ -518,8 +527,11 @@ class AddModal extends Component {
       visible,
     } = this.state;
 
+    const isShadow = pluginName === "shadow";
     let RuleHandleComponent;
-    if (customRulePage && pluginHandleList) {
+    if (isShadow) {
+      RuleHandleComponent = ShadowRuleHandle;
+    } else if (customRulePage && pluginHandleList) {
       RuleHandleComponent = ComposeRuleHandle;
     } else if (pluginHandleList) {
       RuleHandleComponent = CommonRuleHandle;
@@ -550,7 +562,7 @@ class AddModal extends Component {
         visible
         okText={getIntlContent("SHENYU.COMMON.SURE")}
         cancelText={getIntlContent("SHENYU.COMMON.CALCEL")}
-        okButtonProps={{ disabled: !pluginHandleList }}
+        okButtonProps={{ disabled: !isShadow && !pluginHandleList }}
         onOk={this.handleSubmit}
         onCancel={onCancel}
       >
