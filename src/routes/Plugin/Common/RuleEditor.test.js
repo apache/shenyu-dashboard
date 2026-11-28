@@ -95,6 +95,83 @@ it("opens a custom request rule before handle metadata arrives and retains unvis
   await waitFor(() => expect(h.handleOk).toHaveBeenCalledTimes(1));
   expect(JSON.parse(h.handleOk.mock.calls[0][0].handle)).toMatchObject(handle);
 });
+it("creates a disabled shadow handle without raw JSON or metadata", async () => {
+  const h = mount({ pluginName: "shadow", handle: undefined });
+  expect(
+    screen
+      .getByRole("switch", { name: "SHENYU.SHADOW.ENABLE" })
+      .getAttribute("aria-checked"),
+  ).toBe("false");
+  fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.SURE" }));
+  await waitFor(() => expect(h.handleOk).toHaveBeenCalledTimes(1));
+  expect(JSON.parse(h.handleOk.mock.calls[0][0].handle)).toMatchObject({
+    enabled: false,
+    sampleRate: 0,
+    methods: ["GET", "HEAD", "OPTIONS", "TRACE"],
+    forwardHeaders: ["Accept", "Content-Type"],
+  });
+});
+
+it("edits a shadow handle and saves numbers, arrays, and headers with their JSON types", async () => {
+  const h = mount({
+    pluginName: "shadow",
+    handle: JSON.stringify({
+      enabled: true,
+      target: "https://candidate.example/preview",
+      sampleRate: 0.2,
+      queueCapacity: 0,
+      compareHeaders: [],
+      extraHeaders: { "X-Environment": "candidate" },
+      futureOption: true,
+    }),
+  });
+  expect(screen.getByLabelText("SHENYU.SHADOW.TARGET").value).toBe(
+    "https://candidate.example/preview",
+  );
+  fireEvent.change(screen.getByLabelText("SHENYU.SHADOW.SAMPLE_RATE"), {
+    target: { value: "0.5" },
+  });
+  fireEvent.change(screen.getByLabelText("SHENYU.SHADOW.IGNORE_JSON_PATHS"), {
+    target: { value: "$.createdAt\n$.items.id" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.SURE" }));
+  await waitFor(() => expect(h.handleOk).toHaveBeenCalledTimes(1));
+  expect(h.handleOk.mock.calls[0][0].enabled).toBe(false);
+  expect(JSON.parse(h.handleOk.mock.calls[0][0].handle)).toMatchObject({
+    enabled: true,
+    sampleRate: 0.5,
+    queueCapacity: 0,
+    compareHeaders: [],
+    ignoreJsonPaths: ["$.createdAt", "$.items.id"],
+    extraHeaders: { "X-Environment": "candidate" },
+    futureOption: true,
+  });
+});
+
+it("blocks an enabled shadow rule without a destination and rejects invalid bounds or headers", async () => {
+  const h = mount({ pluginName: "shadow", handle: undefined });
+  fireEvent.click(screen.getByRole("switch", { name: "SHENYU.SHADOW.ENABLE" }));
+  fireEvent.change(screen.getByLabelText("SHENYU.SHADOW.METHODS"), {
+    target: { value: "" },
+  });
+  fireEvent.change(screen.getByLabelText("SHENYU.SHADOW.SAMPLE_RATE"), {
+    target: { value: "1.5" },
+  });
+  fireEvent.change(screen.getByLabelText("SHENYU.SHADOW.QUEUE_CAPACITY"), {
+    target: { value: "1.5" },
+  });
+  fireEvent.change(screen.getByLabelText("SHENYU.SHADOW.EXTRA_HEADERS"), {
+    target: { value: '{"X-Flag":true}' },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.SURE" }));
+  expect(await screen.findByText("SHENYU.SHADOW.TARGET_INVALID")).toBeTruthy();
+  expect(screen.getByText("SHENYU.SHADOW.METHODS_INVALID")).toBeTruthy();
+  expect(screen.getByText("SHENYU.SHADOW.SAMPLE_RATE_INVALID")).toBeTruthy();
+  expect(screen.getByText("SHENYU.SHADOW.QUEUE_CAPACITY_INVALID")).toBeTruthy();
+  expect(screen.getByText("SHENYU.SHADOW.EXTRA_HEADERS_INVALID")).toBeTruthy();
+  expect(h.handleOk).not.toHaveBeenCalled();
+});
+
 it("keeps date and time components of a time condition", () => {
   mount({
     ruleConditions: [
