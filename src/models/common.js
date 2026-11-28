@@ -145,13 +145,14 @@ export default {
       }
     },
     *deleteSelector(params, { call, put }) {
-      const { payload, fetchValue } = params;
+      const { payload, fetchValue, callback } = params;
       const { list, namespaceId } = payload;
       const json = yield call(deleteSelector, { list, namespaceId });
       if (json.code === 200) {
         message.success(
           getIntlContent("SHENYU.COMMON.RESPONSE.DELETE.SUCCESS"),
         );
+        callback?.();
         yield put({
           type: "saveRule",
           payload: {

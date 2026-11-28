@@ -16,8 +16,14 @@
  */
 
 import React from "react";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { runSaga } from "redux-saga";
+import { call, put } from "redux-saga/effects";
+import common from "../../../models/common";
+import { deleteSelector } from "../../../services/api";
 import ConnectedCommon from "./index";
+
+jest.mock("../../../services/api", () => ({ deleteSelector: jest.fn() }));
 
 jest.mock("./Selector", () => () => null);
 jest.mock("./Rule", () => () => null);
@@ -118,3 +124,62 @@ it("submits the current rule search on Enter", () => {
     },
   });
 });
+
+it.each([
+  { result: "accepted", code: 200, whenSelected: "before" },
+  { result: "rejected", code: 400, whenSelected: "before" },
+  { result: "accepted", code: 200, whenSelected: "during" },
+  { result: "rejected", code: 400, whenSelected: "during" },
+])(
+  "keeps the selection made $whenSelected a delete request that is $result",
+  async ({ code, whenSelected }) => {
+    const dispatch = mount();
+    let finishDelete;
+    deleteSelector.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finishDelete = resolve;
+        }),
+    );
+    let deletion;
+    dispatch.mockImplementation((action) => {
+      if (action.type === "common/deleteSelector") {
+        deletion = runSaga(
+          { dispatch: jest.fn() },
+          common.effects.deleteSelector,
+          action,
+          { call, put },
+        );
+      }
+    });
+
+    const first = within(screen.getByText("Selector One").closest("tr"));
+    const second = within(screen.getByText("Selector Two").closest("tr"));
+    const firstCheckbox = first.getByRole("checkbox");
+    const secondCheckbox = second.getByRole("checkbox");
+    fireEvent.click(firstCheckbox);
+    if (whenSelected === "before") {
+      fireEvent.click(secondCheckbox);
+    }
+    fireEvent.click(
+      first.getByRole("button", { name: "SHENYU.COMMON.DELETE.NAME" }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "SHENYU.COMMON.SURE" }));
+    expect(deleteSelector).toHaveBeenCalledWith({
+      list: ["s1"],
+      namespaceId: "ns",
+    });
+    expect(firstCheckbox.checked).toBe(true);
+    expect(secondCheckbox.checked).toBe(whenSelected === "before");
+
+    if (whenSelected === "during") {
+      fireEvent.click(secondCheckbox);
+    }
+    await act(async () => {
+      finishDelete({ code, message: "test result" });
+      await deletion.done;
+    });
+    expect(firstCheckbox.checked).toBe(code !== 200);
+    expect(secondCheckbox.checked).toBe(true);
+  },
+);
